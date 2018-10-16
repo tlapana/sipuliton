@@ -1,0 +1,1 @@
+Docker creates database "sipuliton" automatically
