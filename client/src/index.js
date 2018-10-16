@@ -1,11 +1,13 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { createStore } from 'redux'
+import { createStore } from 'redux';
 
-import App from './components/App';
-import rootReducer from './rootReducer'
+import App from './modules/app/components/App';
+import rootReducer from './rootReducer';
 import * as serviceWorker from './serviceWorker';
 
+import 'bootstrap/dist/css/bootstrap.css';
+import './fontawesome';  // this is our font awesome library
 
 const store = createStore(rootReducer);
 
