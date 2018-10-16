@@ -4,6 +4,7 @@ Installation:
 - install Nodejs
 - install npm
 - run "npm install" in this directory
+
 Running: 
 - run "npm start"
 
