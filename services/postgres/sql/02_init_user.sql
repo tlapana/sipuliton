@@ -39,22 +39,6 @@ CREATE TABLE user_stats(
 	last_active timestamp
 );
 
---login attempts by user name
-CREATE TABLE login_attempts_name(
-    name varchar(30) PRIMARY KEY,
-    tries int NOT NULL,
-    last_attempt timestamp NOT NULL
-);
-
---login attempts by ip and mac (if available)
-CREATE TABLE login_attempts_ip(
-    ip inet,
-    mac macaddr8,
-    tries int NOT NULL,
-    last_attempt timestamp NOT NULL,
-    PRIMARY KEY (ip, mac)
-);
-
 --bans
 CREATE TABLE bans(
     user_id bigint PRIMARY KEY REFERENCES user_login,
