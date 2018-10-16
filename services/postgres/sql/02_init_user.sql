@@ -28,11 +28,14 @@ CREATE TABLE user_profile(
 CREATE TABLE user_stats(
     user_id bigint PRIMARY KEY REFERENCES user_profile,
     countries int NOT NULL,
+    cities int NOT NULL,
     reviews int NOT NULL,
     thumbs_up bigint NOT NULL,
     thumbs_down bigint NOT NULL,
     thumbs_up_given int NOT NULL,
-    thumbs_down_given int NOT NULL
+    thumbs_down_given int NOT NULL,
+	activity_level int NOT NULL,
+	last_active timestamp
 );
 
 --login attempts by user name
