@@ -1,7 +1,12 @@
 version: '3'
 services:
   
+  parse_sql:
+    build:
+      context: services/postgres/data
   postgres:
+    depends_on:
+      - parse_sql
     build:
       context: services/postgres
     image: postgres

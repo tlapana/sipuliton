@@ -2,7 +2,7 @@
 
 --language names and codes
 CREATE TABLE languages(
-    language_id serial PRIMARY KEY,
+    language_id int PRIMARY KEY,
     name varchar(20) NOT NULL UNIQUE,
     iso2 varchar(2) NULL UNIQUE,
     iso3 varchar(3) NULL UNIQUE

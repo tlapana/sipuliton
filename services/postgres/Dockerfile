@@ -1,6 +1,8 @@
+
 FROM postgres:10.4
 
 MAINTAINER s.hayrynen@gmail.com
+
 
 ENV POSTGRES_USER sipuliton
 ENV POSTGRES_PASSWORD sipuliton
