@@ -19,7 +19,7 @@ CREATE TABLE country(
 CREATE TABLE country_name(
     country_id int REFERENCES country,
     language_id int REFERENCES languages,
-    name varchar(40) NOT NULL,
+    name varchar(50) NOT NULL,
     PRIMARY KEY (country_id, language_id)
 );
 
