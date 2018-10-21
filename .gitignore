@@ -4,5 +4,4 @@
 /opengit.bat
 /rebuild.bat
 /runpython.bat
-/services/postgres/mock_data/*.*
 /services/postgres/data/wikidata/
