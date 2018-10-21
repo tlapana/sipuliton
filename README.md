@@ -42,7 +42,7 @@ With SAM cli, you can launch AWS Lambda as a local service. Currently there is a
 
 You can test your installation by setting up `hello_world` endpoint.
 ```bash
-cd services/lambda/sipuliton-backen/hello_world
+cd services/lambda/sipuliton-backend/hello_world
 npm install
 cd ../
 
@@ -52,6 +52,7 @@ sam local start-api
 Now you should be able to invoke function `hello_world` by sending a `GET` request to local endpoint `http://localhost:3000/hello`.
 
 
+You can set up other lambda functions in the same way as `hello_world`. Run `npm install` for all lambda functions and run `sam local start-api`. Currently there is one real endpoint available, `/landing`, which takes a GET request and returns dummy json data.
 
 
 
