@@ -19,17 +19,14 @@ const App = ({ store }) => (
       <Container>
         <div className="app">
           <NavigationBar/>
-
-
           <div className="content">
             <Switch>
-              <Route exact path="/" component={Home} />
+              <Route exact path="/" component={Home} style={{'position':'absolute'}}/>
               <Route path="/login" component={Login} />
-
               <Route component={NotFound} />
             </Switch>
           </div>
-          <Footer />
+          <Footer/>
         </div>
       </Container>
 

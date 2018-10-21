@@ -1,5 +1,4 @@
 import React from 'react';
-import MainMenu from './styles.css'
 import { Link } from 'react-router-dom';
 import {
   Navbar,
@@ -12,6 +11,7 @@ import {
 export default class MainMenu_ListItem extends React.Component{
 
   render(){
+
     const itemStyle = {
       display: 'block',
       color: '#000',
@@ -19,10 +19,11 @@ export default class MainMenu_ListItem extends React.Component{
       'borderColor': 'white',
       'width':'75%',
       'textAlign':'center',
-      'margin':'0px 30px'
+      'margin':'0px 30px',
+      'z':'-1'
     };
     const itemBlockStyle= {
-      'text-align: center':'center'
+      'textAlign':'center'
     }
     return (
       <NavItem style={itemBlockStyle}>

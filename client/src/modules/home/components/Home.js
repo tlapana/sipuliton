@@ -13,8 +13,8 @@ const Home = () => (
       Here's a font awesome icon: <FontAwesomeIcon icon="ghost" />
     </div>
     <div>
-      Here's another: <FontAwesomeIcon 
-        icon="envelope" 
+      Here's another: <FontAwesomeIcon
+        icon="envelope"
         color="red"
         size="2x" />
     </div>
