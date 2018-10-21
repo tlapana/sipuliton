@@ -9,6 +9,7 @@ import {
   faEnvelope,
   faHome,
   faBars,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
 
@@ -18,6 +19,7 @@ library.add(
   faEnvelope,
   faHome,
   faBars,
+  faSearch,
 );
 
 export default library;
