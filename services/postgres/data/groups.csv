@@ -1,3 +1,17 @@
-NAME,ISO 639-1,ISO 639-2 
-Suomi,FI,FIN
-English,EN,ENG
+food_groups,ENG,FIN
+,nuts,pähkinät
+,fish,kala
+,crustanean,äyriäiset
+,clams,simpukat
+,lactose,laktoosi
+,eggs,munat
+,onions,sipulit
+,meat,liha
+lactose,dairy,maitotuotteet
+,soy,soija
+,gluten,gluteeni
+orange;lemon;lime;grapefruit,citrus,sitrus
+,orange,appelsiini
+,lemon,sitruuna
+,lime,limetti
+,grapefruit,greippi
