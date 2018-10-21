@@ -15,11 +15,11 @@ CREATE TABLE user_profile(
     role int NOT NULL,
     display_name varchar(30) NOT NULL,
     language_id int REFERENCES languages,
-	birth_year int,
-	birth_month int,
+	birth_year int NULL,
+	birth_month int NULL,
 	gender varchar(1),
     description text,
-	geo_location point,
+	geo_location point NULL,
 	country_id int NULL REFERENCES country,
 	city_id bigint NULL REFERENCES city,
     diet_id int
@@ -46,4 +46,13 @@ CREATE TABLE bans(
     expires timestamp NOT NULL,
     reason text NOT NULL,
     banner_id bigint NOT NULL
+);
+
+CREATE TABLE ban_log(
+    user_id bigint REFERENCES user_login,
+    started timestamp NOT NULL,
+    expired timestamp NOT NULL,
+    reason text NOT NULL,
+    banner_id bigint NOT NULL,
+	PRIMARY KEY (user_id, started)
 );

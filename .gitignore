@@ -3,5 +3,4 @@
 /clean_docker.bat
 /opengit.bat
 /rebuild.bat
-/runpython.bat
 /services/postgres/data/wikidata/

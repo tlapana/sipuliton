@@ -9,7 +9,10 @@ def commajoin(array, elements_to_quote, indent=0):
     """Adds indent, quotes specified elements, joins them with ',' and surrounds with parentheses."""
     result = " " * indent + "("
     for i in elements_to_quote:
-        array[i] = "'" + str(array[i]) + "'"
+        if array[i] == '':
+            array[i] = "NULL"
+        else:
+            array[i] = "'" + str(array[i]) + "'"
     j = 0
     for i in array:
         result += str(i)
@@ -59,7 +62,7 @@ def write_lang_city(sql):
             if i == 0:
                 i += 1
                 continue
-            if row == '':
+            if row == '' or ''.join(row) == '':
                 continue
             langs.append(row[2])
             if i > 1:
@@ -77,7 +80,7 @@ def write_lang_city(sql):
                 i += 1
                 langorder = getorder(row, langs)
                 continue
-            if row == '':
+            if row == '' or ''.join(row) == '':
                 continue
             nametemp.append([row[x] for x in langorder])
             if i > 1:
@@ -107,7 +110,7 @@ def write_groups(sql, langs):
                 i += 1
                 langorder = getorder(row, langs)
                 continue
-            if row == '':
+            if row == '' or ''.join(row) == '':
                 continue
             nametemp.append([row[x] for x in langorder])
             groups.append([i-1, [x for x in row[0].split(';')]])
@@ -164,7 +167,7 @@ def write_groups_diets(sql, langs):
                 i += 1
                 langorder = getorder(row, langs)
                 continue
-            if row == '':
+            if row == '' or ''.join(row) == '':
                 continue
             nametemp.append([row[x] for x in langorder])
             diets.append([i-1, [x for x in row[0].split(';')]])
@@ -210,13 +213,13 @@ def write_test_data(sql):
             i = 0
             for row in reader:
                 if i == 0:
-                    if row != [] and row != '':
+                    if row != '' and ''.join(row) != '':
                         sql.write("INSERT INTO " + "_".join(fname.split('_')[2:])[:-4] + commajoin(row, [], 0) + " VALUES\n")
                     else:
-                        sql.write("INSERT INTO " + "_".join(fname.split('_')[2:]) + " VALUES\n")
+                        sql.write("INSERT INTO " + "_".join(fname.split('_')[2:])[:-4] + " VALUES\n")
                     i += 1
                     continue
-                if row == '':
+                if row == '' or ''.join(row) == '':
                     continue
                 if i > 1:
                     sql.write(",\n")
