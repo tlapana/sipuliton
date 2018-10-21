@@ -8,7 +8,7 @@ import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
 import NotFound from './NotFound';
-
+import NavigationBar from './NavigationBar'
 const { Home } = home;
 const { Login } = login;
 
@@ -18,18 +18,17 @@ const App = ({ store }) => (
 
       <Container>
         <div className="app">
-          <header className="header">
-            <h1>Sipuliton</h1>
-          </header>
+          <NavigationBar/>
+
 
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
+
               <Route component={NotFound} />
             </Switch>
           </div>
-
           <Footer />
         </div>
       </Container>
