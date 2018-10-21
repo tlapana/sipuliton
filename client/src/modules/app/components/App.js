@@ -18,10 +18,10 @@ const App = ({ store }) => (
 
       <Container>
         <div className="app">
-          <NavigationBar/>
+          <NavigationBar header_text="Sipuliton.fi"/>
           <div className="content">
             <Switch>
-              <Route exact path="/" component={Home} style={{'position':'absolute'}}/>
+              <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route component={NotFound} />
             </Switch>

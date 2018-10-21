@@ -69,7 +69,7 @@ class NavigationBar extends React.Component {
             </NavbarToggler>
 
             <header className="header" style={{'Align':'center'}}>
-              <h1>Sipuliton.fi</h1>
+              <h1>{this.props.header_text}</h1>
             </header>
 
             <NavLink tag={Link} to="/">
@@ -80,8 +80,12 @@ class NavigationBar extends React.Component {
           {this.state.visible &&
             <Nav style={menuStyle} alignment="right" onClick={this.mainMenu}>
               <MainMenu_ListItem path="/" text="Home" />
-              <MainMenu_ListItem path="/login" text="Login" />
+              <MainMenu_ListItem path="/map" text="Map" />
+              <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
+              <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />
+              <MainMenu_ListItem path="/admin" text="Admin" />
               <MainMenu_ListItem path="/profile" text="Profile" />
+              <MainMenu_ListItem path="/login" text="Login" />
               <MainMenu_ListItem path="/register" text="Register" />
             </Nav>
           }
