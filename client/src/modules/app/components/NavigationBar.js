@@ -35,7 +35,6 @@ class NavigationBar extends React.Component {
 
   render() {
 
-
       const menuStyle = {
         'backgroundColor':'#aaff80',
         'color': 'white',
@@ -43,7 +42,8 @@ class NavigationBar extends React.Component {
         'width':'15%',
         'z':'1',
         'height':'100%',
-        'position': 'fixed'
+        'position': 'fixed',
+        'top':'0px'
       }
 
       const navBarStyle = {
@@ -51,7 +51,9 @@ class NavigationBar extends React.Component {
         'color': 'white',
         'display': 'inlineblock',
         'width':'100%',
-        'alignItems':'left'
+        'alignItems':'left',
+        'position':'fixed',
+        'bottom':'0'
       }
 
       const iconStyles = {
@@ -62,6 +64,20 @@ class NavigationBar extends React.Component {
 
       return (
         <div>
+          <div>
+          {this.state.visible &&
+            <Nav style={menuStyle} onClick={this.mainMenu}>
+              <MainMenu_ListItem path="/" text="Home" />
+              <MainMenu_ListItem path="/map" text="Map" />
+              <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
+              <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />
+              <MainMenu_ListItem path="/admin" text="Admin" />
+              <MainMenu_ListItem path="/profile" text="Profile" />
+              <MainMenu_ListItem path="/login" text="Login" />
+              <MainMenu_ListItem path="/register" text="Register" />
+            </Nav>
+          }
+          </div>
           <Navbar style={navBarStyle}>
 
             <NavbarToggler onClick={this.mainMenu}>
@@ -77,18 +93,7 @@ class NavigationBar extends React.Component {
             </NavLink>
           </Navbar>
 
-          {this.state.visible &&
-            <Nav style={menuStyle} alignment="right" onClick={this.mainMenu}>
-              <MainMenu_ListItem path="/" text="Home" />
-              <MainMenu_ListItem path="/map" text="Map" />
-              <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
-              <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />
-              <MainMenu_ListItem path="/admin" text="Admin" />
-              <MainMenu_ListItem path="/profile" text="Profile" />
-              <MainMenu_ListItem path="/login" text="Login" />
-              <MainMenu_ListItem path="/register" text="Register" />
-            </Nav>
-          }
+
         </div>
       );
     }

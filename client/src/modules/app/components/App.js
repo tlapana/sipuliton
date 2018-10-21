@@ -9,6 +9,8 @@ import home from '../../home';
 import login from '../../login';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar'
+
+import styles from './styles.css'
 const { Home } = home;
 const { Login } = login;
 
@@ -16,9 +18,8 @@ const App = ({ store }) => (
   <Provider store={store}>
     <Router>
 
-      <Container>
-        <div className="app">
-          <NavigationBar header_text="Sipuliton.fi"/>
+      <Container id="container" >
+        <div className="app" >
           <div className="content">
             <Switch>
               <Route exact path="/" component={Home} />
@@ -27,7 +28,9 @@ const App = ({ store }) => (
             </Switch>
           </div>
           <Footer/>
+
         </div>
+        <NavigationBar  header_text="Sipuliton.fi"/>
       </Container>
 
     </Router>
