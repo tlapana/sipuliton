@@ -36,7 +36,7 @@ class NavigationBar extends React.Component {
 
   checkAccessRights(){
     /* Implement user query from back end */
-    var user = {userLogged: true, admin: true, restaurantOwner:true}
+    var user = {userLogged: false, admin: false, restaurantOwner:false}
 
     /* Check if user is logged in, after that show either register or login */
     if(user.userLogged === true){
@@ -141,6 +141,8 @@ class NavigationBar extends React.Component {
             <NavLink tag={Link} to="/">
               <FontAwesomeIcon style={iconStyles} icon="home" onClick={this.home}/>
             </NavLink>
+
+
           </Navbar>
 
 

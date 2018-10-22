@@ -1,0 +1,28 @@
+{
+	"restaurants":
+	[
+		{
+			"id": 1,
+			"name": "Ravintola 1",
+			"address": "Hämeenkatu 1",
+			"is_open": true,
+			"picture_url": "",
+			"review_written": false,
+			"stars_quality": 3.4,
+			"stars_selection": 3.5,
+			"stars_suitability": 4.0,
+		},
+		{
+			"id": 2,
+			"name": "Ravintola 2",
+			"address": "Hervanta 1",
+			"picture_url": "",
+			"is_open": true,
+			"review_written": false,
+			"stars_quality": 1.0,
+			"stars_selection": 1.0,
+			"stars_suitability": 4.0,
+		}
+	
+	]
+}
