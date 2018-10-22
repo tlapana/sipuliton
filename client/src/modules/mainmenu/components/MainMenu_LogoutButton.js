@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   NavItem,
   NavLink,
+  Button
 } from 'reactstrap';
 
 
@@ -12,6 +13,7 @@ export default class MainMenu_ListItem extends React.Component{
     super(props);
     this.state = {hovered: false};
     this.hover = this.hover.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   hover() {
@@ -19,13 +21,22 @@ export default class MainMenu_ListItem extends React.Component{
       this.setState({ hovered: !this.state.hovered});
   }
 
+  logout(){
+
+    /* Implement user logout */
+
+    console.log("User logged out.");
+  }
+
   render(){
 
     var itemStyle = {
       display: 'block',
       color: '#000',
+      'backgroundColor': '#aaff80',
       'borderStyle': 'solid solid solid solid',
       'borderColor': 'white',
+      'borderWidth': '3px',
       'width':'75%',
       'textAlign':'center',
       'margin':'20px 30px',
@@ -52,9 +63,9 @@ export default class MainMenu_ListItem extends React.Component{
 
     return (
       <NavItem style={itemBlockStyle} >
-        <NavLink style={itemStyle} onMouseLeave={this.hover} onMouseEnter={this.hover} tag={Link} to={this.props.path}>
-          {this.props.text}
-        </NavLink>
+        <Button style={itemStyle} onMouseLeave={this.hover} onMouseEnter={this.hover} onClick={this.logout}>
+          Logout
+        </Button>
       </NavItem>
     )
   }

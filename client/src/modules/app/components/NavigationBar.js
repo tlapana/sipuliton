@@ -9,12 +9,12 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem/MainMenu_ListItem'
-
+import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
 
 class NavigationBar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {visible: false};
+    this.state = {visible: false,userLogged: false, admin: false, restaurantOwner:false};
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
   }
@@ -23,6 +23,7 @@ class NavigationBar extends React.Component {
   mainMenu() {
       /* Sets menu visibility to visible or no visible. */
       this.setState({ visible: !this.state.visible});
+      this.checkAccessRights();
   }
 
   /* Function which will be called when home button is clicked. */
@@ -30,6 +31,33 @@ class NavigationBar extends React.Component {
     /* Closes menu, if menu is open */
     if(this.state.visible === true){
       this.mainMenu();
+    }
+  }
+
+  checkAccessRights(){
+    /* Implement user query from back end */
+    var user = {userLogged: true, admin: true, restaurantOwner:true}
+
+    /* Check if user is logged in, after that show either register or login */
+    if(user.userLogged === true){
+      this.setState({userLogged: true})
+    }
+    else{
+      this.setState({userLogged: false})
+    }
+    /* Check if user has admin access, after that show admin page */
+    if(user.admin === true){
+      this.setState({admin: true})
+    }
+    else{
+      this.setState({admin: false})
+    }
+    /* Check if user is restaurant owner, after that show restaurant page */
+    if(user.restaurantOwner === true){
+      this.setState({restaurantOwner: true})
+    }
+    else{
+      this.setState({restaurantOwner: false})
     }
   }
 
@@ -43,7 +71,7 @@ class NavigationBar extends React.Component {
         'z':'1',
         'height':'100%',
         'position': 'fixed',
-        'top':'0px'
+        'top':'0px',
       }
 
       const navBarStyle = {
@@ -62,19 +90,41 @@ class NavigationBar extends React.Component {
         'height':'50px'
       }
 
+      const menuItemsBox = {
+        'margin':'25vh 0 0 0'
+      }
+      const x = 100;
+      const y = 100;
+      if(this.state.visible){
+        const menuStyle = {
+          'backgroundColor':'#aaff80',
+          'color': 'white',
+          'display': 'block',
+          'width':'15%',
+          'z':'1',
+          'height':'100%',
+          'position': 'fixed',
+          'top':'0px',
+          transform: `translate(${x}px, ${y}px)`
+        };
+      }
+
       return (
         <div>
           <div>
           {this.state.visible &&
             <Nav style={menuStyle} onClick={this.mainMenu}>
-              <MainMenu_ListItem path="/" text="Home" />
-              <MainMenu_ListItem path="/map" text="Map" />
-              <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
-              <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />
-              <MainMenu_ListItem path="/admin" text="Admin" />
-              <MainMenu_ListItem path="/profile" text="Profile" />
-              <MainMenu_ListItem path="/login" text="Login" />
-              <MainMenu_ListItem path="/register" text="Register" />
+              <div style={menuItemsBox}>
+                <MainMenu_ListItem path="/" text="Home" />
+                <MainMenu_ListItem path="/map" text="Map" />
+                <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
+                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />}
+                {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
+                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profile" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Login" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Register" />}
+                {this.state.userLogged && <MainMenu_LogoutButton/>}
+              </div>
             </Nav>
           }
           </div>
