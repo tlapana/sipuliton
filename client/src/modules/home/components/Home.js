@@ -1,13 +1,15 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from './landingpage.css';
+import styles from '../../../styles/landingpage.css';
+
+
 
 const Home = () => (
   <div>  
-    <div class="searchDiv">
+    <div className={styles.searchDiv}>
       <form id="search-form" class="search">
-          <input type="text" name="search" class="round" placeholder="Hae kaupungista tai osoitteesta..." />
+          <input type="text" name="search" className={styles.round} placeholder="Hae kaupungista tai osoitteesta..." />
           <button type="submit" class="searchBtn"><FontAwesomeIcon icon="search" /></button>
           <br />
           <br />
