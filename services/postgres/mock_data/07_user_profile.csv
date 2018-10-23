@@ -1,4 +1,4 @@
-user_id,role,display_name,language_id,birth_year,birth_month,gender,description,geo_location,country_id,city_id,diet_id
-0,1,Sipuliton test,0,2000,,M,dunno what to write,,,,1
-1,0,Admin,1,,,,,,,,
-2,3,Basic user,0,2000,8,M,,,1000,100000,0
+user_id,role,display_name,language_id,birth_year,birth_month,gender,description,country_id,city_id,diet_id
+0,1,Sipuliton test,0,2000,,M,dunno what to write,,,1
+1,0,Admin,1,,,,,,,
+2,3,Basic user,0,2000,8,M,,1000,100000,0

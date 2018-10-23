@@ -19,7 +19,6 @@ CREATE TABLE user_profile(
 	birth_month int NULL,
 	gender varchar(1),
     description text,
-	geo_location point NULL,
 	country_id int NULL REFERENCES country,
 	city_id bigint NULL REFERENCES city,
     diet_id int
