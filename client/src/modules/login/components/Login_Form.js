@@ -7,7 +7,7 @@ import {
   Button
 } from 'reactstrap';
 
-import { Auth } from "@aws-amplify/auth";
+import { Auth } from "aws-amplify";
 
 
 
@@ -21,15 +21,8 @@ export default class MainMenu_ListItem extends React.Component{
   }
 
   login = async event =>{
-    try{
       /* Implement configuration of Authorization to cogniton*/
-
-      await Auth.singIn(this.state.username,this.state.password)
-      alert("Logged in!")
-    }
-    catch(e){
-      alert(e.message)
-    }
+      Auth.signIn(this.state.username,this.state.password).then(user => alert("Logged in!")).catch(alert("Loging failed!"));
   }
 
   changeUsername = (event) => {
