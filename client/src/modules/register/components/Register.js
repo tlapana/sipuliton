@@ -1,10 +1,14 @@
 class Register extends React.Component
 {
+	handleRegistration(event)
+	{
+		console.log('Registration sent');
+	}
 	render()
 	{
 		return (
 		<h1>Rekisteröidy</h1>
-		<form>
+		<form onSubmit={this.handleRegistration}>
 		<label>
 		Käyttäjätunnus:<br>
 		<input type="text" name="username"/><br>
