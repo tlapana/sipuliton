@@ -13,11 +13,11 @@ import LoginForm from './Login_Form.js'
 
 const Login = () => (
   <div id="login">
-    <h2>Login</h2>
+    <h2>Kirjautuminen</h2>
     <LoginForm/>
-    <div>Haven't registered yet?' </div>
+    <div>Etkö ole vielä rekisteröitynyt? </div>
     <NavLink tag={Link} to='/register'>
-      Register now!
+      Rekisteröidy nyt!
     </NavLink>
   </div>
 );

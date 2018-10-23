@@ -20,9 +20,14 @@ export default class MainMenu_ListItem extends React.Component{
     };
   }
 
-  login = async event =>{
+  login = event =>{
       /* Implement configuration of Authorization to cogniton*/
-      Auth.signIn(this.state.username,this.state.password).then(user => alert("Logged in!")).catch(alert("Loging failed!"));
+      Auth.signIn(this.state.username,this.state.password).then(s => {
+        if(s.challengeName == "NEW_PASSWORD_REQUIRED"){
+          alert("Change password!");
+        }
+      })
+      .catch(e => alert(e));
   }
 
   changeUsername = (event) => {
@@ -40,8 +45,8 @@ export default class MainMenu_ListItem extends React.Component{
   render(){
     return (
       <form onSubmit={this.login}>
-       Username: <input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-       Password: <input className="input" value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
+       Käyttäjänimi: <input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+       Salasana: <input className="input" value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
        <input type="submit" value="Login" />
       </form>
     )
