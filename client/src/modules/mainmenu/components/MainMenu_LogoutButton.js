@@ -34,7 +34,7 @@ export default class MainMenu_ListItem extends React.Component{
     var itemStyle = {
       display: 'block',
       color: '#000',
-      'backgroundColor': '#aaff80',
+      'backgroundColor': '#99ff99',
       'borderStyle': 'solid solid solid solid',
       'borderColor': 'white',
       'borderWidth': '3px',

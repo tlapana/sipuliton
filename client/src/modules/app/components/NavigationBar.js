@@ -76,7 +76,7 @@ class NavigationBar extends React.Component {
   render() {
 
       const menuStyle = {
-        'backgroundColor':'#aaff80',
+        'backgroundColor':'#99ff99',
         'color': 'white',
         'display': 'block',
         'width':'15%',
@@ -87,7 +87,7 @@ class NavigationBar extends React.Component {
       }
 
       const navBarStyle = {
-        'backgroundColor':'#aaff80',
+        'backgroundColor':'#99ff99',
         'color': 'white',
         'display': 'inlineblock',
         'width':'100%',
@@ -103,13 +103,13 @@ class NavigationBar extends React.Component {
       }
 
       const menuItemsBox = {
-        'margin':'25vh 0 0 0'
+        'margin':'25px 0 0 0'
       }
       const x = 100;
       const y = 100;
       if(this.state.visible){
         const menuStyle = {
-          'backgroundColor':'#aaff80',
+          'backgroundColor':'#99ff99',
           'color': 'white',
           'display': 'block',
           'width':'15%',
