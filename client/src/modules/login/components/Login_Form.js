@@ -22,6 +22,8 @@ export default class MainMenu_ListItem extends React.Component{
 
   login = async event =>{
     try{
+      /* Implement configuration of Authorization to cogniton*/
+
       await Auth.singIn(this.state.username,this.state.password)
       alert("Logged in!")
     }
@@ -38,7 +40,7 @@ export default class MainMenu_ListItem extends React.Component{
 
   changePassword = (event) => {
     /*Implement validation of password*/
-    
+
     this.setState({ password: event.target.value });
   }
 
