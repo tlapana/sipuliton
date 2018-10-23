@@ -25,3 +25,34 @@ This command builds containers specified in file `docker-compose.yml`. After bui
 ### Connecting to database
 
 Docker container binds its port 5432 to port 5432 of localhost. Username, password, and database name are all `sipuliton`.
+
+
+## AWS Lambdas
+
+### Setup
+
+Application backend is implemented as AWS Lambda functions. To develop and test lambda functions, you will need to install following tools:
+
+* [Amazon Command-line Interface (AWS CLI)](https://docs.aws.amazon.com/lambda/latest/dg/setup-awscli.html)
+* [Serverless Application Model Command-line Interface (SAM CLI)](https://docs.aws.amazon.com/lambda/latest/dg/sam-cli-requirements.html)
+
+### Running Lambda functions locally
+
+With SAM cli, you can launch AWS Lambda as a local service. Currently there is a template Lambda application created under `services/lambda/sipuliton-backend`. The directory also contains a separate README file created automatically by SAM CLI.
+
+You can test your installation by setting up `hello_world` endpoint.
+```bash
+cd services/lambda/sipuliton-backend/hello_world
+npm install
+cd ../
+
+sam local start-api
+```
+
+Now you should be able to invoke function `hello_world` by sending a `GET` request to local endpoint `http://localhost:3000/hello`.
+
+
+You can set up other lambda functions in the same way as `hello_world`. Run `npm install` for all lambda functions and run `sam local start-api`. Currently there is one real endpoint available, `/landing`, which takes a GET request and returns dummy json data.
+
+
+
