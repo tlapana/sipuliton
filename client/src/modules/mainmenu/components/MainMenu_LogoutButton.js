@@ -5,7 +5,7 @@ import {
   NavLink,
   Button
 } from 'reactstrap';
-
+import { Auth } from 'aws-amplify';
 
 
 export default class MainMenu_ListItem extends React.Component{
@@ -24,8 +24,9 @@ export default class MainMenu_ListItem extends React.Component{
   logout(){
 
     /* Implement user logout */
-
-    console.log("User logged out.");
+    Auth.signOut()
+        .then(data => console.log(data))
+        .catch(err => console.log(err));
   }
 
   render(){

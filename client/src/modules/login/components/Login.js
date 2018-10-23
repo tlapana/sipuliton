@@ -9,21 +9,19 @@ import {
 import styles from './styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-
+import LoginForm from './Login_Form.js'
 
 const Login = () => (
   <div id="login">
     <h2>Login</h2>
-    <form action="">
-     Username: <input class="input" type="text" name="username"/><br/>
-     Password: <input class="input" type="password" name="password"/><br/>
-     <input type="submit" value="Login" />
-    </form>
+    <LoginForm/>
     <div>Haven't registered yet?' </div>
     <NavLink tag={Link} to='/register'>
       Register now!
     </NavLink>
   </div>
 );
+
+
 
 export default Login;

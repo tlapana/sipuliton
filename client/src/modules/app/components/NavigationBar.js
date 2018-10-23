@@ -10,6 +10,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem/MainMenu_ListItem'
 import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
+import { Auth } from 'aws-amplify';
 
 class NavigationBar extends React.Component {
   constructor(props) {
@@ -36,29 +37,40 @@ class NavigationBar extends React.Component {
 
   checkAccessRights(){
     /* Implement user query from back end */
-    var user = {userLogged: false, admin: false, restaurantOwner:false}
+    var loggedUser = {} ;
+    Auth.currentAuthenticatedUser()
+        .then(user => {
+          var groups = user['cognito:groups']
+          /* Check if user is logged in, after that show either register or login */
+          this.setState({userLogged: true})
 
-    /* Check if user is logged in, after that show either register or login */
-    if(user.userLogged === true){
-      this.setState({userLogged: true})
-    }
-    else{
-      this.setState({userLogged: false})
-    }
-    /* Check if user has admin access, after that show admin page */
-    if(user.admin === true){
-      this.setState({admin: true})
-    }
-    else{
-      this.setState({admin: false})
-    }
-    /* Check if user is restaurant owner, after that show restaurant page */
-    if(user.restaurantOwner === true){
-      this.setState({restaurantOwner: true})
-    }
-    else{
-      this.setState({restaurantOwner: false})
-    }
+          /* Check if user has admin access, after that show admin page */
+          if(groups.find('admin')){
+            this.setState({admin: true})
+          }
+          else{
+            this.setState({admin: false})
+          }
+          /* Check if user is restaurant owner, after that show restaurant page */
+          if(groups.find('restaurantOwner')){
+            this.setState({restaurantOwner: true})
+          }
+          else{
+            this.setState({restaurantOwner: false})
+          }
+        })
+        .catch(err => {
+          this.setState(
+            {
+              userLogged: false,
+              admin: false,
+              restaurantOwner:false
+            }
+          )
+        });
+
+
+
   }
 
   render() {

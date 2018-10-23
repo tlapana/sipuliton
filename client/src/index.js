@@ -9,10 +9,14 @@ import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.css';
 import './fontawesome';  // this is our font awesome library
 
+
+
 const store = createStore(rootReducer);
 
+
+
 render(
-  <App store={store} />, 
+  <App store={store} />,
   document.getElementById('root')
 );
 
