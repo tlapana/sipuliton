@@ -53,9 +53,10 @@ def write_lang_city(sql):
     langs = []
     nametemp = []
     langorder = []
+    countries = []
 
     sql.write("INSERT INTO languages(language_id, name, iso2, iso3) VALUES\n")
-    with open("data/lang.csv", 'r') as csvfile:
+    with open("data/lang.csv", 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         i = 0
         for row in reader:
@@ -72,7 +73,7 @@ def write_lang_city(sql):
     sql.write(";\n\n")
 
     sql.write("INSERT INTO country(country_id, iso2, iso3) VALUES\n")
-    with open("data/countries.csv", 'r') as csvfile:
+    with open("data/countries.csv", 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         i = 0
         for row in reader:
@@ -83,6 +84,7 @@ def write_lang_city(sql):
             if row == '' or ''.join(row) == '':
                 continue
             nametemp.append([row[x] for x in langorder])
+            countries.append([i-1, [row[x] for x in langorder]])
             if i > 1:
                 sql.write(",\n")
             sql.write(commajoin([i-1, row[0], row[1]], [1, 2], 4))
@@ -93,7 +95,37 @@ def write_lang_city(sql):
     writenames(sql, nametemp, 4)
     sql.write(";\n\n")
 
-    # TODO: cities(if needed)
+    nametemp = []
+    
+    sql.write("INSERT INTO city(city_id, country_id) VALUES\n")
+    with open("data/towns.csv", 'r', encoding='utf8') as csvfile:
+        reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+        i = 0
+        for row in reader:
+            if i == 0:
+                i += 1
+                langorder = getorder(row, langs)
+                continue
+            if row == '' or ''.join(row) == '':
+                continue
+            index = 0
+            for country in countries:
+                if row[0] in country[1]:
+                    nametemp.append([row[x] for x in langorder])
+                    if i > 1:
+                        sql.write(",\n")
+                    sql.write(commajoin([i-1, index], [], 4))
+                    break
+                index += 1
+            if index == len(countries):
+                print("Could not find country(towns.csv): " + row[0])
+            i += 1
+    sql.write(";\n\n")
+
+    sql.write("INSERT INTO city_name(city_id, language_id, name) VALUES\n")
+    writenames(sql, nametemp, 4)
+    sql.write(";\n\n")
+
     return langs
 
 def write_groups(sql, langs):
@@ -102,7 +134,7 @@ def write_groups(sql, langs):
     nametemp = []
     langorder = []
     sql.write("INSERT INTO food_group(food_group_id) VALUES\n")
-    with open("data/groups.csv", 'r') as csvfile:
+    with open("data/groups.csv", 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         i = 0
         for row in reader:
@@ -159,7 +191,7 @@ def write_groups_diets(sql, langs):
     
     groups = write_groups(sql, langs)
     sql.write("INSERT INTO global_diet(global_diet_id, preset) VALUES\n")
-    with open("data/diets.csv", 'r') as csvfile:
+    with open("data/diets.csv", 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         i = 0
         for row in reader:
@@ -208,7 +240,7 @@ def write_groups_diets(sql, langs):
 def write_test_data(sql):
     """simply converts all csv files in mock data into insert statements"""
     for fname in glob.glob("mock_data/*.csv"):
-        with open(fname, 'r') as csvfile:
+        with open(fname, 'r', encoding='utf8') as csvfile:
             reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
             i = 0
             for row in reader:
@@ -231,7 +263,7 @@ def main():
     """Converts csv/tsv files from data folders to populate queries."""
     langs = []
 
-    with open("sql/06_populate.sql", 'w') as sql:
+    with open("sql/06_populate.sql", 'w', encoding='utf8') as sql:
         sql.write("--this file is generated from csv files in data folder\n\n")
 
         langs = write_lang_city(sql)
