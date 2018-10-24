@@ -4,22 +4,24 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 
 // Only import the necessary icons
-import { 
-  faGhost, 
+import {
+  faGhost,
   faEnvelope,
   faHome,
   faBars,
   faSearch,
+
 } from '@fortawesome/free-solid-svg-icons';
 
 
 // Add the necessary icons to out library; now we can use them
 library.add(
-  faGhost, 
+  faGhost,
   faEnvelope,
   faHome,
   faBars,
   faSearch,
+
 );
 
 export default library;
