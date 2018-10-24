@@ -10,6 +10,9 @@ import login from '../../login';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar'
 
+import { Link, withRouter } from "react-router-dom";
+
+
 import styles from './styles.css'
 const { Home } = home;
 const { Login } = login;

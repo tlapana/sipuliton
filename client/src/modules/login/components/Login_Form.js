@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
   NavItem,
   NavLink,
@@ -8,7 +7,8 @@ import {
 } from 'reactstrap';
 
 import { Auth } from "aws-amplify";
-
+import { Link } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 
 export default class MainMenu_ListItem extends React.Component{
@@ -16,19 +16,33 @@ export default class MainMenu_ListItem extends React.Component{
     super(props);
     this.state = {
       username:"",
-      password:""
+      password:"",
+      loggingFailed: false,
+      loggingSucceeded:false,
     };
   }
 
   login = event =>{
+      event.preventDefault();
       /* Implement configuration of Authorization to cogniton*/
-      Auth.signIn(this.state.username,this.state.password).then(s => {
-        if(s.challengeName == "NEW_PASSWORD_REQUIRED"){
-          alert("Change password!");
-        }
+      Auth.signIn(this.state.username,this.state.password)
+        .then(user => {
+          if(user.challengeName == "NEW_PASSWORD_REQUIRED"){
+            user.completeNewPasswordChallenge(this.state.password).then(s => {
+              console.log(s);
+            }).catch(err => console.log(err));
+          }
+          else{
+              console.log(user.username+" logged in!");
+              this.setState({loggingSucceeded:true});
+          }
       })
-      .catch(e => alert(e));
+      .catch(e => {
+        this.setState({loggingFailed:true});
+      });
   }
+
+
 
   changeUsername = (event) => {
       /*Implement validation of username*/
@@ -42,13 +56,21 @@ export default class MainMenu_ListItem extends React.Component{
     this.setState({ password: event.target.value });
   }
 
+
   render(){
     return (
-      <form onSubmit={this.login}>
-       Käyttäjänimi: <input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-       Salasana: <input className="input" value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
-       <input type="submit" value="Login" />
-      </form>
+      <div>
+        {this.state.loggingFailed && <div> Väärä käyttäjätunnus tai salasana!</div>}
+        <form onSubmit={this.login}>
+          Käyttäjänimi: <input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+          Salasana: <input className="input" value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
+          <input type="submit" value="Kirjaudu" />
+        </form>
+        {this.state.loggingSucceeded && <Redirect to="/profile" />}
+
+
+      </div>
+
     )
   }
 }

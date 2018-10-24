@@ -38,15 +38,16 @@ class NavigationBar extends React.Component {
   checkAccessRights(){
     /* Implement user query from back end */
     var loggedUser = {} ;
-    Auth.currentUserInfo()
+    Auth.currentAuthenticatedUser()
         .then(user => {
           console.log(user);
           if(user != null){
-            var groups = user['cognito:groups']
+
             /* Check if user is logged in, after that show either register or login */
             this.setState({userLogged: true})
 
             /* Check if user has admin access, after that show admin page */
+            /*
             if(groups.find('admin')){
               this.setState({admin: true})
             }
@@ -54,12 +55,14 @@ class NavigationBar extends React.Component {
               this.setState({admin: false})
             }
             /* Check if user is restaurant owner, after that show restaurant page */
+            /*
             if(groups.find('restaurantOwner')){
               this.setState({restaurantOwner: true})
             }
             else{
               this.setState({restaurantOwner: false})
             }
+            */
           }
           else{
               this.setState({userLogged: false})
