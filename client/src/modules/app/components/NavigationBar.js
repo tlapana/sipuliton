@@ -40,24 +40,34 @@ class NavigationBar extends React.Component {
     var loggedUser = {} ;
     Auth.currentAuthenticatedUser()
         .then(user => {
-          var groups = user['cognito:groups']
-          /* Check if user is logged in, after that show either register or login */
-          this.setState({userLogged: true})
+          console.log(user);
+          if(user != null){
 
-          /* Check if user has admin access, after that show admin page */
-          if(groups.find('admin')){
-            this.setState({admin: true})
+            /* Check if user is logged in, after that show either register or login */
+            this.setState({userLogged: true})
+
+            /* Check if user has admin access, after that show admin page */
+            /*
+            if(groups.find('admin')){
+              this.setState({admin: true})
+            }
+            else{
+              this.setState({admin: false})
+            }
+            /* Check if user is restaurant owner, after that show restaurant page */
+            /*
+            if(groups.find('restaurantOwner')){
+              this.setState({restaurantOwner: true})
+            }
+            else{
+              this.setState({restaurantOwner: false})
+            }
+            */
           }
           else{
-            this.setState({admin: false})
+              this.setState({userLogged: false})
           }
-          /* Check if user is restaurant owner, after that show restaurant page */
-          if(groups.find('restaurantOwner')){
-            this.setState({restaurantOwner: true})
-          }
-          else{
-            this.setState({restaurantOwner: false})
-          }
+
         })
         .catch(err => {
           this.setState(
@@ -79,7 +89,7 @@ class NavigationBar extends React.Component {
         'backgroundColor':'#99ff99',
         'color': 'white',
         'display': 'block',
-        'width':'15%',
+        'width':'25%',
         'z':'1',
         'height':'100%',
         'position': 'fixed',
@@ -112,7 +122,7 @@ class NavigationBar extends React.Component {
           'backgroundColor':'#99ff99',
           'color': 'white',
           'display': 'block',
-          'width':'15%',
+          'width':'25%',
           'z':'1',
           'height':'100%',
           'position': 'fixed',
@@ -127,14 +137,14 @@ class NavigationBar extends React.Component {
           {this.state.visible &&
             <Nav style={menuStyle} onClick={this.mainMenu}>
               <div style={menuItemsBox}>
-                <MainMenu_ListItem path="/" text="Home" />
-                <MainMenu_ListItem path="/map" text="Map" />
-                <MainMenu_ListItem path="/restaurant_list" text="Restaurant list" />
-                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Restaurant management" />}
+                <MainMenu_ListItem path="/" text="Pääsivu" />
+                <MainMenu_ListItem path="/map" text="Kartta" />
+                <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
+                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
                 {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profile" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Login" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Register" />}
+                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
                 {this.state.userLogged && <MainMenu_LogoutButton/>}
               </div>
             </Nav>

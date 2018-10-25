@@ -5,15 +5,28 @@ import { createStore } from 'redux';
 import App from './modules/app/components/App';
 import rootReducer from './rootReducer';
 import * as serviceWorker from './serviceWorker';
-
+import Amplify from 'aws-amplify';
+import withAuthenticator from 'aws-amplify';
 import 'bootstrap/dist/css/bootstrap.css';
 import './fontawesome';  // this is our font awesome library
 
 
+import config from './config';
+
+Amplify.configure({
+  Auth: {
+    mandatorySignIn: false,
+    region: config.cognito.REGION,
+    userPoolId: config.cognito.USER_POOL_ID,
+    identityPoolId: config.cognito.IDENTITY_POOL_ID,
+    userPoolWebClientId: config.cognito.APP_CLIENT_ID
+  }
+})
+
 
 const store = createStore(rootReducer);
 
-
+withAuthenticator(App);
 
 render(
   <App store={store} />,
