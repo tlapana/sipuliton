@@ -44,7 +44,27 @@ class Register extends React.Component
 		this.state.ula.checked
 		);
 	}
-	render()
+	handleChange = event =>
+	{
+		this.setState({
+			[event.target.id]: event.target.value
+		});
+	}
+	handleSubmit = async event =>
+	{
+		event.preventDefault();
+		this.setState({ isLoading: true });
+		this.setState({ newUser: "test" });
+		this.setState({ isLoading: false });
+	}
+
+	renderConfirmationForm()
+	{
+		return(
+		
+		)
+	}
+	renderForm()
 	{
 		return (
 		<h1>Rekisteröidy</h1>
@@ -65,5 +85,13 @@ class Register extends React.Component
 		<input type="submit"/>
 		</form>
 		)
+	}
+	render()
+	{
+		return (
+			{this.state.newUser === null
+			? this.renderForm()
+			: this.renderConfirmationForm()}
+		);
 	}
 }
