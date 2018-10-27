@@ -1,13 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { render } from 'react-dom';
 import {
   NavItem,
   NavLink,
   form,
   Button
 } from 'reactstrap';
-
+import styles from './styles.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
+
 class Register extends React.Component
 {
 	constructor(props)/*construct the default state on first page load*/
@@ -23,11 +26,6 @@ class Register extends React.Component
 		retypePass: "",
 		newUser: null
 		};
-	}
-	handleRegistration(event)
-	{
-		/* do the registration, maybe send the data in other function */
-		console.log('Registration sent');
 	}
 	validateForm()/*Make sure all fields are okay*/
 	{
@@ -50,18 +48,46 @@ class Register extends React.Component
 			[event.target.id]: event.target.value
 		});
 	}
-	handleSubmit = async event =>
+	handleRegistration = async event =>
 	{
 		event.preventDefault();
 		this.setState({ isLoading: true });
-		this.setState({ newUser: "test" });
+		try {
+			const newUser = await Auth.signUp({
+				username: this.state.username,
+				password: this.state.password,
+				mail: this.state.mail
+			});
+			this.setState({
+				newUser
+			});
+		} catch (e) {
+			alert(e.message);
+		}
 		this.setState({ isLoading: false });
+		}
+	handleConfirmation = async event =>
+	{
+		event.preventDefault();
+		this.setState({ isLoading: true });
+		try {
+			await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
+			await Auth.signIn(this.state.username, this.state.password);
+			this.props.userHasAuthenticated(true);
+			this.props.history.push("/");
+		} catch (e) {
+			alert(e.message);
+			this.setState({ isLoading: false });
+		}
 	}
-
 	renderConfirmationForm()
 	{
 		return(
-		
+			<form onSubmit={this.handleConfirmation}>
+			Varmistuskoodi:<br>
+			<input type="text" name="code" value={this.state.code} onChange={this.handleChange} required/><br>
+			<input type="submit"/>
+			</form>
 		)
 	}
 	renderForm()
@@ -71,16 +97,16 @@ class Register extends React.Component
 		<form onSubmit={this.handleRegistration}>
 		<label>
 		Käyttäjätunnus:<br>
-		<input type="text" name="username" value={this.state.username} onChange={this.changeUsername} required/><br>
+		<input type="text" name="username" value={this.state.username} onChange={this.handleChange} required/><br>
 		Salasana:<br>
-		<input type="password" name="password" value={this.state.password} onChange={this.changePass} required/><br>
+		<input type="password" name="password" value={this.state.password} onChange={this.handleChange} required/><br>
 		Salasana uudelleen:<br>
-		<input type="password" name="retypepass" value={this.state.retypePass} onChange={this.changeRetypePass} required/><br>
+		<input type="password" name="retypepass" value={this.state.retypePass} onChange={this.handleChange} required/><br>
 		Sähköposti:<br>
-		<input type="email" name="mail" value={this.state.mail} onChange={this.changeMail} required/><br>
+		<input type="email" name="mail" value={this.state.mail} onChange={this.handleChange} required/><br>
 		Sähköposti uudelleen:<br>
-		<input type="email" name="retypemail" value={this.state.retypeMail} onChange={this.changeRetypeMail} required/><br>
-		<input type="checkbox" name="ula" value={this.state.ula} onChange={this.changeUla} required/>Hyväksyn käyttäjäehdot<br>
+		<input type="email" name="retypemail" value={this.state.retypeMail} onChange={this.handleChange} required/><br>
+		<input type="checkbox" name="ula" value={this.state.ula} onChange={this.handleChange} required/>Hyväksyn käyttäjäehdot<br>
 		</label>
 		<input type="submit"/>
 		</form>
