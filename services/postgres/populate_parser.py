@@ -239,7 +239,7 @@ def write_groups_diets(sql, langs):
 
 def write_test_data(sql):
     """simply converts all csv files in mock data into insert statements"""
-    for fname in glob.glob("mock_data/*.csv"):
+    for fname in sorted(glob.glob("mock_data/*.csv")):
         with open(fname, 'r', encoding='utf8') as csvfile:
             reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
             i = 0
