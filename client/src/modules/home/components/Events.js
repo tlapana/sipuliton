@@ -44,9 +44,31 @@ constructor(props) {
       )
   }
   
+  //Prints out how many stars the restaurant has
+  renderStars(starCount)
+  {
+    //console.log("DEBUG: Starcount");
+    //console.log(starCount);
+    
+    const starIcons = [];
+    while(starCount >= 1)
+    {
+      starIcons.push(<FontAwesomeIcon icon="star" />);
+      starCount = starCount - 1;
+    }
+    //console.log(starCount);
+    if(starCount >= 0.5)
+    {
+      starIcons.push(<FontAwesomeIcon icon="star-half" />);
+      //console.log("Half star added");
+    }
+    //console.log(starIcons);
+    return starIcons
+  }
+  
   render() {
     
-    const { error, isLoaded, items } = this.state;
+    const { error, isLoaded, restaurants } = this.state;
     
     if (error) {
       
@@ -65,19 +87,15 @@ constructor(props) {
       );
       
     } else {
-      
       return (
          <div className="eventsDiv"> 
           <h3> Ravintoloita joista voisit olla kiinnostunut: </h3>
-          <div className="event">
-            Event
-          </div>
-          <div className="event">
-            Event
-          </div>
-          <div className="event">
-            Event
-          </div>
+          {restaurants.map((restaurant) =>
+            <div className="event">
+            {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
+            {restaurant.address}
+            </div>
+          )}      
         </div>
       );
       
