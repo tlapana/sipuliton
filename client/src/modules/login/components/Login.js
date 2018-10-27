@@ -10,11 +10,13 @@ import styles from './styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import LoginForm from './Login_Form.js'
+import GoogleLoginBtn from './Google_Login.js'
 
 const Login = () => (
   <div id="login">
     <h2>Kirjautuminen</h2>
-    <LoginForm/>
+    <LoginForm/> <br/>
+    <GoogleLoginBtn/>
     <div>Etkö ole vielä rekisteröitynyt? </div>
     <NavLink tag={Link} to='/register'>
       Rekisteröidy nyt!
