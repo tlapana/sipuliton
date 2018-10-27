@@ -52,6 +52,10 @@ exports.lambdaHandler = async (event, context) => {
         var client = new pg.Client(conn);
         response = {
             'statusCode': 200,
+            //TODO: Handle CORS in AWS api gateway settings prior to deployment
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': dummyJson
         }
     } catch (err) {

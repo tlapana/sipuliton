@@ -76,8 +76,12 @@ exports.lambdaHandler = async (event, context) => {
         // ret.data contains IP of request's sender
         var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
         var client = new pg.Client(conn);
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
         response = {
             'statusCode': 200,
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
             'body': dummyJson
         }
     } catch (err) {
