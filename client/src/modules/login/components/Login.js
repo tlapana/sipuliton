@@ -16,7 +16,7 @@ const Login = () => (
   <div id="login">
     <h2>Kirjautuminen</h2>
     <LoginForm/> <br/>
-    <GoogleLoginBtn/>
+    <GoogleLoginBtn/> <br/>
     <div>Etkö ole vielä rekisteröitynyt? </div>
     <NavLink tag={Link} to='/register'>
       Rekisteröidy nyt!
