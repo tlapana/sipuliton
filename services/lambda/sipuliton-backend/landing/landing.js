@@ -54,7 +54,7 @@ exports.lambdaHandler = async (event, context) => {
         var pg = require("pg");
 
         //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-        var conn = "postgres://sipuliton:sipuliton@sipulitonpostgres_postgres_1/sipuliton";
+        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
         const client = new pg.Client(conn);
         await client.connect((err) => {
                 console.log("Connecting")
