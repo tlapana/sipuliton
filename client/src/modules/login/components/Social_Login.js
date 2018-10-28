@@ -10,11 +10,12 @@ import { Link } from "react-router-dom";
 import { Redirect } from "react-router-dom";
 
 import GoogleLogin from 'react-google-login';
+import FacebookLogin from 'react-facebook-login'
 
 import config from "../../../config.js"
 
 //Login for Google accounts
-class GoogleLoginBtn extends React.Component {
+export default class SocialLogin extends React.Component {
   
   constructor(props) {
     super(props);
@@ -22,47 +23,74 @@ class GoogleLoginBtn extends React.Component {
       loggingFailed: false,
       loggingSucceeded:false,
     };
-    
   }
   
-  //Currently does both success and failure. Need to be split into two later
-  responseGoogleSuccess(response){
+  
+  //What to do in case of successful authorization from Google
+  responseGoogle(response) {
     console.log("DEBUG: RESPONSE FROM GOOGLE ON SUCCESS")
-    const tokenObj = response.tokenObj;
-    const googleID = response.googleId;
-    //const token = tokenObj.access_token;
-    const token = tokenObj.id_token;
-    const expires_at = tokenObj.expires_at;
-    var profile = response.profileObj; //Get user profile for checking
-    const user = {
-        email: profile.email,
-        name: profile.name
-    };
-    console.log("RESPONSE");
     console.log(response);
-    console.log("TOKEN")
-    console.log(tokenObj);
-    console.log("token: " + token);
-    console.log("expires: " + expires_at);
-    console.log(profile);
+    var that = this;
+    //const googleID = response.googleId; //Might not need this    
+    const token = response.tokenObj.access_token;
+    const expires = response.tokenObj.expires_at;
     
-    Auth.federatedSignIn('google', { token, expires_at}, { name: user.name })
+    console.log("IMPORTANT DATA:");
+    console.log("TOKEN: " + token);
+    console.log("EXPIRES: " + expires)
+    
+    //Authenticate at Cognito
+    Auth.federatedSignIn('google', { token, expires_at : expires}, { name: "USER_NAME" })
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
         //this.setState({loggingSucceeded:true});
       }).catch(e => {
+          
+        //this.setState({loggingFailed:true});
         console.log("Auth.federatedSignIn ERROR")
         console.log(e);
       });
     
   }
     
-  responseGoogleFailure(response){
-    console.log("DEBUG: RESPONSE FROM GOOGLE ON FAILURE")
+
+  
+  //What to do in case of successful authorization from Facebook
+  responseFacebookSuccess(response) {
+    console.log("DEBUG: RESPONSE FROM FACEBOOK ON SUCCESS")
+    console.log(response);
+    
+    const token = response.accessToken;
+    const expires = response.expiresIn;
+    
+    console.log("IMPORTANT DATA:");
+    console.log("TOKEN: " + token);
+    console.log("EXPIRES: " + expires)
+    
+    //Authenticate at Cognito
+    Auth.federatedSignIn('google', { token, expires_at : expires}, { name: "USER_NAME" })
+      .then(credentials => {
+        console.log("Auth.federatedSignIn SUCCESS")
+        console.log('get aws credentials', credentials);
+        //this.setState({loggingSucceeded:true});
+      }).catch(e => {
+          
+        //this.setState({loggingFailed:true});
+        console.log("Auth.federatedSignIn ERROR")
+        console.log(e);
+      });
+    
+  }
+  
+  //General failure reaction
+  responseFailure(response){
+    console.log("DEBUG: RESPONSE ON FAILURE")
     console.log(response);
     this.setState({loggingFailed:true});
   }
+  
+  
 
   render() {  
 
@@ -76,15 +104,22 @@ class GoogleLoginBtn extends React.Component {
         <GoogleLogin
           clientId={config.google.CLIENT_ID}
           responseType="id_token"
-          onSuccess={this.responseGoogleSuccess}
-          onFailure={this.responseGoogleFailure}
+          onSuccess={this.responseGoogle}
+          onFailure={this.responseFailure}
         >
-          Kirjaudu käyttäen Google tiliä
+          Google+
         </GoogleLogin>
-        {this.state.loggingFailed && <Redirect to="/profile" />}
+        <FacebookLogin
+          appId={config.facebook.APP_ID}
+          fields="name,email,picture"
+          onClick={this.facebookClicked}
+          callback={this.responseFacebookSuccess}
+          onFailure={this.responseFailure}
+        >
+          Facebook
+        </FacebookLogin>
+        {this.state.loggingFailed && "Kirjautuminen Epäonnistui"}
       </div>
     );
   }  
 }
-
-export default GoogleLoginBtn;
