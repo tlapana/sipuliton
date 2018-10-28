@@ -10,6 +10,7 @@ import {
 import styles from './styles.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
+import GoogleLoginBtn from '/client/src/modules/login/components/Google_Login.js'
 
 class Register extends React.Component
 {
@@ -80,7 +81,7 @@ class Register extends React.Component
 			this.setState({ isLoading: false });
 		}
 	}
-	renderConfirmationForm()
+	renderConfirmationForm()/*Confirmation form to be displayed after submitting the info*/
 	{
 		return(
 			<form onSubmit={this.handleConfirmation}>
@@ -88,12 +89,14 @@ class Register extends React.Component
 			<input type="text" name="code" value={this.state.code} onChange={this.handleChange} required/><br>
 			<input type="submit"/>
 			</form>
+			{this.state.userHasAuthenticated && <Redirect to="/profile" />}		
 		)
 	}
-	renderForm()
+	renderForm()/*The registration form and a link to the Google log-in*/
 	{
 		return (
-		<h1>Rekisteröidy</h1>
+		<div id="register">
+		<h2>Rekisteröidy</h2>
 		<form onSubmit={this.handleRegistration}>
 		<label>
 		Käyttäjätunnus:<br>
@@ -108,11 +111,13 @@ class Register extends React.Component
 		<input type="email" name="retypemail" value={this.state.retypeMail} onChange={this.handleChange} required/><br>
 		<input type="checkbox" name="ula" value={this.state.ula} onChange={this.handleChange} required/>Hyväksyn käyttäjäehdot<br>
 		</label>
-		<input type="submit"/>
-		</form>
+		<Button type="submit"/>
+		</form><br>
+		<GoogleLoginBtn/>
+		</div>
 		)
 	}
-	render()
+	render()/*decide which form to show, based on whether there is a 'newUser'*/
 	{
 		return (
 			{this.state.newUser === null
@@ -121,3 +126,4 @@ class Register extends React.Component
 		);
 	}
 }
+export default Register;
