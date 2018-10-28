@@ -24,8 +24,8 @@ CREATE TABLE country_name(
 );
 
 CREATE TABLE city(
-	city_id bigint PRIMARY KEY,
-	country_id int REFERENCES country
+    city_id bigint PRIMARY KEY,
+    country_id int REFERENCES country
 );
 
 CREATE TABLE city_name(

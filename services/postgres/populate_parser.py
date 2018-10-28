@@ -269,7 +269,7 @@ def main():
         langs = write_lang_city(sql)
         write_groups_diets(sql, langs)
 
-    with open("sql/07_populate_test_data.sql", 'w') as sql:
+    with open("sql/10_populate_test_data.sql", 'w') as sql:
         sql.write("--this file is generated from csv files in moc_data folder\n\n")
         write_test_data(sql)
 

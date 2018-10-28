@@ -23,7 +23,7 @@ CREATE TABLE review_diet(
     user_id bigint REFERENCES user_profile,
     review_posted timestamp,
     global_diet_id bigint NOT NULL REFERENCES global_diet,
-	PRIMARY KEY (restaurant_id, user_id, review_posted, global_diet_id),
+    PRIMARY KEY (restaurant_id, user_id, review_posted, global_diet_id),
     FOREIGN KEY (restaurant_id, user_id, review_posted) REFERENCES review
 );
 

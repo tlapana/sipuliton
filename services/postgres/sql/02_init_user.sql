@@ -4,7 +4,7 @@
 CREATE TABLE user_login(
     user_id bigint PRIMARY KEY,
     cognito_sub text,
-	username varchar(30),
+    username varchar(30),
     email varchar(50) NULL UNIQUE
 );
 
@@ -15,12 +15,12 @@ CREATE TABLE user_profile(
     role int NOT NULL,
     display_name varchar(30) NOT NULL,
     language_id int REFERENCES languages,
-	birth_year int NULL,
-	birth_month int NULL,
-	gender varchar(1),
+    birth_year int NULL,
+    birth_month int NULL,
+    gender varchar(1),
     description text,
-	country_id int NULL REFERENCES country,
-	city_id bigint NULL REFERENCES city,
+    country_id int NULL REFERENCES country,
+    city_id bigint NULL REFERENCES city,
     diet_id int
 );
 
@@ -34,8 +34,8 @@ CREATE TABLE user_stats(
     thumbs_down bigint NOT NULL,
     thumbs_up_given int NOT NULL,
     thumbs_down_given int NOT NULL,
-	activity_level int NOT NULL,
-	last_active timestamp
+    activity_level int NOT NULL,
+    last_active timestamp
 );
 
 --bans
@@ -53,5 +53,5 @@ CREATE TABLE ban_log(
     expired timestamp NOT NULL,
     reason text NOT NULL,
     banner_id bigint NOT NULL,
-	PRIMARY KEY (user_id, started)
+    PRIMARY KEY (user_id, started)
 );

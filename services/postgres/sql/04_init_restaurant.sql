@@ -51,7 +51,7 @@ CREATE TABLE restaurant_diet_stats(
 CREATE TABLE restaurant_suggestion(
     suggestion_id bigserial PRIMARY KEY,
     name varchar(30) NOT NULL,
-	status int NOT NULL,
+    status int NOT NULL,
     country_id int NOT NULL REFERENCES country,
     city varchar(60) NOT NULL,
     postal_code varchar(20),
@@ -67,14 +67,14 @@ CREATE TABLE restaurant_accepted(
     restaurant_id bigint NOT NULL REFERENCES restaurant,
     accepter_id bigint NOT NULL REFERENCES user_profile,
     accepted timestamp NOT NULL,
-	edit text
+    edit text
 );
 
 CREATE TABLE restaurant_rejected(
     suggestion_id bigint PRIMARY KEY REFERENCES restaurant_suggestion,
     rejecter_id bigint NOT NULL REFERENCES user_profile,
     rejected timestamp NOT NULL,
-	reason text NOT NULL
+    reason text NOT NULL
 );
 
 --restaurant ownership, requests and log
@@ -87,24 +87,24 @@ CREATE TABLE restaurant_owners(
 
 --status: posted, accepted rejected
 CREATE TABLE restaurant_ownership_request(
-	request_id bigserial PRIMARY KEY,
+    request_id bigserial PRIMARY KEY,
     restaurant_id bigint REFERENCES restaurant,
     owner_id bigint REFERENCES user_profile,
-	requested timestamp NOT NULL,
-	free_text text
+    requested timestamp NOT NULL,
+    free_text text
 );
 
 CREATE TABLE restaurant_ownership_accepted(
-	request_id bigint PRIMARY KEY,
+    request_id bigint PRIMARY KEY,
     restaurant_id bigint REFERENCES restaurant,
     owner_id bigint REFERENCES user_profile,
-	accepted timestamp NOT NULL
+    accepted timestamp NOT NULL
 );
 
 CREATE TABLE restaurant_ownership_rejected(
-	request_id bigint PRIMARY KEY,
+    request_id bigint PRIMARY KEY,
     restaurant_id bigint REFERENCES restaurant,
     owner_id bigint REFERENCES user_profile,
-	rejected timestamp NOT NULL,
-	reason text NOT NULL
+    rejected timestamp NOT NULL,
+    reason text NOT NULL
 );

@@ -1,5 +1,3 @@
-/services/postgres/sql/06_populate.sql
-/services/postgres/sql/07_populate_test_data.sql
 /clean_docker.bat
 /opengit.bat
 /rebuild.bat
