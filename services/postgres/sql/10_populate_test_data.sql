@@ -42,9 +42,9 @@ INSERT INTO ban_log(user_id, started, expired, reason, banner_id) VALUES
     ('0', '2017-06-12 19:10:25-07 ', '2017-6-24 23:59:59-07 ', 'cuz we need test data', '1');
 
 INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
-    ('2', '0', '2', 'ei kalaa'),
-    ('0', '0', '7', 'veg.'),
-    ('0', '1', '2', 'no fish');
+    ('2', '0', '1', 'ei kalaa'),
+    ('0', '0', '6', 'veg.'),
+    ('0', '1', '1', 'no fish');
 
 INSERT INTO restaurant(restaurant_id, name, email, website, country_id, city_id, postal_code, street_address, geo_location) VALUES
     ('0', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', '0', '0', '33200', 'Osoite1', '(1,1)'),
