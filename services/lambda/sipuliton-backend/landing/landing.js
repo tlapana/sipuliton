@@ -37,57 +37,66 @@ let response;
  */
 exports.lambdaHandler = async (event, context) => {
     try {
+        console.log("TRYING")
         // Result of this query will later go to the returned json
-        var collectLandingPage = "SELECT restaurant_id, rating_overall, rating_realibility, rating_variety, rating_service_and_quality FROM restaurant_diet_stats LIMIT 10";
+        //TODO: fix reliability typo in database
+        var collectLandingPage = `
+        SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
+               rating_overall,
+               rating_realiability AS rating_reliability,
+               rating_variety,
+               rating_service_and_quality 
+        FROM restaurant INNER JOIN restaurant_diet_stats
+        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+        ORDER BY rating_overall
+        LIMIT 10;
+        `;
         var pg = require("pg");
-
-        var dummyJson = `
-        {
-            "restaurants":
-            [
-                {
-                    "id": 1,
-                    "name": "Ravintola 1",
-                    "address": "Hämeenkatu 1",
-                    "is_open": true,
-                    "picture_url": "",
-                    "review_written": false,
-                    "rating_overall": 1.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 2,
-                    "name": "Ravintola 2",
-                    "address": "Hervanta 1",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 1.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                }
-            
-            ]
-        }
-        `
-        // ret.data contains IP of request's sender
-        var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
+        var conn = "postgres://sipuliton:sipuliton@sipulitonpostgres_postgres_1:5432/sipuliton";
         var client = new pg.Client(conn);
-        //TODO: Handle CORS in AWS api gateway settings prior to deployment
-        response = {
-            'statusCode': 200,
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': dummyJson
-        }
+        console.log("Client created");
+        console.log(client);
+        const result = await client.connect((err) => {
+            console.log("Connecting")
+            if (err){
+                console.log("Failed to connect client")
+                console.log(err)
+            }
+            console.log("Running query")
+            client.query(collectLandingPage, [], (err, res) => {
+                if(err){
+                    console.log('error running query', err);
+                }
+                console.log("Parsing result");
+                var jsonString = JSON.stringify(res.rows);
+                console.log(jsonString);
+                var jsonObj = JSON.parse(jsonString);
+                console.log("Building response")
+                response = {
+                    'statusCode': 200,
+                    //TODO: Handle CORS in AWS api gateway settings prior to deployment
+                    'headers': {
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    'body': '{"jsonString": "test"}'
+                };
+                console.log(response)
+
+            });
+            console.log("Query done");
+            console.log(response);
+            
+        });
+        await client.end();
+        console.log("Postgres part done")
+        
+
     } catch (err) {
+        console.log("Catched!")
         console.log(err);
         return err;
     }
-
+    console.log("Returning response")
+    console.log(response)
     return response
 };
