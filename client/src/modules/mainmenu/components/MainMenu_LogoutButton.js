@@ -65,7 +65,7 @@ export default class MainMenu_ListItem extends React.Component{
     return (
       <NavItem style={itemBlockStyle} >
         <Button style={itemStyle} onMouseLeave={this.hover} onMouseEnter={this.hover} onClick={this.logout}>
-          Logout
+          Kirjaudu ulos
         </Button>
       </NavItem>
     )
