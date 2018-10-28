@@ -7,12 +7,14 @@ import { Container } from 'reactstrap';
 import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
+import register from '../../register';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar'
 
 import styles from './styles.css'
 const { Home } = home;
 const { Login } = login;
+const { Register } = register;
 
 const App = ({ store }) => (
   <Provider store={store}>
@@ -24,6 +26,7 @@ const App = ({ store }) => (
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
+              <Route path="/register" component={Register} />
               <Route component={NotFound} />
             </Switch>
           </div>

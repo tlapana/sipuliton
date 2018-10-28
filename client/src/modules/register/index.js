@@ -1,3 +1,3 @@
-import Register from ".components/Register.js";
+import Register from './components/Register';
 
 export default {Register, /*...*/};
