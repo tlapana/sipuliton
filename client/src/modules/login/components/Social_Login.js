@@ -23,16 +23,17 @@ export default class SocialLogin extends React.Component {
       loggingFailed: false,
       loggingSucceeded:false,
     };
+    this.setState = this.setState.bind(this);
   }
   
   
-  //What to do in case of successful authorization from Google
+  //What to do in case of successful response from Google
   responseGoogle(response) {
     console.log("DEBUG: RESPONSE FROM GOOGLE ON SUCCESS")
     console.log(response);
     var that = this;
     //const googleID = response.googleId; //Might not need this    
-    const token = response.tokenObj.access_token;
+    const token = response.tokenObj.id_token;
     const expires = response.tokenObj.expires_at;
     
     console.log("IMPORTANT DATA:");
@@ -53,10 +54,8 @@ export default class SocialLogin extends React.Component {
       });
     
   }
-    
-
   
-  //What to do in case of successful authorization from Facebook
+  //What to do in case of successful response from Facebook
   responseFacebookSuccess(response) {
     console.log("DEBUG: RESPONSE FROM FACEBOOK ON SUCCESS")
     console.log(response);
@@ -68,8 +67,7 @@ export default class SocialLogin extends React.Component {
     console.log("TOKEN: " + token);
     console.log("EXPIRES: " + expires)
     
-    //Authenticate at Cognito
-    Auth.federatedSignIn('google', { token, expires_at : expires}, { name: "USER_NAME" })
+    Auth.federatedSignIn('facebook', { token, expires_at : expires}, { name: "USER_NAME" })
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
@@ -81,6 +79,7 @@ export default class SocialLogin extends React.Component {
         console.log(e);
       });
     
+    
   }
   
   //General failure reaction
@@ -89,9 +88,7 @@ export default class SocialLogin extends React.Component {
     console.log(response);
     this.setState({loggingFailed:true});
   }
-  
-  
-
+   
   render() {  
 
     const federated = {
@@ -118,7 +115,6 @@ export default class SocialLogin extends React.Component {
         >
           Facebook
         </FacebookLogin>
-        {this.state.loggingFailed && "Kirjautuminen Epäonnistui"}
       </div>
     );
   }  
