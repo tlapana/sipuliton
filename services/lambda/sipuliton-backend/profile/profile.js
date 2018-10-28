@@ -42,7 +42,9 @@ exports.lambdaHandler = async (event, context) => {
         var pg = require("pg");
 
         var dummyJson = `
-        {
+        {  
+	   "username": "testuser",
+	   "email": "testuser@sipuliton.fi",
            "display_name": "User's Display Name",
 	   "gender": "M",
 	   "birth_year": 1950,
