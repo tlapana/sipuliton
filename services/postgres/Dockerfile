@@ -8,3 +8,4 @@ ENV POSTGRES_USER sipuliton
 ENV POSTGRES_PASSWORD sipuliton
 ENV POSTGRES_DB sipuliton
 ADD sql/*.sql /docker-entrypoint-initdb.d/
+ADD sh/*sh /docker-entrypoint-initdb.d/

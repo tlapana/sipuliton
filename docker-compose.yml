@@ -6,5 +6,10 @@ services:
       context: services/postgres
     image: postgres
     restart: unless-stopped
+    networks:
+      - sipuliton
     ports:
       - 5432:5432
+
+networks:
+   sipuliton:
