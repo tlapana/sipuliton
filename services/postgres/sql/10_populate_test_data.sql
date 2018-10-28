@@ -25,7 +25,7 @@ INSERT INTO user_profile(user_id, role, display_name, language_id, birth_year, b
     ('0', '1', 'Sipuliton test', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '2'),
     ('1', '0', 'Admin', '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('2', '3', 'Basic user', '0', '2000', '8', 'M', NULL, '1000', '100000', '1'),
-    ('3', '2', 'Restaurant owner', '0', NULL, NULL, '-0', 'A happy owner of restaurant', NULL, NULL, NULL),
+    ('3', '2', 'Restaurant owner', '0', NULL, NULL, 'F', 'A happy owner of restaurant', NULL, NULL, NULL),
     ('4', '3', 'Basic user2', '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO user_stats(user_id, countries, cities, reviews, thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given, activity_level, last_active) VALUES
