@@ -19,7 +19,7 @@ INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
     ('1', 'Test-user-2', 'Admin', 'admin@sipuliton.fi'),
     ('2', 'Test-user-3', 'Troller', 'sum1@here.com'),
     ('3', 'get from cognito', 'Restaurant owner', 'asd@asd.com'),
-    ('4', 'cog5', 'user', NULL);
+    ('4', 'cog5', 'user', 'das@asd.com');
 
 INSERT INTO user_profile(user_id, role, display_name, language_id, birth_year, birth_month, gender, description, country_id, city_id, diet_id) VALUES
     ('0', '1', 'Sipuliton test', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '2'),
