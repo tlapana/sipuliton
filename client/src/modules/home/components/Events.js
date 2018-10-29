@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from '../../../styles/landingpage.css';
+import styles from './landingpage.css';
 import axios from 'axios'
 
 class Events extends React.Component {  
