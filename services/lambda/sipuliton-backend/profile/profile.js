@@ -42,8 +42,26 @@ exports.lambdaHandler = async (event, context) => {
         var pg = require("pg");
 
         var dummyJson = `
-        {
-           "username": "Dummy"
+        {  
+	   "username": "testuser",
+	   "email": "testuser@sipuliton.fi",
+           "display_name": "User's Display Name",
+	   "gender": "M",
+	   "birth_year": 1950,
+	   "birth_month": null,
+	   "description": "User's optional description text",
+	   "country_name": "Finland",
+           "city_name": "Tampere",
+	   "countries_visited": 1,
+	   "cities_visited": 1,
+	   "reviews": 100,
+	   "thumbs_up": 10,
+	   "thumbs_down", 20,
+	   "thumbs_up_given": 100,
+	   "humbs_down_given": 300,
+	   "activity_level": 100,
+	   "last_active": null
+			 
 
         }
         `

@@ -1,8 +1,8 @@
 {
   "name": "landing",
   "version": "0.1",
-  "description": "GET endpoint for landing page",
-  "main": "src/landing.js",
+  "description": "GET endpoint for profile page",
+  "main": "src/profile.js",
   "repository": "",
   "author": "Sergei Häyrynen",
   "license": "",
