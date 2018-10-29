@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
-import SocialLogin from '/client/src/modules/login/components/Social_Login.js' /*Import Google&FB log-in, as used in log-in view*/
+//import Social_Login from '../../login/index'; /*Import Google&FB log-in, as used in log-in view*/
 
 export default class Register extends React.Component
 {
@@ -103,8 +103,8 @@ export default class Register extends React.Component
 					</FormGroup>
 					<Button type="submit" onClick={() => this.handleConfirmation()} disabled={!this.validateConfirmationForm()} className="btn btn-primary mb-2">Vahvista</Button>
 				</Form>
+				{/*this.state.userHasAuthenticated && <Redirect to="/profile" />*/}
 			</div>
-			{this.state.userHasAuthenticated && <Redirect to="/profile" />}
 		);
 	}
 
@@ -141,8 +141,8 @@ export default class Register extends React.Component
 						</Label>
 					</FormGroup>
 					<Button type="submit" onClick={() => this.handleRegistration()} disabled={!this.validateForm()} className="btn btn-primary mb-2">Rekisteröidy</Button>
-				</Form><br>
-				<SocialLogin/>
+				</Form>
+				{/*<Social_Login/>*/}
 			</div>
 		);
 	}
@@ -156,4 +156,3 @@ export default class Register extends React.Component
 		);
 	}
 }
-export default Register;
