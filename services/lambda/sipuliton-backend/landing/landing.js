@@ -38,104 +38,54 @@ let response;
 exports.lambdaHandler = async (event, context) => {
     try {
         // Result of this query will later go to the returned json
-        var collectLandingPage = "SELECT restaurant_id, rating_overall, rating_realibility, rating_variety, rating_service_and_quality FROM restaurant_diet_stats LIMIT 10";
+        //TODO: fix reliability typo in database
+        //TODO: take diet and location as parameters
+        var collectLandingPage = `
+        SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
+               rating_overall,
+               rating_realiability AS rating_reliability,
+               rating_variety,
+               rating_service_and_quality 
+        FROM restaurant INNER JOIN restaurant_diet_stats
+        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+        ORDER BY rating_overall DESC
+        LIMIT 10;
+        `;
         var pg = require("pg");
 
-        var dummyJson = `
-        {
-            "restaurants":
-            [
-                {
-                    "id": 1,
-                    "name": "Ravintola 1",
-                    "address": "Hämeenkatu 1",
-                    "is_open": true,
-                    "picture_url": "",
-                    "review_written": false,
-                    "rating_overall": 4.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 2,
-                    "name": "Ravintola 2",
-                    "address": "Hervanta 1",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 2.5,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 3,
-                    "name": "Ravintola 3",
-                    "address": "Insinöörinkatu 1",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 3.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 4,
-                    "name": "Ravintola 4",
-                    "address": "Tohloppi 3",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 4.5,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 5,
-                    "name": "Ravintola 5",
-                    "address": "Arkkitehdintie 2",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 1.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
-                },
-                {
-                    "id": 6,
-                    "name": "Ravintola 6",
-                    "address": "Ei kuulu näkyä 2",
-                    "picture_url": "",
-                    "is_open": true,
-                    "review_written": false,
-                    "rating_overall": 1.0,
-                    "rating_reliability": 1.0,
-                    "rating_variety": 1.0,
-                    "rating_service_and_quality": 1.0
+        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+        const client = new pg.Client(conn);
+        await client.connect((err) => {
+                console.log("Connecting")
+                if (err){
+                    console.error("Failed to connect client")
+                    console.error(err)
+                    throw err
                 }
-            
-            ]
-        }
-        `
-        // ret.data contains IP of request's sender
-        var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
-        var client = new pg.Client(conn);
-        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        });
+        
+        const res = await client.query(collectLandingPage);
+        var jsonString = JSON.stringify(res.rows);
+        var jsonObj = JSON.parse(jsonString);
+        var bodyJSON = {'restaurants': jsonObj}
+        await client.end()
+
         response = {
             'statusCode': 200,
+            //TODO: Handle CORS in AWS api gateway settings prior to deployment
             'headers': {
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': dummyJson
-        }
+            'body': JSON.stringify(bodyJSON)
+        };
+
+
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return err;
     }
 
+    console.log(response)
     return response
 };
