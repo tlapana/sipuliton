@@ -29,6 +29,39 @@ Resources:
                         Path: /hello
                         Method: get
 
+    LandingFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: landing/
+          Handler: landing.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /landing
+                      Method: get
+
+    ProfileFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: profile/
+          Handler: profile.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /profile
+                      Method: get
+
+
 Outputs:
 
     HelloWorldApi:
@@ -42,3 +75,28 @@ Outputs:
     HelloWorldFunctionIamRole:
       Description: "Implicit IAM Role created for Hello World function"
       Value: !GetAtt HelloWorldFunctionRole.Arn
+
+    LandingApi:
+      Description: "API Gateway endpoint URL for Prod stage for landing function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/landing/"
+
+    LandingFunction:
+      Description: "Landing pageLambda Function ARN"
+      Value: !GetAtt LandingFunction.Arn
+
+    LandingFunctionIamRole:
+      Description: "Implicit IAM Role created for Landing page function"
+      Value: !GetAtt LandingFunctionRole.Arn
+
+    ProfileApi:
+      Description: "API Gateway endpoint URL for Prod stage for Profile page function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Profile/"
+
+    ProfileFunction:
+      Description: "Profile pageLambda Function ARN"
+      Value: !GetAtt ProfileFunction.Arn
+
+    ProfileFunctionIamRole:
+      Description: "Implicit IAM Role created for Profile page function"
+      Value: !GetAtt ProfileFunctionRole.Arn
+
