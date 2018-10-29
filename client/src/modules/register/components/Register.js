@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
-import GoogleLoginBtn from '/client/src/modules/login/components/Google_Login.js'
+import SocialLogin from '/client/src/modules/login/components/Social_Login.js' /*Import Google&FB log-in, as used in log-in view*/
 
 export default class Register extends React.Component
 {
@@ -45,17 +45,20 @@ export default class Register extends React.Component
 			this.state.ula.checked;
 		return isValid;
 	}
+	validateConfirmationForm()
+	{
+		return this.state.code.length > 0;
+	}
+	handleChange(event)/*what happens on form change*/
+	{
+		const target = event.target;
+		const value = target.type === 'checkbox' ? target.checked : target.value;
+		this.setState({
+			[target.name]: value
+		});
+	}
 
-
-	handleChange(event) {
-    const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-    this.setState({
-      [target.name]: value
-    });
-  }
-
-	handleRegistration = async event =>
+	handleRegistration = async event =>/*use signUp function to register*/
 	{
 		event.preventDefault();
 		this.setState({ isLoading: true });
@@ -74,7 +77,7 @@ export default class Register extends React.Component
 		this.setState({ isLoading: false });
 	}
 
-	handleConfirmation = async event =>
+	handleConfirmation = async event =>/*use confirmSignUp to confirm registration and do a sign in with singIn*/
 	{
 		event.preventDefault();
 		this.setState({ isLoading: true });
@@ -88,66 +91,28 @@ export default class Register extends React.Component
 			this.setState({ isLoading: false });
 		}
 	}
-<<<<<<< HEAD
-	renderConfirmationForm()/*Confirmation form to be displayed after submitting the info*/
-	{
-		return(
-			<form onSubmit={this.handleConfirmation}>
-			Varmistuskoodi:<br>
-			<input type="text" name="code" value={this.state.code} onChange={this.handleChange} required/><br>
-			<input type="submit"/>
-			</form>
-			{this.state.userHasAuthenticated && <Redirect to="/profile" />}		
-		)
-	}
-	renderForm()/*The registration form and a link to the Google log-in*/
-	{
-		return (
-		<div id="register">
-		<h2>Rekisterˆidy</h2>
-		<form onSubmit={this.handleRegistration}>
-		<label>
-		K‰ytt‰j‰tunnus:<br>
-		<input type="text" name="username" value={this.state.username} onChange={this.handleChange} required/><br>
-		Salasana:<br>
-		<input type="password" name="password" value={this.state.password} onChange={this.handleChange} required/><br>
-		Salasana uudelleen:<br>
-		<input type="password" name="retypepass" value={this.state.retypePass} onChange={this.handleChange} required/><br>
-		S‰hkˆposti:<br>
-		<input type="email" name="mail" value={this.state.mail} onChange={this.handleChange} required/><br>
-		S‰hkˆposti uudelleen:<br>
-		<input type="email" name="retypemail" value={this.state.retypeMail} onChange={this.handleChange} required/><br>
-		<input type="checkbox" name="ula" value={this.state.ula} onChange={this.handleChange} required/>Hyv‰ksyn k‰ytt‰j‰ehdot<br>
-		</label>
-		<Button type="submit"/>
-		</form><br>
-		<GoogleLoginBtn/>
-		</div>
-		)
-	}
-	render()/*decide which form to show, based on whether there is a 'newUser'*/
-=======
 
-	renderConfirmationForm()
+	renderConfirmationForm()/*The second form where user enters a confirmation code and proceeds to the profile*/
 	{
 		return(
-			<div>
+			<div id="register">
 				<Form onSubmit={this.handleConfirmation}>
 					<FormGroup>
 						<Label>Varmistuskoodi:</Label>
 						<Input type="text" name="code" value={this.state.code} onChange={this.handleChange} required/>
 					</FormGroup>
-					<Button type="submit" onClick={() => this.handleConfirmation()} className="btn btn-primary mb-2">Vahvista</Button>
+					<Button type="submit" onClick={() => this.handleConfirmation()} disabled={!this.validateConfirmationForm()} className="btn btn-primary mb-2">Vahvista</Button>
 				</Form>
 			</div>
+			{this.state.userHasAuthenticated && <Redirect to="/profile" />}
 		);
 	}
 
-	renderForm()
+	renderForm()/*The first form where the user enters info needed for an account*/
 	{
 		return (
-			<div>
-				<h1>Rekister√∂idy</h1>
+			<div id="register">
+				<h2>Rekister√∂idy</h2>
 				<Form onSubmit={this.handleRegistration}>
 					<FormGroup>
 						<Label>K√§ytt√§j√§tunnus:</Label>
@@ -175,15 +140,14 @@ export default class Register extends React.Component
 							Hyv√§ksyn k√§ytt√§j√§ehdot
 						</Label>
 					</FormGroup>
-					<Input type="submit" value="Rekister√∂idy" className="btn btn-primary mb-2"/>
-					<Button type="submit" onClick={() => this.handleRegistration()} className="btn btn-primary mb-2">Rekister√∂idy</Button>
-				</Form>
+					<Button type="submit" onClick={() => this.handleRegistration()} disabled={!this.validateForm()} className="btn btn-primary mb-2">Rekister√∂idy</Button>
+				</Form><br>
+				<SocialLogin/>
 			</div>
 		);
 	}
 
-	render()
->>>>>>> b095e744134bf4df078f82b23ca154919332f6e4
+	render()/*decide which form to show, based on whether there is a 'newUser'*/
 	{
 		return (
 			this.state.newUser === null
@@ -192,8 +156,4 @@ export default class Register extends React.Component
 		);
 	}
 }
-<<<<<<< HEAD
 export default Register;
-=======
-
->>>>>>> b095e744134bf4df078f82b23ca154919332f6e4
