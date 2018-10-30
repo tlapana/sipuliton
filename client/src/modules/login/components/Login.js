@@ -6,7 +6,7 @@ import {
   form,
   Button
 } from 'reactstrap';
-import styles from './styles.css'
+import styles from '../../../styles/login.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import LoginForm from './Login_Form.js'
