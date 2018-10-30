@@ -27,7 +27,8 @@ export default class SocialLogin extends React.Component {
       loggingFailed: false,
       loggingSucceeded:false,
     };
-    this.setState = this.setState.bind(this);
+    this.responseGoogle = this.responseGoogle.bind(this);
+    this.responseFacebookSuccess = this.responseFacebookSuccess.bind(this);
   }
   
   
@@ -49,12 +50,14 @@ export default class SocialLogin extends React.Component {
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
+        this.setState({loggingSucceeded:true});
         
       }).catch(e => {
           
         //this.setState({loggingFailed:true});
         console.log("Auth.federatedSignIn ERROR")
         console.log(e);
+        this.setState({loggingFailed:true});
       });
       
     
@@ -77,12 +80,14 @@ export default class SocialLogin extends React.Component {
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
+        this.setState({loggingSucceeded:true});
         
       }).catch(e => {
           
         //this.setState({loggingFailed:true});
         console.log("Auth.federatedSignIn ERROR")
         console.log(e);
+        this.setState({loggingFailed:true});
       });
     
     
@@ -96,11 +101,6 @@ export default class SocialLogin extends React.Component {
    
   render() {  
 
-    const federated = {
-    google_client_id: config.google.CLIENT_ID,
-    facebook_app_id: '',
-    amazon_client_id: ''
-};
     return (
       <div>
         <GoogleLogin
