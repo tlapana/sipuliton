@@ -12,10 +12,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
 //import Social_Login from '../../login/index'; /*Import Google&FB log-in, as used in log-in view*/
 
-export default class Register extends React.Component
-{
-	constructor(props)/*construct the default state on first page load*/
-	{
+export default class Register extends React.Component {
+	constructor(props) {
+		/*construct the default state on first page load*/
 		super(props);
 
 		this.state = {
@@ -25,14 +24,22 @@ export default class Register extends React.Component
 			password: "",
 			retypeMail: "",
 			retypePass: "",
-			newUser: null
+			newUser: null,
+			ula: false,
+			//code: "",
 		};
 
 		this.handleChange = this.handleChange.bind(this);
+		this.validateForm = this.validateForm.bind(this);
+		//this.validateConfirmationForm = this.validateConfirmationForm.bind(this);
+		this.handleRegistration = this.handleRegistration.bind(this);
+		//this.handleConfirmation = this.handleConfirmation.bind(this);
+		this.renderConfirmationForm = this.renderConfirmationForm.bind(this);
+		this.renderForm = this.renderForm.bind(this);
 	}
 
-	validateForm()/*Make sure all fields are okay*/
-	{
+	validateForm() {
+		/*Make sure all fields are okay*/
 		const isValid = 
 			this.state.username.length > 0 &&
 			this.state.mail.length > 0 &&
@@ -42,15 +49,19 @@ export default class Register extends React.Component
 			this.state.password.length < 30 &&
 			this.state.mail === this.state.retypeMail && 
 			this.state.password === this.state.retypePass &&
-			this.state.ula.checked;
+			this.state.ula;
 		return isValid;
 	}
-	validateConfirmationForm()
-	{
-		return this.state.code.length > 0;
+	
+	/*
+	// Not needed(?)
+	validateConfirmationForm() {
+		return (this.state.code && this.state.code.length > 0);
 	}
-	handleChange(event)/*what happens on form change*/
-	{
+	*/
+
+	handleChange(event) {
+		/*what happens on form change*/
 		const target = event.target;
 		const value = target.type === 'checkbox' ? target.checked : target.value;
 		this.setState({
@@ -58,15 +69,17 @@ export default class Register extends React.Component
 		});
 	}
 
-	handleRegistration = async event =>/*use signUp function to register*/
-	{
+	handleRegistration = async event => {
+		/*use signUp function to register*/
 		event.preventDefault();
 		this.setState({ isLoading: true });
 		try {
 			const newUser = await Auth.signUp({
 				username: this.state.username,
 				password: this.state.password,
-				mail: this.state.mail
+				attributes: {
+					email: this.state.mail,
+				},
 			});
 			this.setState({
 				newUser
@@ -77,8 +90,10 @@ export default class Register extends React.Component
 		this.setState({ isLoading: false });
 	}
 
-	handleConfirmation = async event =>/*use confirmSignUp to confirm registration and do a sign in with singIn*/
-	{
+	/*
+	// Not needed (?)
+	//use confirmSignUp to confirm registration and do a sign in with singIn
+	handleConfirmation = async event => {
 		event.preventDefault();
 		this.setState({ isLoading: true });
 		try {
@@ -91,11 +106,19 @@ export default class Register extends React.Component
 			this.setState({ isLoading: false });
 		}
 	}
+  */
 
-	renderConfirmationForm()/*The second form where user enters a confirmation code and proceeds to the profile*/
-	{
+	renderConfirmationForm() {
+		/*The second form where user enters a confirmation code and proceeds to the profile*/
 		return(
-			<div id="register">
+			<div>
+				<p>
+					Rekisteröinti onnistui! 
+					Sähköpostiisi {this.state.mail} on lähetetty vahvistusviesti, 
+					jonka vahvistuslinkkiä sinun tulee klikata ennen kuin voit kirjautua sisään.
+				</p>
+				{/*
+				<div id="register">
 				<Form onSubmit={this.handleConfirmation}>
 					<FormGroup>
 						<Label>Varmistuskoodi:</Label>
@@ -103,13 +126,14 @@ export default class Register extends React.Component
 					</FormGroup>
 					<Button type="submit" onClick={() => this.handleConfirmation()} disabled={!this.validateConfirmationForm()} className="btn btn-primary mb-2">Vahvista</Button>
 				</Form>
-				{/*this.state.userHasAuthenticated && <Redirect to="/profile" />*/}
+			</div>
+			*/}
 			</div>
 		);
 	}
 
-	renderForm()/*The first form where the user enters info needed for an account*/
-	{
+	renderForm() {
+		/*The first form where the user enters info needed for an account*/
 		return (
 			<div id="register">
 				<h2>Rekisteröidy</h2>
@@ -140,15 +164,15 @@ export default class Register extends React.Component
 							Hyväksyn käyttäjäehdot
 						</Label>
 					</FormGroup>
-					<Button type="submit" onClick={() => this.handleRegistration()} disabled={!this.validateForm()} className="btn btn-primary mb-2">Rekisteröidy</Button>
+					<Input type="submit" value="Rekisteröidy" disabled={!this.validateForm()} className="btn btn-primary mb-2">Rekisteröidy></Input>
 				</Form>
 				{/*<Social_Login/>*/}
 			</div>
 		);
 	}
 
-	render()/*decide which form to show, based on whether there is a 'newUser'*/
-	{
+	render() {
+		/*decide which form to show, based on whether there is a 'newUser'*/
 		return (
 			this.state.newUser === null
 			? this.renderForm()
