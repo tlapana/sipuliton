@@ -19,14 +19,12 @@ class Input extends React.Component {
   
 
 
- await fetch('http://127.0.0.1:3000/hello')
+ await fetch('http://127.0.0.1:3000/profile')
       		.then((response) => response.json())
       		.then((responseJson) => {
-                      alert('responseJson2');
         		return responseJson;
       	})
       	.catch((error) => {
-                    alert('responseJson=' + error);
 
         		console.error(error);
       	});

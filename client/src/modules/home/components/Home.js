@@ -1,13 +1,55 @@
 import React from 'react';
-import { Button,Component, Container, Row, Col } from 'reactstrap';
+import { Button, Container, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Input from './Home2';
 
 var name='a';
+
+var  add = () => {
+
+
+ var data1={};
+data1.key=document.getElementById("allerg").value;
+
+
+fetch('test/students/', {
+    method: 'POST',
+    headers: {
+  
+  },
+    body: JSON.stringify(data1),
+  })
+    .then(function(response) {
+        return response;
+      }).then(function(body) {
+        console.log(body);
+      });
+  
+  }
+
+var  remove = () => {
+ var data1={};
+data1.key=document.getElementById("allerg").value;
+
+fetch('test/students/', {
+    method: 'POST',
+    headers: {
+  
+  },
+    body: JSON.stringify(data1),
+  })
+    .then(function(response) {
+        return response;
+      }).then(function(body) {
+        console.log(body);
+      });
+  
+  }
  async function init()  {
 
-   alert('b' + await request());
+   await request();
 }
+
 
 var  request = async  () => {
    let response =  await fetch('https://facebook.github.io/react-native/movies.json');
@@ -18,17 +60,9 @@ name='b';
 
   return data;
 }
- async function getMoviesFromApiAsync() {
 
 
 
-const json = await fetch('https://facebook.github.io/react-native/movies.json');
-
-alert('a'+json[0]);
-console.log(json);
-
-
-}
 const Home =    ()=> (
 init(),
 
@@ -56,11 +90,9 @@ init(),
            </Col>
         </Row>
           <Row> 
-          <Col xs="2">
-          <input type="text" class="form-control" />
-          <input type="text" class="form-control" />
-             <input type="text" class="form-control" />
-               <button type="button" class="btn btn-default btn-sm">Lisää</button>  <button type="button" class="btn btn-default btn-sm">Poista</button>
+          <Col xs="6">
+             <input type="text" id="allerg" class="form-control" />
+               <button type="button"  onClick={add} class="btn btn-default btn-sm">Lisää</button>  <button type="button" onClick={remove} class="btn btn-default btn-sm">Poista</button>
            </Col>
         </Row>
 </Container>
