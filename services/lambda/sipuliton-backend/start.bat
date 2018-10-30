@@ -3,4 +3,4 @@
  cd ..
  
  @REM docker-network sipuliton
- sam local start-api 
+ sam local start-api --docker-network sipuliton
