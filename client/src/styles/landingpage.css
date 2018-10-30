@@ -1,5 +1,10 @@
 //Landing page CSS file
 
+.landingDiv
+{
+  width: 100vh;
+}
+
 .searchDiv {
   height: 25%;
   width: 100%;
