@@ -114,7 +114,6 @@ export default class SocialLogin extends React.Component {
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
-          onClick={this.facebookClicked}
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
         >
