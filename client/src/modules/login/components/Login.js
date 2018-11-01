@@ -19,6 +19,9 @@ const Login = () => (
     <NavLink tag={Link} to='/register'>
       Rekisteröidy nyt!
     </NavLink>
+    <NavLink tag={Link} to='/forgot-password'>
+      Unohditko salasanan?
+    </NavLink>
   </div>
 );
 

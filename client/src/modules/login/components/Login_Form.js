@@ -27,7 +27,7 @@ export default class MainMenu_ListItem extends React.Component{
       /* Implement configuration of Authorization to cogniton*/
       Auth.signIn(this.state.username,this.state.password)
         .then(user => {
-          if(user.challengeName == "NEW_PASSWORD_REQUIRED"){
+          if(user.challengeName === "NEW_PASSWORD_REQUIRED"){
             user.completeNewPasswordChallenge(this.state.password).then(s => {
               console.log(s);
             }).catch(err => console.log(err));
