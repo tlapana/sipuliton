@@ -15,7 +15,12 @@ class SearchBar extends React.Component {
     };
   }
   
-  doSearch() {}
+  doSearch() {
+    
+    
+    
+    
+  }
   
   render() {
     
