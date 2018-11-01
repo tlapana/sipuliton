@@ -10,6 +10,8 @@ import {
   faHome,
   faBars,
   faSearch,
+  faStar,
+  faStarHalf
 
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -21,6 +23,8 @@ library.add(
   faHome,
   faBars,
   faSearch,
+  faStar,
+  faStarHalf
 
 );
 

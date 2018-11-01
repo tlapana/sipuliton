@@ -38,54 +38,48 @@ let response;
 exports.lambdaHandler = async (event, context) => {
     try {
         // Result of this query will later go to the returned json
-        //TODO: fix reliability typo in database
-        //TODO: take diet and location as parameters
-        var collectLandingPage = `
-        SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
-               rating_overall,
-               rating_realiability AS rating_reliability,
-               rating_variety,
-               rating_service_and_quality 
-        FROM restaurant INNER JOIN restaurant_diet_stats
-        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
-        ORDER BY rating_overall DESC
-        LIMIT 10;
-        `;
+        var collectProfile = "";
         var pg = require("pg");
 
-        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-        const client = new pg.Client(conn);
-        await client.connect((err) => {
-                console.log("Connecting")
-                if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
-                    throw err
-                }
-        });
-        
-        const res = await client.query(collectLandingPage);
-        var jsonString = JSON.stringify(res.rows);
-        var jsonObj = JSON.parse(jsonString);
-        var bodyJSON = {'restaurants': jsonObj}
-        await client.end()
+        var dummyJson = `
+        {  
+	   "username": "testuser",
+	   "email": "testuser@sipuliton.fi",
+           "display_name": "User's Display Name",
+	   "gender": "M",
+	   "birth_year": 1950,
+	   "birth_month": null,
+	   "description": "User's optional description text",
+	   "country_name": "Finland",
+           "city_name": "Tampere",
+	   "countries_visited": 1,
+	   "cities_visited": 1,
+	   "reviews": 100,
+	   "thumbs_up": 10,
+	   "thumbs_down", 20,
+	   "thumbs_up_given": 100,
+	   "humbs_down_given": 300,
+	   "activity_level": 100,
+	   "last_active": null
+			 
 
+        }
+        `
+        // ret.data contains IP of request's sender
+        var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
+        var client = new pg.Client(conn);
         response = {
             'statusCode': 200,
             //TODO: Handle CORS in AWS api gateway settings prior to deployment
             'headers': {
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': JSON.stringify(bodyJSON)
-        };
-
-
+            'body': dummyJson
+        }
     } catch (err) {
-        console.error(err);
+        console.log(err);
         return err;
     }
 
-    console.log(response)
     return response
 };

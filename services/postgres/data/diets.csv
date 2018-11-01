@@ -1,0 +1,11 @@
+food_groups,FIN,ENG
+nuts,pähkinätön,nut-free
+fish,kalaton,fish-free
+crustanean;clams,äyrisetön ja simpukaton,shellfish-free
+lactose,laktoositon,lactose-free
+eggs,munaton,egg-free
+onions,sipuliton,onion-free
+meat;fish;crustanean;clams;eggs;dairy,vegaani,vegan
+meat;fish;crustanean;clams,vegetaristi,vegetarian
+soy,soijaton,soy-free
+gluten,gluteeniton,gluten-free
