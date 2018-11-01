@@ -1,3 +1,9 @@
+/*
+
+  This file contains the events(restaurants) that are show on the landing page below the search bar
+
+*/
+
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../../styles/landingpage.css';
@@ -91,7 +97,7 @@ constructor(props) {
           {restaurants.map((restaurant) =>
             <div className="event">
             {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.address}
+            {restaurant.street_address}
             </div>
           )}      
         </div>
