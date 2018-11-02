@@ -76,25 +76,8 @@ init(),
            </Col>
 
            </Row>
-<Row>
-    <Col xs="2">    
-<p>Image</p>
-
-</Col>
-          <Col xs="7">
            <Input/>
-           <p>Arvosteluja yhteensä.......................</p>
-           <p>Paikkakuntia, joissa arvosteluja...........</p>
-           <p>Maita, joissa arvosteluja..................</p>
-           <p>Erityisruokavalioita/Dieetti</p>
-           </Col>
-        </Row>
-          <Row> 
-          <Col xs="6">
-             <input type="text" id="allerg" class="form-control" />
-               <button type="button"  onClick={add} class="btn btn-default btn-sm">Lisää</button>  <button type="button" onClick={remove} class="btn btn-default btn-sm">Poista</button>
-           </Col>
-        </Row>
+
 </Container>
     Home12
     <br/>
