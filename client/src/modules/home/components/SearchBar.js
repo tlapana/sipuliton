@@ -20,6 +20,8 @@ class SearchBar extends React.Component {
     this.doSearch = this.doSearch.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
     this.getOptions = this.getOptions.bind(this);
+    this.handleKeywordChange = this.handleKeywordChange.bind(this);
+    this.handleFilterChange = this.handleFilterChange.bind(this);
     
     this.state = {
       isLoading: true,
@@ -27,7 +29,7 @@ class SearchBar extends React.Component {
       loadedOptions: false,
       popoverOpen: false,
       filters : [],
-      keywords : 'placeholder, another place holder, test,    lot of empty space      , double  space  between  words'
+      keywords : ''
     };
   }
   
@@ -53,8 +55,14 @@ class SearchBar extends React.Component {
         searchTerms[i] = searchTerms[i].trim();
       }
       
+      
+      
       //Console log test to se that we got what we wanted
+      console.log("Search terms: ");
       console.log(searchTerms);
+      console.log("Filters: ");
+      console.log(this.state.filters);
+      
   }
   
   
@@ -103,7 +111,21 @@ class SearchBar extends React.Component {
     
   }
   
+  //Used for the keyword change
+  handleKeywordChange(event) {
+    //console.log("Changing selected keywords");
+    this.setState({keywords: event.target.value});
+    //console.log(event.target.value);
+    //console.log(this.state.keywords);
+  }
   
+  //Used to acknowledge change and store new values
+  handleFilterChange(selectedOptions) {
+    //console.log("Changing selected filters");   
+    this.state.filters = selectedOptions;
+    //console.log(selectedOptions);
+    //console.log(this.state.filters);   
+  }
   
   render() {
     
@@ -112,8 +134,10 @@ class SearchBar extends React.Component {
       <div className="searchDiv">
         <form id="search-form" class="search" onSubmit={this.login}>
         
-          <input type="text" name="search" className="round" placeholder="Hae kaupungista tai osoitteesta..." />
-          
+          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder="Hae..." />
+           <button type="submit" className="searchBtn" onClick={this.doSearch}>
+              <FontAwesomeIcon icon="search" />
+          </button>
           
           <span className="instructions" id="instructions-symbol"> ??? </span>  
            <UncontrolledTooltip placement="right" target="instructions-symbol">
@@ -131,10 +155,11 @@ class SearchBar extends React.Component {
               <Select
                 defaultValue={ this.getDefaultValues() }
                 isMulti
-                name="colors"
+                name="filtersDrop"
                 options={ this.getOptions() }
                 className="basic-multi-select"
                 classNamePrefix="select"
+                onChange={this.handleFilterChange}
               />
             </PopoverBody>
           </Popover>
