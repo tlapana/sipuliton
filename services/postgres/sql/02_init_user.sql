@@ -14,6 +14,7 @@ CREATE TABLE user_profile(
     user_id bigint PRIMARY KEY REFERENCES user_login,
     role int NOT NULL,
     display_name varchar(30) NOT NULL,
+	image_url text,
     language_id int REFERENCES languages,
     birth_year int NULL,
     birth_month int NULL,

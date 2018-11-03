@@ -35,50 +35,210 @@ let response;
  * @returns {Object} object.body - JSON Payload to be returned
  * 
  */
+
+function parseParam(varStr, event) {
+    if (event[varStr] && event[varStr] !== "") {
+        return event[varStr];
+    } else if (event.body && event.body !== "") {
+        var body = JSON.parse(event.body);
+        if (body[varStr] && body[varStr] !== "") {
+            return body[varStr];
+        }
+    } else if (event.queryStringParameters && event.queryStringParameters[varStr] && event.queryStringParameters[varStr] !== "") {
+        return event.queryStringParameters[varStr];
+    } else if (event.multiValueHeaders && event.multiValueHeaders[varStr] && event.multiValueHeaders[varStr] != "") {
+        return event.multiValueHeaders[varStr].join(" and ");
+    } else if (event.headers && event.headers[varStr] && event.headers[varStr] != "") {
+        return event.headers[varStr];
+    }
+    return null;
+}
+
+function getCountryName(client, countryId, languageId) {
+    if (countryId && countryId !== "") {
+        var res = await client.query(
+            `SELECT name
+            FROM country_name
+            WHERE country_id = $1 AND language_id = $2`,
+            [countryId, languageId]);
+        if (res.rowCount == 0) {
+            res = await client.query(
+                `SELECT name
+                FROM country_name, languages
+                WHERE country_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
+                [countryId]);
+            if (res.rowCount == 0) {
+                //TODO: maybe should differentiate between name not found and id being null?
+            }
+        }
+        if (res.rowCount >= 2) {
+            await client.end();
+            throw {
+                'statusCode': 500,
+                'error': "Something is broken, returning 2 or more countries\r\n"
+            }
+        }
+        return res.rows[0]['name'];
+    }
+    return null
+}
+
+function getCityName(client, cityId, languageId) {
+    if (cityId && cityId !== "") {
+        var res = await client.query(
+            `SELECT name
+            FROM city_name
+            WHERE country_id = $1 AND language_id = $2`,
+            [cityId, languageId]);
+        if (res.rowCount == 0) {
+            res = await client.query(
+                `SELECT name
+                FROM city_name, languages
+                WHERE country_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
+                [cityId]);
+            if (res.rowCount == 0) {
+                //TODO: maybe should differentiate between name not found and id being null?
+            }
+        }
+        if (res.rowCount >= 2) {
+            await client.end();
+            throw {
+                'statusCode': 500,
+                'error': "Something is broken, returning 2 or more countries\r\n"
+            }
+        }
+        return res.rows[0]['name'];
+    }
+    return null
+}
+
+function getUserdata(client, userid) {
+    const baseRes = await client.query(
+        `SELECT username, email, display_name, gender, image_url, birth_year, birth_month,
+                description, country_id, city_id, countries AS countries_visited,
+                cities AS cities_visited, reviews, thumbs_up, thumbs_down,
+                thumbs_up_given, thumbs_down_given, activity_level, last_active
+        FROM user_login
+        INNER JOIN user_profile ON user_login.user_id = user_profile.user_id
+        INNER JOIN user_stats ON user_login.user_id = user_stats.user_id
+        WHERE user_login.user_id = $1`,
+        [userId]);
+    if (baseRes.rowCount == 0) {
+        await client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No user found\r\n"
+        }
+    }
+    if (baseRes.rowCount >= 2) {
+        await client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more users\r\n"
+        }
+    }
+    jsonObj = JSON.parse(JSON.stringify(baseRes.rows));
+    return jsonObj;
+}
+
+function fetchUser(userId, ownUserId, languageId) {
+    var pg = require("pg");
+    if (!Number.isInteger(userId)) {
+        throw {
+            'statusCode': 400,
+            'error': "Invalid user id\r\n"
+        }
+    }
+    if (!languageId || !Number.isInteger(languageId)) {
+        throw {
+            'statusCode': 400,
+            'error': "Invalid language id\r\n"
+        }
+    }
+
+    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+    const client = new pg.Client(conn);
+    await client.connect((err) => {
+        if (err) {
+            //TODO: Remove + err before deployment
+            console.error("Failed to connect client");
+            console.error(err);
+            throw {
+                'statusCode': 500,
+                'error': "Failed to connect to database\r\n" + err
+            }
+        }
+    });
+
+    jsonObj = getUserdata(client, userId);
+
+    jsonObj['country_name'] = getCountryName(client, jsonObj['country_id'], languageId);
+    delete jsonObj['country_id']; 
+
+    jsonObj['city_name'] = getCityName(client, jsonObj['city_id'], languageId);
+    delete jsonObj['city_id'];
+
+    await client.end();
+
+    jsonObj['own_profile'] = false;
+    if (ownUserId) {
+        if (Number.isInteger(ownUserId)) {
+            jsonObj['own_profile'] = (ownUserId === userId);
+        }
+        else {
+            throw {
+                'statusCode': 400,
+                'error': "own user id invalid\r\n"
+            }
+        }
+    }
+
+    // ret.data contains IP of request's sender
+    // var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
+    // var client = new pg.Client(conn);
+    response = {
+        'statusCode': 200,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ jsonObj })
+    };
+}
+
 exports.lambdaHandler = async (event, context) => {
     try {
-        // Result of this query will later go to the returned json
-        var collectProfile = "";
-        var pg = require("pg");
-
-        var dummyJson = `
-        {  
-	   "username": "testuser",
-	   "email": "testuser@sipuliton.fi",
-           "display_name": "User's Display Name",
-	   "gender": "M",
-	   "birth_year": 1950,
-	   "birth_month": null,
-	   "description": "User's optional description text",
-	   "country_name": "Finland",
-           "city_name": "Tampere",
-	   "countries_visited": 1,
-	   "cities_visited": 1,
-	   "reviews": 100,
-	   "thumbs_up": 10,
-	   "thumbs_down", 20,
-	   "thumbs_up_given": 100,
-	   "humbs_down_given": 300,
-	   "activity_level": 100,
-	   "last_active": null
-			 
-
+        const userId = parseParam("userId", event);
+        //TODO: get user id from cognito if not requesting specified user
+        if (!userId) {
+            userId = 0;
         }
-        `
-        // ret.data contains IP of request's sender
-        var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
-        var client = new pg.Client(conn);
+        //TODO: get own user id using cognito
+        const ownUserId = userId;
+        //TODO: possibly query language id if not saved as id in cookies
+        const languageId = parseParam("language", event);
+
+        return fetchUser(userId, ownUserId, languageId);
+        
+    } catch (err) {
+        //TODO: Remove += err before deployment
         response = {
-            'statusCode': 200,
+            'statusCode': 500,
             //TODO: Handle CORS in AWS api gateway settings prior to deployment
             'headers': {
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': dummyJson
+            'body': { 'error' : "Something went wrong\r\n" + JSON.stringify(err) }
+        };
+        if (err.has('statusCode')) {
+            response['statusCode'] = err['statusCode'];
         }
-    } catch (err) {
+        if (err.has('error')) {
+            response['body'] = { 'error' : err['error'] };
+        }
         console.log(err);
-        return err;
+        return response;
     }
 
     return response

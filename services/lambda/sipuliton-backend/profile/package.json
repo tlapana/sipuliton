@@ -1,10 +1,10 @@
 {
-  "name": "landing",
+  "name": "profile",
   "version": "0.1",
   "description": "GET endpoint for profile page",
   "main": "src/profile.js",
   "repository": "",
-  "author": "Sergei Häyrynen",
+  "author": "Sergei Häyrynen, Jani Jalkanen",
   "license": "",
   "dependencies": {
     "pg": "^7.5.0"
