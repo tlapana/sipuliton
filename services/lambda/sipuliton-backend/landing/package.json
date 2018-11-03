@@ -7,7 +7,7 @@
   "author": "Sergei Häyrynen",
   "license": "",
   "dependencies": {
-    "pg": "^7.5.0"
+    "pg": "^7.6.0"
   },
   "devDependencies": {}
 }

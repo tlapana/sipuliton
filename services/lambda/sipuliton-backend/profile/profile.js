@@ -54,7 +54,16 @@ function parseParam(varStr, event) {
     return null;
 }
 
-function getCountryName(client, countryId, languageId) {
+function parseIntParam(varStr, event) {
+    var val = parseParam(varStr, event);
+    var parsed = parseInt(val);
+    if (isNaN(parsed)) {
+        return val;
+    }
+    return parsed;
+}
+
+async function getCountryName(client, countryId, languageId) {
     if (countryId && countryId !== "") {
         var res = await client.query(
             `SELECT name
@@ -72,10 +81,10 @@ function getCountryName(client, countryId, languageId) {
             }
         }
         if (res.rowCount >= 2) {
-            await client.end();
+            client.end();
             throw {
                 'statusCode': 500,
-                'error': "Something is broken, returning 2 or more countries\r\n"
+                'error': "Something is broken, returning 2 or more countries"
             }
         }
         return res.rows[0]['name'];
@@ -83,28 +92,28 @@ function getCountryName(client, countryId, languageId) {
     return null
 }
 
-function getCityName(client, cityId, languageId) {
+async function getCityName(client, cityId, languageId) {
     if (cityId && cityId !== "") {
         var res = await client.query(
             `SELECT name
             FROM city_name
-            WHERE country_id = $1 AND language_id = $2`,
+            WHERE city_id = $1 AND language_id = $2`,
             [cityId, languageId]);
         if (res.rowCount == 0) {
             res = await client.query(
                 `SELECT name
                 FROM city_name, languages
-                WHERE country_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
+                WHERE city_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
                 [cityId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
             }
         }
         if (res.rowCount >= 2) {
-            await client.end();
+            client.end();
             throw {
                 'statusCode': 500,
-                'error': "Something is broken, returning 2 or more countries\r\n"
+                'error': "Something is broken, returning 2 or more countries"
             }
         }
         return res.rows[0]['name'];
@@ -112,8 +121,8 @@ function getCityName(client, cityId, languageId) {
     return null
 }
 
-function getUserdata(client, userid) {
-    const baseRes = await client.query(
+async function getUserdata(client, userId) {
+    const res = await client.query(
         `SELECT username, email, display_name, gender, image_url, birth_year, birth_month,
                 description, country_id, city_id, countries AS countries_visited,
                 cities AS cities_visited, reviews, thumbs_up, thumbs_down,
@@ -123,36 +132,36 @@ function getUserdata(client, userid) {
         INNER JOIN user_stats ON user_login.user_id = user_stats.user_id
         WHERE user_login.user_id = $1`,
         [userId]);
-    if (baseRes.rowCount == 0) {
-        await client.end();
+    if (res.rowCount == 0) {
+        client.end();
         throw {
             'statusCode': 400,
-            'error': "No user found\r\n"
+            'error': "No user found"
         }
     }
-    if (baseRes.rowCount >= 2) {
-        await client.end();
+    if (res.rowCount >= 2) {
+        client.end();
         throw {
             'statusCode': 500,
-            'error': "Something is broken, returning 2 or more users\r\n"
+            'error': "Something is broken, returning 2 or more users"
         }
     }
-    jsonObj = JSON.parse(JSON.stringify(baseRes.rows));
+    jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
     return jsonObj;
 }
 
-function fetchUser(userId, ownUserId, languageId) {
+async function fetchUser(userId, ownUserId, languageId) {
     var pg = require("pg");
     if (!Number.isInteger(userId)) {
         throw {
             'statusCode': 400,
-            'error': "Invalid user id\r\n"
+            'error': "Invalid user id"
         }
     }
-    if (!languageId || !Number.isInteger(languageId)) {
+    if (languageId === null || !Number.isInteger(languageId)) {
         throw {
             'statusCode': 400,
-            'error': "Invalid language id\r\n"
+            'error': "Invalid language id"
         }
     }
 
@@ -166,17 +175,17 @@ function fetchUser(userId, ownUserId, languageId) {
             console.error(err);
             throw {
                 'statusCode': 500,
-                'error': "Failed to connect to database\r\n" + err
+                'error': "Failed to connect to database" + err
             }
         }
     });
 
-    jsonObj = getUserdata(client, userId);
+    jsonObj = await getUserdata(client, userId);
 
-    jsonObj['country_name'] = getCountryName(client, jsonObj['country_id'], languageId);
+    jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId);
     delete jsonObj['country_id']; 
 
-    jsonObj['city_name'] = getCityName(client, jsonObj['city_id'], languageId);
+    jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId);
     delete jsonObj['city_id'];
 
     await client.end();
@@ -189,9 +198,14 @@ function fetchUser(userId, ownUserId, languageId) {
         else {
             throw {
                 'statusCode': 400,
-                'error': "own user id invalid\r\n"
+                'error': "own user id invalid"
             }
         }
+    }
+
+    if (!jsonObj['own_profile']) {
+        delete jsonObj['username'];
+        delete jsonObj['email'];
     }
 
     // ret.data contains IP of request's sender
@@ -205,41 +219,42 @@ function fetchUser(userId, ownUserId, languageId) {
         },
         'body': JSON.stringify({ jsonObj })
     };
+    return response;
 }
 
 exports.lambdaHandler = async (event, context) => {
     try {
-        const userId = parseParam("userId", event);
+        var tempId = parseIntParam("userId", event);
         //TODO: get user id from cognito if not requesting specified user
-        if (!userId) {
-            userId = 0;
-        }
+        const userId = !tempId ? 0 : tempId
+
         //TODO: get own user id using cognito
         const ownUserId = userId;
-        //TODO: possibly query language id if not saved as id in cookies
-        const languageId = parseParam("language", event);
 
-        return fetchUser(userId, ownUserId, languageId);
-        
+        //TODO: possibly query language id if not saved as id in cookies
+        tempId = parseIntParam("language", event);
+        const languageId = !tempId ? 0 : tempId
+
+        response = await fetchUser(userId, ownUserId, languageId);
+
     } catch (err) {
-        //TODO: Remove += err before deployment
+        console.log(err);
         response = {
             'statusCode': 500,
             //TODO: Handle CORS in AWS api gateway settings prior to deployment
             'headers': {
                 'Access-Control-Allow-Origin': '*'
             },
-            'body': { 'error' : "Something went wrong\r\n" + JSON.stringify(err) }
+            'body': JSON.stringify({ 'error': "Something went wrong! " + err})
         };
-        if (err.has('statusCode')) {
+        if ("statusCode" in err) {
             response['statusCode'] = err['statusCode'];
         }
-        if (err.has('error')) {
-            response['body'] = { 'error' : err['error'] };
+        if ("error" in err) {
+            response['body'] = JSON.stringify({ 'error': err['error'] });
         }
-        console.log(err);
-        return response;
     }
 
-    return response
+    console.log(response);
+    return response;
 };
