@@ -6,26 +6,25 @@ import {
   Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
-
+import { Redirect } from "react-router-dom";
 
 export default class MainMenu_ListItem extends React.Component{
   constructor(props) {
     super(props);
-    this.state = {hovered: false};
+    this.state = {hovered: false, logoutSuccesfully: true};
     this.hover = this.hover.bind(this);
     this.logout = this.logout.bind(this);
   }
 
   hover() {
-      /* Sets menu visibility to visible or no visible. */
+      /* Changes button background color when user inserts mouse over button. */
       this.setState({ hovered: !this.state.hovered});
   }
 
   logout(){
-
-    /* Implement user logout */
+    /* Logs user out */
     Auth.signOut()
-        .then(data => console.log(data))
+        .then(data => this.setState({logoutSuccesfully: true}))
         .catch(err => console.log(err));
   }
 
@@ -63,11 +62,14 @@ export default class MainMenu_ListItem extends React.Component{
 
 
     return (
-      <NavItem style={itemBlockStyle} >
-        <Button style={itemStyle} onMouseLeave={this.hover} onMouseEnter={this.hover} onClick={this.logout}>
-          Kirjaudu ulos
-        </Button>
-      </NavItem>
+      <div>
+        <NavItem style={itemBlockStyle} >
+          <Button style={itemStyle} onMouseLeave={this.hover} onMouseEnter={this.hover} onClick={this.logout}>
+            Kirjaudu ulos
+          </Button>
+        </NavItem>
+        {this.state.logoutSuccesfully && <Redirect to="/profile" />}
+      </div>
     )
   }
 }

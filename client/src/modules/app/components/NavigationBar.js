@@ -8,7 +8,7 @@ import {
   NavLink,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem/MainMenu_ListItem'
+import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
 import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
 import { Auth } from 'aws-amplify';
 

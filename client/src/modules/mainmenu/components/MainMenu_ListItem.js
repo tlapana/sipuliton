@@ -15,7 +15,7 @@ export default class MainMenu_ListItem extends React.Component{
   }
 
   hover() {
-      /* Sets menu visibility to visible or no visible. */
+      /* Changes button background color when user inserts mouse over button. */
       this.setState({ hovered: !this.state.hovered});
   }
 
