@@ -68,7 +68,7 @@ export default class MainMenu_ListItem extends React.Component{
             Kirjaudu ulos
           </Button>
         </NavItem>
-        {this.state.logoutSuccesfully && <Redirect to="/profile" />}
+        {this.state.logoutSuccesfully && <Redirect to="/" />}
       </div>
     )
   }
