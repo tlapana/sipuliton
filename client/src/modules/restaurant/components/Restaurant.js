@@ -11,5 +11,13 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 export default class Restaurant extends React.Component {
-	
+	constructor(props) {
+		super(props);
+		this.restaurant.name = "Test";
+	}
+	render() {
+		<div id="restaurant">
+		<h2>{this.restaurant.name()}</h2>
+		</div>
+	}
 }
