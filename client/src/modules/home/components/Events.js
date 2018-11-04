@@ -78,7 +78,9 @@ constructor(props) {
       
       return (
         <div className="eventsDiv"> 
-          Error: {error.message}
+          <div className="event">
+            Error: {error.message}
+          </div>
         </div>
       );
       
@@ -86,7 +88,9 @@ constructor(props) {
       
       return (
         <div className="eventsDiv"> 
-        Ladataan
+          <div className="event">
+            Ladataan ehdotuksia...
+          </div>
         </div>
       );
       
@@ -95,7 +99,7 @@ constructor(props) {
          <div className="eventsDiv"> 
           <h3> Ravintoloita joista voisit olla kiinnostunut: </h3>
           {restaurants.map((restaurant) =>
-            <div className="event">
+            <div className="event" key={restaurant.name} >
             {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
             {restaurant.street_address}
             </div>

@@ -29,8 +29,19 @@ class SearchBar extends React.Component {
       loadedOptions: false,
       popoverOpen: false,
       filters : [],
-      keywords : ''
+      keywords : '',
+      options : [],
+      defaultValues : []
     };
+  }
+  
+  componentDidMount() {
+    
+    this.setState({ 
+      options : this.getOptions(),
+      defaultValue : this.getDefaultValues()
+    });
+    
   }
   
   //Toggles popover
@@ -41,7 +52,7 @@ class SearchBar extends React.Component {
     console.log("Toggling popover, new state is: " + this.state.popoverOpen);
   }
   
-  //Actual search event
+  //Actual search event. It also sends signal to the parent by using props.SearchDone, which signals it has done a search and this.props.searchResults which has the results
   doSearch  = event =>{
     
       event.preventDefault();
@@ -63,6 +74,21 @@ class SearchBar extends React.Component {
       console.log("Filters: ");
       console.log(this.state.filters);
       
+      const results = [
+        { name: 'Search Result 1', rating_overall: 3,   street_address : "Katu 1" },
+        { name: 'Search Result 2', rating_overall: 4,   street_address : "Katu 2" },
+        { name: 'Search Result 3', rating_overall: 3.7, street_address : "Katu 3" },
+        { name: 'Search Result 4', rating_overall: 5,   street_address : "Katu 4" },
+        { name: 'Search Result 5', rating_overall: 2.2, street_address : "Katu 5" },
+        { name: 'Search Result 6', rating_overall: 3.3, street_address : "Katu 6" },
+      ];
+      
+      console.log("Sending results");
+      console.log(results);
+      
+      //Send data via props
+      this.props.onSearchDone( results );
+      
   }
   
   
@@ -70,14 +96,14 @@ class SearchBar extends React.Component {
   getDefaultValues() {
     
     const defaultValues = [];
-    this.state.loadedDefaults = true;
+    this.setState({ 
+      loadedDefaults : true
+    });
     return defaultValues;
   }
   
-  //This gets the options for the selection
+  //This gets the options for the selection. 
   getOptions() {
-    
-    
     
     const options = [
       { value: 'onions', label: 'Allergia/Sipuli' },
@@ -85,11 +111,15 @@ class SearchBar extends React.Component {
       { value: 'nuts', label: 'Allergia/Pähkinä' },
       { value: 'lactose', label: 'Laktoositon ruokavalio' },
       { value: 'coeliac ', label: 'Keliakia' }
-    ]
-    console.log("Getting the options: ")
+    ];
+    console.log("Getting the options: ");
     console.log(options);
     
     this.state.loadedOptions = true;
+    
+    this.setState({ 
+      loadedOptions : true
+    });
     
     return options;
   }
@@ -122,7 +152,9 @@ class SearchBar extends React.Component {
   //Used to acknowledge change and store new values
   handleFilterChange(selectedOptions) {
     //console.log("Changing selected filters");   
-    this.state.filters = selectedOptions;
+    this.setState({ 
+      filters : selectedOptions
+    });
     //console.log(selectedOptions);
     //console.log(this.state.filters);   
   }
@@ -132,7 +164,7 @@ class SearchBar extends React.Component {
     
     return (
       <div className="searchDiv">
-        <form id="search-form" class="search" onSubmit={this.login}>
+        <form id="search-form" className="search" onSubmit={this.login}>
         
           <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder="Hae..." />
            <button type="submit" className="searchBtn" onClick={this.doSearch}>
@@ -153,10 +185,10 @@ class SearchBar extends React.Component {
             <PopoverBody>
               Sisällytä hakuun: <br />
               <Select
-                defaultValue={ this.getDefaultValues() }
+                defaultValue={ this.state.defaultValues }
                 isMulti
                 name="filtersDrop"
-                options={ this.getOptions() }
+                options={ this.state.options }
                 className="basic-multi-select"
                 classNamePrefix="select"
                 onChange={this.handleFilterChange}
