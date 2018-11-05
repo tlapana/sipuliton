@@ -1,3 +1,5 @@
+/* In this file is implemented recular main menu list item functionality. */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -14,13 +16,17 @@ export default class MainMenu_ListItem extends React.Component{
     this.hover = this.hover.bind(this);
   }
 
+  /*
+  Called when user's mouse enters or leaves the area. This method changes
+  hovered state, which is used in styling.
+  */
   hover() {
-      /* Sets menu visibility to visible or no visible. */
       this.setState({ hovered: !this.state.hovered});
   }
 
   render(){
 
+    /* Styles for the log out button. */
     var itemStyle = {
       display: 'block',
       color: '#000',
@@ -35,6 +41,7 @@ export default class MainMenu_ListItem extends React.Component{
       'textAlign':'center'
     };
 
+    /* Style for the hovered state. */
     if(this.state.hovered){
       itemStyle = {
         display: 'block',

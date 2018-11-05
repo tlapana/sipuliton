@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
 
 class SearchBar extends React.Component {
-  
+
   constructor(props, context) {
     super(props, context);
 
@@ -197,7 +197,7 @@ class SearchBar extends React.Component {
           </Popover>
           
         </form>
-      </div>  
+      </div>
     );
   }
 }
