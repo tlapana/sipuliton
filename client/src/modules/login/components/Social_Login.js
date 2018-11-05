@@ -27,6 +27,8 @@ export default class SocialLogin extends React.Component {
       loggingFailed: false,
       loggingSucceeded:false,
     };
+	
+    this.responseFailure = this.responseFailure.bind(this);
     this.responseGoogle = this.responseGoogle.bind(this);
     this.responseFacebookSuccess = this.responseFacebookSuccess.bind(this);
   }
@@ -43,10 +45,10 @@ export default class SocialLogin extends React.Component {
     
     console.log("IMPORTANT DATA:");
     console.log("TOKEN: " + token);
-    console.log("EXPIRES: " + expires)
-    
+    console.log("EXPIRES: " + expires);
+
     //Authenticate at Cognito
-    Auth.federatedSignIn('google', { token, expires_at : expires}, { name: "USER_NAME" })
+    Auth.federatedSignIn('google', { token, expires_at : expires }, { name: "USER_NAME" })
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
