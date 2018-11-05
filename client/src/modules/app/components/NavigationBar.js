@@ -1,3 +1,6 @@
+/* In this file, is implementation of the navigation bar and implementation of
+mainmenu which opens from navigation bar.*/
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -7,24 +10,42 @@ import {
   NavItem,
   NavLink,
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem/MainMenu_ListItem'
-import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
 import { Auth } from 'aws-amplify';
 
+/* Styles and icons */
+import styles from '../../../styles/navigationbar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Transition } from 'react-transition-group';
+
+/* Mainmenu components*/
+import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
+import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
+
+
+
 class NavigationBar extends React.Component {
+
+  /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
-    this.state = {visible: false,userLogged: false, admin: false, restaurantOwner:false};
+    this.state = {
+      visible: false,
+      userLogged: false,
+      admin: false,
+      restaurantOwner:false,
+      moderator: false
+    };
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
   mainMenu() {
-      /* Sets menu visibility to visible or no visible. */
+      /* Sets menu visibility to visible or not visible. */
       this.setState({ visible: !this.state.visible});
-      this.checkAccessRights();
+      if(this.state.visible){
+        this.checkAccessRights();
+      }
   }
 
   /* Function which will be called when home button is clicked. */
@@ -35,34 +56,50 @@ class NavigationBar extends React.Component {
     }
   }
 
+  /* This function checks logged in users rights. */
   checkAccessRights(){
-    /* Implement user query from back end */
-    var loggedUser = {} ;
+    /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
-          console.log(user);
+          /* Get current user group. */
+          var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
           if(user != null){
-
-            /* Check if user is logged in, after that show either register or login */
+            /* Check if user is logged in, after that set access to either register or login */
             this.setState({userLogged: true})
 
-            /* Check if user has admin access, after that show admin page */
-            /*
-            if(groups.find('admin')){
+            /* Check if user is basic user, then restrict all accesses */
+            if(userGroup === "SipulitonModUserGroup"){
+              this.setState({
+                admin: false,
+                restaurantOwner: false,
+                moderator: false
+              })
+            }
+
+            /* Check if user has admin access, after that set access to admin pages */
+            if(userGroup === "SipulitonAdminUserGroup"){
               this.setState({admin: true})
             }
             else{
               this.setState({admin: false})
             }
-            /* Check if user is restaurant owner, after that show restaurant page */
-            /*
-            if(groups.find('restaurantOwner')){
+            /* Check if user is restaurant owner, after that set access to restaurant pages */
+
+            if(userGroup === 'SipulitonROUserGroup'){
               this.setState({restaurantOwner: true})
             }
             else{
               this.setState({restaurantOwner: false})
             }
-            */
+
+            /* Check if user has moderator access, after that set access to moderator pages */
+            if(userGroup === "SipulitonModUserGroup"){
+              this.setState({moderator: true})
+            }
+            else{
+              this.setState({moderator: false})
+            }
+
           }
           else{
               this.setState({userLogged: false})
@@ -70,32 +107,21 @@ class NavigationBar extends React.Component {
 
         })
         .catch(err => {
+          /* If user is not logged in restrict accesses. */
           this.setState(
             {
               userLogged: false,
               admin: false,
-              restaurantOwner:false
+              restaurantOwner:false,
+              moderator: false
             }
           )
         });
 
-
-
   }
 
   render() {
-
-      const menuStyle = {
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'block',
-        'width':'25%',
-        'z':'1',
-        'height':'100%',
-        'position': 'fixed',
-        'top':'0px',
-      }
-
+      /* Navigation bar inline styles. */
       const navBarStyle = {
         'backgroundColor':'#99ff99',
         'color': 'white',
@@ -115,60 +141,71 @@ class NavigationBar extends React.Component {
       const menuItemsBox = {
         'margin':'25px 0 0 0'
       }
-      const x = 100;
-      const y = 100;
-      if(this.state.visible){
-        const menuStyle = {
-          'backgroundColor':'#99ff99',
-          'color': 'white',
-          'display': 'block',
-          'width':'25%',
-          'z':'1',
-          'height':'100%',
-          'position': 'fixed',
-          'top':'0px',
-          transform: `translate(${x}px, ${y}px)`
-        };
+
+      /* Menu appearance styles. */
+      const duration = 200;
+      const defaultStyle = {
+        transition: `opacity ${duration}ms ease-in-out`,
+        opacity: 0,
+        'backgroundColor':'#99ff99',
+        'color': 'white',
+        'display': 'block',
+        'width':'25%',
+        'left':'-500px',
+        'height':'100%',
+        'position': 'fixed',
+        'top':'0px',
       }
 
+      const transitionStyles = {
+        entering: { opacity: 0, 'left':'-500px' },
+        entered:  { opacity: 1, 'left':'0px' },
+        exiting: { opacity: 1, 'left':'0px' },
+        exited: { opacity: 0, 'left':'-500px' }
+      };
+
       return (
+
         <div>
           <div>
-          {this.state.visible &&
-            <Nav style={menuStyle} onClick={this.mainMenu}>
-              <div style={menuItemsBox}>
-                <MainMenu_ListItem path="/" text="Pääsivu" />
-                <MainMenu_ListItem path="/map" text="Kartta" />
-                <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
-                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
-                {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
-                {this.state.userLogged && <MainMenu_LogoutButton/>}
-              </div>
-            </Nav>
-          }
+          <Transition in={this.state.visible} out={!this.state.visible}
+            timeout={duration}
+            >
+            {(state) => (
+              <Nav style={{
+                ...defaultStyle,
+                ...transitionStyles[state]
+              }} onClick={this.mainMenu}>
+                <div className="menuItems" style={menuItemsBox}>
+                  <MainMenu_ListItem path="/" text="Pääsivu" />
+                  <MainMenu_ListItem path="/map" text="Kartta" />
+                  <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
+                  {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
+                  {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
+                  {this.state.moderator && <MainMenu_ListItem path="/moderating" text="Moderointi" />}
+                  {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
+                  {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
+                  {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
+                  {this.state.userLogged && <MainMenu_LogoutButton/>}
+                </div>
+              </Nav>
+            )}
+          </Transition>
+
           </div>
-          <Navbar style={navBarStyle}>
-
+          <Navbar id="navBar" style={navBarStyle}>
             <NavbarToggler onClick={this.mainMenu}>
-              <FontAwesomeIcon style={iconStyles} icon="bars"/>
+              <FontAwesomeIcon className="icon" style={iconStyles} icon="bars"/>
             </NavbarToggler>
-
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
-
             <NavLink tag={Link} to="/">
-              <FontAwesomeIcon style={iconStyles} icon="home" onClick={this.home}/>
+              <FontAwesomeIcon className="icon" style={iconStyles} icon="home" onClick={this.home}/>
             </NavLink>
-
-
           </Navbar>
-
-
         </div>
+
       );
     }
 }

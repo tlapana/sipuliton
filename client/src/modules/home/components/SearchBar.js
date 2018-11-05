@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
 
 class SearchBar extends React.Component {
-  
+
   constructor(props, context) {
     super(props, context);
 
@@ -14,14 +14,14 @@ class SearchBar extends React.Component {
       isLoading: false
     };
   }
-  
+
   doSearch() {}
-  
+
   render() {
-    
+
     return (
       <div className="searchDiv">
-        <form id="search-form" class="search">
+        <form id="search-form" className="search">
           <input type="text" name="search" className="round" placeholder="Hae kaupungista tai osoitteesta..." />
           <button type="submit" className="searchBtn" onClick={this.doSearch}>
               <FontAwesomeIcon icon="search" />
@@ -30,7 +30,7 @@ class SearchBar extends React.Component {
           <br />
           <button className="filterBtn">Rajaa</button>
         </form>
-      </div>  
+      </div>
     );
   }
 }
