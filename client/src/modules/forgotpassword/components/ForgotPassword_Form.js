@@ -1,13 +1,25 @@
+/*
+This file implements forgot password form functionality. In this file is
+implemented forgot password code sending to user's email and after that show
+password changing objects to the user. In password changing user can change
+password to account with sended code.
+*/
+
 import React from 'react';
 import {
   form,
 } from 'reactstrap';
-
 import { Auth } from "aws-amplify";
 import { Redirect } from "react-router-dom";
+
+/* Configuration files */
 import config from "../../../config.js"
 
-export default class MainMenu_ListItem extends React.Component{
+/*
+ ForgotPassword_Form class which implements all needed things for the password
+ changing.
+*/
+export default class ForgotPassword_Form extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -30,6 +42,10 @@ export default class MainMenu_ListItem extends React.Component{
     this.sendCodeAgain = this.sendCodeAgain.bind(this);
   }
 
+  /*
+  Returns all states back to normal after user decides to send code again. This
+  method is called when user clicks send code again button.
+  */
   sendCodeAgain(){
     this.setState({
       email:"",
@@ -48,6 +64,10 @@ export default class MainMenu_ListItem extends React.Component{
     })
   }
 
+  /*
+  This method implements password changing code to the user's email.
+  This method is called when user clicks send code button.
+  */
   sendCode = (event) => {
       event.preventDefault();
       if(this.state.usernameIsValid){
@@ -62,6 +82,7 @@ export default class MainMenu_ListItem extends React.Component{
             });
           })
           .catch(err => {
+            /* Exception when code is sent too many times in a short time period.*/
             if(err.code === "LimitExceededException"){
               this.setState({
                 limitExceeded:true,
@@ -84,10 +105,15 @@ export default class MainMenu_ListItem extends React.Component{
 
   }
 
+  /*
+  Method which implements password changing for the user. This method is
+  ran when user clicks change password button.
+  */
   changePassword = (event) => {
     event.preventDefault();
     if(this.state.passwordsMatch && this.state.codeIsValid
       && this.state.newPasswordIsValid && this.state.newPasswordAgainIsValid){
+      /* Changes user password for the user. */
       Auth.forgotPasswordSubmit(
         this.state.username,
         this.state.code,
@@ -111,6 +137,10 @@ export default class MainMenu_ListItem extends React.Component{
 
   }
 
+  /*
+  This method implements code validation. This only checks that code is not
+  too short or too long. Lenghts are read from config.js file.
+  */
   changeCode = (event) => {
     if(event.target.value.length >= config.login.CODE_MIN_LENGTH
       && event.target.value.length <= config.login.CODE_MAX_LENGTH){
@@ -121,8 +151,11 @@ export default class MainMenu_ListItem extends React.Component{
     }
   }
 
+  /*
+  This method implements username validation. This only checks that username is
+  not too short or too long. Lenghts are read from config.js file.
+  */
   changeUsername = (event) => {
-    /*Implement validation of username*/
     if(event.target.value.length >= config.login.USERNAME_MIN_LENGTH
       && event.target.value.length <= config.login.USERNAME_MAX_LENGTH){
       this.setState({username: event.target.value, usernameIsValid: true });
@@ -132,8 +165,11 @@ export default class MainMenu_ListItem extends React.Component{
     }
   }
 
+  /*
+  This method implements new password validation. This only checks that password
+  is not too short or too long. Lenghts are read from config.js file.
+  */
   changeNewPassword = (event) => {
-    /*Implement validation of password*/
     if(event.target.value.length >= config.login.PASSWORD_MIN_LENGTH
       && event.target.value.length <= config.login.PASSWORD_MAX_LENGTH){
         this.setState({ newPassword: event.target.value, newPasswordIsValid: true });
@@ -143,6 +179,10 @@ export default class MainMenu_ListItem extends React.Component{
     }
   }
 
+  /*
+  This method implements second new password validation. This only checks that
+  password is not too short or too long. Lenghts are read from config.js file.
+  */
   changeNewPasswordAgain = (event) => {
     /*Implement validation of password*/
     if(event.target.value === this.state.newPassword){
@@ -168,6 +208,8 @@ export default class MainMenu_ListItem extends React.Component{
   }
 
   render(){
+
+    /* Password fields border colors. Borders are red until passwords matches.*/
     var passwordBorder = {
       'borderStyle': 'solid solid solid solid',
       'borderColor': 'black'

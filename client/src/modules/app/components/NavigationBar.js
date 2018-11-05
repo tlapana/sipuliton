@@ -1,3 +1,6 @@
+/* In this file, is implementation of the navigation bar and implementation of
+mainmenu which opens from navigation bar.*/
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -7,15 +10,22 @@ import {
   NavItem,
   NavLink,
 } from 'reactstrap';
+import { Auth } from 'aws-amplify';
+
+/* Styles and icons */
+import styles from '../../../styles/navigationbar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Transition } from 'react-transition-group';
+
+/* Mainmenu components*/
 import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
 import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
-import { Auth } from 'aws-amplify';
-import styles from '../../../styles/navigationbar.css';
-import { Transition } from 'react-transition-group';
-import login from '../../login';
+
+
 
 class NavigationBar extends React.Component {
+
+  /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
     this.state = {
@@ -31,9 +41,11 @@ class NavigationBar extends React.Component {
 
   /* Function which will be called when menu button is clicked. */
   mainMenu() {
-      /* Sets menu visibility to visible or no visible. */
+      /* Sets menu visibility to visible or not visible. */
       this.setState({ visible: !this.state.visible});
-      this.checkAccessRights();
+      if(this.state.visible){
+        this.checkAccessRights();
+      }
   }
 
   /* Function which will be called when home button is clicked. */
@@ -44,14 +56,15 @@ class NavigationBar extends React.Component {
     }
   }
 
+  /* This function checks logged in users rights. */
   checkAccessRights(){
-    /* Implement user query from back end */
-    var loggedUser = {} ;
+    /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
+          /* Get current user group. */
           var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
           if(user != null){
-            /* Check if user is logged in, after that show either register or login */
+            /* Check if user is logged in, after that set access to either register or login */
             this.setState({userLogged: true})
 
             /* Check if user is basic user, then restrict all accesses */
@@ -94,6 +107,7 @@ class NavigationBar extends React.Component {
 
         })
         .catch(err => {
+          /* If user is not logged in restrict accesses. */
           this.setState(
             {
               userLogged: false,
@@ -107,7 +121,7 @@ class NavigationBar extends React.Component {
   }
 
   render() {
-
+      /* Navigation bar inline styles. */
       const navBarStyle = {
         'backgroundColor':'#99ff99',
         'color': 'white',
@@ -128,6 +142,7 @@ class NavigationBar extends React.Component {
         'margin':'25px 0 0 0'
       }
 
+      /* Menu appearance styles. */
       const duration = 200;
       const defaultStyle = {
         transition: `opacity ${duration}ms ease-in-out`,
@@ -150,7 +165,6 @@ class NavigationBar extends React.Component {
       };
 
       return (
-
 
         <div>
           <div>

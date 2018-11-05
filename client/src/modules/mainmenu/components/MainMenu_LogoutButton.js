@@ -1,3 +1,5 @@
+/* This file implements logout button implementation. */
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -16,13 +18,16 @@ export default class MainMenu_ListItem extends React.Component{
     this.logout = this.logout.bind(this);
   }
 
+  /*
+  Called when user's mouse enters or leaves the area. This method changes
+  hovered state, which is used in styling.
+  */
   hover() {
-      /* Changes button background color when user inserts mouse over button. */
       this.setState({ hovered: !this.state.hovered});
   }
 
+  /* This method implements user log out. */
   logout(){
-    /* Logs user out */
     Auth.signOut()
         .then(data => this.setState({logoutSuccesfully: true}))
         .catch(err => console.log(err));
@@ -30,6 +35,7 @@ export default class MainMenu_ListItem extends React.Component{
 
   render(){
 
+    /* Styles for the log out button. */
     var itemStyle = {
       display: 'block',
       color: '#000',
@@ -46,6 +52,7 @@ export default class MainMenu_ListItem extends React.Component{
       'textAlign':'center'
     };
 
+    /* Style for the hovered state. */
     if(this.state.hovered){
       itemStyle = {
         display: 'block',

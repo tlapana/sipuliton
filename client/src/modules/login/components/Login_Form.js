@@ -1,3 +1,7 @@
+/*
+This file implements regular login to the application.
+*/
+
 import React from 'react';
 import {
   NavItem,
@@ -33,6 +37,7 @@ export default class MainMenu_ListItem extends React.Component{
       if(this.state.passwordIsValid && this.state.usernameIsValid){
         Auth.signIn(this.state.username,this.state.password)
           .then(user => {
+
             /* If user needs to set new password this will automatically set old
                password as a new password and after that tries to log user in. */
 
@@ -59,8 +64,10 @@ export default class MainMenu_ListItem extends React.Component{
       }
   }
 
-
-
+  /*
+  This method implements username validation. This only checks that username is
+  not too short or too long. Lenghts are read from config.js file.
+  */
   changeUsername = (event) => {
     /* Implements validation of username */
     if(event.target.value.length >= config.login.USERNAME_MIN_LENGTH
@@ -77,8 +84,11 @@ export default class MainMenu_ListItem extends React.Component{
     }
   }
 
+  /*
+  This method implements password validation. This only checks that password is
+  not too short or too long. Lenghts are read from config.js file.
+  */
   changePassword = (event) => {
-    /* Implements validation of password */
     if(event.target.value.length >= config.login.PASSWORD_MIN_LENGTH
       && event.target.value.length <= config.login.PASSWORD_MAX_LENGTH){
       this.setState({password: event.target.value, passwordIsValid: true });
@@ -96,6 +106,7 @@ export default class MainMenu_ListItem extends React.Component{
 
   render(){
 
+    /* Styles for the input box borders. */
     var passwordBorderStyle = {
       'borderStyle': 'solid solid solid solid',
       'borderColor': 'black',
@@ -105,6 +116,7 @@ export default class MainMenu_ListItem extends React.Component{
       'borderColor': 'black',
     };
 
+    /* Changes input box border colors to the red when they are not valid. */
     if(!this.state.passwordIsValid){
       passwordBorderStyle = {
         'borderStyle': 'solid solid solid solid',
