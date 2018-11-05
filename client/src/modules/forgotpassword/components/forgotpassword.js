@@ -2,8 +2,8 @@ import React from 'react';
 
 import ForgotPasswordForm from './ForgotPassword_Form.js'
 
-const Login = () => (
-  <div id="login">
+const ForgotPassword = () => (
+  <div id="forgotPassword">
     <h2>Unohtuiko salasana?</h2>
     <ForgotPasswordForm/>
   </div>
@@ -11,4 +11,4 @@ const Login = () => (
 
 
 
-export default Login;
+export default ForgotPassword;
