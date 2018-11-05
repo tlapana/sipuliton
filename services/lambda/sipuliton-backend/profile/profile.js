@@ -63,7 +63,30 @@ function parseIntParam(varStr, event) {
     return parsed;
 }
 
-async function getCountryName(client, countryId, languageId) {
+async function getLanguage(client, language) {
+     res = await client.query(
+        `SELECT language_id
+        FROM languages
+        WHERE languages.iso2 = $1`,
+        [language]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No language found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more languages"
+        }
+    }
+     return res.rows[0]['language_id'];
+}
+
+async function getCountryName(client, countryId, languageId, defaultLanguageId) {
     if (countryId && countryId !== "") {
         var res = await client.query(
             `SELECT name
@@ -73,9 +96,9 @@ async function getCountryName(client, countryId, languageId) {
         if (res.rowCount == 0) {
             res = await client.query(
                 `SELECT name
-                FROM country_name, languages
-                WHERE country_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
-                [countryId]);
+                FROM country_name
+                WHERE country_id = $1 AND language_id = $2`,
+                [countryId, defaultLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
             }
@@ -92,7 +115,7 @@ async function getCountryName(client, countryId, languageId) {
     return null
 }
 
-async function getCityName(client, cityId, languageId) {
+async function getCityName(client, cityId, languageId, defaultLanguageId) {
     if (cityId && cityId !== "") {
         var res = await client.query(
             `SELECT name
@@ -102,9 +125,9 @@ async function getCityName(client, cityId, languageId) {
         if (res.rowCount == 0) {
             res = await client.query(
                 `SELECT name
-                FROM city_name, languages
-                WHERE city_id = $1 AND languages.iso2 = 'EN' AND country.language_id = languages.language_id`,
-                [cityId]);
+                FROM city_name
+                WHERE city_id = $1 AND language_id = $2`,
+                [cityId, defaultLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
             }
@@ -118,7 +141,70 @@ async function getCityName(client, cityId, languageId) {
         }
         return res.rows[0]['name'];
     }
-    return null
+    return null;
+}
+
+async function getGroups(client, languageId, defaultLanguageId) {
+    const res = await client.query(
+        `SELECT name_join.food_group_id, name, array_agg(food_group_id2) as groups
+        FROM (SELECT food_group.food_group_id, name
+            FROM food_group, food_group_name
+            WHERE food_group.food_group_id = food_group_name.food_group_id AND (
+                language_id = $1 OR (language_id = $2 AND food_group.food_group_id NOT IN (
+                    SELECT food_group.food_group_id
+                    FROM food_group, food_group_name
+                    WHERE food_group.food_group_id = food_group_name.food_group_id AND
+                    language_id = $1 AND name != ''
+                )
+            ))
+        ) AS name_join
+        LEFT JOIN food_group_groups ON name_join.food_group_id = food_group_groups.food_group_id 
+        GROUP BY name_join.food_group_id, name`,
+        [languageId, defaultLanguageId]);
+    if (res.rowCount > 0) {
+        console.log(res.rows);
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
+}
+
+async function getPresetDiets(client, languageId, defaultLanguageId) {
+    const res = await client.query(
+        `SELECT name_join.global_diet_id, name, array_agg(food_group_id) as groups
+        FROM (SELECT global_diet.global_diet_id, name
+            FROM global_diet, global_diet_name
+            WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND (
+                language_id = $1 OR (language_id = $2 AND global_diet.global_diet_id NOT IN (
+                    SELECT global_diet.global_diet_id
+                    FROM global_diet, global_diet_name
+                    WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND
+                    language_id = $1 AND name != ''
+                )
+            ))
+        ) AS name_join
+        LEFT JOIN diet_groups ON name_join.global_diet_id = diet_groups.global_diet_id 
+        GROUP BY name_join.global_diet_id, name`,
+        [languageId, defaultLanguageId]);
+    if (res.rowCount > 0) {
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
+}
+
+async function getDiets(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
+        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
+        WHERE user_id = $1
+        GROUP BY diet_id, diet_name.global_diet_id, name`,
+        [userId]);
+    if (res.rowCount > 0) {
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
 }
 
 async function getUserdata(client, userId) {
@@ -126,7 +212,7 @@ async function getUserdata(client, userId) {
         `SELECT username, email, display_name, gender, image_url, birth_year, birth_month,
                 description, country_id, city_id, countries AS countries_visited,
                 cities AS cities_visited, reviews, thumbs_up, thumbs_down,
-                thumbs_up_given, thumbs_down_given, activity_level, last_active
+                thumbs_up_given, thumbs_down_given, activity_level, last_active, diet_id
         FROM user_login
         INNER JOIN user_profile ON user_login.user_id = user_profile.user_id
         INNER JOIN user_stats ON user_login.user_id = user_stats.user_id
@@ -182,14 +268,6 @@ async function fetchUser(userId, ownUserId, languageId) {
 
     jsonObj = await getUserdata(client, userId);
 
-    jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId);
-    delete jsonObj['country_id']; 
-
-    jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId);
-    delete jsonObj['city_id'];
-
-    await client.end();
-
     jsonObj['own_profile'] = false;
     if (ownUserId) {
         if (Number.isInteger(ownUserId)) {
@@ -207,6 +285,24 @@ async function fetchUser(userId, ownUserId, languageId) {
         delete jsonObj['username'];
         delete jsonObj['email'];
     }
+
+    const defaultLanguageId = await getLanguage(client, 'EN');
+
+    jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, defaultLanguageId);
+    delete jsonObj['country_id']; 
+
+    jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, defaultLanguageId);
+    delete jsonObj['city_id'];
+
+    if (jsonObj['own_profile']) {
+        jsonObj['own_diets'] = await getDiets(client, userId);
+
+        jsonObj['preset_diets'] = await getPresetDiets(client, languageId, defaultLanguageId);
+
+        jsonObj['food_groups'] = await getGroups(client, languageId, defaultLanguageId);
+    }
+
+    await client.end();
 
     // ret.data contains IP of request's sender
     // var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
@@ -246,6 +342,36 @@ exports.lambdaHandler = async (event, context) => {
                 'Access-Control-Allow-Origin': '*'
             },
             'body': JSON.stringify({ 'error': "Something went wrong! " + err})
+        };
+        if ("statusCode" in err) {
+            response['statusCode'] = err['statusCode'];
+        }
+        if ("error" in err) {
+            response['body'] = JSON.stringify({ 'error': err['error'] });
+        }
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.editHandler = async (event, context) => {
+    try {
+        throw {
+            'statusCode': 500,
+            'error': "Not implemented"
+        }
+
+    } catch (err) {
+        console.log(err);
+        response = {
+            'statusCode': 500,
+            //TODO: Handle CORS in AWS api gateway settings prior to deployment
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': JSON.stringify({ 'error': "Something went wrong! " + err })
         };
         if ("statusCode" in err) {
             response['statusCode'] = err['statusCode'];

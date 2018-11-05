@@ -22,9 +22,9 @@ INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
     ('4', 'cog5', 'user', 'das@asd.com');
 
 INSERT INTO user_profile(user_id, role, display_name, image_url, language_id, birth_year, birth_month, gender, description, country_id, city_id, diet_id) VALUES
-    ('0', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '2'),
+    ('0', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
     ('1', '0', 'Admin', NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-    ('2', '3', 'Basic user', NULL, '0', '2000', '8', 'M', NULL, '1000', '100000', '1'),
+    ('2', '3', 'Basic user', NULL, '0', '2000', '8', 'M', NULL, '1000', '100000', '0'),
     ('3', '2', 'Restaurant owner', NULL, '0', NULL, NULL, 'F', 'A happy owner of restaurant', NULL, NULL, NULL),
     ('4', '3', 'Basic user2', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 

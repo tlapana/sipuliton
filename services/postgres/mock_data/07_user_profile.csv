@@ -1,6 +1,6 @@
 user_id,role,display_name,image_url,language_id,birth_year,birth_month,gender,description,country_id,city_id,diet_id
-0,1,Sipuliton test,https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047,0,2000,,M,dunno what to write,,,2
+0,1,Sipuliton test,https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047,0,2000,,M,dunno what to write,,,1
 1,0,Admin,,1,,,,,,,
-2,3,Basic user,,0,2000,8,M,,1000,100000,1
+2,3,Basic user,,0,2000,8,M,,1000,100000,0
 3,2,Restaurant owner,,0,,,F,A happy owner of restaurant,,,
 4,3,Basic user2,,0,,,,,,,
