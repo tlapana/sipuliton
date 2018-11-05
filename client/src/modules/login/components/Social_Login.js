@@ -1,13 +1,15 @@
-/* global gapi */
+/*
+  This file handles social logins. It covers both facebook and google.
+  It presents the buttons, allows user to log in, authenticates the user 
+  and if the user exists, logs them in.
+*/
+
 import React from 'react';
-import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import styles from './styles.css'
+import styles from '../../../styles/login.css';
 
 import { Auth } from "aws-amplify";
-import { Link } from "react-router-dom";
-import { Redirect } from "react-router-dom";
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login'
@@ -20,9 +22,12 @@ export default class SocialLogin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      username:"",
+      password:"",
       loggingFailed: false,
       loggingSucceeded:false,
     };
+	
     this.responseFailure = this.responseFailure.bind(this);
     this.responseGoogle = this.responseGoogle.bind(this);
     this.responseFacebookSuccess = this.responseFacebookSuccess.bind(this);
@@ -47,13 +52,17 @@ export default class SocialLogin extends React.Component {
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
-        //this.setState({loggingSucceeded:true});
+        this.setState({loggingSucceeded:true});
+        
       }).catch(e => {
           
         //this.setState({loggingFailed:true});
         console.log("Auth.federatedSignIn ERROR")
         console.log(e);
+        this.setState({loggingFailed:true});
       });
+      
+    
     
   }
   
@@ -73,12 +82,14 @@ export default class SocialLogin extends React.Component {
       .then(credentials => {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
-        //this.setState({loggingSucceeded:true});
+        this.setState({loggingSucceeded:true});
+        
       }).catch(e => {
           
         //this.setState({loggingFailed:true});
         console.log("Auth.federatedSignIn ERROR")
         console.log(e);
+        this.setState({loggingFailed:true});
       });
     
     
@@ -88,16 +99,10 @@ export default class SocialLogin extends React.Component {
   responseFailure(response){
     console.log("DEBUG: RESPONSE ON FAILURE")
     console.log(response);
-    this.setState({loggingFailed:true});
   }
    
   render() {  
 
-    const federated = {
-    google_client_id: config.google.CLIENT_ID,
-    facebook_app_id: '',
-    amazon_client_id: ''
-};
     return (
       <div>
         <GoogleLogin
@@ -111,7 +116,6 @@ export default class SocialLogin extends React.Component {
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
-          onClick={this.facebookClicked}
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
         >

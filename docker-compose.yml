@@ -6,5 +6,11 @@ services:
       context: services/postgres
     image: postgres
     restart: unless-stopped
+    networks:
+      - sipuliton
     ports:
-      - 5432:5432    
+      - 5432:5432
+    container_name: sipuliton_postgres_1
+
+networks:
+   sipuliton:

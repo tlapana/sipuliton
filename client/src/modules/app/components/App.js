@@ -8,17 +8,18 @@ import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
 import register from '../../register';
+import forgotPassword from '../../forgotpassword';
 import NotFound from './NotFound';
-import NavigationBar from './NavigationBar'
+import NavigationBar from './NavigationBar';
 
 import { Link, withRouter } from "react-router-dom";
 
+import styles from '../../../styles/app.css';
 
-import styles from './styles.css'
 const { Home } = home;
 const { Login } = login;
 const { Register } = register;
-
+const { ForgotPassword} = forgotPassword;
 const App = ({ store }) => (
   <Provider store={store}>
     <Router>
@@ -30,6 +31,7 @@ const App = ({ store }) => (
               <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
               <Route path="/register" component={Register} />
+              <Route path="/forgot-password" component={ForgotPassword} />
               <Route component={NotFound} />
             </Switch>
           </div>
