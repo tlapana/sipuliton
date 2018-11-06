@@ -36,24 +36,71 @@ let response;
  * 
  */
 
+// shared functions
+
+async function getPsqlClient() {
+    var pg = require("pg");
+    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+    const client = new pg.Client(conn);
+    await client.connect((err) => {
+        if (err) {
+            //TODO: Remove + err before deployment
+            console.error("Failed to connect client");
+            console.error(err);
+            throw {
+                'statusCode': 500,
+                'error': "Failed to connect to database" + err
+            }
+        }
+    });
+    return client
+}
+
+function errorHandler(err) {
+    console.log(err);
+    response = {
+        'statusCode': 500,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+    };
+    if ("statusCode" in err) {
+        response['statusCode'] = err['statusCode'];
+    }
+    if ("error" in err) {
+        response['body'] = JSON.stringify({ 'error': err['error'] });
+    }
+    return response;
+}
+
+function packResponse(jsonObj) {
+    response = {
+        'statusCode': 200,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ jsonObj })
+    };
+    return response;
+}
+
 function parseParam(varStr, event) {
     if (event[varStr] && event[varStr] !== "") {
-        console.log('event');
         return event[varStr];
     } else if (event.body && event.body !== "") {
         var body = JSON.parse(event.body);
         if (body[varStr] && body[varStr] !== "") {
-            console.log('json');
             return body[varStr];
         }
     } else if (event.queryStringParameters && event.queryStringParameters[varStr] && event.queryStringParameters[varStr] !== "") {
-        console.log('stringparams');
         return event.queryStringParameters[varStr];
     } else if (event.multiValueHeaders && event.multiValueHeaders[varStr] && event.multiValueHeaders[varStr] != "") {
-        console.log('multiValueHeaders');
         return event.multiValueHeaders[varStr].join(" and ");
     } else if (event.headers && event.headers[varStr] && event.headers[varStr] != "") {
-        console.log('headers');
         return event.headers[varStr];
     }
     return null;
@@ -81,7 +128,7 @@ function parseIntParam(varStr, event) {
     var val = parseParam(varStr, event);
     var parsed = parseInt(val);
     if (isNaN(parsed)) {
-        return val;
+        return null;
     }
     return parsed;
 }
@@ -95,7 +142,7 @@ Object.prototype.isEmpty = function () {
 }
 
 async function getLanguage(client, language) {
-     res = await client.query(
+    res = await client.query(
         `SELECT language_id
         FROM languages
         WHERE languages.iso2 = $1`,
@@ -114,8 +161,12 @@ async function getLanguage(client, language) {
             'error': "Something is broken, returning 2 or more languages"
         }
     }
-     return res.rows[0]['language_id'];
+    return res.rows[0]['language_id'];
 }
+
+
+// start of module functions
+
 
 async function getCountryName(client, countryId, languageId, defaultLanguageId) {
     if (countryId && countryId !== "") {
@@ -175,106 +226,6 @@ async function getCityName(client, cityId, languageId, defaultLanguageId) {
     return null;
 }
 
-async function getGroups(client, languageId, defaultLanguageId) {
-    const res = await client.query(
-        `SELECT name_join.food_group_id, name, array_agg(food_group_id2) as groups
-        FROM (SELECT food_group.food_group_id, name
-            FROM food_group, food_group_name
-            WHERE food_group.food_group_id = food_group_name.food_group_id AND (
-                language_id = $1 OR (language_id = $2 AND food_group.food_group_id NOT IN (
-                    SELECT food_group.food_group_id
-                    FROM food_group, food_group_name
-                    WHERE food_group.food_group_id = food_group_name.food_group_id AND
-                    language_id = $1 AND name != ''
-                )
-            ))
-        ) AS name_join
-        LEFT JOIN food_group_groups ON name_join.food_group_id = food_group_groups.food_group_id 
-        GROUP BY name_join.food_group_id, name`,
-        [languageId, defaultLanguageId]);
-    if (res.rowCount > 0) {
-        console.log(res.rows);
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getPresetDiets(client, languageId, defaultLanguageId) {
-    const res = await client.query(
-        `SELECT name_join.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM (SELECT global_diet.global_diet_id, name
-            FROM global_diet, global_diet_name
-            WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND (
-                language_id = $1 OR (language_id = $2 AND global_diet.global_diet_id NOT IN (
-                    SELECT global_diet.global_diet_id
-                    FROM global_diet, global_diet_name
-                    WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND
-                    language_id = $1 AND name != ''
-                )
-            ))
-        ) AS name_join
-        LEFT JOIN diet_groups ON name_join.global_diet_id = diet_groups.global_diet_id 
-        GROUP BY name_join.global_diet_id, name`,
-        [languageId, defaultLanguageId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getDiets(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
-        WHERE user_id = $1
-        GROUP BY diet_id, diet_name.global_diet_id, name`,
-        [userId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getCities(client, countryId, languageId, defaultLanguageId) {
-    if (countryId && countryId !== "") {
-        const res = await client.query(
-            `SELECT city.city_id, name
-            FROM city INNER JOIN city_name ON city.city_id = city_name.city_id
-            WHERE (language_id = $1 AND city.country_id = $3) OR ((language_id = $2 AND city.country_id = $3) AND city.city_id NOT IN (
-                SELECT city.city_id
-                FROM city INNER JOIN city_name ON city.city_id = city_name.city_id
-                WHERE language_id = $1 AND name != '' AND city.country_id = $3
-                )
-            )`,
-            [languageId, defaultLanguageId, countryId]);
-        if (res.rowCount > 0) {
-            var jsonObj = JSON.parse(JSON.stringify(res.rows));
-            return jsonObj;
-        }
-    }
-    return null;
-}
-
-async function getCountries(client, languageId, defaultLanguageId) {
-    const res = await client.query(
-        `SELECT country_id, name
-        FROM country_name
-        WHERE language_id = $1 OR (language_id = $2 AND country_id NOT IN (
-                SELECT country_id FROM Country_name
-                WHERE language_id = $1 AND name != ''
-            )
-        )`,
-        [languageId, defaultLanguageId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
 async function getUserdata(client, userId) {
     const res = await client.query(
         `SELECT username, email, display_name, gender, image_url, birth_year, birth_month,
@@ -304,25 +255,6 @@ async function getUserdata(client, userId) {
     return jsonObj;
 }
 
-async function getPsqlClient() {
-    var pg = require("pg");
-    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-    const client = new pg.Client(conn);
-    await client.connect((err) => {
-        if (err) {
-            //TODO: Remove + err before deployment
-            console.error("Failed to connect client");
-            console.error(err);
-            throw {
-                'statusCode': 500,
-                'error': "Failed to connect to database" + err
-            }
-        }
-    });
-    return client
-}
-
 async function fetchUser(userId, ownUserId, languageId) {
     if (!Number.isInteger(userId)) {
         throw {
@@ -340,10 +272,7 @@ async function fetchUser(userId, ownUserId, languageId) {
     const client = await getPsqlClient();
 
     jsonObj = await getUserdata(client, userId);
-
-    console.log(userId);
-    console.log(ownUserId);
-
+    
     jsonObj['own_profile'] = false;
     if (ownUserId !== null) {
         if (Number.isInteger(ownUserId)) {
@@ -368,116 +297,9 @@ async function fetchUser(userId, ownUserId, languageId) {
 
     jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, defaultLanguageId);
 
-    if (jsonObj['own_profile']) {
-        jsonObj['own_diets'] = await getDiets(client, userId);
-
-        jsonObj['preset_diets'] = await getPresetDiets(client, languageId, defaultLanguageId);
-
-        jsonObj['food_groups'] = await getGroups(client, languageId, defaultLanguageId);
-
-        jsonObj['countries'] = await getCountries(client, languageId, defaultLanguageId);
-
-        jsonObj['cities'] = await getCities(client, jsonObj['country_id'], languageId, defaultLanguageId);
-    }
-
     await client.end();
 
     return jsonObj;
-}
-
-exports.lambdaHandler = async (event, context) => {
-    try {
-        var tempId = parseIntParam("userId", event);
-        //TODO: get user id from cognito if not requesting specified user
-        const userId = !tempId ? 0 : tempId
-
-        //TODO: get own user id using cognito
-        const ownUserId = userId;
-
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
-        const jsonObj = await fetchUser(userId, ownUserId, languageId);
-
-        // ret.data contains IP of request's sender
-        // var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
-        // var client = new pg.Client(conn);
-        response = {
-            'statusCode': 200,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify({ jsonObj })
-        };
-
-    } catch (err) {
-        console.log(err);
-        response = {
-            'statusCode': 500,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify({ 'error': "Something went wrong! " + err})
-        };
-        if ("statusCode" in err) {
-            response['statusCode'] = err['statusCode'];
-        }
-        if ("error" in err) {
-            response['body'] = JSON.stringify({ 'error': err['error'] });
-        }
-    }
-
-    console.log(response);
-    return response;
-};
-
-exports.lambdaGetCities = async (event, context) => {
-    try {
-        const countryId = parseParam('country_id', event);
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
-        const client = await getPsqlClient();
-
-        const defaultLanguageId = await getLanguage(client, 'EN');
-
-        const jsonObj = await getCities(client, countryId, languageId, defaultLanguageId);
-
-        await client.end();
-
-        response = {
-            'statusCode': 200,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify({ jsonObj })
-        };
-        
-    } catch (err) {
-        console.log(err);
-        response = {
-            'statusCode': 500,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify({ 'error': "Something went wrong! " + err })
-        };
-        if ("statusCode" in err) {
-            response['statusCode'] = err['statusCode'];
-        }
-        if ("error" in err) {
-            response['body'] = JSON.stringify({ 'error': err['error'] });
-        }
-    }
-
-    console.log(response);
-    return response;
 }
 
 async function doCognitoChanges(changes) {
@@ -521,7 +343,35 @@ async function doUserChanges(client, ownUserId, userChanges) {
     return
 }
 
-exports.editHandler = async (event, context) => {
+exports.profileLambda = async (event, context) => {
+    try {
+        var tempId = parseIntParam("userId", event);
+        //TODO: get user id from cognito if not requesting specified user
+        const userId = !tempId ? 0 : tempId
+
+        //TODO: get own user id using cognito
+        const ownUserId = userId;
+
+        //TODO: possibly query language id if not saved as id in cookies
+        tempId = parseIntParam("language", event);
+        const languageId = !tempId ? 0 : tempId
+
+        const jsonObj = await fetchUser(userId, ownUserId, languageId);
+
+        // ret.data contains IP of request's sender
+        // var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
+        // var client = new pg.Client(conn);
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+exports.editLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
         const ownUserId = 0;
@@ -671,21 +521,7 @@ exports.editHandler = async (event, context) => {
         }
 
     } catch (err) {
-        console.log(err);
-        response = {
-            'statusCode': 500,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify({ 'error': "Something went wrong! " + err })
-        };
-        if ("statusCode" in err) {
-            response['statusCode'] = err['statusCode'];
-        }
-        if ("error" in err) {
-            response['body'] = JSON.stringify({ 'error': err['error'] });
-        }
+        response = errorHandler(err);
     }
 
     console.log(response);

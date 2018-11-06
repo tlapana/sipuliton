@@ -1,0 +1,13 @@
+{
+  "name": "getApi",
+  "version": "0.1",
+  "description": "GET endpoints for fetching data used in multiple places",
+  "main": "src/getApi.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

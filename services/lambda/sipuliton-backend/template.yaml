@@ -49,7 +49,7 @@ Resources:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: profile/
-          Handler: profile.lambdaHandler
+          Handler: profile.profileLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -65,7 +65,7 @@ Resources:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: profile/
-          Handler: profile.editHandler
+          Handler: profile.editLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -75,6 +75,86 @@ Resources:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
                       Path: /profile/edit
+                      Method: get
+
+    GetApiFoodGroupsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: getApi/
+          Handler: getApi.getFoodGroupsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /getApi/foodGroups
+                      Method: get
+
+    GetApiPresetDietsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: getApi/
+          Handler: getApi.getPresetDietsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /getApi/presetDiets
+                      Method: get
+
+    GetApiOwnDietsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: getApi/
+          Handler: getApi.getOwnDietsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /getApi/ownDiets
+                      Method: get
+
+    GetApiCountriesFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: getApi/
+          Handler: getApi.getCountriesLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /getApi/countries
+                      Method: get
+
+    GetApiCitiesFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: getApi/
+          Handler: getApi.getCitiesLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /getApi/cities
                       Method: get
 
 Outputs:
@@ -126,4 +206,64 @@ Outputs:
     ProfileEditFunctionIamRole:
       Description: "Implicit IAM Role created for Profile page function"
       Value: !GetAtt ProfileEditFunctionRole.Arn
+
+    GetApiFoodGroupsApi:
+      Description: "API Gateway endpoint URL for Prod stage for getApi function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/foodGroups/"
+
+    GetApiFoodGroupsFunction:
+      Description: "Get api Function ARN"
+      Value: !GetAtt GetApiFoodGroupsFunction.Arn
+
+    GetApiFoodGroupsFunctionIamRole:
+      Description: "Implicit IAM Role created for FoodGroups page function"
+      Value: !GetAtt GetApiFoodGroupsFunctionRole.Arn
+
+    GetApiPresetDietsApi:
+      Description: "API Gateway endpoint URL for Prod stage for getApi function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/presetDiets/"
+
+    GetApiPresetDietsFunction:
+      Description: "Get api Function ARN"
+      Value: !GetAtt GetApiPresetDietsFunction.Arn
+
+    GetApiPresetDietsFunctionIamRole:
+      Description: "Implicit IAM Role created for PresetDiets page function"
+      Value: !GetAtt GetApiPresetDietsFunctionRole.Arn
+
+    GetApiOwnDietsApi:
+      Description: "API Gateway endpoint URL for Prod stage for getApi function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/ownDiets/"
+
+    GetApiOwnDietsFunction:
+      Description: "Get api Function ARN"
+      Value: !GetAtt GetApiOwnDietsFunction.Arn
+
+    GetApiOwnDietsFunctionIamRole:
+      Description: "Implicit IAM Role created for OwnDiets page function"
+      Value: !GetAtt GetApiOwnDietsFunctionRole.Arn
+
+    GetApiCountriesApi:
+      Description: "API Gateway endpoint URL for Prod stage for getApi function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/countries/"
+
+    GetApiCountriesFunction:
+      Description: "Get api Function ARN"
+      Value: !GetAtt GetApiCountriesFunction.Arn
+
+    GetApiCountriesIamRole:
+      Description: "Implicit IAM Role created for Countries page function"
+      Value: !GetAtt GetApiCountriesFunctionRole.Arn
+
+    GetApiCitiesApi:
+      Description: "API Gateway endpoint URL for Prod stage for getApi function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/cities/"
+
+    GetApiCitiesFunction:
+      Description: "Get api Function ARN"
+      Value: !GetAtt GetApiCitiesFunction.Arn
+
+    GetApiCitiesFunctionIamRole:
+      Description: "Implicit IAM Role created for Cities page function"
+      Value: !GetAtt GetApiCitiesFunctionRole.Arn
 
