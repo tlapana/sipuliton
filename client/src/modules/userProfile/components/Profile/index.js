@@ -2,7 +2,7 @@ import React, {} from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
 
 
-class Input extends React.Component {
+class Profile extends React.Component {
       		constructor(props) {
        			super(props);
        			this.state = {
@@ -40,13 +40,17 @@ class Input extends React.Component {
     		body: JSON.stringify(data1),
   	  	})
     		.then(function(response) {
+             
         	return response;
       		}).then(function(body) {
         	console.log(body);
       		});
 
 
+
+                 this.handleClick();
         }
+   
 
 	addAllerg()  {
           var data1={};
@@ -168,18 +172,57 @@ class Input extends React.Component {
              return(
                <div>
          <form>
-          <input
-          type="button"
-          value="edit"
-          onClick={()=>{this.handleClick()}}/> <br/>
-           
-         <input type="text" id="name" name="name" onchange={()=>{}}  defaultValue={this.state.username}/><br/>
-         <input type="text" id="email" name="email" defaultValue={this.state.email}/><br/>
-         <input type="text" id="city" name="city" defaultValue={this.state.city}/><br/>
-         <input type="text" id="desc" name="desc" defaultValue={this.state.desc}/><br/>
-         
 
-             <input type="Button" name="save"   onClick={()=>{this.saveData()}} value="Tallenna"/> <br/>
+          <Row>
+          <Col xs="2">
+	
+</Col>
+<Col xs="7">
+ <input type="Button" name="save"   onClick={()=>{this.saveData()}} value="Tallenna"/>
+</Col>
+</Row>
+          <Row>
+          <Col xs="2">
+	    <p>nimi</p>
+</Col>
+<Col xs="7">
+ <input type="text" id="name" name="name" defaultValue={this.state.username}/>
+</Col>
+</Row>
+          <Row>
+          <Col xs="2">
+	    <p>sähköposti</p>
+</Col>
+<Col xs="7">
+ <input type="text" id="email" name="email" defaultValue={this.state.email}/>
+</Col>
+</Row>
+          <Row>
+          <Col xs="2">
+	    <p>Kaupunki</p>
+</Col>
+<Col xs="7">
+ <input type="text" id="city" name="city" defaultValue={this.state.city}/>
+</Col>
+</Row>
+          <Row>
+          <Col xs="2">
+	    <p>Kuvaus</p>
+</Col>
+<Col xs="7">
+ <input type="text" id="desc" name="desc" defaultValue={this.state.desc}/>
+</Col>
+</Row>
+
+	
+
+      
+           
+   
+
+
+
+             <br/>
   <br/>
    <input type="text" id="allerg" name="allerg"/> <br/>
 
@@ -195,4 +238,4 @@ class Input extends React.Component {
 
 
 }
-export default Input;
+export default Profile;
