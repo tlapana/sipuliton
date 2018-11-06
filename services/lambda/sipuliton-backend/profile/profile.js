@@ -229,7 +229,7 @@ async function getCityName(client, cityId, languageId, defaultLanguageId) {
 async function getUserdata(client, userId) {
     const res = await client.query(
         `SELECT username, email, display_name, gender, image_url, birth_year, birth_month,
-                description, country_id, city_id, diet_id, countries AS countries_visited,
+                description, country_id, city_id, countries AS countries_visited,
                 cities AS cities_visited, reviews, thumbs_up, thumbs_down,
                 thumbs_up_given, thumbs_down_given, activity_level, last_active
         FROM user_login
@@ -251,7 +251,7 @@ async function getUserdata(client, userId) {
             'error': "Something is broken, returning 2 or more users"
         }
     }
-    jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
+    var jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
     return jsonObj;
 }
 
@@ -495,12 +495,16 @@ exports.editLambda = async (event, context) => {
         if (hasParam('diet_id', event)) {
             fieldValue = parseIntParam('diet_id', event)
             userChanges['diet_id'] = fieldValue;
+            throw {
+                'statusCode': 500,
+                'error': "Changing diet should be possible elsewhere too"
+            }
         }
         if (hasParam('new_diet', event)) {
             fieldValue = parseParam('diet', event)
             throw {
                 'statusCode': 500,
-                'error': "Adding a new diet is not done"
+                'error': "Adding own diet should be possible elsewhere too"
             }
         }
 

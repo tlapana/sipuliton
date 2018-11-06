@@ -232,6 +232,30 @@ async function getOwnDiets(client, userId) {
     return null;
 }
 
+async function getSelectedDiet(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id
+        FROM user_profile
+        WHERE user_id = $1`,
+        [userId]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No user found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more users"
+        }
+    }
+    var dietId = res.rows[0]['diet_id'];
+    return dietId;
+}
+
 async function getCities(client, countryId, languageId, defaultLanguageId) {
     if (countryId && countryId !== "") {
         const res = await client.query(
@@ -324,7 +348,9 @@ exports.getOwnDietsLambda = async (event, context) => {
 
         const client = await getPsqlClient();
 
-        const jsonObj = await getOwnDiets(client, ownUserId);
+        var jsonObj = {};
+        jsonObj['selected_diet_id'] = await getSelectedDiet(client, ownUserId);
+        jsonObj['own_diets'] = await getOwnDiets(client, ownUserId);
 
         await client.end();
 
