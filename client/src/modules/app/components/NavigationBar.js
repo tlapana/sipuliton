@@ -7,13 +7,12 @@ import {
   Navbar,
   NavbarToggler,
   Nav,
-  NavItem,
   NavLink,
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
 /* Styles and icons */
-import styles from '../../../styles/navigationbar.css';
+import '../../../styles/navigationbar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
@@ -121,42 +120,9 @@ class NavigationBar extends React.Component {
   }
 
   render() {
-      /* Navigation bar inline styles. */
-      const navBarStyle = {
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'inlineblock',
-        'width':'100%',
-        'alignItems':'left',
-        'position':'fixed',
-        'bottom':'0'
-      }
-
-      const iconStyles = {
-        'color':'black',
-        'width':'50px',
-        'height':'50px'
-      }
-
-      const menuItemsBox = {
-        'margin':'25px 0 0 0'
-      }
-
       /* Menu appearance styles. */
+      
       const duration = 200;
-      const defaultStyle = {
-        transition: `opacity ${duration}ms ease-in-out`,
-        opacity: 0,
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'block',
-        'width':'25%',
-        'left':'-500px',
-        'height':'100%',
-        'position': 'fixed',
-        'top':'0px',
-      }
-
       const transitionStyles = {
         entering: { opacity: 0, 'left':'-500px' },
         entered:  { opacity: 1, 'left':'0px' },
@@ -172,11 +138,11 @@ class NavigationBar extends React.Component {
             timeout={duration}
             >
             {(state) => (
-              <Nav style={{
-                ...defaultStyle,
+              <Nav className="side-menu" style={{
+                //...defaultStyle,
                 ...transitionStyles[state]
               }} onClick={this.mainMenu}>
-                <div className="menuItems" style={menuItemsBox}>
+                <div className="menu-items">
                   <MainMenu_ListItem path="/" text="Pääsivu" />
                   <MainMenu_ListItem path="/map" text="Kartta" />
                   <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
@@ -193,15 +159,15 @@ class NavigationBar extends React.Component {
           </Transition>
 
           </div>
-          <Navbar id="navBar" style={navBarStyle}>
+          <Navbar id="navBar" className="fixed-bottom bottom-bar">
             <NavbarToggler onClick={this.mainMenu}>
-              <FontAwesomeIcon className="icon" style={iconStyles} icon="bars"/>
+              <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
             </NavbarToggler>
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
             <NavLink tag={Link} to="/">
-              <FontAwesomeIcon className="icon" style={iconStyles} icon="home" onClick={this.home}/>
+              <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
             </NavLink>
           </Navbar>
         </div>

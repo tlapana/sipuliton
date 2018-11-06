@@ -1,6 +1,7 @@
-#container{
-  margin-left: 0;
-  margin-right: 0;
-  padding-right: 0px;
-  padding-left: 0px;
+.main-content {
+  padding-bottom: 6em;
+}
+
+.theme-1 .bottom-bar.navbar {
+  background-color: #99ff99;
 }

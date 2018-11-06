@@ -1,19 +1,24 @@
-.navBar = {
-  backgroundColor:#99ff99;
+.theme-1 .bottom-bar.navbar {
   color: white;
-  display: inlineblock;
-  width:100%;
-  alignItems:left;
-  position:fixed;
-  bottom:0;
 }
 
-.icon = {
-  color:black;
-  width:50px;
-  height:50px;
+.bottom-bar.navbar .icon {
+  color: black;
 }
 
-.menuItemsBox = {
-  margin:25px 0 0 0;
+.menu-items {
+  margin: 0 auto;
+}
+
+.side-menu {
+  transition: opacity 200 ms ease-in-out;
+  opacity: 0;
+  background-color: #99ff99;
+  color: white;
+  display: block;
+  width: 20em;
+  left: -500px;
+  height: 100%;
+  position: fixed;
+  top: 0px;
 }
