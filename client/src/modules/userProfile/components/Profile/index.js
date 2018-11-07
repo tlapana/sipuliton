@@ -19,7 +19,7 @@ class Profile extends React.Component {
         		}
         	}
       
-
+  
         handleClick()  {
        
           this.setState({mode:!this.state.mode})
