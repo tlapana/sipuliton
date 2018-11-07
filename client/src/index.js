@@ -12,7 +12,7 @@ import './fontawesome';  // this is our font awesome library
 
 
 import config from './config';
-
+   
 
 Amplify.configure({
   Auth: {
