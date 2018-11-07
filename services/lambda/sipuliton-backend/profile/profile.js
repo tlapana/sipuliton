@@ -38,6 +38,14 @@ let response;
 
 // shared functions
 
+async function getOwnUserId(event) {
+    const AWS = require('aws-sdk');
+    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
+    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
+    //console.log("user sub:" + userSub);
+    return 0;
+}
+
 async function getPsqlClient() {
     var pg = require("pg");
     //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
@@ -83,7 +91,7 @@ function packResponse(jsonObj) {
         'headers': {
             'Access-Control-Allow-Origin': '*'
         },
-        'body': JSON.stringify({ jsonObj })
+        'body': JSON.stringify(jsonObj)
     };
     return response;
 }
@@ -325,7 +333,6 @@ async function doUserChanges(client, ownUserId, userChanges) {
     var values = [ownUserId];
     var columns = '';
     var arrayIndex = 2;
-    console.log(userChanges['display_name'])
     for (var key in userChanges) {
         // check if the property/key is defined in the object itself, not in parent
         if (userChanges.hasOwnProperty(key)) {
@@ -337,9 +344,7 @@ async function doUserChanges(client, ownUserId, userChanges) {
             arrayIndex++;
         }
     }
-    console.log('UPDATE user_profile SET ' + columns + ' WHERE user_id = $1');
-    console.log(values);
-    //await client.query('UPDATE user_profile SET ' + columns + ' WHERE user_id = $1', values);
+    await client.query('UPDATE user_profile SET ' + columns + ' WHERE user_id = $1', values);
     return
 }
 
@@ -350,7 +355,7 @@ exports.profileLambda = async (event, context) => {
         const userId = !tempId ? 0 : tempId
 
         //TODO: get own user id using cognito
-        const ownUserId = userId;
+        const ownUserId = await getOwnUserId(event);
 
         //TODO: possibly query language id if not saved as id in cookies
         tempId = parseIntParam("language", event);
@@ -374,7 +379,7 @@ exports.profileLambda = async (event, context) => {
 exports.editLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
-        const ownUserId = 0;
+        const ownUserId = await getOwnUserId(event);
         if (ownUserId === null) {
             throw {
                 'statusCode': 400,
@@ -516,13 +521,10 @@ exports.editLambda = async (event, context) => {
         if (!userChanges.isEmpty()) {
             await doUserChanges(client, ownUserId, userChanges);
         }
-
+        
         await client.end();
 
-        throw {
-            'statusCode': 500,
-            'error': "Work in progress"
-        }
+        response = packResponse({ 'message': "Operation completed successfully" });
 
     } catch (err) {
         response = errorHandler(err);

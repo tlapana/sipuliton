@@ -84,7 +84,7 @@ function packResponse(jsonObj) {
         'headers': {
             'Access-Control-Allow-Origin': '*'
         },
-        'body': JSON.stringify({ jsonObj })
+        'body': JSON.stringify(jsonObj)
     };
     return response;
 }
