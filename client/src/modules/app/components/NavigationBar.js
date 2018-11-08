@@ -17,8 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
-import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
+import { MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index'
 
 
 
@@ -34,8 +33,10 @@ class NavigationBar extends React.Component {
       restaurantOwner:false,
       moderator: false
     };
+
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
+    this.checkAccessRights = this.checkAccessRights.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
@@ -56,7 +57,7 @@ class NavigationBar extends React.Component {
   }
 
   /* This function checks logged in users rights. */
-  checkAccessRights(){
+  checkAccessRights() {
     /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
@@ -136,24 +137,24 @@ class NavigationBar extends React.Component {
           <div>
           <Transition in={this.state.visible} out={!this.state.visible}
             timeout={duration}
-            >
+          >
             {(state) => (
-              <Nav className="side-menu" style={{
-                //...defaultStyle,
-                ...transitionStyles[state]
-              }} onClick={this.mainMenu}>
-                <div className="menu-items">
-                  <MainMenu_ListItem path="/" text="Pääsivu" />
-                  <MainMenu_ListItem path="/map" text="Kartta" />
-                  <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
-                  {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
-                  {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                  {this.state.moderator && <MainMenu_ListItem path="/moderating" text="Moderointi" />}
-                  {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
-                  {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
-                  {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
-                  {this.state.userLogged && <MainMenu_LogoutButton/>}
-                </div>
+              <Nav 
+                vertical
+                className="side-menu" 
+                onClick={this.mainMenu} 
+                style={{...transitionStyles[state]}}
+              >
+                <MainMenu_ListItem path="/" text="Pääsivu" />
+                <MainMenu_ListItem path="/map" text="Kartta" />
+                <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
+                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
+                {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
+                {this.state.moderator && <MainMenu_ListItem path="/moderating" text="Moderointi" />}
+                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
+                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
+                {this.state.userLogged && <MainMenu_LogoutButton/>}
               </Nav>
             )}
           </Transition>

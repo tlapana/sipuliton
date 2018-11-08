@@ -7,7 +7,7 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import styles from '../../../styles/login.css';
+import '../../../styles/login.css';
 
 import { Auth } from "aws-amplify";
 
@@ -108,18 +108,22 @@ export default class SocialLogin extends React.Component {
         <GoogleLogin
           clientId={config.google.CLIENT_ID}
           responseType="id_token"
+          className="google-login-btn"
           onSuccess={this.responseGoogle}
           onFailure={this.responseFailure}
         >
-          Google+
+          <FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>
+          <span>Google kirjautuminen</span>
         </GoogleLogin>
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
+          cssClass="facebook-login-btn"
+          icon={<FontAwesomeIcon icon={["fab", "facebook-f"]} />}
+          textButton="Facebook kirjautuminen"
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
         >
-          Facebook
         </FacebookLogin>
       </div>
     );

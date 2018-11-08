@@ -2,6 +2,22 @@
   padding-bottom: 6em;
 }
 
-.theme-1 .bottom-bar.navbar {
-  background-color: #99ff99;
+.nav-link.inline-link {
+  display: inline;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+
+.theme-1 .bottom-bar.navbar, 
+.theme-1 .side-menu {
+  background-color: #84da84;
+  color: white;
+}
+
+.theme-2 .bottom-bar.navbar, 
+.theme-2 .side-menu {
+  background-color: #e15527;
+  color: white;
 }

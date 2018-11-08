@@ -1,24 +1,33 @@
-.theme-1 .bottom-bar.navbar {
-  color: white;
-}
-
-.bottom-bar.navbar .icon {
-  color: black;
-}
-
-.menu-items {
-  margin: 0 auto;
-}
-
 .side-menu {
   transition: opacity 200 ms ease-in-out;
   opacity: 0;
-  background-color: #99ff99;
-  color: white;
   display: block;
   width: 20em;
   left: -500px;
   height: 100%;
   position: fixed;
   top: 0px;
+}
+
+.side-menu .menu-item .nav-link {
+  display: block;
+  color: inherit;
+  width: 100%;
+  text-align: center;
+}
+
+.side-menu .menu-item {
+  text-align: center;
+  border-style: none none solid none;
+  border-color: inherit;
+}
+
+
+.side-menu .menu-item .nav-link:hover {
+  color: #2b2b2b;
+  background-color: white;
+}
+
+.bottom-bar.navbar .icon {
+  color: black;
 }
