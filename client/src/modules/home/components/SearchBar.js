@@ -10,6 +10,9 @@ import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
 
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
 class SearchBar extends React.Component {
 
   constructor(props, context) {
@@ -22,7 +25,7 @@ class SearchBar extends React.Component {
     this.getOptions = this.getOptions.bind(this);
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
-    
+
     this.state = {
       isLoading: true,
       loadedDefaults: false,
@@ -34,16 +37,16 @@ class SearchBar extends React.Component {
       defaultValues : []
     };
   }
-  
+
   componentDidMount() {
-    
-    this.setState({ 
+
+    this.setState({
       options : this.getOptions(),
       defaultValue : this.getDefaultValues()
     });
-    
+
   }
-  
+
   //Toggles popover
   togglePopover() {
     this.setState({
@@ -51,29 +54,29 @@ class SearchBar extends React.Component {
     });
     console.log("Toggling popover, new state is: " + this.state.popoverOpen);
   }
-  
+
   //Actual search event. It also sends signal to the parent by using props.SearchDone, which signals it has done a search and this.props.searchResults which has the results
   doSearch  = event =>{
-    
+
       event.preventDefault();
-      
+
       console.log("Doing search")
       //First, split off various keywords. Separator is ','
       var searchTerms = this.state.keywords.split(',');
-      //Remove whitespaces      
+      //Remove whitespaces
       for( var i = 0; i < searchTerms.length; i++)
       {
         searchTerms[i] = searchTerms[i].trim();
       }
-      
-      
-      
+
+
+
       //Console log test to se that we got what we wanted
       console.log("Search terms: ");
       console.log(searchTerms);
       console.log("Filters: ");
       console.log(this.state.filters);
-      
+
       const results = [
         { name: 'Search Result 1', rating_overall: 3,   street_address : "Katu 1" },
         { name: 'Search Result 2', rating_overall: 4,   street_address : "Katu 2" },
@@ -82,29 +85,29 @@ class SearchBar extends React.Component {
         { name: 'Search Result 5', rating_overall: 2.2, street_address : "Katu 5" },
         { name: 'Search Result 6', rating_overall: 3.3, street_address : "Katu 6" },
       ];
-      
+
       console.log("Sending results");
       console.log(results);
-      
+
       //Send data via props
       this.props.onSearchDone( results );
-      
+
   }
-  
-  
+
+
   //Get the default selections. Mainly checks if user is logged in if is, then get the data
   getDefaultValues() {
-    
+
     const defaultValues = [];
-    this.setState({ 
+    this.setState({
       loadedDefaults : true
     });
     return defaultValues;
   }
-  
-  //This gets the options for the selection. 
+
+  //This gets the options for the selection.
   getOptions() {
-    
+
     const options = [
       { value: 'onions', label: 'Allergia/Sipuli' },
       { value: 'tomato', label: 'Allergia/Tomaatti' },
@@ -114,16 +117,16 @@ class SearchBar extends React.Component {
     ];
     console.log("Getting the options: ");
     console.log(options);
-    
+
     this.state.loadedOptions = true;
-    
-    this.setState({ 
+
+    this.setState({
       loadedOptions : true
     });
-    
+
     return options;
   }
-  
+
   renderFilterButton()
   {
     if( this.state.loadedDefaults && this.state.loadedOptions) {
@@ -132,15 +135,15 @@ class SearchBar extends React.Component {
           <FontAwesomeIcon icon="search" />
         </button>
       );
-    }    
+    }
     else {
       return (
         "Ladataan tietoja..."
       );
     }
-    
+
   }
-  
+
   //Used for the keyword change
   handleKeywordChange(event) {
     //console.log("Changing selected keywords");
@@ -148,42 +151,58 @@ class SearchBar extends React.Component {
     //console.log(event.target.value);
     //console.log(this.state.keywords);
   }
-  
+
   //Used to acknowledge change and store new values
   handleFilterChange(selectedOptions) {
-    //console.log("Changing selected filters");   
-    this.setState({ 
+    //console.log("Changing selected filters");
+    this.setState({
       filters : selectedOptions
     });
     //console.log(selectedOptions);
-    //console.log(this.state.filters);   
+    //console.log(this.state.filters);
   }
-  
+
   render() {
-    
-    
+
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        search:"Search...",
+        usecommaasaseparator:"Use comma ( , ) as a separator.",
+        filter:"Filter",
+        includeinsearch:"Include in search:",
+      },
+      fi: {
+        search:"Hae...",
+        usecommaasaseparator:"Käytä pilkkua ( , ) erottimena.",
+        filter:"Rajaa",
+        includeinsearch:"Sisällytä hakuun:"
+      }
+    });
+    strings.setLanguage(this.props.language);
+
     return (
       <div className="searchDiv">
         <form id="search-form" className="search" onSubmit={this.login}>
-        
-          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder="Hae..." />
+
+          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} />
            <button type="submit" className="searchBtn" onClick={this.doSearch}>
               <FontAwesomeIcon icon="search" />
           </button>
-          
-          <span className="instructions" id="instructions-symbol"> ??? </span>  
+
+          <span className="instructions" id="instructions-symbol"> ??? </span>
            <UncontrolledTooltip placement="right" target="instructions-symbol">
-            Käytä pilkkua ( , ) erottimena
+            {strings.usecommaasaseparator}
           </UncontrolledTooltip>
-          
+
           <br />
-          
-          <button className="filterBtn" id="filter_popover" onClick={this.togglePopover} type="button" >Rajaa</button>     
-          
+
+          <button className="filterBtn" id="filter_popover" onClick={this.togglePopover} type="button" >{strings.filter}</button>
+
           <Popover placement="bottom" isOpen={this.state.popoverOpen} target="filter_popover" toggle={this.togglePopover}>
             <PopoverHeader></PopoverHeader>
             <PopoverBody>
-              Sisällytä hakuun: <br />
+              {strings.includeinsearch} <br />
               <Select
                 defaultValue={ this.state.defaultValues }
                 isMulti
@@ -195,7 +214,7 @@ class SearchBar extends React.Component {
               />
             </PopoverBody>
           </Popover>
-          
+
         </form>
       </div>
     );

@@ -9,6 +9,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
@@ -21,6 +22,8 @@ import { Transition } from 'react-transition-group';
 import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
 import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
 
+/* Localization */
+import LocalizedStrings from 'react-localization';
 
 
 class NavigationBar extends React.Component {
@@ -164,6 +167,52 @@ class NavigationBar extends React.Component {
         exited: { opacity: 0, 'left':'-500px' }
       };
 
+      /* Localization */
+      let strings = new LocalizedStrings({
+        en:{
+          mainmenu:"Mainpage",
+          map:"Map",
+          restaurantList:"Restaurant list",
+          restaurantManagement:"Restaurant management",
+          admin:"Admin",
+          moderation:"Moderation",
+          profile:"Profile",
+          login:"Login",
+          register:"Register",
+          logout: "Logout"
+        },
+        fi: {
+          mainmenu:"Pääsivu",
+          map:"Kartta",
+          restaurantList:"Ravintola lista",
+          restaurantManagement:"Ravintola hallinta",
+          admin:"Admin",
+          moderation:"Moderointi",
+          profile:"Profiili",
+          login:"Kirjaudu",
+          register:"Rekisteröidy",
+          logout:"Kirjaudu ulos"
+        }
+      });
+
+      if(this.props.language == "fi"){
+        strings.setLanguage('fi');
+      }
+      if(this.props.language == "en"){
+        strings.setLanguage('en');
+      }
+
+      /* URL Paths to pages*/
+      const pathToMenu = "/"+this.props.language
+      const pathToMap = "/map/"+this.props.language
+      const pathToRestaurantList = "/restaurant_list/"+this.props.language
+      const pathToRestaurantManagement = "/restaurant_management/"+this.props.language
+      const pathToAdmin = "/admin/"+this.props.language
+      const pathToModerating = "/moderating/"+this.props.language
+      const pathToProfile = "/profile/"+this.props.language
+      const pathToLogin = "/login/"+this.props.language
+      const pathToRegister = "/register/"+this.props.language
+
       return (
 
         <div>
@@ -177,16 +226,20 @@ class NavigationBar extends React.Component {
                 ...transitionStyles[state]
               }} onClick={this.mainMenu}>
                 <div className="menuItems" style={menuItemsBox}>
-                  <MainMenu_ListItem path="/" text="Pääsivu" />
-                  <MainMenu_ListItem path="/map" text="Kartta" />
-                  <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
-                  {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
-                  {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                  {this.state.moderator && <MainMenu_ListItem path="/moderating" text="Moderointi" />}
-                  {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
-                  {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
-                  {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
-                  {this.state.userLogged && <MainMenu_LogoutButton/>}
+                  <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
+                  <MainMenu_ListItem path={pathToMap} text={strings.map} />
+                  <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                  {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                  {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
+                  {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
+                  {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
+                  {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
+                  {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
+                  {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                </div>
+                <div>
+                  <Button onClick={this.props.changeToFinland}>Finland</Button>
+                  <Button onClick={this.props.changeToEngland}>England</Button>
                 </div>
               </Nav>
             )}
@@ -200,7 +253,7 @@ class NavigationBar extends React.Component {
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
-            <NavLink tag={Link} to="/">
+            <NavLink tag={Link} to={pathToMenu}>
               <FontAwesomeIcon className="icon" style={iconStyles} icon="home" onClick={this.home}/>
             </NavLink>
           </Navbar>
