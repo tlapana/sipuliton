@@ -13,14 +13,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 export default class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
-		this.restaurant.name = "Test";
-		this.restaurant.pictures = ["", "", ""];
-		this.restaurant.priceLevel = 2;
-		this.restaurant.userScore = 3;
-		this.restaurant.allergyTags = ["Sipuliton", "Munaton"];
-		this.restaurant.openingHours = {monFri: 08002100, sat: 09002100, sun: 09001800};
-		this.restaurant.description = "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.";
-		
+		this.state = {
+			this.restaurant.name : "Test";
+			this.restaurant.pictures : ["", "", ""];
+			this.restaurant.priceLevel : 2;
+			this.restaurant.userScore : 3;
+			this.restaurant.allergyTags : ["Sipuliton", "Munaton"];
+			this.restaurant.openingHours : {monFri: 08002100, sat: 09002100, sun: 09001800};
+			this.restaurant.description : "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.";
+			this.redirect : false;
+		};
+		this.loadRestaurant = this.loadRestaurant.bind(this);
+		this.looper = this.looper.bind(this);
 	}
 	loadRestaurant() {
 		
@@ -40,6 +44,17 @@ export default class Restaurant extends React.Component {
 		}
 		return tagString;
 	}
+	setRedirect = () => {
+		this.setState({
+			redirect: true
+		})
+	}
+
+	renderRedirect = () => {
+		if (this.state.redirect) {
+			return <Redirect to='/writeReview' />
+		}
+	}
 	render() {
 		<div id="restaurant">
 		<h2>{this.restaurant.name()}</h2><br>
@@ -49,7 +64,8 @@ export default class Restaurant extends React.Component {
 		Allergiatunnisteet:<br>
 		{looper(this.restaurant.allergyTags())}</div><br>
 		<div id="restaurantDesc">{this.restaurant.description()}</div><br>
-		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2">Lisää arvostelu></Input>
+		{this.renderRedirect()}
+		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.setRedirect}>Lisää arvostelu></Input>
 		</div>
 	}
 }
