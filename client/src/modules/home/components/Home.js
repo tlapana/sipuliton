@@ -9,6 +9,7 @@ import styles from '../../../styles/landingpage.css';
 import SearchBar from './SearchBar.js'
 import Events from './Events.js'
 import SearchResults from './SearchResults.js'
+import { Redirect } from 'react-router-dom';
 
 class Home extends React.Component {
 
@@ -47,6 +48,53 @@ class Home extends React.Component {
   }
 
   render() {
+
+    /*
+    Redirects user back to correct place with default language,
+    when language parameter is missing or deleted.
+    */
+
+    if(this.props.match.params.language === "admin"){
+      return(
+        <Redirect to={"/fi/admin"}/>
+      )
+    }
+    if(this.props.match.params.language === "restaurant_management"){
+      return(
+        <Redirect to={"/fi/restaurant_management"}/>
+      )
+    }
+    if(this.props.match.params.language === "restaurant_list"){
+      return(
+        <Redirect to={"/fi/restaurant_list"}/>
+      )
+    }
+    if(this.props.match.params.language === "map"){
+      return(
+        <Redirect to={"/fi/map"}/>
+      )
+    }
+    if(this.props.match.params.language === "login"){
+      return(
+        <Redirect to={"/fi/login"}/>
+      )
+    }
+    if(this.props.match.params.language === "register"){
+      return(
+        <Redirect to={"/fi/register"}/>
+      )
+    }
+    if(this.props.match.params.language === "profile"){
+      return(
+        <Redirect to={"/fi/profile"}/>
+      )
+    }
+    if(this.props.match.params.language === "moderating"){
+      return(
+        <Redirect to={"/fi/moderating"}/>
+      )
+    }
+    
     if(!this.state.searchDone)
     {
       return (
