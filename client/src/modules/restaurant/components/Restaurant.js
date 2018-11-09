@@ -22,7 +22,24 @@ export default class Restaurant extends React.Component {
 		this.restaurant.description = "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.";
 		
 	}
-	
+	loadRestaurant() {
+		
+	}
+	looper(tags) {
+		var tagString = "";
+		for (var i = 0; i < tags.length; i++)
+		{
+			if (i > 0)
+			{
+				tagString = tagString + ", " + tags[i];
+			}
+			else
+			{
+				tagString = tagString + tags[i];
+			}
+		}
+		return tagString;
+	}
 	render() {
 		<div id="restaurant">
 		<h2>{this.restaurant.name()}</h2><br>
@@ -30,7 +47,7 @@ export default class Restaurant extends React.Component {
 		<div id="restaurantStats">Hintataso: {this.restaurant.priceLevel()}<br>
 		Käyttäjien arvio: {this.restaurant.userScore()}<br>
 		Allergiatunnisteet:<br>
-		{this.restaurant.allergyTags()}</div><br>
+		{looper(this.restaurant.allergyTags())}</div><br>
 		<div id="restaurantDesc">{this.restaurant.description()}</div><br>
 		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2">Lisää arvostelu></Input>
 		</div>
