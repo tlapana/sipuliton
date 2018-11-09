@@ -179,7 +179,13 @@ class SearchBar extends React.Component {
         includeinsearch:"Sisällytä hakuun:"
       }
     });
-    strings.setLanguage(this.props.language);
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
+
 
     return (
       <div className="searchDiv">

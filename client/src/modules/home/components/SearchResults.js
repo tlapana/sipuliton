@@ -59,7 +59,12 @@ constructor(props) {
         restaurants:" ravintolaa: ",
       }
     });
-    strings.setLanguage(this.props.language);
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
 
     const restaurants = this.state.restaurants;
 

@@ -238,14 +238,14 @@ class NavigationBar extends React.Component {
 
       /* URL Paths to pages*/
       const pathToMenu = "/"+this.state.language
-      const pathToMap = "/map/"+this.state.language
-      const pathToRestaurantList = "/restaurant_list/"+this.state.language
-      const pathToRestaurantManagement = "/restaurant_management/"+this.state.language
-      const pathToAdmin = "/admin/"+this.state.language
-      const pathToModerating = "/moderating/"+this.state.language
-      const pathToProfile = "/profile/"+this.state.language
-      const pathToLogin = "/login/"+this.state.language
-      const pathToRegister = "/register/"+this.state.language
+      const pathToMap = "/"+this.state.language+"/map"
+      const pathToRestaurantList = "/"+this.state.language+"/restaurant_list"
+      const pathToRestaurantManagement = "/"+this.state.language+"/restaurant_management"
+      const pathToAdmin = "/"+this.state.language+"/admin"
+      const pathToModerating = "/"+this.state.language+"/moderating"
+      const pathToProfile = "/"+this.state.language+"/profile"
+      const pathToLogin = "/"+this.state.language+"/login"
+      const pathToRegister = "/"+this.state.language+"/register"
 
       /* Changed correct language to page after clicking change language. */
       if(this.state.languageChanged){
