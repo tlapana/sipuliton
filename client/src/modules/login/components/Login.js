@@ -37,6 +37,7 @@ class Login extends React.Component {
       }
     });
     strings.setLanguage(this.props.match.params.language);
+    console.log(this.props.location);
 
     /* URL paths */
     const pathToRegister = '/register/'+this.props.match.params.language

@@ -2,7 +2,7 @@
 mainmenu which opens from navigation bar.*/
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
   Navbar,
   NavbarToggler,
@@ -36,10 +36,15 @@ class NavigationBar extends React.Component {
       userLogged: false,
       admin: false,
       restaurantOwner:false,
-      moderator: false
+      moderator: false,
+      language:'fi',
+      redirectUrl:"",
+      languageChanged:false
     };
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
+    this.ChangeToEngland = this.ChangeToEngland.bind(this);
+    this.ChangeToFinland = this.ChangeToFinland.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
@@ -123,6 +128,28 @@ class NavigationBar extends React.Component {
 
   }
 
+  ChangeToFinland(){
+    var url = window.location.href
+    url = url.replace(this.state.language,'fi');
+    var index = url.search('://');
+    url = url.slice(index+3);
+    index = url.search('/');
+    url = url.slice(index);
+    console.log(url);
+    this.setState({language:'fi',redirectUrl:url,languageChanged:true});
+
+  }
+  ChangeToEngland(){
+    var url = window.location.href
+    url = url.replace(this.state.language,'en');
+    var index = url.search('://');
+    url = url.slice(index+3);
+    index = url.search('/');
+    url = url.slice(index);
+    console.log(url);
+    this.setState({language:'en',redirectUrl:url,languageChanged:true});
+  }
+
   render() {
       /* Navigation bar inline styles. */
       const navBarStyle = {
@@ -195,23 +222,31 @@ class NavigationBar extends React.Component {
         }
       });
 
-      if(this.props.language == "fi"){
+      if(this.state.language == "fi"){
         strings.setLanguage('fi');
       }
-      if(this.props.language == "en"){
+      if(this.state.language == "en"){
         strings.setLanguage('en');
       }
 
       /* URL Paths to pages*/
-      const pathToMenu = "/"+this.props.language
-      const pathToMap = "/map/"+this.props.language
-      const pathToRestaurantList = "/restaurant_list/"+this.props.language
-      const pathToRestaurantManagement = "/restaurant_management/"+this.props.language
-      const pathToAdmin = "/admin/"+this.props.language
-      const pathToModerating = "/moderating/"+this.props.language
-      const pathToProfile = "/profile/"+this.props.language
-      const pathToLogin = "/login/"+this.props.language
-      const pathToRegister = "/register/"+this.props.language
+      const pathToMenu = "/"+this.state.language
+      const pathToMap = "/map/"+this.state.language
+      const pathToRestaurantList = "/restaurant_list/"+this.state.language
+      const pathToRestaurantManagement = "/restaurant_management/"+this.state.language
+      const pathToAdmin = "/admin/"+this.state.language
+      const pathToModerating = "/moderating/"+this.state.language
+      const pathToProfile = "/profile/"+this.state.language
+      const pathToLogin = "/login/"+this.state.language
+      const pathToRegister = "/register/"+this.state.language
+
+      /* Changed correct language to page after clicking change language. */
+      if(this.state.languageChanged){
+        this.setState({languageChanged:false});
+        return(
+          <Redirect to={this.state.redirectUrl}/>
+        )
+      }
 
       return (
 
@@ -238,8 +273,8 @@ class NavigationBar extends React.Component {
                   {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
                 </div>
                 <div>
-                  <Button onClick={this.props.changeToFinland}>Finland</Button>
-                  <Button onClick={this.props.changeToEngland}>England</Button>
+                  <Button onClick={this.ChangeToFinland}>Finland</Button>
+                  <Button onClick={this.ChangeToEngland}>England</Button>
                 </div>
               </Nav>
             )}

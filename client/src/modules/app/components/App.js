@@ -12,39 +12,25 @@ import forgotPassword from '../../forgotpassword';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar';
 
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 
 import styles from '../../../styles/app.css';
-
 
 
 class App extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
-    this.state = {language:'fi'};
-    this.ChangeToEngland = this.ChangeToEngland.bind(this);
-    this.ChangeToFinland = this.ChangeToFinland.bind(this);
-  }
-
-  ChangeToFinland(){
-    this.setState({language:'fi'});
-    console.log(this.props);
-  }
-  ChangeToEngland(){
-    this.setState({language:'en'});
-    console.log(this.props);
   }
 
   render() {
-    const { Home } = withRouter(home);
+    const { Home } = home;
     const { Login } = login;
     const { Register } = register;
     const { ForgotPassword} = forgotPassword;
     return(
       <Provider store={this.props.store}>
         <Router>
-
           <Container id="container" >
             <div className="app" >
               <div className="content">
@@ -57,14 +43,9 @@ class App extends React.Component {
                 </Switch>
               </div>
               <Footer/>
-
             </div>
-            <NavigationBar  header_text="Sipuliton.fi"
-              changeToFinland={this.ChangeToFinland}
-              changeToEngland={this.ChangeToEngland}
-              language={this.state.language}/>
+            <NavigationBar  header_text="Sipuliton.fi"/>
           </Container>
-
         </Router>
       </Provider>
     )
