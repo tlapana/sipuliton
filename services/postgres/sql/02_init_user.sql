@@ -5,7 +5,7 @@ CREATE TABLE user_login(
     user_id bigint PRIMARY KEY,
     cognito_sub text,
     username varchar(30),
-    email varchar(50) NOT NULL UNIQUE
+    email varchar(50) NULL UNIQUE
 );
 
 --user profile

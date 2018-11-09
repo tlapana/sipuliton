@@ -40,7 +40,7 @@ CREATE TABLE thumbs(
 
 --log review acception/rejection
 
-CREATE TABLE accept_log(
+CREATE TABLE review_accept_log(
     restaurant_id bigint,
     poster_id bigint,
     review_posted timestamp,
@@ -50,7 +50,7 @@ CREATE TABLE accept_log(
     FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
 );
 
-CREATE TABLE reject_log(
+CREATE TABLE review_reject_log(
     restaurant_id bigint,
     poster_id bigint,
     review_posted timestamp,

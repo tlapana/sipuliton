@@ -102,6 +102,7 @@ CREATE TABLE restaurant_ownership_accepted(
     request_id bigint PRIMARY KEY,
     restaurant_id bigint REFERENCES restaurant,
     owner_id bigint REFERENCES user_profile,
+    accepter_id bigint NOT NULL REFERENCES user_profile,
     accepted timestamp NOT NULL
 );
 
@@ -110,5 +111,6 @@ CREATE TABLE restaurant_ownership_rejected(
     restaurant_id bigint REFERENCES restaurant,
     owner_id bigint REFERENCES user_profile,
     rejected timestamp NOT NULL,
+    rejecter_id bigint NOT NULL REFERENCES user_profile,
     reason text NOT NULL
 );

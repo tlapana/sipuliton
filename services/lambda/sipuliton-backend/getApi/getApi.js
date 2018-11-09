@@ -218,44 +218,6 @@ async function getPresetDiets(client, languageId, defaultLanguageId) {
     return null;
 }
 
-async function getOwnDiets(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
-        WHERE user_id = $1
-        GROUP BY diet_id, diet_name.global_diet_id, name`,
-        [userId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getSelectedDiet(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id
-        FROM user_profile
-        WHERE user_id = $1`,
-        [userId]);
-    if (res.rowCount == 0) {
-        client.end();
-        throw {
-            'statusCode': 400,
-            'error': "No user found"
-        }
-    }
-    if (res.rowCount >= 2) {
-        client.end();
-        throw {
-            'statusCode': 500,
-            'error': "Something is broken, returning 2 or more users"
-        }
-    }
-    var dietId = res.rows[0]['diet_id'];
-    return dietId;
-}
-
 async function getCities(client, countryId, languageId, defaultLanguageId) {
     if (countryId && countryId !== "") {
         const res = await client.query(
@@ -293,6 +255,7 @@ async function getCountries(client, languageId, defaultLanguageId) {
     return null;
 }
 
+
 exports.getFoodGroupsLambda = async (event, context) => {
     try {
         //TODO: possibly query language id if not saved as id in cookies
@@ -316,6 +279,7 @@ exports.getFoodGroupsLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
 
 exports.getPresetDietsLambda = async (event, context) => {
     try {
@@ -341,28 +305,6 @@ exports.getPresetDietsLambda = async (event, context) => {
     return response;
 };
 
-exports.getOwnDietsLambda = async (event, context) => {
-    try {
-        //TODO: get own user id using cognito
-        const ownUserId = 0;
-
-        const client = await getPsqlClient();
-
-        var jsonObj = {};
-        jsonObj['selected_diet_id'] = await getSelectedDiet(client, ownUserId);
-        jsonObj['own_diets'] = await getOwnDiets(client, ownUserId);
-
-        await client.end();
-
-        response = packResponse(jsonObj);
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
 
 exports.getCountriesLambda = async (event, context) => {
     try {
@@ -387,6 +329,7 @@ exports.getCountriesLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
 
 exports.getCitiesLambda = async (event, context) => {
     try {
@@ -415,3 +358,4 @@ exports.getCitiesLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+

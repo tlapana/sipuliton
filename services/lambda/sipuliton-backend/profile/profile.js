@@ -277,35 +277,40 @@ async function fetchUser(userId, ownUserId, languageId) {
         }
     }
 
+    var jsonObj = {};
+
     const client = await getPsqlClient();
 
-    jsonObj = await getUserdata(client, userId);
+    try {
+        jsonObj = await getUserdata(client, userId);
     
-    jsonObj['own_profile'] = false;
-    if (ownUserId !== null) {
-        if (Number.isInteger(ownUserId)) {
-            jsonObj['own_profile'] = (ownUserId === userId);
-        }
-        else {
-            throw {
-                'statusCode': 400,
-                'error': "own user id invalid"
+        jsonObj['own_profile'] = false;
+        if (ownUserId !== null) {
+            if (Number.isInteger(ownUserId)) {
+                jsonObj['own_profile'] = (ownUserId === userId);
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "own user id invalid"
+                }
             }
         }
+
+        if (!jsonObj['own_profile']) {
+            delete jsonObj['username'];
+            delete jsonObj['email'];
+        }
+
+        const defaultLanguageId = await getLanguage(client, 'EN');
+
+        jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, defaultLanguageId);
+
+        jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, defaultLanguageId);
+
+    } finally {
+        await client.end();
     }
-
-    if (!jsonObj['own_profile']) {
-        delete jsonObj['username'];
-        delete jsonObj['email'];
-    }
-
-    const defaultLanguageId = await getLanguage(client, 'EN');
-
-    jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, defaultLanguageId);
-
-    jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, defaultLanguageId);
-
-    await client.end();
 
     return jsonObj;
 }
@@ -318,13 +323,69 @@ async function doCognitoChanges(changes) {
     return
 }
 
+async function createUser(cognitoSub, username, email, languageId) {
+    const client = await getPsqlClient();
+
+    try {
+        await client.query('BEGIN');
+        try {
+            const res = await client.query(
+                `INSERT INTO user_login (user_id, cognito_sub, username, email)
+                VALUES ((SELECT coalesce(max(user_id),0)+1 FROM user_login), $1, $2, $3)
+                RETURNING user_id`,
+                [cognitoSub, username, email]);
+
+            const userId = res.rows[0]['user_id'];
+            await client.query(
+                `INSERT INTO user_profile (user_id, role, display_name, image_url, language_id,
+                    birth_year, birth_month, gender, description,
+                    country_id, city_id, diet_id)
+                VALUES ($1, 0, $2, NULL, $3,
+                    NULL, NULL, NULL, NULL,
+                    NULL, NULL, NULL)`,
+                [userId, username, languageId]);
+
+            await client.query(
+                `INSERT INTO user_stats (user_id, countries, cities, reviews,
+                    thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given,
+                    activity_level, last_active)
+                VALUES ($1, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, timezone('utc', now()))`,
+                [userId]);
+            await client.query('COMMIT');
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        }
+    } finally {
+        await client.end();
+    }
+    return
+}
+
 async function doLoginChanges(client, ownUserId, changes) {
     await doCognitoChanges(changes);
     try {
-        //TODO: do database changes here
+        var values = [ownUserId];
+        var columns = '';
+        var arrayIndex = 2;
+        for (var key in changes) {
+            // check if the property/key is defined in the object itself, not in parent
+            if (changes.hasOwnProperty(key)) {
+                if (arrayIndex > 2) {
+                    columns += ', ';
+                }
+                columns += key + ' = $' + arrayIndex.toString();
+                values.push(changes[key]);
+                arrayIndex++;
+            }
+        }
+        await client.query('UPDATE user_login SET ' + columns + ' WHERE user_id = $1', values);
     }
     catch (err) {
         //TODO: revert changes to cognito
+        throw err;
     }
     return
 }
@@ -348,6 +409,111 @@ async function doUserChanges(client, ownUserId, userChanges) {
     return
 }
 
+async function deleteDiet(userId, dietId) {
+    const client = await getPsqlClient();
+    try {
+        await client.query(
+            `DELETE FROM diet_name
+        WHERE user_id = $1 AND diet_id = $2`,
+            [userId, dietId]);
+    } finally {
+        await client.end();
+    }
+    return;
+}
+
+async function deleteUser(userId, keepReviews, permanent) {
+    const client = await getPsqlClient();
+    try {
+        await client.query('BEGIN');
+        try {
+            await client.query(
+                `UPDATE user_profile
+                SET display_name = '', image_url = NULL, birth_year = NULL, birth_month = NULL,
+                gender = NULL, description = NULL, country_id = NULL, city_id = NULL, diet_id = NULL
+                WHERE user_id = $1`,
+                [userId]);
+            if (!keepReviews) {
+                await client.query(`DELETE FROM diet_name WHERE user_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM suspicious_review WHERE user_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_reject_log WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_accept_log WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM thumbs WHERE poster_id = $1 OR thumber_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_diet WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM restaurant_ownership_request WHERE owner_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM restaurant_owners WHERE owner_id = $1`, [ownUserId]);
+                await client.query(
+                    `UPDATE user_stats
+                    SET countries = 0, cities = 0, reviews = 0, thumbs_up = 0, thumbs_down = 0,
+                    thumbs_up_given = 0, thumbs_down_given = 0, activity_level = 0, last_active = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            if (permanent) {
+                await client.query(
+                    `UPDATE user_login
+                    SET cognito_sub = NULL, username = NULL, email = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            else {
+                await client.query(
+                    `UPDATE user_login
+                    SET cognito_sub = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            await client.query('COMMIT');
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        }
+    }
+    finally {
+        client.end();
+    }
+    return;
+}
+
+async function getOwnDiets(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
+        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
+        WHERE user_id = $1
+        GROUP BY diet_id, diet_name.global_diet_id, name`,
+        [userId]);
+    if (res.rowCount > 0) {
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
+}
+
+async function getSelectedDiet(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id
+        FROM user_profile
+        WHERE user_id = $1`,
+        [userId]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No user found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more users"
+        }
+    }
+    var dietId = res.rows[0]['diet_id'];
+    return dietId;
+}
+
 exports.profileLambda = async (event, context) => {
     try {
         var tempId = parseIntParam("userId", event);
@@ -362,10 +528,7 @@ exports.profileLambda = async (event, context) => {
         const languageId = !tempId ? 0 : tempId
 
         const jsonObj = await fetchUser(userId, ownUserId, languageId);
-
-        // ret.data contains IP of request's sender
-        // var conn = "postgres://sipuliton:sipuliton@localhost/sipuliton";
-        // var client = new pg.Client(conn);
+        
         response = packResponse(jsonObj);
 
     } catch (err) {
@@ -376,7 +539,7 @@ exports.profileLambda = async (event, context) => {
     return response;
 };
 
-exports.editLambda = async (event, context) => {
+exports.editProfileLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
         const ownUserId = await getOwnUserId(event);
@@ -444,6 +607,7 @@ exports.editLambda = async (event, context) => {
             userChanges['gender'] = fieldValue;
         }
         if (hasParam('image', event)) {
+            // TODO: image adding
             throw {
                 'statusCode': 400,
                 'error': "Adding image not implemented"
@@ -515,14 +679,17 @@ exports.editLambda = async (event, context) => {
 
         const client = await getPsqlClient();
 
-        if (!cognitoChanges.isEmpty()) {
-            await doLoginChanges(client, ownUserId, cognitoChanges);
-        }
-        if (!userChanges.isEmpty()) {
-            await doUserChanges(client, ownUserId, userChanges);
+        try {
+            if (!cognitoChanges.isEmpty()) {
+                await doLoginChanges(client, ownUserId, cognitoChanges);
+            }
+            if (!userChanges.isEmpty()) {
+                await doUserChanges(client, ownUserId, userChanges);
+            }
+        } finally {
+            await client.end();
         }
         
-        await client.end();
 
         response = packResponse({ 'message': "Operation completed successfully" });
 
@@ -533,3 +700,154 @@ exports.editLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+
+exports.createUserLambda = async (event, context) => {
+    try {
+        //TODO: check that user exists in cognito
+
+        //TODO: possibly query language id if not saved as id in cookies
+        tempId = parseIntParam("language", event);
+        const languageId = !tempId ? 0 : tempId
+
+        var cognitoSub = null;
+        var username = null;
+        var email = null;
+        var fieldValue;
+
+        if (hasParam('username', event)) {
+            fieldValue = parseParam('username', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                username = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "username can't be empty"
+                }
+            }
+        }
+        if (hasParam('cognito_sub', event)) {
+            fieldValue = parseParam('cognito_sub', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                cognitoSub = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "cognito_sub can't be empty"
+                }
+            }
+        }
+        if (hasParam('email', event)) {
+            fieldValue = parseParam('email', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                email = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "email can't be empty"
+                }
+            }
+        }
+        
+        await createUser(cognitoSub, username, email, languageId);
+
+        response = packResponse({ 'message': "Operation completed successfully" });
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.deleteDietLambda = async (event, context) => {
+    try {
+        //TODO: get own user id using cognito
+        const ownUserId = await getOwnUserId(event);
+        if (ownUserId === null) {
+            throw {
+                'statusCode': 400,
+                'error': "Not logged in"
+            }
+        }
+
+        const dietId = parseIntParam("diet_id", event);
+
+        if (dietId === null) {
+            throw {
+                'statusCode': 400,
+                'error': "Invalid diet id"
+            }
+        }
+
+        await deleteDiet(ownUserId, dietId);
+
+        response = packResponse({ 'message': "Diet removed succesfully" });
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.deleteUserLambda = async (event, context) => {
+    try {
+        //TODO: get own user id using cognito
+        const ownUserId = await getOwnUserId(event);
+        if (ownUserId === null) {
+            throw {
+                'statusCode': 400,
+                'error': "Not logged in"
+            }
+        }
+
+        const keepReviews = JSON.parse(parseParam("reviews", event)) !== true;
+        const permanent = JSON.parse(parseParam("permanent", event)) === true;
+
+        await deleteUser(ownUserId, keepReviews, permanent);
+
+        response = packResponse({ 'message': "User removed succesfully" });
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.getOwnDietsLambda = async (event, context) => {
+    try {
+        //TODO: get own user id using cognito
+        const ownUserId = 0;
+
+        const client = await getPsqlClient();
+
+        var jsonObj = {};
+
+        try {
+            jsonObj['selected_diet_id'] = await getSelectedDiet(client, ownUserId);
+            jsonObj['own_diets'] = await getOwnDiets(client, ownUserId);
+        } finally {
+            await client.end();
+        }
+        
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
