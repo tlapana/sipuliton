@@ -168,6 +168,13 @@ class NavigationBar extends React.Component {
         'height':'50px'
       }
 
+      const flagStyles = {
+        'width':'50px',
+        'height':'50px',
+        'display': 'inlineblock',
+        'margin':'0px 0px 0px 30px',
+      }
+
       const menuItemsBox = {
         'margin':'25px 0 0 0'
       }
@@ -273,8 +280,12 @@ class NavigationBar extends React.Component {
                   {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
                 </div>
                 <div>
-                  <Button onClick={this.ChangeToFinland}>Finland</Button>
-                  <Button onClick={this.ChangeToEngland}>England</Button>
+                    <img src={require('../../../resources/suomilippu_logo.ico')}
+                      onClick={this.ChangeToFinland}
+                      style={flagStyles} />
+                    <img src={require('../../../resources/englanninlippu_logo.ico')}
+                      onClick={this.ChangeToEngland}
+                      style={flagStyles} />
                 </div>
               </Nav>
             )}
