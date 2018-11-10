@@ -11,6 +11,7 @@ import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar';
+import write_review from '../../writereview';
 
 import { Link, withRouter, Redirect } from "react-router-dom";
 
@@ -28,6 +29,7 @@ class App extends React.Component {
     const { Login } = login;
     const { Register } = register;
     const { ForgotPassword} = forgotPassword;
+    const { WriteReview} = write_review;
     return(
       <Provider store={this.props.store}>
         <Router>
@@ -40,6 +42,7 @@ class App extends React.Component {
                   <Route path="/:language/login/" component={Login} />
                   <Route path="/:language/register/" component={Register} />
                   <Route path="/:language/forgot-password/" component={ForgotPassword} />
+                  <Route path="/:language/writereview/:restaurantID" component={WriteReview} />
                   <Route component={NotFound} />
                 </Switch>
               </div>
