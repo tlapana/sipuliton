@@ -210,7 +210,7 @@ export default class WriteReview extends React.Component {
     else {
       return (
         <button type="submit" className="submitBtn" onClick={this.submitReview}>
-              Lähetä
+          Lähetä
         </button> 
       );
     }
