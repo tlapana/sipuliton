@@ -9,6 +9,8 @@ import home from '../../home';
 import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
+import Profile from '../../userProfile';
+
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar';
 
@@ -40,6 +42,8 @@ class App extends React.Component {
                   <Route path="/:language/login/" component={Login} />
                   <Route path="/:language/register/" component={Register} />
                   <Route path="/:language/forgot-password/" component={ForgotPassword} />
+                  <Route path="/:language/userProfile/" component={Profile} />
+
                   <Route component={NotFound} />
                 </Switch>
               </div>
