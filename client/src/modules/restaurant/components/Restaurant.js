@@ -9,6 +9,7 @@ import {
 	Label,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+const restaurantDataUrl = "";
 
 export default class Restaurant extends React.Component {
 	constructor(props) {
@@ -22,23 +23,41 @@ export default class Restaurant extends React.Component {
 			this.restaurant.openingHours : {monFri: 08002100, sat: 09002100, sun: 09001800};
 			this.restaurant.description : "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.";
 			this.redirect : false;
+			this isLoaded : false;
 		};
 		this.loadRestaurant = this.loadRestaurant.bind(this);
 		this.looper = this.looper.bind(this);
 	}
-	loadRestaurant() {
-		
+	loadRestaurant() {    
+		fetch(restaurantDataUrl)
+		.then(res => res.json())
+		.then(
+			(result) => {
+				console.log("DEBUG: loadRestaurant success");
+				console.log(result);
+				this.setState({
+					isLoaded: true,
+					restaurants: result.restaurants
+				});
+			},
+
+			(error) => {
+				console.log("DEBUG: loadRestaurant error");
+				console.log(error);
+				this.setState({
+					isLoaded: true,
+					error
+				});
+			}
+		)
 	}
 	looper(tags) {
 		var tagString = "";
-		for (var i = 0; i < tags.length; i++)
-		{
-			if (i > 0)
-			{
+		for (var i = 0; i < tags.length; i++) {
+			if (i > 0) {
 				tagString = tagString + ", " + tags[i];
 			}
-			else
-			{
+			else {
 				tagString = tagString + tags[i];
 			}
 		}
