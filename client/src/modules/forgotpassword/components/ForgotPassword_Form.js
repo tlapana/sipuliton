@@ -15,6 +15,9 @@ import { Redirect } from "react-router-dom";
 /* Configuration files */
 import config from "../../../config.js"
 
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
 /*
  ForgotPassword_Form class which implements all needed things for the password
  changing.
@@ -221,32 +224,59 @@ export default class ForgotPassword_Form extends React.Component{
       };
     }
 
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        username:"Username:",
+        usernotfound:"User not found or username is invalid.",
+        limitexceeded:"You send code too many times in a row, try again later.",
+        passwordchangedidntsuccee:"Password didn't succee, password or code is invalid.",
+        codesentto:"Code is sent to following email address: ",
+        newpassword:"New password: ",
+        newpasswordagain:"New password again: ",
+        code:"Code: ",
+        sendcodeagain:"Send code again"
+      },
+      fi: {
+        username:"Käyttäjänimi:",
+        usernotfound:"Käyttäjää ei löydy tai käyttäjänimi ei ole validi.",
+        limitexceeded:"Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
+        passwordchangedidntsuccee:"Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.",
+        codesentto:"Koodi lähetetty sähköpostilla osoitteeseen: ",
+        newpassword:"Uusi salasana: ",
+        newpasswordagain:"Uusi salasana uudelleen: ",
+        code:"Koodi: ",
+        sendcodeagain:"Lähetä koodi uudelleen"
+      }
+    });
+    strings.setLanguage(this.props.language);
+
     return (
       <div>
-        {this.state.codeSendingFailed && <div>Käyttäjää ei löydy tai käyttäjänimi ei ole validi.</div>}
-        {this.state.limitExceeded && <div>Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen</div>}
+        {this.state.codeSendingFailed && <div>{strings.usernotfound}</div>}
+        {this.state.limitExceeded && <div>{strings.limitexceeded}</div>}
         {!this.state.codeSentSuccesfully &&
           <form onSubmit={this.sendCode}>
-            Käyttäjänimi: <input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+            {strings.username}<input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
             <input type="submit" value="Lähetä koodi" />
           </form>
         }
         {this.state.passwordChangingFailed &&
           <div>
-            Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.
+            {strings.passwordchangedidntsuccee}
           </div>
         }
         {this.state.codeSentSuccesfully &&
 
           <div>
-            <p>Koodi lähetetty sähköpostilla osoitteeseen: {this.state.email}</p>
+            <p>{strings.codesentto}{this.state.email}</p>
             <form onSubmit={this.changePassword}>
-              Uusi salasana: <input className="input" value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required />
-              Uusi salasana uudelleen: <input className="input" style={passwordBorder} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password" required />
-              Koodi: <input className="input" value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
+              {strings.newpassword} <input className="input" value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required />
+              {strings.newpasswordagain} <input className="input" style={passwordBorder} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password" required />
+              {strings.code} <input className="input" value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
               <input type="submit" value="Vaihda salasana"/>
             </form>
-            <button onClick={this.sendCodeAgain}>Lähetä koodi uudelleen</button>
+            <button onClick={this.sendCodeAgain}>{strings.sendcodeagain}</button>
           </div>
         }
 

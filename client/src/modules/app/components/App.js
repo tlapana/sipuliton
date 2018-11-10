@@ -12,38 +12,47 @@ import forgotPassword from '../../forgotpassword';
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar';
 
-import { Link, withRouter } from "react-router-dom";
+import { Link, withRouter, Redirect } from "react-router-dom";
 
 import styles from '../../../styles/app.css';
 
-const { Home } = home;
-const { Login } = login;
-const { Register } = register;
-const { ForgotPassword} = forgotPassword;
-const App = ({ store }) => (
-  <Provider store={store}>
-    <Router>
 
-      <Container id="container" >
-        <div className="app" >
-          <div className="content">
-            <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/login" component={Login} />
-              <Route path="/register" component={Register} />
-              <Route path="/forgot-password" component={ForgotPassword} />
-              <Route component={NotFound} />
-            </Switch>
-          </div>
-          <Footer/>
+class App extends React.Component {
+  /* Constructor of the navication bar class. */
+  constructor(props) {
+    super(props);
+  }
 
-        </div>
-        <NavigationBar  header_text="Sipuliton.fi"/>
-      </Container>
+  render() {
+    const { Home } = home;
+    const { Login } = login;
+    const { Register } = register;
+    const { ForgotPassword} = forgotPassword;
+    return(
+      <Provider store={this.props.store}>
+        <Router>
+          <Container id="container" >
+            <div className="app" >
+              <div className="content">
+                <Switch>
+                  <Route exact path="/" component={Home} />
+                  <Route exact path="/:language" component={Home} />
+                  <Route path="/:language/login/" component={Login} />
+                  <Route path="/:language/register/" component={Register} />
+                  <Route path="/:language/forgot-password/" component={ForgotPassword} />
+                  <Route component={NotFound} />
+                </Switch>
+              </div>
+              <Footer/>
+            </div>
+            <NavigationBar  header_text="Sipuliton.fi"/>
+          </Container>
+        </Router>
+      </Provider>
+    )
+  }
 
-    </Router>
-  </Provider>
-);
+}
 
 App.propTypes = {
   store: PropTypes.object.isRequired

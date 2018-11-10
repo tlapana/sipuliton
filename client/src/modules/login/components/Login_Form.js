@@ -14,6 +14,10 @@ import { Auth } from "aws-amplify";
 import { Link } from "react-router-dom";
 import { Redirect } from "react-router-dom";
 import config from "../../../config.js"
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
+
 
 export default class MainMenu_ListItem extends React.Component{
   constructor(props) {
@@ -130,13 +134,28 @@ export default class MainMenu_ListItem extends React.Component{
       };
     }
 
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        username:"Username:",
+        password:"Password: ",
+        login:"Login",
+      },
+      fi: {
+        username:"Käyttäjänimi:",
+        password:"Salasana: ",
+        login:"Kirjaudu",
+      }
+    });
+    strings.setLanguage(this.props.language);
+
     return (
       <div>
-        {this.state.loggingFailed && <div> Väärä käyttäjätunnus tai salasana!</div>}
+        {this.state.loggingFailed && <div>{strings.wrongusername}</div>}
         <form onSubmit={this.login}>
-          Käyttäjänimi: <input className="input" style={usernameBorderStyle} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-          Salasana: <input className="input" style={passwordBorderStyle} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
-          <input type="submit" value="Kirjaudu" />
+          {strings.username} <input className="input" style={usernameBorderStyle} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+          {strings.password} <input className="input" style={passwordBorderStyle} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
+          <input type="submit" value={strings.login} />
         </form>
         {this.state.loggingSucceeded && <Redirect to="/profile" />}
 
