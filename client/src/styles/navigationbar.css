@@ -1,5 +1,5 @@
 .side-menu {
-  transition: left 200ms ease-out 0ms, opacity 400ms ease-out 0ms;
+  transition: left 250ms ease-in-out 0ms, opacity 400ms ease-in-out 0ms;
   opacity: 0;
   display: block;
   width: 20em;

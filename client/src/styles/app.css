@@ -12,12 +12,24 @@
 
 .theme-1 .bottom-bar.navbar, 
 .theme-1 .side-menu {
-  background-color: #84da84;
+  background-color: #72c567;
   color: white;
 }
 
 .theme-2 .bottom-bar.navbar, 
 .theme-2 .side-menu {
+  background-color: #84da84;
+  color: white;
+}
+
+.theme-3 .bottom-bar.navbar, 
+.theme-3 .side-menu {
   background-color: #e15527;
+  color: white;
+}
+
+.theme-old .bottom-bar.navbar, 
+.theme-old .side-menu {
+  background-color: #99ff99;
   color: white;
 }
