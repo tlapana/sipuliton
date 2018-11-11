@@ -5,7 +5,7 @@
 */
 
 import React from 'react';
-import { Button, UncontrolledTooltip, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { Button, UncontrolledTooltip, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
@@ -18,7 +18,8 @@ class SearchBar extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    //Bind the functions
+    //Bind the 
+    this.toggleModal = this.toggleModal.bind(this);
     this.togglePopover = this.togglePopover.bind(this);
     this.doSearch = this.doSearch.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
@@ -31,6 +32,7 @@ class SearchBar extends React.Component {
       loadedDefaults: false,
       loadedOptions: false,
       popoverOpen: false,
+      modalState: false,
       filters : [],
       keywords : '',
       options : [],
@@ -46,13 +48,24 @@ class SearchBar extends React.Component {
     });
 
   }
+  
+  //Toggles modal
+  toggleModal() {
+    
+    this.setState({
+      modalState: !this.state.modalState
+    });
+    
+    console.log("showModal: Toggling modal to " + this.state.modalState)
+  }  
+  
 
   //Toggles popover
   togglePopover() {
     this.setState({
       popoverOpen: !this.state.popoverOpen
     });
-    console.log("Toggling popover, new state is: " + this.state.popoverOpen);
+    //console.log("Toggling popover, new state is: " + this.state.popoverOpen);
   }
 
   //Actual search event. It also sends signal to the parent by using props.SearchDone, which signals it has done a search and this.props.searchResults which has the results
@@ -171,12 +184,16 @@ class SearchBar extends React.Component {
         usecommaasaseparator:"Use comma ( , ) as a separator.",
         filter:"Filter",
         includeinsearch:"Include in search:",
+        diets: "Diets",
+        closeModal:"Close"
       },
       fi: {
         search:"Hae...",
         usecommaasaseparator:"Käytä pilkkua ( , ) erottimena.",
         filter:"Rajaa",
-        includeinsearch:"Sisällytä hakuun:"
+        includeinsearch:"Sisällytä hakuun:",
+        diets: "Ruokavaliot",
+        closeModal:"Sulje"
       }
     });
     if(typeof this.props.language !== 'undefined'){
@@ -203,12 +220,12 @@ class SearchBar extends React.Component {
 
           <br />
 
-          <button className="filterBtn" id="filter_popover" onClick={this.togglePopover} type="button" >{strings.filter}</button>
+          <button className="filterBtn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
-          <Popover placement="bottom" isOpen={this.state.popoverOpen} target="filter_popover" toggle={this.togglePopover}>
-            <PopoverHeader></PopoverHeader>
-            <PopoverBody>
-              {strings.includeinsearch} <br />
+          <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+          <ModalHeader>{strings.includeinsearch}</ModalHeader>
+          <ModalBody className="filterBox">
+              {strings.diets}:
               <Select
                 defaultValue={ this.state.defaultValues }
                 isMulti
@@ -218,8 +235,11 @@ class SearchBar extends React.Component {
                 classNamePrefix="select"
                 onChange={this.handleFilterChange}
               />
-            </PopoverBody>
-          </Popover>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.toggleModal}> {strings.closeModal} </Button>
+          </ModalFooter>
+        </Modal>
 
         </form>
       </div>

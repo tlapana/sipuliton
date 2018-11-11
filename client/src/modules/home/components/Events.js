@@ -100,8 +100,8 @@ constructor(props) {
           <h3> Ravintoloita joista voisit olla kiinnostunut: </h3>
           {restaurants.map((restaurant) =>
             <div className="event" key={restaurant.name} >
-            {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.street_address}
+              {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
+              {restaurant.street_address}
             </div>
           )}      
         </div>
