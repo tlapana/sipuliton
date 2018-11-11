@@ -8,25 +8,25 @@ import forgotPassword from '../../forgotpassword';
 
 import NotFound from './NotFound';
 
-const { Home } = home;
-const { Login } = login;
-const { Register } = register;
-const { ForgotPassword} = forgotPassword;
-
-
-
+/* This is where all routes should be */
 class RouteCollection extends React.Component {
   constructor(props) {
     super(props);
   }
 
   render() {
+    const { Home } = home;
+    const { Login } = login;
+    const { Register } = register;
+    const { ForgotPassword} = forgotPassword;
+
     return (
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route path="/login" component={Login} />
-        <Route path="/register" component={Register} />
-        <Route path="/forgot-password" component={ForgotPassword} />
+        <Route exact path="/:language" component={Home} />
+        <Route path="/:language/login/" component={Login} />
+        <Route path="/:language/register/" component={Register} />
+        <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route component={NotFound} />
       </Switch>
     );

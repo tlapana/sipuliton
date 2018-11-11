@@ -9,6 +9,13 @@
   padding-bottom: 0;
 }
 
+.language-container img {
+  width: 3em;
+  height: 3em;
+  display: inline-block;
+  margin: 0 0 0 1.5em;
+}
+
 
 .theme-1 .bottom-bar.navbar, 
 .theme-1 .side-menu {

@@ -7,21 +7,58 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import LoginForm from './Login_Form.js'
 import SocialLogin from './Social_Login.js'
 
-const Login = () => (
-  <div id="login">
-    <h2>Kirjautuminen</h2>
-    <LoginForm/> <br/>
-    <SocialLogin/> <br/>
-    <span>Etkö ole vielä rekisteröitynyt? </span>
-    <Link tag={Link} to='/register'>
-      Rekisteröidy nyt!
-    </Link>
-    <br/>
-    <Link tag={Link} to='/forgot-password'>
-      Unohditko salasanan?
-    </Link>
-  </div>
-);
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
+class Login extends React.Component {
+  /* Constructor of the navication bar class. */
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        forgotpassword:"Forgot password?",
+        login:"Login",
+        notRegisteredYet:"Not registered yet?",
+        registerNow:"Register now!"
+      },
+      fi: {
+        forgotpassword:"Unohditko salasana?",
+        login:"Kirjautuminen",
+        notRegisteredYet:"Etkö ole vielä rekisteröitynyt?",
+        registerNow:"Rekisteröidy nyt!"
+      }
+    });
+    strings.setLanguage(this.props.match.params.language);
+    console.log(this.props.location);
+
+    /* URL paths */
+    const pathToRegister = '/register/'+this.props.match.params.language
+    const pathToForgotPassword = '/forgot-password/'+this.props.match.params.language
+
+    return(
+      <div id="login">
+        <h2>{strings.login}</h2>
+        <LoginForm language={this.props.match.params.language}/> 
+        <br/>
+        <SocialLogin/> 
+        <br/>
+        
+        <span>{strings.notRegisteredYet}</span>
+        <Link tag={Link} to={pathToRegister}>
+          {strings.registerNow}
+        </Link>
+        <br/>
+        <Link tag={Link} to={pathToForgotPassword}>
+          {strings.forgotpassword}
+        </Link>
+      </div>
+    )
+  }
+}
+
 
 
 

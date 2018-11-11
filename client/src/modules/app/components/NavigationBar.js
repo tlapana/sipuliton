@@ -2,12 +2,13 @@
 mainmenu which opens from navigation bar.*/
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
   Navbar,
   NavbarToggler,
   Nav,
   NavLink,
+  Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
@@ -19,6 +20,8 @@ import { Transition } from 'react-transition-group';
 /* Mainmenu components*/
 import { MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index'
 
+/* Localization */
+import LocalizedStrings from 'react-localization';
 
 
 class NavigationBar extends React.Component {
@@ -31,12 +34,17 @@ class NavigationBar extends React.Component {
       userLogged: false,
       admin: false,
       restaurantOwner:false,
-      moderator: false
+      moderator: false,
+      language:'fi',
+      redirectUrl:"",
+      languageChanged:false
     };
 
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
     this.checkAccessRights = this.checkAccessRights.bind(this);
+    this.ChangeToEngland = this.ChangeToEngland.bind(this);
+    this.ChangeToFinland = this.ChangeToFinland.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
@@ -120,9 +128,31 @@ class NavigationBar extends React.Component {
 
   }
 
+  ChangeToFinland(){
+    var url = window.location.href
+    url = url.replace(this.state.language,'fi');
+    var index = url.search('://');
+    url = url.slice(index+3);
+    index = url.search('/');
+    url = url.slice(index);
+    console.log(url);
+    this.setState({language:'fi',redirectUrl:url,languageChanged:true});
+
+  }
+  ChangeToEngland(){
+    var url = window.location.href
+    url = url.replace(this.state.language,'en');
+    var index = url.search('://');
+    url = url.slice(index+3);
+    index = url.search('/');
+    url = url.slice(index);
+    console.log(url);
+    this.setState({language:'en',redirectUrl:url,languageChanged:true});
+  }
+
   render() {
       /* Menu appearance styles. */
-      
+
       const duration = 200;
       const transitionStyles = {
         entering: { opacity: 0, 'left':'-500px' },
@@ -131,35 +161,95 @@ class NavigationBar extends React.Component {
         exited: { opacity: 0, 'left':'-500px' }
       };
 
+      /* Localization */
+      let strings = new LocalizedStrings({
+        en:{
+          mainmenu:"Mainpage",
+          map:"Map",
+          restaurantList:"Restaurant list",
+          restaurantManagement:"Restaurant management",
+          admin:"Admin",
+          moderation:"Moderation",
+          profile:"Profile",
+          login:"Login",
+          register:"Register",
+          logout: "Logout"
+        },
+        fi: {
+          mainmenu:"Pääsivu",
+          map:"Kartta",
+          restaurantList:"Ravintola lista",
+          restaurantManagement:"Ravintola hallinta",
+          admin:"Admin",
+          moderation:"Moderointi",
+          profile:"Profiili",
+          login:"Kirjaudu",
+          register:"Rekisteröidy",
+          logout:"Kirjaudu ulos"
+        }
+      });
+
+      if(this.state.language == "fi"){
+        strings.setLanguage('fi');
+      }
+      if(this.state.language == "en"){
+        strings.setLanguage('en');
+      }
+
+      /* URL Paths to pages*/
+      const pathToMenu = "/" + this.state.language;
+      const pathToMap = "/" + this.state.language+"/map";
+      const pathToRestaurantList = "/" + this.state.language + "/restaurant_list";
+      const pathToRestaurantManagement = "/" + this.state.language + "/restaurant_management";
+      const pathToAdmin = "/" + this.state.language + "/admin";
+      const pathToModerating = "/" + this.state.language + "/moderating";
+      const pathToProfile = "/" + this.state.language + "/profile";
+      const pathToLogin = "/" + this.state.language + "/login";
+      const pathToRegister = "/" + this.state.language + "/register";
+
+      /* Changed correct language to page after clicking change language. */
+      if(this.state.languageChanged){
+        this.setState({languageChanged:false});
+        return(
+          <Redirect to={this.state.redirectUrl}/>
+        );
+      }
+
       return (
 
         <div>
           <div>
-          <Transition in={this.state.visible} out={!this.state.visible}
-            timeout={duration}
-          >
-            {(state) => (
-              <Nav 
-                vertical
-                className="side-menu" 
-                onClick={this.mainMenu} 
-                style={{...transitionStyles[state]}}
-              >
-                <MainMenu_ListItem path="/" text="Pääsivu" />
-                <MainMenu_ListItem path="/map" text="Kartta" />
-                <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
-                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
-                {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                {this.state.moderator && <MainMenu_ListItem path="/moderating" text="Moderointi" />}
-                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
-                {this.state.userLogged && <MainMenu_LogoutButton/>}
-              </Nav>
-            )}
-          </Transition>
-
+            <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
+              {(state) => (
+                <Nav 
+                  vertical
+                  className="side-menu" 
+                  onClick={this.mainMenu} 
+                  style={{...transitionStyles[state]}}
+                >
+                  <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
+                  <MainMenu_ListItem path={pathToMap} text={strings.map} />
+                  <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                  {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                  {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
+                  {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
+                  {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
+                  {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
+                  {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
+                  {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                  <li>
+                    <div className="language-container">
+                        <img src={require('../../../resources/suomilippu_logo.ico')}
+                          onClick={this.ChangeToFinland} />
+                        <img src={require('../../../resources/englanninlippu_logo.ico')}
+                          onClick={this.ChangeToEngland} />
+                    </div>
+                  </li>
+                </Nav>
+              )}
+            </Transition>
           </div>
+
           <Navbar id="navBar" className="fixed-bottom bottom-bar">
             <NavbarToggler onClick={this.mainMenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
@@ -167,7 +257,7 @@ class NavigationBar extends React.Component {
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
-            <NavLink tag={Link} to="/">
+            <NavLink tag={Link} to={pathToMenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
             </NavLink>
           </Navbar>
