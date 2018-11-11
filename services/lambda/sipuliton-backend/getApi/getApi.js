@@ -169,7 +169,7 @@ async function getLanguage(client, language) {
 // start of module functions
 
 
-async function getGroups(client, languageId, defaultLanguageId) {
+async function getGroups(client, languageId, alternativeLanguageId) {
     const res = await client.query(
         `SELECT name_join.food_group_id, name, array_agg(food_group_id2) as groups
         FROM (SELECT food_group.food_group_id, name
@@ -185,7 +185,7 @@ async function getGroups(client, languageId, defaultLanguageId) {
         ) AS name_join
         LEFT JOIN food_group_groups ON name_join.food_group_id = food_group_groups.food_group_id 
         GROUP BY name_join.food_group_id, name`,
-        [languageId, defaultLanguageId]);
+        [languageId, alternativeLanguageId]);
     if (res.rowCount > 0) {
         console.log(res.rows);
         var jsonObj = JSON.parse(JSON.stringify(res.rows));
@@ -194,7 +194,7 @@ async function getGroups(client, languageId, defaultLanguageId) {
     return null;
 }
 
-async function getPresetDiets(client, languageId, defaultLanguageId) {
+async function getPresetDiets(client, languageId, alternativeLanguageId) {
     const res = await client.query(
         `SELECT name_join.global_diet_id, name, array_agg(food_group_id) as groups
         FROM (SELECT global_diet.global_diet_id, name
@@ -210,7 +210,7 @@ async function getPresetDiets(client, languageId, defaultLanguageId) {
         ) AS name_join
         LEFT JOIN diet_groups ON name_join.global_diet_id = diet_groups.global_diet_id 
         GROUP BY name_join.global_diet_id, name`,
-        [languageId, defaultLanguageId]);
+        [languageId, alternativeLanguageId]);
     if (res.rowCount > 0) {
         var jsonObj = JSON.parse(JSON.stringify(res.rows));
         return jsonObj;
@@ -218,7 +218,7 @@ async function getPresetDiets(client, languageId, defaultLanguageId) {
     return null;
 }
 
-async function getCities(client, countryId, languageId, defaultLanguageId) {
+async function getCities(client, countryId, languageId, alternativeLanguageId) {
     if (countryId && countryId !== "") {
         const res = await client.query(
             `SELECT city.city_id, name
@@ -229,7 +229,7 @@ async function getCities(client, countryId, languageId, defaultLanguageId) {
                 WHERE language_id = $1 AND name != '' AND city.country_id = $3
                 )
             )`,
-            [languageId, defaultLanguageId, countryId]);
+            [languageId, alternativeLanguageId, countryId]);
         if (res.rowCount > 0) {
             var jsonObj = JSON.parse(JSON.stringify(res.rows));
             return jsonObj;
@@ -238,7 +238,7 @@ async function getCities(client, countryId, languageId, defaultLanguageId) {
     return null;
 }
 
-async function getCountries(client, languageId, defaultLanguageId) {
+async function getCountries(client, languageId, alternativeLanguageId) {
     const res = await client.query(
         `SELECT country_id, name
         FROM country_name
@@ -247,7 +247,7 @@ async function getCountries(client, languageId, defaultLanguageId) {
                 WHERE language_id = $1 AND name != ''
             )
         )`,
-        [languageId, defaultLanguageId]);
+        [languageId, alternativeLanguageId]);
     if (res.rowCount > 0) {
         var jsonObj = JSON.parse(JSON.stringify(res.rows));
         return jsonObj;
@@ -258,19 +258,21 @@ async function getCountries(client, languageId, defaultLanguageId) {
 
 exports.getFoodGroupsLambda = async (event, context) => {
     try {
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
         const client = await getPsqlClient();
+        try {
+            var temp = parseParam("language", event);
 
-        const defaultLanguageId = await getLanguage(client, 'EN');
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
 
-        jsonObj = await getGroups(client, languageId, defaultLanguageId);
+            const alternativeLanguageId = await getLanguage(client, 'EN');
 
-        await client.end();
+            jsonObj = await getGroups(client, languageId, alternativeLanguageId);
 
-        response = packResponse(jsonObj);
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
 
     } catch (err) {
         response = errorHandler(err);
@@ -283,19 +285,22 @@ exports.getFoodGroupsLambda = async (event, context) => {
 
 exports.getPresetDietsLambda = async (event, context) => {
     try {
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
         const client = await getPsqlClient();
 
-        const defaultLanguageId = await getLanguage(client, 'EN');
+        try {
+            var temp = parseParam("language", event);
 
-        const jsonObj = await getPresetDiets(client, languageId, defaultLanguageId);
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
 
-        await client.end();
+            const alternativeLanguageId = await getLanguage(client, 'EN');
 
-        response = packResponse(jsonObj);
+            const jsonObj = await getPresetDiets(client, languageId, alternativeLanguageId);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
 
     } catch (err) {
         response = errorHandler(err);
@@ -308,19 +313,22 @@ exports.getPresetDietsLambda = async (event, context) => {
 
 exports.getCountriesLambda = async (event, context) => {
     try {
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
         const client = await getPsqlClient();
 
-        const defaultLanguageId = await getLanguage(client, 'EN');
+        try {
+            var temp = parseParam("language", event);
 
-        const jsonObj = await getCountries(client, languageId, defaultLanguageId);
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
 
-        await client.end();
+            const alternativeLanguageId = await getLanguage(client, 'EN');
 
-        response = packResponse(jsonObj);
+            const jsonObj = await getCountries(client, languageId, alternativeLanguageId);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
 
     } catch (err) {
         response = errorHandler(err);
@@ -334,22 +342,26 @@ exports.getCountriesLambda = async (event, context) => {
 exports.getCitiesLambda = async (event, context) => {
     try {
         const countryId = parseParam('country_id', event);
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
 
         const client = await getPsqlClient();
 
-        const defaultLanguageId = await getLanguage(client, 'EN');
+        try {
+            var temp = parseParam("language", event);
 
-        var jsonObj = '';
-        if (countryId !== null) {
-            jsonObj = await getCities(client, countryId, languageId, defaultLanguageId);
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
+
+            const alternativeLanguageId = await getLanguage(client, 'EN');
+
+            var jsonObj = '';
+            if (countryId !== null) {
+                jsonObj = await getCities(client, countryId, languageId, alternativeLanguageId);
+            }
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
         }
-
-        await client.end();
-
-        response = packResponse(jsonObj);
         
     } catch (err) {
         response = errorHandler(err);

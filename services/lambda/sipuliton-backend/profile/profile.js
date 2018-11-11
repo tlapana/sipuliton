@@ -44,6 +44,7 @@ async function getOwnUserId(event) {
     //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
     //console.log("user sub:" + userSub);
     return 0;
+    return null;
 }
 
 async function getPsqlClient() {
@@ -176,7 +177,7 @@ async function getLanguage(client, language) {
 // start of module functions
 
 
-async function getCountryName(client, countryId, languageId, defaultLanguageId) {
+async function getCountryName(client, countryId, languageId, alternativeLanguageId) {
     if (countryId && countryId !== "") {
         var res = await client.query(
             `SELECT name
@@ -188,7 +189,7 @@ async function getCountryName(client, countryId, languageId, defaultLanguageId) 
                 `SELECT name
                 FROM country_name
                 WHERE country_id = $1 AND language_id = $2`,
-                [countryId, defaultLanguageId]);
+                [countryId, alternativeLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
             }
@@ -205,7 +206,7 @@ async function getCountryName(client, countryId, languageId, defaultLanguageId) 
     return null
 }
 
-async function getCityName(client, cityId, languageId, defaultLanguageId) {
+async function getCityName(client, cityId, languageId, alternativeLanguageId) {
     if (cityId && cityId !== "") {
         var res = await client.query(
             `SELECT name
@@ -217,7 +218,7 @@ async function getCityName(client, cityId, languageId, defaultLanguageId) {
                 `SELECT name
                 FROM city_name
                 WHERE city_id = $1 AND language_id = $2`,
-                [cityId, defaultLanguageId]);
+                [cityId, alternativeLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
             }
@@ -263,17 +264,11 @@ async function getUserdata(client, userId) {
     return jsonObj;
 }
 
-async function fetchUser(userId, ownUserId, languageId) {
+async function fetchUser(userId, ownUserId, language) {
     if (!Number.isInteger(userId)) {
         throw {
             'statusCode': 400,
             'error': "Invalid user id"
-        }
-    }
-    if (languageId === null || !Number.isInteger(languageId)) {
-        throw {
-            'statusCode': 400,
-            'error': "Invalid language id"
         }
     }
 
@@ -282,6 +277,16 @@ async function fetchUser(userId, ownUserId, languageId) {
     const client = await getPsqlClient();
 
     try {
+        const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+
+        if (languageId === null || !Number.isInteger(languageId)) {
+            throw {
+                'statusCode': 400,
+                'error': "Invalid language id"
+            }
+        }
+
         jsonObj = await getUserdata(client, userId);
     
         jsonObj['own_profile'] = false;
@@ -302,11 +307,11 @@ async function fetchUser(userId, ownUserId, languageId) {
             delete jsonObj['email'];
         }
 
-        const defaultLanguageId = await getLanguage(client, 'EN');
+        const alternativeLanguageId = await getLanguage(client, 'EN');
 
-        jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, defaultLanguageId);
+        jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, alternativeLanguageId);
 
-        jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, defaultLanguageId);
+        jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, alternativeLanguageId);
 
     } finally {
         await client.end();
@@ -316,6 +321,7 @@ async function fetchUser(userId, ownUserId, languageId) {
 }
 
 async function doCognitoChanges(changes) {
+    //TODO: change cognito credentials
     throw {
         'statusCode': 400,
         'error': "Cognito related stuff not implemented"
@@ -323,10 +329,19 @@ async function doCognitoChanges(changes) {
     return
 }
 
-async function createUser(cognitoSub, username, email, languageId) {
+async function createUser(cognitoSub, username, email, language) {
     const client = await getPsqlClient();
 
     try {
+        const languageId = language === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, language.toUpperCase());
+        if (languageId === null || !Number.isInteger(languageId)) {
+            throw {
+                'statusCode': 400,
+                'error': "Invalid language id"
+            }
+        }
+
         await client.query('BEGIN');
         try {
             const res = await client.query(
@@ -517,17 +532,14 @@ async function getSelectedDiet(client, userId) {
 exports.profileLambda = async (event, context) => {
     try {
         var tempId = parseIntParam("userId", event);
-        //TODO: get user id from cognito if not requesting specified user
-        const userId = !tempId ? 0 : tempId
 
         //TODO: get own user id using cognito
         const ownUserId = await getOwnUserId(event);
+        const userId = tempId === null ? ownUserId : tempId
 
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
+        var language = parseParam("language", event);
 
-        const jsonObj = await fetchUser(userId, ownUserId, languageId);
+        const jsonObj = await fetchUser(userId, ownUserId, language);
         
         response = packResponse(jsonObj);
 
@@ -706,10 +718,6 @@ exports.createUserLambda = async (event, context) => {
     try {
         //TODO: check that user exists in cognito
 
-        //TODO: possibly query language id if not saved as id in cookies
-        tempId = parseIntParam("language", event);
-        const languageId = !tempId ? 0 : tempId
-
         var cognitoSub = null;
         var username = null;
         var email = null;
@@ -751,8 +759,10 @@ exports.createUserLambda = async (event, context) => {
                 }
             }
         }
-        
-        await createUser(cognitoSub, username, email, languageId);
+
+        var language = parseParam("language", event);
+
+        await createUser(cognitoSub, username, email, language);
 
         response = packResponse({ 'message': "Operation completed successfully" });
 
