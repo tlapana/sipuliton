@@ -61,6 +61,22 @@ Resources:
                       Path: /profile
                       Method: get
 
+    SearchFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: search/
+          Handler: search.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /search
+                      Method: get
+
 
 Outputs:
 
@@ -99,4 +115,18 @@ Outputs:
     ProfileFunctionIamRole:
       Description: "Implicit IAM Role created for Profile page function"
       Value: !GetAtt ProfileFunctionRole.Arn
+
+    SearchApi:
+      Description: "API Gateway endpoint URL for Prod stage for search functionality"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Search/"
+
+    SearchFunction:
+      Description: "Restaurant search Lambda Function ARN"
+      Value: !GetAtt SearchFunction.Arn
+
+    SearchFunctionIamRole:
+      Description: "Implicit IAM Role created for Search function"
+      Value: !GetAtt SearchFunctionRole.Arn
+
+
 
