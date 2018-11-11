@@ -9,6 +9,7 @@ import {
 	Label,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReviewList from './Review_List.js'
 const restaurantDataUrl = "";
 
 export default class Restaurant extends React.Component {
