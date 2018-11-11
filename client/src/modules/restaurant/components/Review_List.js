@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const reviewsDataUrl = "";
 var reviewIndex = 0;
 
-export default class Restaurant extends React.Component {
+export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
