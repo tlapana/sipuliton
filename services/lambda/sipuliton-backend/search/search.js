@@ -61,10 +61,9 @@ exports.lambdaHandler = async (event, context) => {
         const defaultDiet = 0
 
         // Setting empty query string if none was provided
-        if (!('queryStringParameters' in event)){
+        if ((event.queryStringParameters == null)){
             event.queryStringParameters = {}
         }
-        console.log(queryStringParameters)
         // Check parameters
         searchParameters = {
             generalParameters: {
@@ -105,32 +104,42 @@ exports.lambdaHandler = async (event, context) => {
                     value: checkQueryParameter(event.queryStringParameters, 'maxPricing', defaultMaxPricing),
                     operator: '<='
                 },
+                cityName: {
+                    sql_name: 'city_name.name',
+                    value: checkQueryParameter(event.queryStringParameters, 'cityName', null),
+                    operator: '='
+                },
                 globalDietId: {
                     sql_name: 'global_diet_id',
                     value: checkQueryParameter(event.queryStringParameters, 'globalDietId', defaultDiet),
                     operator: '='
                 }
             }
-        }
-        console.log(searchParameters)
+        };
+        console.log(searchParameters);
 
         var collectRestaurants = `
-        SELECT restaurant.restaurant_id AS restaurant_id, name, email,
-               website, street_address, rating_overall, rating_realiability as rating_reliability,
+        SELECT restaurant.restaurant_id AS restaurant_id, restaurant.name as restaurant_name, email,
+               city_name.name as city_name, website, street_address, rating_overall, rating_realiability as rating_reliability,
                rating_variety, rating_service_and_quality, pricing, trending
-        FROM restaurant_diet_stats INNER JOIN restaurant 
-        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+        FROM restaurant 
+            INNER JOIN restaurant_diet_stats
+                ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+            INNER JOIN city_name ON restaurant.city_id=city_name.city_id
         WHERE
-        `
+            city_name.language_id=0 AND
+        `;
 
-        var paramIndex = 1
-        var paramValues = []
-        var paramObject = searchParameters.restaurantParameters
+        var paramIndex = 1;
+        var paramValues = [];
+        var paramObject = searchParameters.restaurantParameters;
         for (var key in searchParameters.restaurantParameters){
 
             // TODO: Implement checking distance
             if (key == 'maxDistance'){
-                continue
+                continue;
+            } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null){
+                continue;
             } else {
                 if (paramIndex > 1){
                     collectRestaurants = collectRestaurants + ' AND '
@@ -145,15 +154,15 @@ exports.lambdaHandler = async (event, context) => {
         var pageDefinition = `
         LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`
 
-        paramIndex += 2
-        paramValues.push(searchParameters.generalParameters.pageSize)
-        paramValues.push(searchParameters.generalParameters.offset())
+        paramIndex += 2;
+        paramValues.push(searchParameters.generalParameters.pageSize);
+        paramValues.push(searchParameters.generalParameters.offset());
 
         collectRestaurants = collectRestaurants + `
            ORDER BY $${paramIndex} DESC
-           ` + pageDefinition 
-        paramValues.push(searchParameters.generalParameters.orderBy)
-        console.log(collectRestaurants)
+           ` + pageDefinition;
+        paramValues.push(searchParameters.generalParameters.orderBy);
+        console.log(collectRestaurants);
 
         var pg = require("pg");
        
@@ -173,7 +182,7 @@ exports.lambdaHandler = async (event, context) => {
         const res = await client.query(collectRestaurants, paramValues);
         var jsonString = JSON.stringify(res.rows);
         var jsonObj = JSON.parse(jsonString);
-        await client.end()
+        await client.end();
 
         var bodyJSON = {
             'restaurants': jsonObj
@@ -194,6 +203,6 @@ exports.lambdaHandler = async (event, context) => {
         return err;
     }
 
-    console.log(response)
+    console.log(response);
     return response
 };
