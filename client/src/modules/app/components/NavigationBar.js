@@ -18,7 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import { MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index'
+import { LanguageSelection, MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -43,8 +43,7 @@ class NavigationBar extends React.Component {
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
     this.checkAccessRights = this.checkAccessRights.bind(this);
-    this.ChangeToEngland = this.ChangeToEngland.bind(this);
-    this.ChangeToFinland = this.ChangeToFinland.bind(this);
+    this.changeLanguage = this.changeLanguage.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
@@ -128,32 +127,20 @@ class NavigationBar extends React.Component {
 
   }
 
-  ChangeToFinland(){
-    var url = window.location.href
-    url = url.replace(this.state.language,'fi');
+  changeLanguage(language) {
+    var url = window.location.href;
+    url = url.replace(this.state.language, language);
     var index = url.search('://');
-    url = url.slice(index+3);
+    url = url.slice(index + 3);
     index = url.search('/');
     url = url.slice(index);
     console.log(url);
-    this.setState({language:'fi',redirectUrl:url,languageChanged:true});
-
-  }
-  ChangeToEngland(){
-    var url = window.location.href
-    url = url.replace(this.state.language,'en');
-    var index = url.search('://');
-    url = url.slice(index+3);
-    index = url.search('/');
-    url = url.slice(index);
-    console.log(url);
-    this.setState({language:'en',redirectUrl:url,languageChanged:true});
+    this.setState({language: language, redirectUrl: url, languageChanged: true});
   }
 
   render() {
       /* Menu appearance styles. */
-
-      const duration = 200;
+      const duration = 0;
       const transitionStyles = {
         entering: { opacity: 0, 'left':'-500px' },
         entered:  { opacity: 1, 'left':'0px' },
@@ -189,10 +176,10 @@ class NavigationBar extends React.Component {
         }
       });
 
-      if(this.state.language == "fi"){
+      if(this.state.language === "fi"){
         strings.setLanguage('fi');
       }
-      if(this.state.language == "en"){
+      if(this.state.language === "en"){
         strings.setLanguage('en');
       }
 
@@ -221,31 +208,28 @@ class NavigationBar extends React.Component {
           <div>
             <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
               {(state) => (
-                <Nav 
-                  vertical
-                  className="side-menu" 
-                  onClick={this.mainMenu} 
-                  style={{...transitionStyles[state]}}
-                >
-                  <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
-                  <MainMenu_ListItem path={pathToMap} text={strings.map} />
-                  <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
-                  {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
-                  {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
-                  {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
-                  {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
-                  {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
-                  {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
-                  {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
-                  <li>
-                    <div className="language-container">
-                        <img src={require('../../../resources/suomilippu_logo.ico')}
-                          onClick={this.ChangeToFinland} />
-                        <img src={require('../../../resources/englanninlippu_logo.ico')}
-                          onClick={this.ChangeToEngland} />
-                    </div>
-                  </li>
-                </Nav>
+                <div>
+                  <Nav 
+                    vertical
+                    className="side-menu" 
+                    onClick={this.mainMenu} 
+                    style={{...transitionStyles[state]}}
+                  >
+                    <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
+                    <MainMenu_ListItem path={pathToMap} text={strings.map} />
+                    <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                    {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                    {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
+                    {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
+                    {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
+                    {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    <li>
+                      <LanguageSelection changeLanguage={this.changeLanguage} />
+                    </li>
+                  </Nav>
+                </div>
               )}
             </Transition>
           </div>

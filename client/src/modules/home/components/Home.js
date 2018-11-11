@@ -5,7 +5,6 @@
 */
 
 import React from 'react';
-import styles from '../../../styles/landingpage.css';
 import SearchBar from './SearchBar.js'
 import Events from './Events.js'
 import SearchResults from './SearchResults.js'

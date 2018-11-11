@@ -17,7 +17,14 @@ class App extends React.Component {
 
     this.state = {
 			theme: 'theme-1',
-		};
+    };
+
+    this.changeTheme = this.changeTheme.bind(this);
+  }
+
+  changeTheme(theme) {
+    // TODO: this can be used later to add theme support
+    this.setState({theme: theme});
   }
 
   render() {
@@ -31,7 +38,7 @@ class App extends React.Component {
                   <RouteCollection/>
                 </Switch>
               </Container>
-              <NavigationBar  header_text="Sipuliton.fi"/>
+              <NavigationBar header_text="Sipuliton.fi"/>
             </div>
           </div>
         </Router>

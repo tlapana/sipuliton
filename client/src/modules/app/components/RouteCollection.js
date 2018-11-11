@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Redirect, Switch } from 'react-router-dom';
 
 import home from '../../home';
 import login from '../../login';
@@ -22,7 +22,7 @@ class RouteCollection extends React.Component {
 
     return (
       <Switch>
-        <Route exact path="/" component={Home} />
+        <Redirect exact from="/" to="/fi" />
         <Route exact path="/:language" component={Home} />
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
