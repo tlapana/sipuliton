@@ -342,6 +342,12 @@ exports.getCountriesLambda = async (event, context) => {
 exports.getCitiesLambda = async (event, context) => {
     try {
         const countryId = parseParam('country_id', event);
+        if (countryId === null) {
+            throw {
+                'statusCode': 400,
+                'error' : "country_id not set"
+            }
+        }
 
         const client = await getPsqlClient();
 
@@ -353,10 +359,7 @@ exports.getCitiesLambda = async (event, context) => {
 
             const alternativeLanguageId = await getLanguage(client, 'EN');
 
-            var jsonObj = '';
-            if (countryId !== null) {
-                jsonObj = await getCities(client, countryId, languageId, alternativeLanguageId);
-            }
+            var jsonObj = await getCities(client, countryId, languageId, alternativeLanguageId);
 
             response = packResponse(jsonObj);
         } finally {

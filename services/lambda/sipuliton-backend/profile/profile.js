@@ -320,61 +320,34 @@ async function fetchUser(userId, ownUserId, language) {
     return jsonObj;
 }
 
+exports.profileLambda = async (event, context) => {
+    try {
+        var tempId = parseIntParam("userId", event);
+
+        //TODO: get own user id using cognito
+        const ownUserId = await getOwnUserId(event);
+        const userId = tempId === null ? ownUserId : tempId
+
+        var language = parseParam("language", event);
+
+        const jsonObj = await fetchUser(userId, ownUserId, language);
+        
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
 async function doCognitoChanges(changes) {
     //TODO: change cognito credentials
     throw {
         'statusCode': 400,
         'error': "Cognito related stuff not implemented"
-    }
-    return
-}
-
-async function createUser(cognitoSub, username, email, language) {
-    const client = await getPsqlClient();
-
-    try {
-        const languageId = language === null ? await getLanguage(client, 'FI') :
-            await getLanguage(client, language.toUpperCase());
-        if (languageId === null || !Number.isInteger(languageId)) {
-            throw {
-                'statusCode': 400,
-                'error': "Invalid language id"
-            }
-        }
-
-        await client.query('BEGIN');
-        try {
-            const res = await client.query(
-                `INSERT INTO user_login (user_id, cognito_sub, username, email)
-                VALUES ((SELECT coalesce(max(user_id),0)+1 FROM user_login), $1, $2, $3)
-                RETURNING user_id`,
-                [cognitoSub, username, email]);
-
-            const userId = res.rows[0]['user_id'];
-            await client.query(
-                `INSERT INTO user_profile (user_id, role, display_name, image_url, language_id,
-                    birth_year, birth_month, gender, description,
-                    country_id, city_id, diet_id)
-                VALUES ($1, 0, $2, NULL, $3,
-                    NULL, NULL, NULL, NULL,
-                    NULL, NULL, NULL)`,
-                [userId, username, languageId]);
-
-            await client.query(
-                `INSERT INTO user_stats (user_id, countries, cities, reviews,
-                    thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given,
-                    activity_level, last_active)
-                VALUES ($1, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, timezone('utc', now()))`,
-                [userId]);
-            await client.query('COMMIT');
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
-        }
-    } finally {
-        await client.end();
     }
     return
 }
@@ -423,133 +396,6 @@ async function doUserChanges(client, ownUserId, userChanges) {
     await client.query('UPDATE user_profile SET ' + columns + ' WHERE user_id = $1', values);
     return
 }
-
-async function deleteDiet(userId, dietId) {
-    const client = await getPsqlClient();
-    try {
-        await client.query(
-            `DELETE FROM diet_name
-        WHERE user_id = $1 AND diet_id = $2`,
-            [userId, dietId]);
-    } finally {
-        await client.end();
-    }
-    return;
-}
-
-async function deleteUser(userId, keepReviews, permanent) {
-    const client = await getPsqlClient();
-    try {
-        await client.query('BEGIN');
-        try {
-            await client.query(
-                `UPDATE user_profile
-                SET display_name = '', image_url = NULL, birth_year = NULL, birth_month = NULL,
-                gender = NULL, description = NULL, country_id = NULL, city_id = NULL, diet_id = NULL
-                WHERE user_id = $1`,
-                [userId]);
-            if (!keepReviews) {
-                await client.query(`DELETE FROM diet_name WHERE user_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM suspicious_review WHERE user_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_reject_log WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_accept_log WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM thumbs WHERE poster_id = $1 OR thumber_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_diet WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM restaurant_ownership_request WHERE owner_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM restaurant_owners WHERE owner_id = $1`, [ownUserId]);
-                await client.query(
-                    `UPDATE user_stats
-                    SET countries = 0, cities = 0, reviews = 0, thumbs_up = 0, thumbs_down = 0,
-                    thumbs_up_given = 0, thumbs_down_given = 0, activity_level = 0, last_active = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            if (permanent) {
-                await client.query(
-                    `UPDATE user_login
-                    SET cognito_sub = NULL, username = NULL, email = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            else {
-                await client.query(
-                    `UPDATE user_login
-                    SET cognito_sub = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            await client.query('COMMIT');
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
-        }
-    }
-    finally {
-        client.end();
-    }
-    return;
-}
-
-async function getOwnDiets(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
-        WHERE user_id = $1
-        GROUP BY diet_id, diet_name.global_diet_id, name`,
-        [userId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getSelectedDiet(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id
-        FROM user_profile
-        WHERE user_id = $1`,
-        [userId]);
-    if (res.rowCount == 0) {
-        client.end();
-        throw {
-            'statusCode': 400,
-            'error': "No user found"
-        }
-    }
-    if (res.rowCount >= 2) {
-        client.end();
-        throw {
-            'statusCode': 500,
-            'error': "Something is broken, returning 2 or more users"
-        }
-    }
-    var dietId = res.rows[0]['diet_id'];
-    return dietId;
-}
-
-exports.profileLambda = async (event, context) => {
-    try {
-        var tempId = parseIntParam("userId", event);
-
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        const userId = tempId === null ? ownUserId : tempId
-
-        var language = parseParam("language", event);
-
-        const jsonObj = await fetchUser(userId, ownUserId, language);
-        
-        response = packResponse(jsonObj);
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
 
 exports.editProfileLambda = async (event, context) => {
     try {
@@ -714,6 +560,56 @@ exports.editProfileLambda = async (event, context) => {
 };
 
 
+async function createUser(cognitoSub, username, email, language) {
+    const client = await getPsqlClient();
+
+    try {
+        const languageId = language === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, language.toUpperCase());
+        if (languageId === null || !Number.isInteger(languageId)) {
+            throw {
+                'statusCode': 400,
+                'error': "Invalid language id"
+            }
+        }
+
+        await client.query('BEGIN');
+        try {
+            const res = await client.query(
+                `INSERT INTO user_login (user_id, cognito_sub, username, email)
+                VALUES ((SELECT coalesce(max(user_id),0)+1 FROM user_login), $1, $2, $3)
+                RETURNING user_id`,
+                [cognitoSub, username, email]);
+
+            const userId = res.rows[0]['user_id'];
+            await client.query(
+                `INSERT INTO user_profile (user_id, role, display_name, image_url, language_id,
+                    birth_year, birth_month, gender, description,
+                    country_id, city_id, diet_id)
+                VALUES ($1, 0, $2, NULL, $3,
+                    NULL, NULL, NULL, NULL,
+                    NULL, NULL, NULL)`,
+                [userId, username, languageId]);
+
+            await client.query(
+                `INSERT INTO user_stats (user_id, countries, cities, reviews,
+                    thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given,
+                    activity_level, last_active)
+                VALUES ($1, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, timezone('utc', now()))`,
+                [userId]);
+            await client.query('COMMIT');
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        }
+    } finally {
+        await client.end();
+    }
+    return
+}
+
 exports.createUserLambda = async (event, context) => {
     try {
         //TODO: check that user exists in cognito
@@ -775,6 +671,19 @@ exports.createUserLambda = async (event, context) => {
 };
 
 
+async function deleteDiet(userId, dietId) {
+    const client = await getPsqlClient();
+    try {
+        await client.query(
+            `DELETE FROM diet_name
+        WHERE user_id = $1 AND diet_id = $2`,
+            [userId, dietId]);
+    } finally {
+        await client.end();
+    }
+    return;
+}
+
 exports.deleteDietLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
@@ -808,6 +717,61 @@ exports.deleteDietLambda = async (event, context) => {
 };
 
 
+async function deleteUser(userId, keepReviews, permanent) {
+    const client = await getPsqlClient();
+    try {
+        await client.query('BEGIN');
+        try {
+            await client.query(
+                `UPDATE user_profile
+                SET display_name = '', image_url = NULL, birth_year = NULL, birth_month = NULL,
+                gender = NULL, description = NULL, country_id = NULL, city_id = NULL, diet_id = NULL
+                WHERE user_id = $1`,
+                [userId]);
+            if (!keepReviews) {
+                await client.query(`DELETE FROM diet_name WHERE user_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM suspicious_review WHERE user_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_reject_log WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_accept_log WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM thumbs WHERE poster_id = $1 OR thumber_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review_diet WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM review WHERE poster_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM restaurant_ownership_request WHERE owner_id = $1`, [ownUserId]);
+                await client.query(`DELETE FROM restaurant_owners WHERE owner_id = $1`, [ownUserId]);
+                await client.query(
+                    `UPDATE user_stats
+                    SET countries = 0, cities = 0, reviews = 0, thumbs_up = 0, thumbs_down = 0,
+                    thumbs_up_given = 0, thumbs_down_given = 0, activity_level = 0, last_active = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            if (permanent) {
+                await client.query(
+                    `UPDATE user_login
+                    SET cognito_sub = NULL, username = NULL, email = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            else {
+                await client.query(
+                    `UPDATE user_login
+                    SET cognito_sub = NULL
+                    WHERE user_id = $1`,
+                    [userId]);
+            }
+            await client.query('COMMIT');
+        } catch (err) {
+            await client.query('ROLLBACK');
+            throw err;
+        }
+    }
+    finally {
+        client.end();
+    }
+    return;
+}
+
+
 exports.deleteUserLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
@@ -835,10 +799,55 @@ exports.deleteUserLambda = async (event, context) => {
 };
 
 
+async function getOwnDiets(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
+        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
+        WHERE user_id = $1
+        GROUP BY diet_id, diet_name.global_diet_id, name`,
+        [userId]);
+    if (res.rowCount > 0) {
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
+}
+
+async function getSelectedDiet(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id
+        FROM user_profile
+        WHERE user_id = $1`,
+        [userId]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No user found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more diets"
+        }
+    }
+    var dietId = res.rows[0]['diet_id'];
+    return dietId;
+}
+
+
 exports.getOwnDietsLambda = async (event, context) => {
     try {
         //TODO: get own user id using cognito
-        const ownUserId = 0;
+        const ownUserId = await getOwnUserId(event);
+        if (ownUserId === null) {
+            throw {
+                'statusCode': 400,
+                'error': "Not logged in"
+            }
+        }
 
         const client = await getPsqlClient();
 
@@ -851,6 +860,102 @@ exports.getOwnDietsLambda = async (event, context) => {
             await client.end();
         }
         
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+async function getOwnReviews(ownUserId, status, offset, limit) {
+    const client = await getPsqlClient();
+    var jsonObj = '';
+    try {
+        if (status == 0) {
+            const res = await client.query(
+                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
+                    rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id)
+                FROM review, review_diet, restaurant
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
+                    AND review_diet.restaurant_id = review.restaurant_id AND review_posted = posted
+                    AND restaurant.restaurant_id = review.restaurant_id
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj = JSON.parse(JSON.stringify(res.rows)); 
+            }
+        }
+        if (status == 1) {
+            const res = await client.query(
+                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
+                    rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id), accepted
+                FROM review, review_diet, restaurant, review_accept_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
+                    AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
+                    AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
+                    AND review_accept_log.restaurant_id = review.restaurant_id AND review_accept_log.review_posted = posted
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj = JSON.parse(JSON.stringify(res.rows));
+            }
+        }
+        if (status == 2) {
+            const res = await client.query(
+                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
+                    rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id), rejected, reason
+                FROM review, review_diet, restaurant, review_reject_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
+                    AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
+                    AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
+                    AND review_reject_log.restaurant_id = review.restaurant_id AND review_reject_log.review_posted = posted
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj = JSON.parse(JSON.stringify(res.rows));
+            }
+        }
+    } finally {
+        await client.end();
+    }
+    return jsonObj;
+}
+
+
+exports.getOwnReviewsLambda = async (event, context) => {
+    try {
+        //TODO: get own user id using cognito
+        const ownUserId = await getOwnUserId(event);
+        if (ownUserId === null) {
+            throw {
+                'statusCode': 400,
+                'error': "Not logged in"
+            }
+        }
+        const countryId = parseParam('country_id', event);
+
+        const status = parseIntParam('status', event);
+        if (status < 0 | status > 2) {
+            throw {
+                'statusCode': 400,
+                'error': "invalid status code"
+            }
+        }
+        const limit = parseIntParam('limit', event);
+        const offset = parseIntParam('offset', event);
+
+        var jsonObj = await getReviews(ownUserId, status, offset, limit);
+
         response = packResponse(jsonObj);
 
     } catch (err) {

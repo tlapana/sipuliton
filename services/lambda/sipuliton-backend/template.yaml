@@ -141,6 +141,22 @@ Resources:
                       Path: /profile/ownDiets
                       Method: get
 
+    ProfileOwnDietsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: profile/
+          Handler: profile.getOwnReviewsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /profile/ownReviews
+                      Method: get
+
     GetApiFoodGroupsFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
