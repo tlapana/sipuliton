@@ -9,7 +9,8 @@ import {
 	Label,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-const restaurantDataUrl = "";
+const reviewsDataUrl = "";
+var reviewIndex = 0;
 
 export default class Restaurant extends React.Component {
 	constructor(props) {
@@ -23,21 +24,22 @@ export default class Restaurant extends React.Component {
 			this.reviewList.relevance : [3, 2];
 			this.reviewList.allergyAwareness: [3, 3];
 			this.reviewList.serviceQuality : [2, 4];
+			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
 			this isLoaded : false;
 		};
-		this.loadRestaurant = this.loadRestaurant.bind(this);
+		this.loadReviews = this.loadRestaurant.bind(this);
 		this.looper = this.looper.bind(this);
 	}
-	loadRestaurant() {    
-		fetch(restaurantDataUrl)
+	loadReviews() {    
+		fetch(reviewsDataUrl)
 		.then(res => res.json())
 		.then(
 			(result) => {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
 				this.setState({
-					isLoaded: true,
-					restaurants: result.restaurants
+					isLoaded: true;
+					//TODO: set the review contents, once the exact format is known
 				});
 			},
 
@@ -63,10 +65,27 @@ export default class Restaurant extends React.Component {
 		}
 		return tagString;
 	}
-
+	changeReview() {
+		if (reviewIndex < this.reviewList.numberOfRevs) {
+			reviewIndex++;
+		}
+		else {
+			reviewIndex = 0;
+		}
+		this.setState({
+			isLoaded: true;
+		});
+	}
 	render() {
-		<div id="reviewList">
-		
+		<div id="reviewList" onClick={this.changeReview()}>
+		<h3>{this.reviewList.titles[reviewIndex]()}</h3>
+		<div id="reviewPicture"><img src={this.reviewList.pictures[reviewIndex]()} alt="Review picture"></div><br>
+		<div id="reviewText">{this.reviewList.reviews[reviewIndex]()}</div><br>
+		<div id="reviewUser">Arvostelija: {this.reviewList.users[reviewIndex]()}</div>
+		<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.reviewIndex.allergyTags[reviewIndex]())}</div><br>
+		<div id="reviewRelevance">Vastasi hakua: {this.reviewList.relevance[reviewIndex]()}</div><br>
+		<div id="reviewAwareness">Allergioiden huomioon otto: {this.reviewList.allergyAwareness[reviewIndex]()}</div><br>
+		<div id="reviewQuality">Palvelu ja laatu: {this.reviewList.serviceQuality[reviewIndex]()}</div>
 		</div>
 	}
 }

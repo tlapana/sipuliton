@@ -16,6 +16,7 @@ export default class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
+			//How the restaurant properties is made up, for now
 			this.restaurant.name : "Test";
 			this.restaurant.pictures : ["", "", ""];
 			this.restaurant.priceLevel : 2;
@@ -38,7 +39,7 @@ export default class Restaurant extends React.Component {
 				console.log(result);
 				this.setState({
 					isLoaded: true,
-					restaurants: result.restaurants
+					//TODO: set new restaurant properties, once the exact format is known
 				});
 			},
 
@@ -82,10 +83,11 @@ export default class Restaurant extends React.Component {
 		<div id="restaurantStats">Hintataso: {this.restaurant.priceLevel()}<br>
 		Käyttäjien arvio: {this.restaurant.userScore()}<br>
 		Allergiatunnisteet:<br>
-		{looper(this.restaurant.allergyTags())}</div><br>
+		{this.looper(this.restaurant.allergyTags())}</div><br>
 		<div id="restaurantDesc">{this.restaurant.description()}</div><br>
 		{this.renderRedirect()}
-		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.setRedirect}>Lisää arvostelu></Input>
+		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.setRedirect}>Lisää arvostelu></Input><br>
+		</ReviewList>
 		</div>
 	}
 }
