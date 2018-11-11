@@ -8,8 +8,9 @@
   margin-right: -50%;
 }*/
 
-.input {
-  margin: 10px 10px
+.social-login-container {
+  text-align: center;
+  margin: 1em 0;
 }
 
 .facebook-login-btn, .google-login-btn {
@@ -21,7 +22,6 @@
   margin: .5em;
   width: 20em;
   position: relative;
-  display: block;
 }
 
 .facebook-login-btn {

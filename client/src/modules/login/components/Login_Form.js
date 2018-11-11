@@ -4,10 +4,11 @@ This file implements regular login to the application.
 
 import React from 'react';
 import {
-  NavItem,
-  NavLink,
-  form,
-  Button
+  Button,
+	Form,
+	FormGroup,
+	Input,
+	Label,
 } from 'reactstrap';
 
 import { Auth } from "aws-amplify";
@@ -16,7 +17,6 @@ import { Redirect } from "react-router-dom";
 import config from "../../../config.js"
 /* Localization */
 import LocalizedStrings from 'react-localization';
-
 
 
 export default class MainMenu_ListItem extends React.Component{
@@ -109,31 +109,6 @@ export default class MainMenu_ListItem extends React.Component{
 
 
   render(){
-
-    /* Styles for the input box borders. */
-    var passwordBorderStyle = {
-      'borderStyle': 'solid solid solid solid',
-      'borderColor': 'black',
-    };
-    var usernameBorderStyle = {
-      'borderStyle': 'solid solid solid solid',
-      'borderColor': 'black',
-    };
-
-    /* Changes input box border colors to the red when they are not valid. */
-    if(!this.state.passwordIsValid){
-      passwordBorderStyle = {
-        'borderStyle': 'solid solid solid solid',
-        'borderColor': 'red',
-      };
-    }
-    if(!this.state.usernameIsValid){
-      usernameBorderStyle = {
-        'borderStyle': 'solid solid solid solid',
-        'borderColor': 'red',
-      };
-    }
-
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -152,14 +127,19 @@ export default class MainMenu_ListItem extends React.Component{
     return (
       <div>
         {this.state.loggingFailed && <div>{strings.wrongusername}</div>}
-        <form onSubmit={this.login}>
-          {strings.username} <input className="input" style={usernameBorderStyle} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-          {strings.password} <input className="input" style={passwordBorderStyle} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
-          <input type="submit" value={strings.login} />
-        </form>
+        <Form onSubmit={this.login}>
+          <FormGroup>
+            <Label>{strings.username}</Label>
+            <Input className={!this.state.usernameIsValid ? 'invalid' : ''} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.password}</Label>
+            <Input className={!this.state.passwordIsValid ? 'invalid' : ''} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
+          </FormGroup>
+
+          <Input type="submit" value={strings.login} className="btn main-btn big-btn mb-2" /> 
+        </Form>
         {this.state.loggingSucceeded && <Redirect to="/profile" />}
-
-
       </div>
 
     )

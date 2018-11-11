@@ -22,31 +22,34 @@ class Login extends React.Component {
         forgotpassword:"Forgot password?",
         login:"Login",
         notRegisteredYet:"Not registered yet?",
-        registerNow:"Register now!"
+        registerNow:"Register now!",
+        or:"Or",
       },
       fi: {
-        forgotpassword:"Unohditko salasana?",
+        forgotpassword:"Unohditko salasanasi?",
         login:"Kirjautuminen",
         notRegisteredYet:"Etkö ole vielä rekisteröitynyt?",
-        registerNow:"Rekisteröidy nyt!"
+        registerNow:"Rekisteröidy nyt!",
+        or:"Tai",
       }
     });
     strings.setLanguage(this.props.match.params.language);
     console.log(this.props.location);
 
     /* URL paths */
-    const pathToRegister = '/register/'+this.props.match.params.language
-    const pathToForgotPassword = '/forgot-password/'+this.props.match.params.language
+    const pathToRegister = '/' + this.props.match.params.language + '/register/';
+    const pathToForgotPassword = '/' + this.props.match.params.language + '/forgot-password/';
 
     return(
       <div id="login">
         <h2>{strings.login}</h2>
         <LoginForm language={this.props.match.params.language}/> 
-        <br/>
-        <SocialLogin/> 
-        <br/>
+        <div className="social-login-container">
+          <h5>{strings.or}</h5>
+          <SocialLogin/> 
+        </div>
         
-        <span>{strings.notRegisteredYet}</span>
+        <span>{strings.notRegisteredYet} </span>
         <Link tag={Link} to={pathToRegister}>
           {strings.registerNow}
         </Link>
