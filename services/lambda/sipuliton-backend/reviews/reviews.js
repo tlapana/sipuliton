@@ -37,20 +37,24 @@ let response;
  */
 exports.lambdaHandler = async (event, context) => {
     try {
+        // Result of this query will later go to the returned json
+        //TODO: fix reliability typo in database
+        var pageSize = event.queryStringParameters.pageSize
         const restaurantId = event.queryStringParameters.restaurantId
+        var pageNumber = event.queryStringParameters.pageNumber
 
-        var collectRestaurantPage = `
-        SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
-               rating_overall,
-               rating_realiability AS rating_reliability,
-               rating_variety,
-               rating_service_and_quality 
-        FROM restaurant INNER JOIN restaurant_diet_stats
-        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
-        WHERE restaurant.restaurant_id = $1
-        `;
-
+        const offset = pageNumber * pageSize
+        console.log(event)
+        var collectReviews = `
+        SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
+            rating_realiability as rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down
+        FROM review WHERE restaurant_id = $1
+        ORDER BY posted DESC
+        LIMIT $2 OFFSET $3
+        `
         var pg = require("pg");
+       
 
         //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
         var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
@@ -64,13 +68,14 @@ exports.lambdaHandler = async (event, context) => {
                 }
         });
         
-        const resRestaurant = await client.query(collectRestaurantPage, [restaurantId]);
-        var jsonString = JSON.stringify(resRestaurant.rows);
-        var jsonObjRestaurant = JSON.parse(jsonString);
+
+        const resReviews = await client.query(collectReviews, [restaurantId, pageSize, offset]);
+        var jsonString = JSON.stringify(resReviews.rows);
+        var jsonObjReviews = JSON.parse(jsonString);
         await client.end()
 
         var bodyJSON = {
-            'restaurant': jsonObjRestaurant
+            'reviews': jsonObjReviews
         }
 
         response = {
