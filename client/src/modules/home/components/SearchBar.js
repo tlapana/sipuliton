@@ -265,6 +265,7 @@ class SearchBar extends React.Component {
         pricing:"Hintaluokka"
       }
     });
+    
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
