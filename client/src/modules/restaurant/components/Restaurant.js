@@ -27,10 +27,12 @@ export default class Restaurant extends React.Component {
 			this.redirect : false;
 			this isLoaded : false;
 		};
-		this.loadRestaurant = this.loadRestaurant.bind(this);
+		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
+		this.setRedirect = this.setRedirect.bind(this);
+		this.renderRedirect = this.renderRedirect.bind(this);
 	}
-	loadRestaurant() {    
+	componentDidMount() {    
 		fetch(restaurantDataUrl)
 		.then(res => res.json())
 		.then(

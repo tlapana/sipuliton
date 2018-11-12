@@ -27,10 +27,11 @@ export default class ReviewList extends React.Component {
 			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
 			this isLoaded : false;
 		};
-		this.loadReviews = this.loadRestaurant.bind(this);
+		this.loadReviews = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
+		this.changeReview = this.changeReview.bind(this);
 	}
-	loadReviews() {    
+	componentDidMount() {    
 		fetch(reviewsDataUrl)
 		.then(res => res.json())
 		.then(
