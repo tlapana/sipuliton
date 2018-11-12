@@ -17,7 +17,7 @@ constructor(props) {
     super(props);
     this.state = {
       error: null,
-      restaurants: props.restaurants
+      restaurants: props.restaurants.restaurants
     };
 
     console.log("SearchResults: Received following props:")
@@ -74,8 +74,8 @@ constructor(props) {
 
           {restaurants.map((restaurant) =>
             <div className="event" key={restaurant.name}>
-            {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.street_address}
+            {restaurant.restaurant_name} {this.renderStars(restaurant.rating_overall)} <br/>
+            {restaurant.street_address}, {restaurant.city_name}
             </div>
           )}
 

@@ -43,7 +43,7 @@ class Home extends React.Component {
     this.setState({
       restaurants : results,
       searchDone : true,
-      searching : false,
+      searchInProgress : false,
       error : null
     });
 
@@ -55,7 +55,7 @@ class Home extends React.Component {
   //Toggles flag that search is being done
   searching() {
     this.setState({
-      searching : true,
+      searchInProgress : true,
       error : null
     });
   }
@@ -64,7 +64,7 @@ class Home extends React.Component {
   errorHappened(errorMsg) {
     this.setState({
       error : errorMsg,
-      searching : false
+      searchInProgress : false
     });
     
     console.log(errorMsg);
@@ -135,7 +135,7 @@ class Home extends React.Component {
           </div>
         );
       }
-      else if(!this.state.searching) {
+      else if(!this.state.searchInProgress) {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
@@ -150,7 +150,7 @@ class Home extends React.Component {
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}/>
             <div className="eventsDiv"> 
-              <h3> Haetaan tuloksia <ReactAnimatedEllipsis/> </h3>
+              <h3> Haetaan tuloksia  </h3>
             </div>
           </div>
         );       

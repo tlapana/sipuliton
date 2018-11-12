@@ -104,11 +104,11 @@ class SearchBar extends React.Component {
       console.log(this.state.filters);
       
       //Basic search portion
-      var url = "http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall"
-                  + "?minOverallRating=" + this.state.minOverall
-                  + "?minReliabilityRating=" + this.state.minReliability
-                  + "?minVarietyRating=" + this.state.minService
-                  + "?minServiceAndQualityRating=" + this.state.minVariety;
+      var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                  + '?minOverallRating=' + this.state.minOverall
+                  + '?minReliabilityRating=' + this.state.minReliability
+                  + '?minVarietyRating=' + this.state.minService
+                  + '?minServiceAndQualityRating=' + this.state.minVariety;
                   
       console.log("URL to fetch from: " + url)           ; 
       this.props.searching();
@@ -120,7 +120,7 @@ class SearchBar extends React.Component {
           console.log(result);
 
           //Send data via props
-          //this.props.onSearchDone( results );
+          this.props.onSearchDone( result );
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -248,7 +248,8 @@ class SearchBar extends React.Component {
         overall:"Overall rating",
         reliability:"Menu reliability",
         service:"Service & Food",
-        variety:"Menu variety"
+        variety:"Menu variety",
+        pricing:"Pricing"
       },
       fi: {
         search:"Hae...",
@@ -260,8 +261,8 @@ class SearchBar extends React.Component {
         overall:"Keskiarvo",
         reliability:"Ruokavalion luotettavuus",
         service:"Ruoka ja palvelu",
-        variety:"Ruokalajien laajuus"
-        
+        variety:"Ruokalajien laajuus",
+        pricing:"Hintaluokka"
       }
     });
     if(typeof this.props.language !== 'undefined'){
@@ -331,14 +332,14 @@ class SearchBar extends React.Component {
               size = {24}
               onChange = {this.changeVariety}
             />
-            {strings.variety}
+            {strings.pricing}
             <ReactStars
-              value = {this.state.minVariety}
+              value = {this.state.pricing}
               count = {3}
               size = {24}
               char = '€'
               half = {false}
-              onChange = {this.changeVariety}
+              onChange = {this.changePricing}
             />
               
           </ModalBody>
