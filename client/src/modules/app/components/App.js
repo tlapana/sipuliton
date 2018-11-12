@@ -7,6 +7,8 @@ import { Container } from 'reactstrap';
 import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
+import Profile from '../../userProfile';
+
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import NotFound from './NotFound';
@@ -40,7 +42,9 @@ class App extends React.Component {
                   <Route path="/:language/login/" component={Login} />
                   <Route path="/:language/register/" component={Register} />
                   <Route path="/:language/forgot-password/" component={ForgotPassword} />
-                  <Route component={NotFound} />
+               <Route path="/:language/userProfile/" component={Profile} />
+  
+                <Route component={NotFound} />
                 </Switch>
               </div>
               <Footer/>
