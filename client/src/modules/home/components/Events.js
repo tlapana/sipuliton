@@ -57,13 +57,13 @@ constructor(props) {
     const starIcons = [];
     while(starCount >= 1)
     {
-      starIcons.push(<FontAwesomeIcon icon="star" />);
+      starIcons.push(<FontAwesomeIcon icon="star" key={starCount} />);
       starCount = starCount - 1;
     }
     //console.log(starCount);
     if(starCount >= 0.5)
     {
-      starIcons.push(<FontAwesomeIcon icon="star-half" />);
+      starIcons.push(<FontAwesomeIcon icon="star-half" key={starCount} />);
       //console.log("Half star added");
     }
     //console.log(starIcons);

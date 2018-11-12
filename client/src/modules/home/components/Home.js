@@ -11,6 +11,9 @@ import Events from './Events.js'
 import SearchResults from './SearchResults.js'
 import { Redirect } from 'react-router-dom';
 
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
 class Home extends React.Component {
 
   constructor(props, context) {
@@ -20,11 +23,15 @@ class Home extends React.Component {
     //Bind the functions
     this.setState = this.setState.bind(this);
     this.handleResults = this.handleResults.bind(this);
+    this.searching = this.searching.bind(this);
+    this.errorHappened = this.errorHappened.bind(this);
 
     this.state = {
       error: null,
       searchDone: false,
-      restaurants: []
+      restaurants: [],
+      searchInProgress: false,
+      error: null
     };
   }
 
@@ -32,19 +39,37 @@ class Home extends React.Component {
     this._isMounted = true;
   }
 
-  //When we get results, we need to collect them and set our searchDone to truee
+  //When we get results, we need to collect them and set our searchDone to true
   handleResults(results) {
-
 
     this.setState({
       restaurants : results,
-      searchDone : true
+      searchDone : true,
+      searching : false,
+      error : null
     });
 
     console.log("A search was done with following results:");
     console.log(this.state.restaurants);
     console.log(this.state.searchDone);
-
+  }
+  
+  //Toggles flag that search is being done
+  searching() {
+    this.setState({
+      searching : true,
+      error : null
+    });
+  }
+  
+  
+  errorHappened(errorMsg) {
+    this.setState({
+      error : errorMsg,
+      searching : false
+    });
+    
+    console.log(errorMsg);
   }
 
   render() {
@@ -95,15 +120,59 @@ class Home extends React.Component {
       )
     }
     
+    let strings = new LocalizedStrings({
+      en:{
+        searching: "Fetching results...",
+        errorTitle:"An error has occured.",
+        errorName:"Error message: ",
+        errorText:"If this error persists, contact support"
+      },
+      fi: {
+        searching: "Haetaan tuloksia...",
+        errorTitle:"An error has occured.",
+        errorName:"Error message: ",
+        errorText:"If this error persists, contact support"
+        
+      }
+    });
+    
     if(!this.state.searchDone)
     {
-      return (
-      <div className="landingDiv">
-        <SearchBar onSearchDone={this.handleResults}
-          language={this.props.match.params.language}/>
-        <Events />
-      </div>
-      );
+      if (this.state.error != null)
+      {
+        return (
+          <div className="landingDiv">
+            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
+              language={this.props.match.params.language}/>
+            <div className="eventsDiv"> 
+              <h3> Tapahtui virhe </h3>
+              Virhe: {this.state.error.message} <br/>
+              Jos virhe toistuu useammin, ota yhteyttä sivuston ylläpitoon.              
+            </div>
+          </div>
+        );
+      }
+      else if(!this.state.searching) {
+        return (
+          <div className="landingDiv">
+            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
+              language={this.props.match.params.language}/>
+            <Events />
+          </div>
+        );        
+      }
+      else{
+        return (
+          <div className="landingDiv">
+            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
+              language={this.props.match.params.language}/>
+            <div className="eventsDiv"> 
+              <h3> {strings.searching} </h3>
+            </div>
+          </div>
+        );       
+      }
+
     }
     else {
       return (
