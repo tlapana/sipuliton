@@ -105,10 +105,10 @@ class SearchBar extends React.Component {
       
       //Basic search portion
       var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
-                  + '?minOverallRating=' + this.state.minOverall
-                  + '?minReliabilityRating=' + this.state.minReliability
-                  + '?minVarietyRating=' + this.state.minService
-                  + '?minServiceAndQualityRating=' + this.state.minVariety;
+                  + '&minOverallRating=' + this.state.minOverall
+                  + '&minReliabilityRating=' + this.state.minReliability
+                  + '&minVarietyRating=' + this.state.minService
+                  + '&minServiceAndQualityRating=' + this.state.minVariety;
                   
       console.log("URL to fetch from: " + url)           ; 
       this.props.searching();

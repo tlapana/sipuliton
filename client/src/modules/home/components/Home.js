@@ -56,7 +56,8 @@ class Home extends React.Component {
   searching() {
     this.setState({
       searchInProgress : true,
-      error : null
+      searchDone : false,
+      error : null,
     });
   }
   
@@ -126,7 +127,8 @@ class Home extends React.Component {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}/>
+              language={this.props.match.params.language}
+            />
             <div className="eventsDiv"> 
               <h3> Tapahtui virhe </h3>
               Virhe: {this.state.error.message} <br/>
@@ -139,7 +141,8 @@ class Home extends React.Component {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}/>
+              language={this.props.match.params.language}
+            />
             <Events />
           </div>
         );        
@@ -148,9 +151,10 @@ class Home extends React.Component {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}/>
+              language={this.props.match.params.language}
+            />
             <div className="eventsDiv"> 
-              <h3> Haetaan tuloksia  </h3>
+              <h3> Haetaan tuloksia <ReactAnimatedEllipsis/>  </h3>
             </div>
           </div>
         );       
@@ -160,8 +164,9 @@ class Home extends React.Component {
     else {
       return (
       <div className="landingDiv">
-        <SearchBar onSearchDone={this.handleResults}
-          language={this.props.match.params.language}/>
+        <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
+          language={this.props.match.params.language}
+        />
         <SearchResults restaurants={this.state.restaurants}
           language={this.props.match.params.language}/>
       </div>
