@@ -7,7 +7,7 @@ import { Container } from 'reactstrap';
 import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
-import Profile from '../../userProfile'
+import Reviews from '../../myReviews'
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar'
 
@@ -28,7 +28,7 @@ const App = ({ store }) => (
             <Switch>
               <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
-            <Route path="/userProfile" component={Profile} />
+            <Route path="/myReviews" component={Reviews} />
               <Route component={NotFound} />
             </Switch>
           </div>
