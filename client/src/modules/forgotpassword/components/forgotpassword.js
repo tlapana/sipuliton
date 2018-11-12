@@ -11,6 +11,7 @@ class ForgotPassword extends React.Component {
     super(props);
   }
   render() {
+    
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -23,11 +24,11 @@ class ForgotPassword extends React.Component {
     strings.setLanguage(this.props.match.params.language);
 
     return(
-      <div id="forgotPassword">
+      <div id="forgotPassword" className="max-w-40">
         <h2>{strings.forgotpassword}</h2>
         <ForgotPasswordForm language={this.props.match.params.language}/>
       </div>
-    )
+    );
   }
 }
 

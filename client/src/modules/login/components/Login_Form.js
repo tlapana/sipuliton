@@ -137,7 +137,7 @@ export default class MainMenu_ListItem extends React.Component{
             <Input className={!this.state.passwordIsValid ? 'invalid' : ''} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
           </FormGroup>
 
-          <Input type="submit" value={strings.login} className="btn main-btn big-btn mb-2" /> 
+          <Input type="submit" value={strings.login} className="main-btn big-btn max-w-10" /> 
         </Form>
         {this.state.loggingSucceeded && <Redirect to="/profile" />}
       </div>

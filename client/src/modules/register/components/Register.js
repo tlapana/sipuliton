@@ -229,7 +229,7 @@ export default class Register extends React.Component {
 
 		/*The first form where the user enters info needed for an account*/
 		return (
-			<div id="register">
+			<div id="register" className="max-w-40">
 				<h2>{strings.register}</h2>
 				<Form onSubmit={this.handleRegistration}>
 					<FormGroup>
@@ -259,11 +259,11 @@ export default class Register extends React.Component {
 						</Label>
 					</FormGroup>
 					<br/>
-					<Input type="submit" value={strings.register} disabled={!this.validateForm()} className="btn main-btn mb-2" />
+					<Input type="submit" value={strings.register} disabled={!this.validateForm()} className="main-btn big-btn max-w-10" />
 				</Form>
 				<div>
 					{strings.alreadyRegistered}
-					<Link tag={Link} to={'/' + this.props.match.params.language + '/login/'}>
+					<Link to={'/' + this.props.match.params.language + '/login/'}>
           	{strings.loginHere}
         	</Link>
 				</div>

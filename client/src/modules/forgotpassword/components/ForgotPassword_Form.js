@@ -7,7 +7,11 @@ password to account with sended code.
 
 import React from 'react';
 import {
-  form,
+  Button,
+  Form,
+  FormGroup,
+  Input,
+  Label,
 } from 'reactstrap';
 import { Auth } from "aws-amplify";
 import { Redirect } from "react-router-dom";
@@ -32,17 +36,17 @@ export default class ForgotPassword_Form extends React.Component{
       code:"",
       codeSentSuccesfully: false,
       passwordChangedSuccesfully:false,
-      passwordsMatch: false,
+      passwordsMatch: true,
       codeSendingFailed: false,
       email:"",
       limitExceeded:false,
       codeIsValid:true,
       usernameIsValid:true,
       newPasswordIsValid:true,
-      newPasswordAgainIsValid:true
 
     };
     this.sendCodeAgain = this.sendCodeAgain.bind(this);
+    this.validateChangeForm = this.validateChangeForm.bind(this);
   }
 
   /*
@@ -57,13 +61,12 @@ export default class ForgotPassword_Form extends React.Component{
       code:"",
       codeSentSuccesfully: false,
       passwordChangedSuccesfully:false,
-      passwordsMatch: false,
+      passwordsMatch: true,
       passwordChangingFailed: false,
       limitExceeded:false,
       codeIsValid:true,
       usernameIsValid:true,
       newPasswordIsValid:true,
-      newPasswordAgainIsValid:true
     })
   }
 
@@ -80,8 +83,9 @@ export default class ForgotPassword_Form extends React.Component{
             console.log(data);
             this.setState({
               codeSentSuccesfully: true,
-              email:data.CodeDeliveryDetails.Destination,
-              codeSendingFailed:false
+              email: data.CodeDeliveryDetails.Destination,
+              codeSendingFailed: false,
+              limitExceeded: false,
             });
           })
           .catch(err => {
@@ -114,8 +118,18 @@ export default class ForgotPassword_Form extends React.Component{
   */
   changePassword = (event) => {
     event.preventDefault();
+    let strings = new LocalizedStrings({
+      en:{
+        changeSuccess:"Password changed successfully!",
+      },
+      fi: {
+        changeSuccess:"Salasana vaihdettu onnistuneesti!",
+      }
+    });
+    strings.setLanguage(this.props.language);
+
     if(this.state.passwordsMatch && this.state.codeIsValid
-      && this.state.newPasswordIsValid && this.state.newPasswordAgainIsValid){
+      && this.state.newPasswordIsValid) {
       /* Changes user password for the user. */
       Auth.forgotPasswordSubmit(
         this.state.username,
@@ -124,12 +138,12 @@ export default class ForgotPassword_Form extends React.Component{
       )
         .then(data => {
           this.setState({passwordChangedSuccesfully: true});
-          alert("Salasana vaihdettu onnistuneesti!");
+          alert(strings.changeSuccess);
         })
         .catch(err => this.setState({
-                passwordChangedSuccesfully:false,
-                passwordChangingFailed: true
-              }));
+          passwordChangedSuccesfully:false,
+          passwordChangingFailed: true
+        }));
     }
     else{
       this.setState({
@@ -140,17 +154,28 @@ export default class ForgotPassword_Form extends React.Component{
 
   }
 
+	validateChangeForm() {
+		/*Make sure all fields are okay*/
+		const isValid = (
+			this.state.newPasswordIsValid && this.state.newPassword.length > 0 &&
+			this.state.passwordsMatch && this.state.newPasswordAgain.length > 0 && 
+			this.state.codeIsValid && this.state.code.length > 0
+		);
+		return isValid;
+	}
+
   /*
   This method implements code validation. This only checks that code is not
   too short or too long. Lenghts are read from config.js file.
   */
   changeCode = (event) => {
-    if(event.target.value.length >= config.login.CODE_MIN_LENGTH
-      && event.target.value.length <= config.login.CODE_MAX_LENGTH){
-      this.setState({code: event.target.value, codeIsValid: true });
+    const code = event.target.value;
+    if (code.length >= config.login.CODE_MIN_LENGTH
+      && code.length <= config.login.CODE_MAX_LENGTH) {
+      this.setState({code: code, codeIsValid: true });
     }
-    else{
-        this.setState({code: event.target.value, codeIsValid: false });
+    else {
+        this.setState({code: code, codeIsValid: false });
     }
   }
 
@@ -159,12 +184,13 @@ export default class ForgotPassword_Form extends React.Component{
   not too short or too long. Lenghts are read from config.js file.
   */
   changeUsername = (event) => {
-    if(event.target.value.length >= config.login.USERNAME_MIN_LENGTH
-      && event.target.value.length <= config.login.USERNAME_MAX_LENGTH){
-      this.setState({username: event.target.value, usernameIsValid: true });
+    const username = event.target.value;
+    if (username.length >= config.login.USERNAME_MIN_LENGTH
+      && username.length <= config.login.USERNAME_MAX_LENGTH) {
+      this.setState({username: username, usernameIsValid: true });
     }
-    else{
-        this.setState({username: event.target.value, usernameIsValid: false });
+    else {
+        this.setState({username: username, usernameIsValid: false });
     }
   }
 
@@ -173,80 +199,67 @@ export default class ForgotPassword_Form extends React.Component{
   is not too short or too long. Lenghts are read from config.js file.
   */
   changeNewPassword = (event) => {
-    if(event.target.value.length >= config.login.PASSWORD_MIN_LENGTH
-      && event.target.value.length <= config.login.PASSWORD_MAX_LENGTH){
-        this.setState({ newPassword: event.target.value, newPasswordIsValid: true });
-    }
-    else{
-        this.setState({newPassword: event.target.value, newPasswordIsValid: false });
-    }
+    const password = event.target.value;
+    const reLowerCase = /[a-z]/;
+    const reNumber = /[0-9]/;
+		const isValid = (
+			password != null && 
+			password.length >= config.login.PASSWORD_MIN_LENGTH && 
+			password.length <= config.login.PASSWORD_MAX_LENGTH && 
+			reLowerCase.test(password) && 
+			reNumber.test(password)
+		);
+
+    const passwordsMatch = (password === this.state.newPasswordAgain);
+    this.setState({ 
+      newPassword: password, 
+      newPasswordIsValid: isValid, 
+      passwordsMatch: passwordsMatch,
+    });
   }
 
   /*
   This method implements second new password validation. This only checks that
-  password is not too short or too long. Lenghts are read from config.js file.
+  password is the same as the first password. 
   */
   changeNewPasswordAgain = (event) => {
-    /*Implement validation of password*/
-    if(event.target.value === this.state.newPassword){
-      this.setState({
-        newPasswordAgain: event.target.value,
-        passwordsMatch:true
-      });
-    }
-    else{
-      this.setState({
-        newPasswordAgain: event.target.value,
-        passwordsMatch:false
-      });
-    }
-    if(event.target.value.length >= config.login.PASSWORD_MIN_LENGTH
-      && event.target.value.length <= config.login.PASSWORD_MAX_LENGTH){
-        this.setState({newPasswordAgainIsValid: true });
-    }
-    else{
-        this.setState({newPasswordAgainIsValid: false });
-    }
-
+    const password2 = event.target.value;
+    this.setState({
+      newPasswordAgain: password2,
+      passwordsMatch: (password2 === this.state.newPassword),
+    });
   }
 
   render(){
-
-    /* Password fields border colors. Borders are red until passwords matches.*/
-    var passwordBorder = {
-      'borderStyle': 'solid solid solid solid',
-      'borderColor': 'black'
-    };
-    if(!this.state.passwordsMatch){
-      passwordBorder = {
-        'borderStyle': 'solid solid solid solid',
-        'borderColor': 'red'
-      };
-    }
-
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
         username:"Username:",
+        sendCode:"Send code",
         usernotfound:"User not found or username is invalid.",
-        limitexceeded:"You send code too many times in a row, try again later.",
-        passwordchangedidntsuccee:"Password didn't succee, password or code is invalid.",
-        codesentto:"Code is sent to following email address: ",
-        newpassword:"New password: ",
-        newpasswordagain:"New password again: ",
-        code:"Code: ",
-        sendcodeagain:"Send code again"
+        limitexceeded:"You send a code too many times in a row, try again later.",
+        passwordchangedidntsuccee:"Password didn't succeed, password or code is invalid.",
+        codesentto:"Code was sent to following email address: ",
+        newpassword:"New password:",
+        newpasswordagain:"New password again:",
+        code:"Code:",
+        didntGetEmail:"Didn't get email? ",
+        sendcodeagain:"Send code again",
+        changePassword:"Change password",
       },
       fi: {
         username:"Käyttäjänimi:",
+        sendCode:"Lähetä koodi",
         usernotfound:"Käyttäjää ei löydy tai käyttäjänimi ei ole validi.",
         limitexceeded:"Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
         passwordchangedidntsuccee:"Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.",
         codesentto:"Koodi lähetetty sähköpostilla osoitteeseen: ",
-        newpassword:"Uusi salasana: ",
-        newpasswordagain:"Uusi salasana uudelleen: ",
-        code:"Koodi: ",
-        sendcodeagain:"Lähetä koodi uudelleen"
+        newpassword:"Uusi salasana:",
+        newpasswordagain:"Uusi salasana uudelleen:",
+        code:"Koodi:",
+        didntGetEmail:"Etkö saanut sähköpostia? ",
+        sendcodeagain:"Lähetä koodi uudelleen",
+        changePassword:"Vaihda salasana",
       }
     });
     strings.setLanguage(this.props.language);
@@ -256,31 +269,46 @@ export default class ForgotPassword_Form extends React.Component{
         {this.state.codeSendingFailed && <div>{strings.usernotfound}</div>}
         {this.state.limitExceeded && <div>{strings.limitexceeded}</div>}
         {!this.state.codeSentSuccesfully &&
-          <form onSubmit={this.sendCode}>
-            {strings.username}<input className="input" value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-            <input type="submit" value="Lähetä koodi" />
-          </form>
+          <Form onSubmit={this.sendCode}>
+            <FormGroup>
+              <Label>{strings.username}</Label>
+              <Input className={!this.state.usernameIsValid ? 'invalid' : ''} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+            </FormGroup>
+            <Input className="main-btn big-btn max-w-10" type="submit" value={strings.sendCode} />
+          </Form>
         }
         {this.state.passwordChangingFailed &&
           <div>
             {strings.passwordchangedidntsuccee}
           </div>
         }
-        {this.state.codeSentSuccesfully &&
 
+        {this.state.codeSentSuccesfully && 
           <div>
-            <p>{strings.codesentto}{this.state.email}</p>
-            <form onSubmit={this.changePassword}>
-              {strings.newpassword} <input className="input" value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required />
-              {strings.newpasswordagain} <input className="input" style={passwordBorder} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password" required />
-              {strings.code} <input className="input" value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
-              <input type="submit" value="Vaihda salasana"/>
-            </form>
-            <button onClick={this.sendCodeAgain}>{strings.sendcodeagain}</button>
+            <p>{strings.codesentto}{this.state.email}.</p>
+            <p>
+              {strings.didntGetEmail}
+              <Button onClick={this.sendCodeAgain} className="secondary-btn small-btn">{strings.sendcodeagain}</Button>
+            </p>
+            <Form onSubmit={this.changePassword}>
+              <FormGroup>
+                <Label>{strings.newpassword}</Label>
+                <Input className={!this.state.newPasswordIsValid ? 'invalid' : ''} value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required autoFocus />
+              </FormGroup>
+              <FormGroup>
+                <Label>{strings.newpasswordagain}</Label>
+                <Input className={!this.state.passwordsMatch ? 'invalid' : ''} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password2" required />
+              </FormGroup>
+              <FormGroup>
+                <Label>{strings.code}</Label>
+                <Input className={!this.state.codeIsValid ? 'invalid' : ''} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
+              </FormGroup>
+              <Input type="submit" value={strings.changePassword} disabled={!this.validateChangeForm()} className="main-btn big-btn max-w-10"/>
+            </Form>
           </div>
         }
 
-        {this.state.passwordChangedSuccesfully && <Redirect to="/login" />}
+        {this.state.passwordChangedSuccesfully && <Redirect to={'/' + this.props.language + '/login'} />}
 
       </div>
 

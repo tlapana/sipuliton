@@ -13,6 +13,7 @@ import { Auth } from "aws-amplify";
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login'
+import LocalizedStrings from 'react-localization';
 
 import config from "../../../config.js"
 
@@ -101,8 +102,18 @@ export default class SocialLogin extends React.Component {
     console.log(response);
   }
    
-  render() {  
-
+  render() {
+    let strings = new LocalizedStrings({
+      en:{
+        fbLogin:'Facebook login',
+        googleLogin: 'Google login',
+      },
+      fi: {
+        fbLogin: 'Facebook kirjautuminen',
+        googleLogin: 'Google kirjautuminen',
+      }
+    });
+    strings.setLanguage(this.props.language);
     return (
       <div>
         <GoogleLogin
@@ -113,14 +124,14 @@ export default class SocialLogin extends React.Component {
           onFailure={this.responseFailure}
         >
           <FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>
-          <span>Google kirjautuminen</span>
+          <span>{strings.googleLogin}</span>
         </GoogleLogin>
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
           cssClass="facebook-login-btn"
           icon={<FontAwesomeIcon icon={["fab", "facebook-f"]} />}
-          textButton="Facebook kirjautuminen"
+          textButton={strings.fbLogin}
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
         >

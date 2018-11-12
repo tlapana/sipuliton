@@ -15,9 +15,52 @@ input.invalid, input.invalid:focus {
   box-shadow: 0 0 0 0.2rem #F58F8F;
 }
 
-.main-btn.big-btn {
-  padding: auto 2em;
+.centered-block {
+  margin: auto;
+  display: block;
 }
+
+.main-btn.big-btn,
+.secondary-btn.big-btn,
+.tertiary-btn.big-btn {
+  padding: 1em 0;
+  height: auto;
+}
+
+.main-btn.small-btn,
+.secondary-btn.small-btn,
+.tertiary-btn.small-btn {
+  padding: .2em .2em;
+  height: auto;
+}
+
+form .main-btn {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.max-w-40 {
+  max-width: 40em;
+  margin: auto;
+}
+
+.max-w-20 {
+  max-width: 20em;
+  margin: auto;
+}
+
+.max-w-10 {
+  max-width: 10em;
+  margin: auto;
+}
+
+.max-w-5 {
+  max-width: 5em;
+  margin: auto;
+}
+
 
 
 

@@ -41,20 +41,20 @@ class Login extends React.Component {
     const pathToForgotPassword = '/' + this.props.match.params.language + '/forgot-password/';
 
     return(
-      <div id="login">
+      <div id="login" className="max-w-40">
         <h2>{strings.login}</h2>
         <LoginForm language={this.props.match.params.language}/> 
         <div className="social-login-container">
           <h5>{strings.or}</h5>
-          <SocialLogin/> 
+          <SocialLogin language={this.props.match.params.language}/> 
         </div>
         
         <span>{strings.notRegisteredYet} </span>
-        <Link tag={Link} to={pathToRegister}>
+        <Link to={pathToRegister}>
           {strings.registerNow}
         </Link>
         <br/>
-        <Link tag={Link} to={pathToForgotPassword}>
+        <Link to={pathToForgotPassword}>
           {strings.forgotpassword}
         </Link>
       </div>
