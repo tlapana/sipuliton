@@ -1,6 +1,6 @@
 import React, { } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-
+  
  
 class Profile extends React.Component {
       constructor(props) {
