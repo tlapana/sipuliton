@@ -5,14 +5,12 @@
 */
 
 import React from 'react';
+import ReactAnimatedEllipsis  from 'react-animated-ellipsis';
 import styles from '../../../styles/landingpage.css';
-import SearchBar from './SearchBar.js'
-import Events from './Events.js'
-import SearchResults from './SearchResults.js'
+import SearchBar from './SearchBar.js';
+import Events from './Events.js';
+import SearchResults from './SearchResults.js';
 import { Redirect } from 'react-router-dom';
-
-/* Localization */
-import LocalizedStrings from 'react-localization';
 
 class Home extends React.Component {
 
@@ -120,21 +118,6 @@ class Home extends React.Component {
       )
     }
     
-    let strings = new LocalizedStrings({
-      en:{
-        searching: "Fetching results...",
-        errorTitle:"An error has occured.",
-        errorName:"Error message: ",
-        errorText:"If this error persists, contact support"
-      },
-      fi: {
-        searching: "Haetaan tuloksia...",
-        errorTitle:"An error has occured.",
-        errorName:"Error message: ",
-        errorText:"If this error persists, contact support"
-        
-      }
-    });
     
     if(!this.state.searchDone)
     {
@@ -167,7 +150,7 @@ class Home extends React.Component {
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}/>
             <div className="eventsDiv"> 
-              <h3> {strings.searching} </h3>
+              <h3> Haetaan tuloksia <ReactAnimatedEllipsis/> </h3>
             </div>
           </div>
         );       
