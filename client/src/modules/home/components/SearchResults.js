@@ -15,6 +15,9 @@ class SearchResults extends React.Component {
 
 constructor(props) {
     super(props);
+    
+    this.renderWeblink = this.renderWeblink.bind(this);
+    
     this.state = {
       error: null,
       restaurants: props.restaurants.restaurants
@@ -45,6 +48,16 @@ constructor(props) {
     //console.log(starIcons);
     return starIcons
   }
+  
+  renderWeblink(address)
+  {
+    if(address != null) {
+      return ([<a href={address}> {address} </a>, <br/>]);
+    }
+    else {
+      return ('');
+    }
+  }
 
   render() {
 
@@ -74,7 +87,8 @@ constructor(props) {
 
           {restaurants.map((restaurant) =>
             <div className="event" key={restaurant.name}>
-            {restaurant.restaurant_name} {this.renderStars(restaurant.rating_overall)} <br/>
+            <a href={'/restaurant/${restaurant.restaurant_id}'}> {restaurant.restaurant_name} </a>  {this.renderStars(restaurant.rating_overall)} <br/>
+            {this.renderWeblink(restaurant.website)}
             {restaurant.street_address}, {restaurant.city_name}
             </div>
           )}
