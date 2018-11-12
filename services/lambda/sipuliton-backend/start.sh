@@ -2,6 +2,12 @@
  npm install
  cd ../search
  npm install
+ cd ../profile
+ npm install
+ cd ../restaurant
+ npm install
+ cd ../reviews
+ npm install
  cd ..
 
  sam local start-api --docker-network sipuliton

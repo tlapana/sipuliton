@@ -61,3 +61,7 @@ INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 
+INSERT INTO review(restaurant_id, user_id, posted, status, title, free_text, rating_overall, rating_realiability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down) VALUES
+    ('1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
+    ('1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
+

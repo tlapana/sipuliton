@@ -1,8 +1,8 @@
 {
-  "name": "landing",
+  "name": "restaurant",
   "version": "0.1.1",
-  "description": "GET endpoint for landing page",
-  "main": "src/landing.js",
+  "description": "GET endpoint for restaurant page",
+  "main": "src/restaurant.js",
   "repository": "",
   "author": "Sergei Häyrynen",
   "license": "",
