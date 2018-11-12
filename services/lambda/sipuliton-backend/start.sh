@@ -1,6 +1,10 @@
  cd landing
  npm install
- cd ../search
+ cd ../profile
+ npm install
+ cd ../restaurant
+ npm install
+ cd ../reviews
  npm install
  cd ..
 
