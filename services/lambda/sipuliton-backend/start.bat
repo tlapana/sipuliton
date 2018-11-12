@@ -1,5 +1,9 @@
  cd landing
  call npm install
+ cd ../restaurant
+ call npm install
+ cd ../reviews
+ call npm install
  cd ..
  
  @REM docker-network sipuliton
