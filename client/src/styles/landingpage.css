@@ -69,6 +69,7 @@ button.filterBtn {
   margin-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  text-align: center;
   clear: both;
 }
 
@@ -83,6 +84,21 @@ button.filterBtn {
  border-color: #e5e5e5;
  border-style: solid;
  border-width: 1px;
+}
+
+a.event {
+ display: block;
+ width: 100%;
+ padding-left: 30px;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ margin-left: 5px;
+ margin-right: 5px;
+ border-radius: 10px;
+ border-color: #e5e5e5;
+ border-style: solid;
+ border-width: 1px;
+ text-decoration: none;
 }
 
 .instructions {
@@ -103,7 +119,10 @@ button.filterBtn {
   
 }
 
-.modalBackgroundStyle
+.loadingSpinner
 {
-  
+  margin-left: auto;
+  margin-right: auto;
+  height: 50px;
+  width: 50px;
 }

@@ -88,7 +88,6 @@ constructor(props) {
           {restaurants.map((restaurant) =>
             <div className="event" key={restaurant.name}>
             <a href={'/restaurant/${restaurant.restaurant_id}'}> {restaurant.restaurant_name} </a>  {this.renderStars(restaurant.rating_overall)} <br/>
-            {this.renderWeblink(restaurant.website)}
             {restaurant.street_address}, {restaurant.city_name}
             </div>
           )}

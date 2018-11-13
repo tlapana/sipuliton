@@ -5,7 +5,7 @@
 */
 
 import React from 'react';
-import ReactAnimatedEllipsis  from 'react-animated-ellipsis';
+import ReactLoading from 'react-loading';
 import styles from '../../../styles/landingpage.css';
 import SearchBar from './SearchBar.js';
 import Events from './Events.js';
@@ -128,12 +128,12 @@ class Home extends React.Component {
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
-        search:"Searching...",
+        search:"Searching restaurants",
         errorTitle:"Error",
         errorText:"If this problem continues please contact support"
       },
       fi: {
-        search:"Haetaan...",
+        search:"Haetaan ravintoloita",
         errorTitle:"Virhe",
         errorText:"Jos tämä ongelma jatkuu, ole hyvä ja ota yhteyttä ylläpitoon"
       }
@@ -179,7 +179,7 @@ class Home extends React.Component {
               language={this.props.match.params.language}
             />
             <div className="eventsDiv"> 
-              <h3> {strings.search}     </h3>
+              <h3> {strings.search} <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" />     </h3>
             </div>
           </div>
         );       
