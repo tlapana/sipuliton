@@ -11,21 +11,27 @@ import {
   faBars,
   faSearch,
   faStar,
-  faStarHalf
-
+  faStarHalf,
 } from '@fortawesome/free-solid-svg-icons';
 
+import { 
+  faGoogle, 
+  faFacebook, 
+  faFacebookF, 
+} from '@fortawesome/free-brands-svg-icons'
 
 // Add the necessary icons to out library; now we can use them
 library.add(
+  faFacebook,
+  faFacebookF,
+  faGoogle,
   faGhost,
   faEnvelope,
   faHome,
   faBars,
   faSearch,
   faStar,
-  faStarHalf
-
+  faStarHalf,
 );
 
 export default library;
