@@ -5,7 +5,8 @@
 */
 
 import React from 'react';
-import { Button, UncontrolledTooltip, Popover, PopoverBody, PopoverHeader } from 'reactstrap';
+import { Button, UncontrolledTooltip, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
+import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
@@ -18,23 +19,37 @@ class SearchBar extends React.Component {
   constructor(props, context) {
     super(props, context);
 
-    //Bind the functions
+    //Bind the 
+    this.toggleModal = this.toggleModal.bind(this);
     this.togglePopover = this.togglePopover.bind(this);
     this.doSearch = this.doSearch.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
     this.getOptions = this.getOptions.bind(this);
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
+    
+    this.changeOverall = this.changeOverall.bind(this);
+    this.changeReliability = this.changeReliability.bind(this);
+    this.changeVariety = this.changeVariety.bind(this);
+    this.changeService = this.changeService.bind(this);
+    this.changePricing = this.changePricing.bind(this);
 
     this.state = {
       isLoading: true,
       loadedDefaults: false,
       loadedOptions: false,
       popoverOpen: false,
+      modalState: false,
       filters : [],
       keywords : '',
       options : [],
-      defaultValues : []
+      defaultValues : [],
+      minOverall : 0, 
+      minReliability : 0,
+      minVariety : 0,
+      minService : 0,
+      pricing: 0
+      
     };
   }
 
@@ -46,13 +61,24 @@ class SearchBar extends React.Component {
     });
 
   }
+  
+  //Toggles modal
+  toggleModal() {
+    
+    this.setState({
+      modalState: !this.state.modalState
+    });
+    
+    console.log("showModal: Toggling modal to " + this.state.modalState)
+  }  
+  
 
   //Toggles popover
   togglePopover() {
     this.setState({
       popoverOpen: !this.state.popoverOpen
     });
-    console.log("Toggling popover, new state is: " + this.state.popoverOpen);
+    //console.log("Toggling popover, new state is: " + this.state.popoverOpen);
   }
 
   //Actual search event. It also sends signal to the parent by using props.SearchDone, which signals it has done a search and this.props.searchResults which has the results
@@ -76,21 +102,35 @@ class SearchBar extends React.Component {
       console.log(searchTerms);
       console.log("Filters: ");
       console.log(this.state.filters);
+      
+      //Basic search portion
+      var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                  + '&minOverallRating=' + this.state.minOverall
+                  + '&minReliabilityRating=' + this.state.minReliability
+                  + '&minVarietyRating=' + this.state.minService
+                  + '&minServiceAndQualityRating=' + this.state.minVariety;
+                  
+      console.log("URL to fetch from: " + url)           ; 
+      this.props.searching();
+      fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log("Sending results");
+          console.log(result);
 
-      const results = [
-        { name: 'Search Result 1', rating_overall: 3,   street_address : "Katu 1" },
-        { name: 'Search Result 2', rating_overall: 4,   street_address : "Katu 2" },
-        { name: 'Search Result 3', rating_overall: 3.7, street_address : "Katu 3" },
-        { name: 'Search Result 4', rating_overall: 5,   street_address : "Katu 4" },
-        { name: 'Search Result 5', rating_overall: 2.2, street_address : "Katu 5" },
-        { name: 'Search Result 6', rating_overall: 3.3, street_address : "Katu 6" },
-      ];
-
-      console.log("Sending results");
-      console.log(results);
-
-      //Send data via props
-      this.props.onSearchDone( results );
+          //Send data via props
+          this.props.onSearchDone( result );
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          console.log("DEBUG: ComponentsDidMount error");
+          console.log(error);
+          this.props.onError( error )
+        }
+      )
 
   }
 
@@ -109,11 +149,11 @@ class SearchBar extends React.Component {
   getOptions() {
 
     const options = [
-      { value: 'onions', label: 'Allergia/Sipuli' },
-      { value: 'tomato', label: 'Allergia/Tomaatti' },
-      { value: 'nuts', label: 'Allergia/Pähkinä' },
-      { value: 'lactose', label: 'Laktoositon ruokavalio' },
-      { value: 'coeliac ', label: 'Keliakia' }
+      { value: '1', label: 'Allergia/Sipuli' },
+      { value: '2', label: 'Allergia/Tomaatti' },
+      { value: '3', label: 'Allergia/Pähkinä' },
+      { value: '4', label: 'Laktoositon ruokavalio' },
+      { value: '5 ', label: 'Keliakia' }
     ];
     console.log("Getting the options: ");
     console.log(options);
@@ -161,6 +201,38 @@ class SearchBar extends React.Component {
     //console.log(selectedOptions);
     //console.log(this.state.filters);
   }
+  
+  //Used to change star rating values
+  changeOverall(newRating, name)
+  {
+    this.setState({
+      minOverall : newRating
+    });
+  }  
+  changeReliability(newRating, name)
+  {
+    this.setState({
+      minReliability : newRating
+    });
+  }  
+  changeService(newRating, name)
+  {
+    this.setState({
+      minService : newRating
+    });
+  }  
+  changeVariety(newRating, name)
+  {
+    this.setState({
+      minVariety : newRating
+    });
+  }
+  changePricing(newRating, name)
+  {
+    this.setState({
+      pricing : newRating
+    });
+  }
 
   render() {
 
@@ -171,14 +243,29 @@ class SearchBar extends React.Component {
         usecommaasaseparator:"Use comma ( , ) as a separator.",
         filter:"Filter",
         includeinsearch:"Include in search:",
+        diets: "Diets",
+        closeModal:"Close",
+        overall:"Overall rating",
+        reliability:"Menu reliability",
+        service:"Service & Food",
+        variety:"Menu variety",
+        pricing:"Pricing"
       },
       fi: {
         search:"Hae...",
         usecommaasaseparator:"Käytä pilkkua ( , ) erottimena.",
         filter:"Rajaa",
-        includeinsearch:"Sisällytä hakuun:"
+        includeinsearch:"Sisällytä hakuun:",
+        diets: "Ruokavaliot",
+        closeModal:"Sulje",
+        overall:"Keskiarvo",
+        reliability:"Ruokavalion luotettavuus",
+        service:"Ruoka ja palvelu",
+        variety:"Ruokalajien laajuus",
+        pricing:"Hintaluokka"
       }
     });
+    
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
@@ -191,7 +278,7 @@ class SearchBar extends React.Component {
       <div className="searchDiv">
         <form id="search-form" className="search" onSubmit={this.login}>
 
-          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} />
+          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} autoFocus />
            <button type="submit" className="searchBtn" onClick={this.doSearch}>
               <FontAwesomeIcon icon="search" />
           </button>
@@ -203,23 +290,64 @@ class SearchBar extends React.Component {
 
           <br />
 
-          <button className="filterBtn" id="filter_popover" onClick={this.togglePopover} type="button" >{strings.filter}</button>
+          <button className="filterBtn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
-          <Popover placement="bottom" isOpen={this.state.popoverOpen} target="filter_popover" toggle={this.togglePopover}>
-            <PopoverHeader></PopoverHeader>
-            <PopoverBody>
-              {strings.includeinsearch} <br />
-              <Select
-                defaultValue={ this.state.defaultValues }
-                isMulti
-                name="filtersDrop"
-                options={ this.state.options }
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={this.handleFilterChange}
-              />
-            </PopoverBody>
-          </Popover>
+          <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+          <ModalHeader>{strings.includeinsearch}</ModalHeader>
+          <ModalBody className="filterBox">
+            {strings.diets}
+            <Select
+              defaultValue={ this.state.defaultValues }
+              isMulti
+              name="filtersDrop"
+              options={ this.state.options }
+              className="basic-multi-select"
+              classNamePrefix="select"
+              onChange={this.handleFilterChange}
+            />
+            {strings.overall}
+            <ReactStars
+              value = {this.state.minOverall}
+              count = {5}
+              size = {24}
+              onChange = {this.changeOverall}
+            />
+            {strings.reliability}
+            <ReactStars
+              value = {this.state.minReliability}
+              count = {5}
+              size = {24}
+              onChange = {this.changeReliability}
+            />
+            {strings.service}
+            <ReactStars
+              value = {this.state.minService}
+              count = {5}
+              size = {24}
+              onChange = {this.changeService}
+            />
+            {strings.variety}
+            <ReactStars
+              value = {this.state.minVariety}
+              count = {5}
+              size = {24}
+              onChange = {this.changeVariety}
+            />
+            {strings.pricing}
+            <ReactStars
+              value = {this.state.pricing}
+              count = {3}
+              size = {24}
+              char = '€'
+              half = {false}
+              onChange = {this.changePricing}
+            />
+              
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.toggleModal}> {strings.closeModal} </Button>
+          </ModalFooter>
+        </Modal>
 
         </form>
       </div>

@@ -1,0 +1,13 @@
+{
+  "name": "search",
+  "version": "0.1.1",
+  "description": "GET endpoint for performing searches",
+  "main": "src/search.js",
+  "repository": "",
+  "author": "Sergei Häyrynen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.5.0"
+  },
+  "devDependencies": {}
+}

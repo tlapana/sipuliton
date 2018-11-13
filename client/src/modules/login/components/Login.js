@@ -1,12 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  NavItem,
-  NavLink,
-  form,
-  Button
-} from 'reactstrap';
-import styles from '../../../styles/login.css';
+import { NavLink, } from 'reactstrap';
+import '../../../styles/login.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import LoginForm from './Login_Form.js'
@@ -26,35 +21,42 @@ class Login extends React.Component {
       en:{
         forgotpassword:"Forgot password?",
         login:"Login",
-        doesntRegisteredYet:"Don't have registered yet?",
-        registerNow:"Register now!"
+        notRegisteredYet:"Not registered yet?",
+        registerNow:"Register now!",
+        or:"Or",
       },
       fi: {
-        forgotpassword:"Unohditko salasana?",
+        forgotpassword:"Unohditko salasanasi?",
         login:"Kirjautuminen",
-        doesntRegisteredYet:"Etkö ole vielä rekisteröitynyt?",
-        registerNow:"Rekisteröidy nyt!"
+        notRegisteredYet:"Etkö ole vielä rekisteröitynyt?",
+        registerNow:"Rekisteröidy nyt!",
+        or:"Tai",
       }
     });
     strings.setLanguage(this.props.match.params.language);
     console.log(this.props.location);
 
     /* URL paths */
-    const pathToRegister = '/register/'+this.props.match.params.language
-    const pathToForgotPassword = '/forgot-password/'+this.props.match.params.language
+    const pathToRegister = '/' + this.props.match.params.language + '/register/';
+    const pathToForgotPassword = '/' + this.props.match.params.language + '/forgot-password/';
 
     return(
-      <div id="login">
+      <div id="login" className="max-w-40">
         <h2>{strings.login}</h2>
-        <LoginForm language={this.props.match.params.language}/> <br/>
-        <SocialLogin/> <br/>
-        <div>{strings.doesntRegisteredYet}</div>
-        <NavLink tag={Link} to={pathToRegister}>
+        <LoginForm language={this.props.match.params.language}/> 
+        <div className="social-login-container">
+          <h5>{strings.or}</h5>
+          <SocialLogin language={this.props.match.params.language}/> 
+        </div>
+        
+        <span>{strings.notRegisteredYet} </span>
+        <Link to={pathToRegister}>
           {strings.registerNow}
-        </NavLink>
-        <NavLink tag={Link} to={pathToForgotPassword}>
+        </Link>
+        <br/>
+        <Link to={pathToForgotPassword}>
           {strings.forgotpassword}
-        </NavLink>
+        </Link>
       </div>
     )
   }

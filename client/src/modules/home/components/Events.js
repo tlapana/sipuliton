@@ -8,6 +8,10 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../../styles/landingpage.css';
 
+
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
 class Events extends React.Component {  
   
 constructor(props) {
@@ -57,13 +61,13 @@ constructor(props) {
     const starIcons = [];
     while(starCount >= 1)
     {
-      starIcons.push(<FontAwesomeIcon icon="star" />);
+      starIcons.push(<FontAwesomeIcon icon="star" key={starCount} />);
       starCount = starCount - 1;
     }
     //console.log(starCount);
     if(starCount >= 0.5)
     {
-      starIcons.push(<FontAwesomeIcon icon="star-half" />);
+      starIcons.push(<FontAwesomeIcon icon="star-half" key={starCount} />);
       //console.log("Half star added");
     }
     //console.log(starIcons);
@@ -73,6 +77,25 @@ constructor(props) {
   render() {
     
     const { error, isLoaded, restaurants } = this.state;
+    
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        loading:"Loading suggestions...",
+        suggestions:"Restaurants you might be interested:"
+      },
+      fi: {
+        loading:"Ladataan ehdotuksia...",
+        suggestions:" Ravintoloita joista voisit olla kiinnostunut:"
+      }
+    });
+    
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
     
     if (error) {
       
@@ -89,7 +112,7 @@ constructor(props) {
       return (
         <div className="eventsDiv"> 
           <div className="event">
-            Ladataan ehdotuksia...
+            {strings.loading}
           </div>
         </div>
       );
@@ -97,11 +120,11 @@ constructor(props) {
     } else {
       return (
          <div className="eventsDiv"> 
-          <h3> Ravintoloita joista voisit olla kiinnostunut: </h3>
+          <h3> {strings.suggestions} </h3>
           {restaurants.map((restaurant) =>
             <div className="event" key={restaurant.name} >
-            {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.street_address}
+              {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
+              {restaurant.street_address}
             </div>
           )}      
         </div>

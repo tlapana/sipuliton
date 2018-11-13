@@ -1,5 +1,7 @@
  cd landing
  call npm install
+ cd ../search
+ call npm install
  cd ../restaurant
  call npm install
  cd ../reviews
