@@ -135,7 +135,7 @@ class Home extends React.Component {
       fi: {
         search:"Haetaan ravintoloita",
         errorTitle:"Virhe",
-        errorText:"Jos t‰m‰ ongelma jatkuu, ole hyv‰ ja ota yhteytt‰ yll‰pitoon"
+        errorText:"Jos t√§m√§ ongelma jatkuu, ole hyv√§ ja ota yhteytt√§ yll√§pitoon"
       }
     });
     if(typeof this.props.language !== 'undefined'){
