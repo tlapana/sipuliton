@@ -10,11 +10,11 @@ import {
   Button,
   Form,
   FormGroup,
-  Input,
   Label,
 } from 'reactstrap';
 import { Auth } from "aws-amplify";
 import { Redirect } from "react-router-dom";
+import commonComponents from '../../common'
 
 /* Configuration files */
 import config from "../../../config.js"
@@ -78,6 +78,7 @@ export default class ForgotPassword_Form extends React.Component{
       event.preventDefault();
       if(this.state.usernameIsValid){
         /* Implements forgot password code sending. */
+        this.setState({codeSendingFailed: false, limitExceeded: false});
         Auth.forgotPassword(this.state.username)
           .then(data => {
             console.log(data);
@@ -130,6 +131,7 @@ export default class ForgotPassword_Form extends React.Component{
 
     if(this.state.passwordsMatch && this.state.codeIsValid
       && this.state.newPasswordIsValid) {
+      this.setState({passwordChangingFailed:false});
       /* Changes user password for the user. */
       Auth.forgotPasswordSubmit(
         this.state.username,
@@ -231,7 +233,7 @@ export default class ForgotPassword_Form extends React.Component{
   }
 
   render(){
-    /* Localization */
+    const { VInput, } = commonComponents;
     let strings = new LocalizedStrings({
       en:{
         username:"Username:",
@@ -272,9 +274,9 @@ export default class ForgotPassword_Form extends React.Component{
           <Form onSubmit={this.sendCode}>
             <FormGroup>
               <Label>{strings.username}</Label>
-              <Input className={!this.state.usernameIsValid ? 'invalid' : ''} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
+              <VInput isValid={this.state.usernameIsValid} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required autoFocus="true" />
             </FormGroup>
-            <Input className="main-btn big-btn max-w-10" type="submit" value={strings.sendCode} />
+            <VInput className="main-btn big-btn max-w-10" type="submit" value={strings.sendCode} />
           </Form>
         }
         {this.state.passwordChangingFailed &&
@@ -293,17 +295,17 @@ export default class ForgotPassword_Form extends React.Component{
             <Form onSubmit={this.changePassword}>
               <FormGroup>
                 <Label>{strings.newpassword}</Label>
-                <Input className={!this.state.newPasswordIsValid ? 'invalid' : ''} value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required autoFocus />
+                <VInput isValid={this.state.newPasswordIsValid} value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required autoFocus="true" />
               </FormGroup>
               <FormGroup>
                 <Label>{strings.newpasswordagain}</Label>
-                <Input className={!this.state.passwordsMatch ? 'invalid' : ''} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password2" required />
+                <VInput isValid={this.state.passwordsMatch} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password2" required />
               </FormGroup>
               <FormGroup>
                 <Label>{strings.code}</Label>
-                <Input className={!this.state.codeIsValid ? 'invalid' : ''} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
+                <VInput isValid={this.state.codeIsValid} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
               </FormGroup>
-              <Input type="submit" value={strings.changePassword} disabled={!this.validateChangeForm()} className="main-btn big-btn max-w-10"/>
+              <VInput type="submit" value={strings.changePassword} isValid={this.validateChangeForm} className="main-btn big-btn max-w-10"/>
             </Form>
           </div>
         }

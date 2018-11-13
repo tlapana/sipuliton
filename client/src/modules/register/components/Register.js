@@ -10,6 +10,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
+import commonComponents from '../../common'
 
 import config from "../../../config.js"
 
@@ -47,7 +48,7 @@ export default class Register extends React.Component {
 		this.validateForm = this.validateForm.bind(this);
 
 		this.handleRegistration = this.handleRegistration.bind(this);
-		this.renderConfirmationForm = this.renderConfirmationForm.bind(this);
+		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
 	}
 
@@ -169,7 +170,7 @@ export default class Register extends React.Component {
 		this.setState({ isLoading: false });
 	}
 
-	renderConfirmationForm() {
+	renderConfirmation() {
 		let strings = new LocalizedStrings({
       en:{
         successHeader: 'Registration successfull!',
@@ -197,8 +198,7 @@ export default class Register extends React.Component {
 	}
 
 	renderForm() {
-
-    /* Localization */
+    const { VInput, } = commonComponents;
     let strings = new LocalizedStrings({
       en:{
         username:"Username:",
@@ -234,32 +234,32 @@ export default class Register extends React.Component {
 				<Form onSubmit={this.handleRegistration}>
 					<FormGroup>
 						<Label>{strings.username}</Label>
-						<Input type="text" name="username" className={!this.state.usernameValid ? 'invalid' : ''} value={this.state.username} onChange={this.onUsernameChanged} required/>
+						<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.password}</Label>
-						<Input type="password" name="password" className={!this.state.passwordValid ? 'invalid' : ''} value={this.state.password} onChange={this.onPasswordChanged}/>
+						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.passwordAgain}</Label>
-						<Input type="password" name="retypePass" className={!this.state.retypePassValid ? 'invalid' : ''} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
+						<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.email}</Label>
-						<Input type="email" name="mail" className={!this.state.mailValid ? 'invalid' : ''} value={this.state.mail} onChange={this.onMailChanged}/>
+						<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.emailAgain}</Label>
-						<Input type="email" name="retypeMail" className={!this.state.retypeMailValid ? 'invalid' : ''} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
+						<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
 					</FormGroup>
 					<FormGroup check>
 						<Label check>{' '}
-							<Input type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
+							<VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
 							{strings.acceptUla}
 						</Label>
 					</FormGroup>
-					<br/>
-					<Input type="submit" value={strings.register} disabled={!this.validateForm()} className="main-btn big-btn max-w-10" />
+
+					<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
 				</Form>
 				<div>
 					{strings.alreadyRegistered}
@@ -277,7 +277,7 @@ export default class Register extends React.Component {
 		return (
 			this.state.newUser === null
 			? this.renderForm()
-			: this.renderConfirmationForm()
+			: this.renderConfirmation()
 		);
 	}
 }

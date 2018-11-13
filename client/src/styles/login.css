@@ -1,19 +1,10 @@
-/*#login{
-  display: block;
-  top: 25%;
-  left:25%;
-  width: auto;
-  position:absolute;
-  margin: 0;
-  margin-right: -50%;
-}*/
-
 .social-login-container {
   text-align: center;
   margin: 1em 0;
 }
 
-.facebook-login-btn, .google-login-btn {
+.facebook-login-btn,
+.google-login-btn {
   padding-top: 1em;
   padding-bottom: 1em;
   border-radius: 3px;
@@ -22,25 +13,40 @@
   margin: .5em;
   width: 20em;
   position: relative;
+  -webkit-box-shadow: 1px 1px 2px 0px #c5c5c5;
+  box-shadow: 1px 1px 2px 0px #c5c5c5;
+  transition: background-color .15s;
 }
-
-.facebook-login-btn {
-  color: #fff;
-  font-weight: bold;
-  transition: background-color .3s, border-color .3s;
-  background-color: #4c69ba;
-}
-
-.google-login-btn {
-  font-weight: bold;
-  color: white;
-  background-color: rgb(209, 72, 54);
-}
-
-.google-login-btn svg,
-.facebook-login-btn svg {
+.facebook-login-btn .logo-icon,
+.google-login-btn .logo-icon {
+  width: 1.333333em;
+  height: 1.333333em;
   position: absolute;
   left: 1em;
   top: 50%;
   transform: translate(0, -50%);
+}
+.facebook-login-btn:hover,
+.google-login-btn:hover {
+  -webkit-box-shadow: 1px 1px 5px 1px #c5c5c5;
+  box-shadow: 1px 1px 5px 1px #c5c5c5;
+}
+
+
+.facebook-login-btn {
+  color: #ffffff;
+  background-color: #4267B2;
+}
+.facebook-login-btn:focus {
+  background-color: #3B5998;
+}
+
+
+.google-login-btn {
+  font-family: 'Roboto', sans-serif;
+  color: #757575;
+  background-color: #ffffff;
+}
+.google-login-btn:focus {
+  background-color: #eeeeee;
 }

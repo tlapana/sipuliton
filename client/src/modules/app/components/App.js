@@ -28,10 +28,15 @@ class App extends React.Component {
   }
 
   render() {
+    let classes = 'app ' + this.state.theme;
+    if (this.props.isLoading) {
+      classes += ' loading';
+    }
+
     return(
       <Provider store={this.props.store}>
         <Router>
-          <div className={'app ' + this.state.theme}>
+          <div className={classes}>
             <div className="content">
               <Container className="main-content" >
                 <Switch>
@@ -43,7 +48,7 @@ class App extends React.Component {
           </div>
         </Router>
       </Provider>
-    )
+    );
   }
 
 }

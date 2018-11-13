@@ -105,8 +105,8 @@ export default class SocialLogin extends React.Component {
   render() {
     let strings = new LocalizedStrings({
       en:{
-        fbLogin:'Facebook login',
-        googleLogin: 'Google login',
+        fbLogin:'Login with Facebook',
+        googleLogin: 'Login with Google',
       },
       fi: {
         fbLogin: 'Facebook kirjautuminen',
@@ -123,14 +123,15 @@ export default class SocialLogin extends React.Component {
           onSuccess={this.responseGoogle}
           onFailure={this.responseFailure}
         >
-          <FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>
+          {/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
+          <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
           <span>{strings.googleLogin}</span>
         </GoogleLogin>
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
           cssClass="facebook-login-btn"
-          icon={<FontAwesomeIcon icon={["fab", "facebook-f"]} />}
+          icon={<FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />}
           textButton={strings.fbLogin}
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
