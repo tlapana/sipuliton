@@ -1,6 +1,202 @@
-#container{
-  margin-left: 0;
-  margin-right: 0;
-  padding-right: 0px;
-  padding-left: 0px;
+.main-content {
+  padding-bottom: 6em;
+  padding-top: 1em;
+}
+
+.nav-link.inline-link {
+  display: inline;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+input.invalid, input.invalid:focus {
+  border: 1px solid red !important;
+  box-shadow: 0 0 0 0.2rem #F58F8F;
+}
+
+.centered-block {
+  margin: auto;
+  display: block;
+}
+
+.app .main-btn,
+.app .secondary-btn,
+.app .tertiary-btn {
+  cursor: pointer;
+  -webkit-box-shadow: 0px 0px 2px 0px #c5c5c5;
+  box-shadow: 0px 0px 2px 0px #c5c5c5;
+  transition: background-color .15s, opacity .15s;
+  
+}
+.app .main-btn:hover,
+.app .secondary-btn:hover,
+.app .tertiary-btn:hover {
+  -webkit-box-shadow: 0px 0px 5px 0px #c5c5c5;
+  box-shadow: 0px 0px 5px 0px #c5c5c5;
+}
+
+.main-btn.big-btn,
+.secondary-btn.big-btn,
+.tertiary-btn.big-btn {
+  padding: 1em 0;
+  height: auto;
+}
+
+.main-btn.small-btn,
+.secondary-btn.small-btn,
+.tertiary-btn.small-btn {
+  padding: .2em .2em;
+  height: auto;
+}
+
+form .main-btn {
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.max-w-40 {
+  max-width: 40em;
+  margin: auto;
+}
+
+.max-w-20 {
+  max-width: 20em;
+  margin: auto;
+}
+
+.max-w-10 {
+  max-width: 10em;
+  margin: auto;
+}
+
+.max-w-5 {
+  max-width: 5em;
+  margin: auto;
+}
+
+
+/* Theme specific css */
+.theme-1 .bottom-bar.navbar, 
+.theme-1 .side-menu {
+  background-color: #72c567;
+  color: white;
+}
+.theme-1 .main-btn:hover, 
+.theme-1 .main-btn:focus {
+  background-color: #66b15c;
+}
+.theme-1 .main-btn, 
+.theme-1 .main-btn:disabled,
+.theme-1 .form-control[type="submit"]:focus {
+  background-color: #72c567;
+  color: white;
+  border-color: #66b15c;
+}
+.theme-1 .form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #66b15c;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(91, 157, 82, 0.25);
+}
+.theme-1 .form-control[type="submit"]:focus {
+  background-color: #66b15c;
+}
+.theme-1 .main-btn:disabled {
+  opacity: 0.6;
+}
+
+
+.theme-2 .bottom-bar.navbar, 
+.theme-2 .side-menu {
+  background-color: #84b1da;
+  color: white;
+}
+.theme-2 .main-btn:hover {
+  background-color: #769fc4;
+}
+.theme-2 .main-btn, 
+.theme-2 .main-btn:disabled,
+.theme-2 .form-control[type="submit"]:focus {
+  background-color: #84b1da;
+  color: white;
+  border-color: #769fc4;
+}
+.theme-2 .form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #769fc4;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(105, 141, 174, 0.25);
+}
+.theme-2 .form-control[type="submit"]:focus {
+  background-color: #769fc4;
+}
+.theme-2 .main-btn:disabled {
+  opacity: 0.6;
+}
+
+
+.theme-3 .bottom-bar.navbar, 
+.theme-3 .side-menu {
+  background-color: #e15527;
+  color: white;
+}
+.theme-3 .main-btn:hover {
+  background-color: #ca4c23;
+}
+.theme-3 .main-btn, 
+.theme-3 .main-btn:disabled,
+.theme-3 .form-control[type="submit"]:focus {
+  background-color: #e15527;
+  color: white;
+  border-color: #ca4c23;
+}
+.theme-3 .form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #ca4c23;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(225, 85, 39, 0.25);
+}
+.theme-3 .form-control[type="submit"]:focus {
+  background-color: #ca4c23;
+}
+.theme-3 .main-btn:disabled {
+  opacity: 0.6;
+}
+
+
+.theme-old, .theme-old .main-btn {
+  text-shadow: 0px 0px 1px #cccccc;
+}
+.theme-old .bottom-bar.navbar, 
+.theme-old .side-menu {
+  background-color: #99ff99;
+  color: white;
+}
+.theme-old .main-btn:hover {
+  background-color: #ffffff;
+  color: #4d4d4d;
+  border-color: #4d4d4d;
+}
+.theme-old .main-btn, 
+.theme-old .main-btn:disabled,
+.theme-old .form-control[type="submit"]:focus {
+  background-color: #99ff99;
+  color: white;
+  border-color: #89e589;
+}
+.theme-old .form-control:focus {
+  color: #495057;
+  background-color: #fff;
+  border-color: #89e589;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(122, 204, 122, 0.25);
+}
+.theme-old .main-btn:disabled {
+  opacity: 0.6;
 }
