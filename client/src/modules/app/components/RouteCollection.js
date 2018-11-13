@@ -5,6 +5,7 @@ import home from '../../home';
 import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
+import profile from '../../profile';
 
 import NotFound from './NotFound';
 
@@ -18,7 +19,8 @@ class RouteCollection extends React.Component {
     const { Home } = home;
     const { Login } = login;
     const { Register } = register;
-    const { ForgotPassword} = forgotPassword;
+    const { ForgotPassword } = forgotPassword;
+    const { Profile } = profile;
 
     return (
       <Switch>
@@ -27,6 +29,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
+        <Route path="/:language/userProfile/" component={Profile} />
         <Route component={NotFound} />
       </Switch>
     );
