@@ -90,3 +90,4 @@ export default class ReviewList extends React.Component {
 		</div>
 	}
 }
+export default ReviewList;
