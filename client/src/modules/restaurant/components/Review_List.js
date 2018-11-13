@@ -9,21 +9,21 @@ import {
 	Label,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-const reviewsDataUrl = "";
+const reviewsDataUrl = "/services/lambda/sipuliton-backend/reviews";
 var reviewIndex = 0;
 
 export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			this.reviewList.titles : ["Otsikko1", "Otsikko2"];
-			this.reviewList.pictures : ["", ""];
-			this.reviewList.reviews : ["", ""];
-			this.reviewList.users : ["", ""];
-			this.reviewList.allergyTags : [["", ""], ["", ""]];
-			this.reviewList.relevance : [3, 2];
-			this.reviewList.allergyAwareness: [3, 3];
-			this.reviewList.serviceQuality : [2, 4];
+			this.reviewList.titles : [];
+			this.reviewList.pictures : [];
+			this.reviewList.reviews : [];
+			this.reviewList.users : [];
+			this.reviewList.allergyTags : [];
+			this.reviewList.relevance : [];
+			this.reviewList.allergyAwareness: [];
+			this.reviewList.serviceQuality : [];
 			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
 			this isLoaded : false;
 		};
@@ -31,8 +31,8 @@ export default class ReviewList extends React.Component {
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
 	}
-	componentDidMount() {    
-		fetch(reviewsDataUrl)
+	componentDidMount() {
+		fetch(reviewsDataUrl, restaurant.id)
 		.then(res => res.json())
 		.then(
 			(result) => {
@@ -40,7 +40,16 @@ export default class ReviewList extends React.Component {
 				console.log(result);
 				this.setState({
 					isLoaded: true;
-					//TODO: set the review contents, once the exact format is known
+					for (var i = 0; i < result.length; i++) {
+						var obj = result[i];
+						this.reviewList.titles : this.reviewList.titles.push(obj.title);
+						this.reviewList.reviews : this.reviewList.reviews.push(obj.free_text);
+						this.reviewList.users : this.reviewList.users.push(obj.user_id);
+						this.reviewList.relevance : this.reviewList.relevance.push(obj.rating_reliability);
+						this.reviewList.allergyAwareness: this.reviewList.allergyAwareness.push(obj.rating_variety);
+						this.reviewList.serviceQuality : this.reviewList.serviceQuality.push(obj.rating_service_and_quality);
+					}
+					this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
 				});
 			},
 
@@ -56,13 +65,18 @@ export default class ReviewList extends React.Component {
 	}
 	looper(tags) {
 		var tagString = "";
-		for (var i = 0; i < tags.length; i++) {
-			if (i > 0) {
-				tagString = tagString + ", " + tags[i];
+		if (Array.isArray(tags)) {
+			for (var i = 0; i < tags.length; i++) {
+				if (i > 0) {
+					tagString = tagString + ", " + tags[i];
+				}
+				else {
+					tagString = tagString + tags[i];
+				}
 			}
-			else {
-				tagString = tagString + tags[i];
-			}
+		}
+		else {
+			tagString = tags;
 		}
 		return tagString;
 	}

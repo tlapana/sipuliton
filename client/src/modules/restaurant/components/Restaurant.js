@@ -10,7 +10,7 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReviewList from './Review_List.js'
-const restaurantDataUrl = "";
+const restaurantDataUrl = "/services/lambda/sipuliton-backend/restaurant";
 
 export default class Restaurant extends React.Component {
 	constructor(props) {
@@ -24,6 +24,7 @@ export default class Restaurant extends React.Component {
 			this.restaurant.allergyTags : ["Sipuliton", "Munaton"];
 			this.restaurant.openingHours : {monFri: 08002100, sat: 09002100, sun: 09001800};
 			this.restaurant.description : "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.";
+			this.restaurant.id : 0;
 			this.redirect : false;
 			this isLoaded : false;
 		};
@@ -41,7 +42,11 @@ export default class Restaurant extends React.Component {
 				console.log(result);
 				this.setState({
 					isLoaded: true,
-					//TODO: set new restaurant properties, once the exact format is known
+					this.restaurant.name : result.name;
+					this.restaurant.userScore : result.rating_overall;
+					this.restaurant.allergyTags : result.restaurant_diet_stats;
+					this.restaurant.description : result.email + ", " + result.website + ", " result.street_address;
+					this.restaurant.id : result.restaurant_id;
 				});
 			},
 
@@ -57,13 +62,18 @@ export default class Restaurant extends React.Component {
 	}
 	looper(tags) {
 		var tagString = "";
-		for (var i = 0; i < tags.length; i++) {
-			if (i > 0) {
-				tagString = tagString + ", " + tags[i];
+		if (Array.isArray(tags)) {
+			for (var i = 0; i < tags.length; i++) {
+				if (i > 0) {
+					tagString = tagString + ", " + tags[i];
+				}
+				else {
+					tagString = tagString + tags[i];
+				}
 			}
-			else {
-				tagString = tagString + tags[i];
-			}
+		}
+		else {
+			tagString = tags;
 		}
 		return tagString;
 	}
