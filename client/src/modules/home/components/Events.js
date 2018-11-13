@@ -1,8 +1,12 @@
+/*
+
+  This file contains the events(restaurants) that are show on the landing page below the search bar
+
+*/
+
 import React from 'react';
-import { Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from '../../../styles/landingpage.css';
-import axios from 'axios'
+import '../../../styles/landingpage.css';
 
 class Events extends React.Component {  
   
@@ -74,7 +78,9 @@ constructor(props) {
       
       return (
         <div className="eventsDiv"> 
-          Error: {error.message}
+          <div className="event">
+            Error: {error.message}
+          </div>
         </div>
       );
       
@@ -82,7 +88,9 @@ constructor(props) {
       
       return (
         <div className="eventsDiv"> 
-        Ladataan
+          <div className="event">
+            Ladataan ehdotuksia...
+          </div>
         </div>
       );
       
@@ -91,9 +99,9 @@ constructor(props) {
          <div className="eventsDiv"> 
           <h3> Ravintoloita joista voisit olla kiinnostunut: </h3>
           {restaurants.map((restaurant) =>
-            <div className="event">
+            <div className="event" key={restaurant.name} >
             {restaurant.name} {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.address}
+            {restaurant.street_address}
             </div>
           )}      
         </div>

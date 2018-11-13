@@ -1,30 +1,58 @@
+/* In this file, is implementation of the navigation bar and implementation of
+mainmenu which opens from navigation bar.*/
+
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
   Navbar,
   NavbarToggler,
   Nav,
-  NavItem,
   NavLink,
+  Button
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem/MainMenu_ListItem'
-import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
 import { Auth } from 'aws-amplify';
 
+/* Styles and icons */
+import '../../../styles/navigationbar.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Transition } from 'react-transition-group';
+
+/* Mainmenu components*/
+import { LanguageSelection, MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index';
+
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
+
 class NavigationBar extends React.Component {
+
+  /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
-    this.state = {visible: false,userLogged: false, admin: false, restaurantOwner:false};
+    this.state = {
+      visible: false,
+      userLogged: false,
+      admin: false,
+      restaurantOwner:false,
+      moderator: false,
+      language:'fi',
+      redirectUrl:"",
+      languageChanged:false
+    };
+
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
+    this.checkAccessRights = this.checkAccessRights.bind(this);
+    this.changeLanguage = this.changeLanguage.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
   mainMenu() {
-      /* Sets menu visibility to visible or no visible. */
+      /* Sets menu visibility to visible or not visible. */
       this.setState({ visible: !this.state.visible});
-      this.checkAccessRights();
+      if(this.state.visible){
+        this.checkAccessRights();
+      }
   }
 
   /* Function which will be called when home button is clicked. */
@@ -35,34 +63,50 @@ class NavigationBar extends React.Component {
     }
   }
 
-  checkAccessRights(){
-    /* Implement user query from back end */
-    var loggedUser = {} ;
+  /* This function checks logged in users rights. */
+  checkAccessRights() {
+    /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
-          console.log(user);
+          /* Get current user group. */
+          var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
           if(user != null){
-
-            /* Check if user is logged in, after that show either register or login */
+            /* Check if user is logged in, after that set access to either register or login */
             this.setState({userLogged: true})
 
-            /* Check if user has admin access, after that show admin page */
-            /*
-            if(groups.find('admin')){
+            /* Check if user is basic user, then restrict all accesses */
+            if(userGroup === "SipulitonModUserGroup"){
+              this.setState({
+                admin: false,
+                restaurantOwner: false,
+                moderator: false
+              })
+            }
+
+            /* Check if user has admin access, after that set access to admin pages */
+            if(userGroup === "SipulitonAdminUserGroup"){
               this.setState({admin: true})
             }
             else{
               this.setState({admin: false})
             }
-            /* Check if user is restaurant owner, after that show restaurant page */
-            /*
-            if(groups.find('restaurantOwner')){
+            /* Check if user is restaurant owner, after that set access to restaurant pages */
+
+            if(userGroup === 'SipulitonROUserGroup'){
               this.setState({restaurantOwner: true})
             }
             else{
               this.setState({restaurantOwner: false})
             }
-            */
+
+            /* Check if user has moderator access, after that set access to moderator pages */
+            if(userGroup === "SipulitonModUserGroup"){
+              this.setState({moderator: true})
+            }
+            else{
+              this.setState({moderator: false})
+            }
+
           }
           else{
               this.setState({userLogged: false})
@@ -70,105 +114,139 @@ class NavigationBar extends React.Component {
 
         })
         .catch(err => {
+          /* If user is not logged in restrict accesses. */
           this.setState(
             {
               userLogged: false,
               admin: false,
-              restaurantOwner:false
+              restaurantOwner:false,
+              moderator: false
             }
           )
         });
 
+  }
 
-
+  changeLanguage(language) {
+    var url = window.location.href;
+    url = url.replace(this.state.language, language);
+    var index = url.search('://');
+    url = url.slice(index + 3);
+    index = url.search('/');
+    url = url.slice(index);
+    console.log(url);
+    this.setState({language: language, redirectUrl: url, languageChanged: true});
   }
 
   render() {
+      /* Menu appearance styles. */
+      const duration = 0;
+      const transitionStyles = {
+        entering: { opacity: 0, 'left':'-500px' },
+        entered:  { opacity: 1, 'left':'0px' },
+        exiting: { opacity: 1, 'left':'0px' },
+        exited: { opacity: 0, 'left':'-500px' }
+      };
 
-      const menuStyle = {
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'block',
-        'width':'25%',
-        'z':'1',
-        'height':'100%',
-        'position': 'fixed',
-        'top':'0px',
+      /* Localization */
+      let strings = new LocalizedStrings({
+        en:{
+          mainmenu:"Mainpage",
+          map:"Map",
+          restaurantList:"Restaurant list",
+          restaurantManagement:"Restaurant management",
+          admin:"Admin",
+          moderation:"Moderation",
+          profile:"Profile",
+          login:"Login",
+          register:"Register",
+          logout: "Logout"
+        },
+        fi: {
+          mainmenu:"Pääsivu",
+          map:"Kartta",
+          restaurantList:"Ravintola lista",
+          restaurantManagement:"Ravintola hallinta",
+          admin:"Admin",
+          moderation:"Moderointi",
+          profile:"Profiili",
+          login:"Kirjaudu",
+          register:"Rekisteröidy",
+          logout:"Kirjaudu ulos"
+        }
+      });
+
+      if(this.state.language === "fi"){
+        strings.setLanguage('fi');
+      }
+      if(this.state.language === "en"){
+        strings.setLanguage('en');
       }
 
-      const navBarStyle = {
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'inlineblock',
-        'width':'100%',
-        'alignItems':'left',
-        'position':'fixed',
-        'bottom':'0'
-      }
+      /* URL Paths to pages*/
+      const pathToMenu = "/" + this.state.language;
+      const pathToMap = "/" + this.state.language+"/map";
+      const pathToRestaurantList = "/" + this.state.language + "/restaurant_list";
+      const pathToRestaurantManagement = "/" + this.state.language + "/restaurant_management";
+      const pathToAdmin = "/" + this.state.language + "/admin";
+      const pathToModerating = "/" + this.state.language + "/moderating";
+      const pathToProfile = "/" + this.state.language + "/profile";
+      const pathToLogin = "/" + this.state.language + "/login";
+      const pathToRegister = "/" + this.state.language + "/register";
 
-      const iconStyles = {
-        'color':'black',
-        'width':'50px',
-        'height':'50px'
-      }
-
-      const menuItemsBox = {
-        'margin':'25px 0 0 0'
-      }
-      const x = 100;
-      const y = 100;
-      if(this.state.visible){
-        const menuStyle = {
-          'backgroundColor':'#99ff99',
-          'color': 'white',
-          'display': 'block',
-          'width':'25%',
-          'z':'1',
-          'height':'100%',
-          'position': 'fixed',
-          'top':'0px',
-          transform: `translate(${x}px, ${y}px)`
-        };
+      /* Changed correct language to page after clicking change language. */
+      if(this.state.languageChanged){
+        this.setState({languageChanged:false});
+        return(
+          <Redirect to={this.state.redirectUrl}/>
+        );
       }
 
       return (
+
         <div>
           <div>
-          {this.state.visible &&
-            <Nav style={menuStyle} onClick={this.mainMenu}>
-              <div style={menuItemsBox}>
-                <MainMenu_ListItem path="/" text="Pääsivu" />
-                <MainMenu_ListItem path="/map" text="Kartta" />
-                <MainMenu_ListItem path="/restaurant_list" text="Ravintola lista" />
-                {this.state.restaurantOwner && <MainMenu_ListItem path="/restaurant_management" text="Ravintola hallinta" />}
-                {this.state.admin && <MainMenu_ListItem path="/admin" text="Admin" />}
-                {this.state.userLogged && <MainMenu_ListItem path="/profile" text="Profiili" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/login" text="Kirjaudu" />}
-                {!this.state.userLogged && <MainMenu_ListItem path="/register" text="Rekisteröidy" />}
-                {this.state.userLogged && <MainMenu_LogoutButton/>}
-              </div>
-            </Nav>
-          }
+            <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
+              {(state) => (
+                <div>
+                  <Nav 
+                    vertical
+                    className="side-menu" 
+                    onClick={this.mainMenu} 
+                    style={{...transitionStyles[state]}}
+                  >
+                    <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
+                    <MainMenu_ListItem path={pathToMap} text={strings.map} />
+                    <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                    {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                    {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
+                    {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
+                    {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
+                    {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    <li>
+                      <LanguageSelection changeLanguage={this.changeLanguage} />
+                    </li>
+                  </Nav>
+                </div>
+              )}
+            </Transition>
           </div>
-          <Navbar style={navBarStyle}>
 
+          <Navbar id="navBar" className="fixed-bottom bottom-bar">
             <NavbarToggler onClick={this.mainMenu}>
-              <FontAwesomeIcon style={iconStyles} icon="bars"/>
+              <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
             </NavbarToggler>
-
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
-
-            <NavLink tag={Link} to="/">
-              <FontAwesomeIcon style={iconStyles} icon="home" onClick={this.home}/>
+            <NavLink tag={Link} to={pathToMenu}>
+              <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
             </NavLink>
-
-
           </Navbar>
-
-
         </div>
+
       );
     }
 }

@@ -10,5 +10,15 @@ export default {
   },
   facebook: {
     APP_ID: "1523866137714690"
+  },
+  login: {
+    PASSWORD_MAX_LENGTH: 50,
+    PASSWORD_MIN_LENGTH: 8,
+    USERNAME_MAX_LENGTH: 30,
+    USERNAME_MIN_LENGTH: 4,
+    CODE_MIN_LENGTH: 2,
+    CODE_MAX_LENGTH: 9,
+    EMAIL_MIN_LENGTH: 5,
+    EMAIL_MAX_LENGTH: 50,
   }
 }
