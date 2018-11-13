@@ -4,22 +4,21 @@ This file implements regular login to the application.
 
 import React from 'react';
 import {
-  NavItem,
-  NavLink,
-  form,
-  Button
+	Form,
+	FormGroup,
+	Label,
 } from 'reactstrap';
 
 import { Auth } from "aws-amplify";
-import { Link } from "react-router-dom";
 import { Redirect } from "react-router-dom";
 import config from "../../../config.js"
+import commonComponents from '../../common'
+
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
 
-
-export default class MainMenu_ListItem extends React.Component{
+export default class Login_Form extends React.Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -38,6 +37,7 @@ export default class MainMenu_ListItem extends React.Component{
       is not valid login will automatically fail. */
 
       event.preventDefault();
+      this.setState({loggingFailed:false});
       if(this.state.passwordIsValid && this.state.usernameIsValid){
         Auth.signIn(this.state.username,this.state.password)
           .then(user => {
@@ -108,58 +108,40 @@ export default class MainMenu_ListItem extends React.Component{
   }
 
 
-  render(){
-
-    /* Styles for the input box borders. */
-    var passwordBorderStyle = {
-      'borderStyle': 'solid solid solid solid',
-      'borderColor': 'black',
-    };
-    var usernameBorderStyle = {
-      'borderStyle': 'solid solid solid solid',
-      'borderColor': 'black',
-    };
-
-    /* Changes input box border colors to the red when they are not valid. */
-    if(!this.state.passwordIsValid){
-      passwordBorderStyle = {
-        'borderStyle': 'solid solid solid solid',
-        'borderColor': 'red',
-      };
-    }
-    if(!this.state.usernameIsValid){
-      usernameBorderStyle = {
-        'borderStyle': 'solid solid solid solid',
-        'borderColor': 'red',
-      };
-    }
-
-    /* Localization */
+  render() {
+    const { VInput, } = commonComponents;
     let strings = new LocalizedStrings({
       en:{
-        username:"Username:",
-        password:"Password: ",
-        login:"Login",
+        username: "Username:",
+        password: "Password: ",
+        login: "Login",
+        loginfailed: "Incorrect username or password",
       },
       fi: {
-        username:"Käyttäjänimi:",
-        password:"Salasana: ",
-        login:"Kirjaudu",
+        username: "Käyttäjänimi:",
+        password: "Salasana: ",
+        login: "Kirjaudu",
+        loginfailed: "Virheellinen käyttäjänimi tai salasana",
       }
     });
     strings.setLanguage(this.props.language);
 
     return (
       <div>
-        {this.state.loggingFailed && <div>{strings.wrongusername}</div>}
-        <form onSubmit={this.login}>
-          {strings.username} <input className="input" style={usernameBorderStyle} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required />
-          {strings.password} <input className="input" style={passwordBorderStyle} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
-          <input type="submit" value={strings.login} />
-        </form>
+        {this.state.loggingFailed && <div className="errormsg">{strings.loginfailed}</div>}
+        <Form onSubmit={this.login}>
+          <FormGroup>
+            <Label>{strings.username}</Label>
+            <VInput isValid={this.state.usernameIsValid} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required autoFocus="true" />
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.password}</Label>
+            <VInput isValid={this.state.passwordIsValid} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
+          </FormGroup>
+
+          <VInput type="submit" value={strings.login} className="main-btn big-btn max-w-10" /> 
+        </Form>
         {this.state.loggingSucceeded && <Redirect to="/profile" />}
-
-
       </div>
 
     )

@@ -7,12 +7,13 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import styles from '../../../styles/login.css';
+import '../../../styles/login.css';
 
 import { Auth } from "aws-amplify";
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login'
+import LocalizedStrings from 'react-localization';
 
 import config from "../../../config.js"
 
@@ -101,25 +102,40 @@ export default class SocialLogin extends React.Component {
     console.log(response);
   }
    
-  render() {  
-
+  render() {
+    let strings = new LocalizedStrings({
+      en:{
+        fbLogin:'Login with Facebook',
+        googleLogin: 'Login with Google',
+      },
+      fi: {
+        fbLogin: 'Facebook kirjautuminen',
+        googleLogin: 'Google kirjautuminen',
+      }
+    });
+    strings.setLanguage(this.props.language);
     return (
       <div>
         <GoogleLogin
           clientId={config.google.CLIENT_ID}
           responseType="id_token"
+          className="google-login-btn"
           onSuccess={this.responseGoogle}
           onFailure={this.responseFailure}
         >
-          Google+
+          {/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
+          <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
+          <span>{strings.googleLogin}</span>
         </GoogleLogin>
         <FacebookLogin
           appId={config.facebook.APP_ID}
           fields="name,email,picture"
+          cssClass="facebook-login-btn"
+          icon={<FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />}
+          textButton={strings.fbLogin}
           callback={this.responseFacebookSuccess}
           onFailure={this.responseFailure}
         >
-          Facebook
         </FacebookLogin>
       </div>
     );

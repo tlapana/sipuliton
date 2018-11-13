@@ -278,7 +278,7 @@ class SearchBar extends React.Component {
       <div className="searchDiv">
         <form id="search-form" className="search" onSubmit={this.login}>
 
-          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} />
+          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} autoFocus />
            <button type="submit" className="searchBtn" onClick={this.doSearch}>
               <FontAwesomeIcon icon="search" />
           </button>
