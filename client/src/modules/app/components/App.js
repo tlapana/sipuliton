@@ -3,7 +3,18 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
+
+import Footer from './Footer';
+import home from '../../home';
+import login from '../../login';
+import Profile from '../../userProfile';
+
+import register from '../../register';
+import forgotPassword from '../../forgotpassword';
+import NotFound from './NotFound';
+
 import RouteCollection from './RouteCollection';
+
 import NavigationBar from './NavigationBar';
 
 import '../../../styles/app.css';
@@ -40,6 +51,14 @@ class App extends React.Component {
             <div className="content">
               <Container className="main-content" >
                 <Switch>
+
+                  <Route exact path="/" component={Home} />
+                  <Route exact path="/:language" component={Home} />
+                  <Route path="/:language/login/" component={Login} />
+                  <Route path="/:language/register/" component={Register} />
+                  <Route path="/:language/forgot-password/" component={ForgotPassword} />
+               <Route path="/:language/userProfile/" component={Profile} />
+                <Route component={NotFound} />
                   <RouteCollection/>
                 </Switch>
               </Container>
