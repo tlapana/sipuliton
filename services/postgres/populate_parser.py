@@ -23,13 +23,13 @@ def commajoin(array, elements_to_quote, indent=0):
 
 def getorder(columns, langs):
     """Gets what column matches which language."""
-    i = 0
     order = []
-    for col in columns:
-        for lang in langs:
+    for lang in langs:
+        i = 0
+        for col in columns:
             if col == lang:
                 order.append(i)
-        i += 1
+            i += 1
     if len(order) != len(langs):
         print("Either missing a language or have a duplicate\n")
     return order

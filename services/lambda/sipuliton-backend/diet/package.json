@@ -1,8 +1,8 @@
 {
-  "name": "getApi",
+  "name": "diet",
   "version": "0.1.0",
-  "description": "Get endpoints for fetching data used in multiple places",
-  "main": "src/getApi.js",
+  "description": "endpoints for diet management",
+  "main": "src/diet.js",
   "repository": "",
   "author": "Jani Jalkanen",
   "license": "",

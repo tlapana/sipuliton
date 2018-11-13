@@ -38,7 +38,7 @@ let response;
 
 // shared functions
 
-async function getOwnUserId(event) {
+async function getOwnUserId(client, event) {
     const AWS = require('aws-sdk');
     const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
     //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
@@ -264,7 +264,7 @@ async function getUserdata(client, userId) {
     return jsonObj;
 }
 
-async function fetchUser(userId, ownUserId, language) {
+async function fetchUser(client, userId, ownUserId, languageId) {
     if (!Number.isInteger(userId)) {
         throw {
             'statusCode': 400,
@@ -274,66 +274,62 @@ async function fetchUser(userId, ownUserId, language) {
 
     var jsonObj = {};
 
-    const client = await getPsqlClient();
+    const alternativeLanguageId = await getLanguage(client, 'EN');
 
-    try {
-        const languageId = temp === null ? await getLanguage(client, 'FI') :
-            await getLanguage(client, temp.toUpperCase());
-
-        if (languageId === null || !Number.isInteger(languageId)) {
+    jsonObj = await getUserdata(client, userId);
+    
+    jsonObj['own_profile'] = false;
+    if (ownUserId !== null) {
+        if (Number.isInteger(ownUserId)) {
+            jsonObj['own_profile'] = (ownUserId === userId);
+        }
+        else {
             throw {
                 'statusCode': 400,
-                'error': "Invalid language id"
+                'error': "own user id invalid"
             }
         }
-
-        jsonObj = await getUserdata(client, userId);
-    
-        jsonObj['own_profile'] = false;
-        if (ownUserId !== null) {
-            if (Number.isInteger(ownUserId)) {
-                jsonObj['own_profile'] = (ownUserId === userId);
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "own user id invalid"
-                }
-            }
-        }
-
-        if (!jsonObj['own_profile']) {
-            delete jsonObj['username'];
-            delete jsonObj['email'];
-        }
-
-        const alternativeLanguageId = await getLanguage(client, 'EN');
-
-        jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, alternativeLanguageId);
-
-        jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, alternativeLanguageId);
-
-    } finally {
-        await client.end();
     }
 
+    if (!jsonObj['own_profile']) {
+        delete jsonObj['username'];
+        delete jsonObj['email'];
+    }
+
+    jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, alternativeLanguageId);
+
+    jsonObj['city_name'] = await getCityName(client, jsonObj['city_id'], languageId, alternativeLanguageId);
+    
     return jsonObj;
 }
 
 exports.profileLambda = async (event, context) => {
     try {
-        var tempId = parseIntParam("userId", event);
+        const client = await getPsqlClient();
+        try {
+            var tempId = parseIntParam("user_id", event);
 
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        const userId = tempId === null ? ownUserId : tempId
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            const userId = tempId === null ? ownUserId : tempId
 
-        var language = parseParam("language", event);
+            var temp = parseParam("language", event);
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
 
-        const jsonObj = await fetchUser(userId, ownUserId, language);
+            if (languageId === null || !Number.isInteger(languageId)) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid language id"
+                }
+            }
+
+            const jsonObj = await fetchUser(client, userId, ownUserId, languageId);
         
-        response = packResponse(jsonObj);
-
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
     } catch (err) {
         response = errorHandler(err);
     }
@@ -346,7 +342,7 @@ exports.profileLambda = async (event, context) => {
 async function doCognitoChanges(changes) {
     //TODO: change cognito credentials
     throw {
-        'statusCode': 400,
+        'statusCode': 501,
         'error': "Cognito related stuff not implemented"
     }
     return
@@ -399,145 +395,143 @@ async function doUserChanges(client, ownUserId, userChanges) {
 
 exports.editProfileLambda = async (event, context) => {
     try {
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        if (ownUserId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Not logged in"
-            }
-        }
-
-        var cognitoChanges = {};
-        var userChanges = {};
-        var fieldValue;
-
-        if (hasParam('username', event)) {
-            fieldValue = parseParam('username', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                cognitoChanges['username'] = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "username can't be empty"
-                }
-            }
-        }
-        if (hasParam('password', event)) {
-            fieldValue = parseParam('password', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                cognitoChanges['password'] = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "password can't be empty"
-                }
-            }
-        }
-        if (hasParam('email', event)) {
-            fieldValue = parseParam('email', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                cognitoChanges['email'] = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "email can't be empty"
-                }
-            }
-        }
-        if (hasParam('display_name', event)) {
-            fieldValue = parseParam('display_name', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                userChanges['display_name'] = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "Display name can't be empty"
-                }
-            }
-        }
-        if (hasParam('gender', event)) {
-            fieldValue = parseParam('gender', event);
-            userChanges['gender'] = fieldValue;
-        }
-        if (hasParam('image', event)) {
-            // TODO: image adding
-            throw {
-                'statusCode': 400,
-                'error': "Adding image not implemented"
-            }
-        }
-        if (hasParam('birth_year', event)) {
-            if (parseParam('birth_year', event) === null) {
-                userChanges['birth_year'] = null;
-            }
-            else {
-                fieldValue = parseIntParam('birth_year', event);
-                if (fieldValue !== null) {
-                    userChanges['birth_year'] = fieldValue;
-                }
-                else {
-                    throw {
-                        'statusCode': 400,
-                        'error': "Invalid year"
-                    }
-                }
-            }
-        }
-        if (hasParam('birth_month', event)) {
-            fieldValue = parseParam('birth_month', event)
-            if (fieldValue === null || fieldValue === '0') {
-                userChanges['birth_month'] = null;
-            }
-            else {
-                fieldValue = parseIntParam('birth_month', event);
-                if (fieldValue !== null && fieldValue >= 1 && fieldValue <= 12) {
-                    userChanges['birth_month'] = fieldValue;
-                }
-                else {
-                    throw {
-                        'statusCode': 400,
-                        'error': "Invalid month"
-                    }
-                }
-            }
-        }
-        if (hasParam('description', event)) {
-            fieldValue = parseParam('description', event)
-            userChanges['description'] = fieldValue;
-        }
-        if (hasParam('country_id', event)) {
-            fieldValue = parseIntParam('country_id', event)
-            userChanges['country_id'] = fieldValue;
-            userChanges['city_id'] = null;
-        }
-        if (hasParam('city_id', event)) {
-            fieldValue = parseIntParam('city_id', event)
-            userChanges['city_id'] = fieldValue;
-        }
-        if (hasParam('diet_id', event)) {
-            fieldValue = parseIntParam('diet_id', event)
-            userChanges['diet_id'] = fieldValue;
-            throw {
-                'statusCode': 500,
-                'error': "Changing diet should be possible elsewhere too"
-            }
-        }
-        if (hasParam('new_diet', event)) {
-            fieldValue = parseParam('diet', event)
-            throw {
-                'statusCode': 500,
-                'error': "Adding own diet should be possible elsewhere too"
-            }
-        }
-
         const client = await getPsqlClient();
-
         try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            var cognitoChanges = {};
+            var userChanges = {};
+            var fieldValue;
+
+            if (hasParam('username', event)) {
+                fieldValue = parseParam('username', event);
+                if (fieldValue !== null && fieldValue.length > 3 && /^[A-Za-z-_]+$/.test(fieldValue)) {
+                    cognitoChanges['username'] = fieldValue;
+                }
+                else {
+                    throw {
+                        'statusCode': 400,
+                        'error': "invalid username"
+                    }
+                }
+            }
+            if (hasParam('password', event)) {
+                fieldValue = parseParam('password', event);
+                if (fieldValue !== null && fieldValue !== '') {
+                    cognitoChanges['password'] = fieldValue;
+                }
+                else {
+                    throw {
+                        'statusCode': 400,
+                        'error': "password can't be empty"
+                    }
+                }
+            }
+            if (hasParam('email', event)) {
+                fieldValue = parseParam('email', event);
+                if (fieldValue !== null && fieldValue !== '') {
+                    cognitoChanges['email'] = fieldValue;
+                }
+                else {
+                    throw {
+                        'statusCode': 400,
+                        'error': "email can't be empty"
+                    }
+                }
+            }
+            if (hasParam('display_name', event)) {
+                fieldValue = parseParam('display_name', event);
+                if (fieldValue !== null && fieldValue.length > 3 && /^[A-Za-z-_\d\s]+$/.test(fieldValue)) {
+                    userChanges['display_name'] = fieldValue;
+                }
+                else {
+                    throw {
+                        'statusCode': 400,
+                        'error': "invalid display name"
+                    }
+                }
+            }
+            if (hasParam('gender', event)) {
+                fieldValue = parseParam('gender', event);
+                userChanges['gender'] = fieldValue;
+            }
+            if (hasParam('image', event)) {
+                // TODO: image adding
+                throw {
+                    'statusCode': 501,
+                    'error': "Adding image not implemented"
+                }
+            }
+            if (hasParam('birth_year', event)) {
+                if (parseParam('birth_year', event) === null) {
+                    userChanges['birth_year'] = null;
+                }
+                else {
+                    fieldValue = parseIntParam('birth_year', event);
+                    if (fieldValue !== null) {
+                        userChanges['birth_year'] = fieldValue;
+                    }
+                    else {
+                        throw {
+                            'statusCode': 400,
+                            'error': "Invalid year"
+                        }
+                    }
+                }
+            }
+            if (hasParam('birth_month', event)) {
+                fieldValue = parseParam('birth_month', event)
+                if (fieldValue === null || fieldValue === '0') {
+                    userChanges['birth_month'] = null;
+                }
+                else {
+                    fieldValue = parseIntParam('birth_month', event);
+                    if (fieldValue !== null && fieldValue >= 1 && fieldValue <= 12) {
+                        userChanges['birth_month'] = fieldValue;
+                    }
+                    else {
+                        throw {
+                            'statusCode': 400,
+                            'error': "Invalid month"
+                        }
+                    }
+                }
+            }
+            if (hasParam('description', event)) {
+                fieldValue = parseParam('description', event)
+                userChanges['description'] = fieldValue;
+            }
+            if (hasParam('country_id', event)) {
+                fieldValue = parseIntParam('country_id', event)
+                userChanges['country_id'] = fieldValue;
+                userChanges['city_id'] = null;
+            }
+            if (hasParam('city_id', event)) {
+                fieldValue = parseIntParam('city_id', event)
+                userChanges['city_id'] = fieldValue;
+            }
+            if (hasParam('diet_id', event)) {
+                fieldValue = parseIntParam('diet_id', event)
+                userChanges['diet_id'] = fieldValue;
+                throw {
+                    'statusCode': 500,
+                    'error': "Changing diet should be possible elsewhere too"
+                }
+            }
+            if (hasParam('new_diet', event)) {
+                fieldValue = parseParam('diet', event)
+                throw {
+                    'statusCode': 500,
+                    'error': "Adding own diet should be possible elsewhere too"
+                }
+            }
             if (!cognitoChanges.isEmpty()) {
                 await doLoginChanges(client, ownUserId, cognitoChanges);
             }
@@ -550,413 +544,6 @@ exports.editProfileLambda = async (event, context) => {
         
 
         response = packResponse({ 'message': "Operation completed successfully" });
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-async function createUser(cognitoSub, username, email, language) {
-    const client = await getPsqlClient();
-
-    try {
-        const languageId = language === null ? await getLanguage(client, 'FI') :
-            await getLanguage(client, language.toUpperCase());
-        if (languageId === null || !Number.isInteger(languageId)) {
-            throw {
-                'statusCode': 400,
-                'error': "Invalid language id"
-            }
-        }
-
-        await client.query('BEGIN');
-        try {
-            const res = await client.query(
-                `INSERT INTO user_login (user_id, cognito_sub, username, email)
-                VALUES ((SELECT coalesce(max(user_id),0)+1 FROM user_login), $1, $2, $3)
-                RETURNING user_id`,
-                [cognitoSub, username, email]);
-
-            const userId = res.rows[0]['user_id'];
-            await client.query(
-                `INSERT INTO user_profile (user_id, role, display_name, image_url, language_id,
-                    birth_year, birth_month, gender, description,
-                    country_id, city_id, diet_id)
-                VALUES ($1, 0, $2, NULL, $3,
-                    NULL, NULL, NULL, NULL,
-                    NULL, NULL, NULL)`,
-                [userId, username, languageId]);
-
-            await client.query(
-                `INSERT INTO user_stats (user_id, countries, cities, reviews,
-                    thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given,
-                    activity_level, last_active)
-                VALUES ($1, 0, 0, 0,
-                    0, 0, 0, 0,
-                    0, timezone('utc', now()))`,
-                [userId]);
-            await client.query('COMMIT');
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
-        }
-    } finally {
-        await client.end();
-    }
-    return
-}
-
-exports.createUserLambda = async (event, context) => {
-    try {
-        //TODO: check that user exists in cognito
-
-        var cognitoSub = null;
-        var username = null;
-        var email = null;
-        var fieldValue;
-
-        if (hasParam('username', event)) {
-            fieldValue = parseParam('username', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                username = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "username can't be empty"
-                }
-            }
-        }
-        if (hasParam('cognito_sub', event)) {
-            fieldValue = parseParam('cognito_sub', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                cognitoSub = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "cognito_sub can't be empty"
-                }
-            }
-        }
-        if (hasParam('email', event)) {
-            fieldValue = parseParam('email', event);
-            if (fieldValue !== null && fieldValue !== '') {
-                email = fieldValue;
-            }
-            else {
-                throw {
-                    'statusCode': 400,
-                    'error': "email can't be empty"
-                }
-            }
-        }
-
-        var language = parseParam("language", event);
-
-        await createUser(cognitoSub, username, email, language);
-
-        response = packResponse({ 'message': "Operation completed successfully" });
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-async function deleteDiet(userId, dietId) {
-    const client = await getPsqlClient();
-    try {
-        await client.query(
-            `DELETE FROM diet_name
-        WHERE user_id = $1 AND diet_id = $2`,
-            [userId, dietId]);
-    } finally {
-        await client.end();
-    }
-    return;
-}
-
-exports.deleteDietLambda = async (event, context) => {
-    try {
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        if (ownUserId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Not logged in"
-            }
-        }
-
-        const dietId = parseIntParam("diet_id", event);
-
-        if (dietId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Invalid diet id"
-            }
-        }
-
-        await deleteDiet(ownUserId, dietId);
-
-        response = packResponse({ 'message': "Diet removed succesfully" });
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-async function deleteUser(userId, keepReviews, permanent) {
-    const client = await getPsqlClient();
-    try {
-        await client.query('BEGIN');
-        try {
-            await client.query(
-                `UPDATE user_profile
-                SET display_name = '', image_url = NULL, birth_year = NULL, birth_month = NULL,
-                gender = NULL, description = NULL, country_id = NULL, city_id = NULL, diet_id = NULL
-                WHERE user_id = $1`,
-                [userId]);
-            if (!keepReviews) {
-                await client.query(`DELETE FROM diet_name WHERE user_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM suspicious_review WHERE user_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_reject_log WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_accept_log WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM thumbs WHERE poster_id = $1 OR thumber_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review_diet WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM review WHERE poster_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM restaurant_ownership_request WHERE owner_id = $1`, [ownUserId]);
-                await client.query(`DELETE FROM restaurant_owners WHERE owner_id = $1`, [ownUserId]);
-                await client.query(
-                    `UPDATE user_stats
-                    SET countries = 0, cities = 0, reviews = 0, thumbs_up = 0, thumbs_down = 0,
-                    thumbs_up_given = 0, thumbs_down_given = 0, activity_level = 0, last_active = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            if (permanent) {
-                await client.query(
-                    `UPDATE user_login
-                    SET cognito_sub = NULL, username = NULL, email = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            else {
-                await client.query(
-                    `UPDATE user_login
-                    SET cognito_sub = NULL
-                    WHERE user_id = $1`,
-                    [userId]);
-            }
-            await client.query('COMMIT');
-        } catch (err) {
-            await client.query('ROLLBACK');
-            throw err;
-        }
-    }
-    finally {
-        client.end();
-    }
-    return;
-}
-
-
-exports.deleteUserLambda = async (event, context) => {
-    try {
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        if (ownUserId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Not logged in"
-            }
-        }
-
-        const keepReviews = JSON.parse(parseParam("reviews", event)) !== true;
-        const permanent = JSON.parse(parseParam("permanent", event)) === true;
-
-        await deleteUser(ownUserId, keepReviews, permanent);
-
-        response = packResponse({ 'message': "User removed succesfully" });
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-async function getOwnDiets(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
-        WHERE user_id = $1
-        GROUP BY diet_id, diet_name.global_diet_id, name`,
-        [userId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getSelectedDiet(client, userId) {
-    const res = await client.query(
-        `SELECT diet_id
-        FROM user_profile
-        WHERE user_id = $1`,
-        [userId]);
-    if (res.rowCount == 0) {
-        client.end();
-        throw {
-            'statusCode': 400,
-            'error': "No user found"
-        }
-    }
-    if (res.rowCount >= 2) {
-        client.end();
-        throw {
-            'statusCode': 500,
-            'error': "Something is broken, returning 2 or more diets"
-        }
-    }
-    var dietId = res.rows[0]['diet_id'];
-    return dietId;
-}
-
-
-exports.getOwnDietsLambda = async (event, context) => {
-    try {
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        if (ownUserId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Not logged in"
-            }
-        }
-
-        const client = await getPsqlClient();
-
-        var jsonObj = {};
-
-        try {
-            jsonObj['selected_diet_id'] = await getSelectedDiet(client, ownUserId);
-            jsonObj['own_diets'] = await getOwnDiets(client, ownUserId);
-        } finally {
-            await client.end();
-        }
-        
-        response = packResponse(jsonObj);
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-async function getOwnReviews(ownUserId, status, offset, limit) {
-    const client = await getPsqlClient();
-    var jsonObj = '';
-    try {
-        if (status == 0) {
-            const res = await client.query(
-                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
-                    rating_reliability, rating_variety, rating_service_and_quality,
-                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id)
-                FROM review, review_diet, restaurant
-                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                    AND review_diet.restaurant_id = review.restaurant_id AND review_posted = posted
-                    AND restaurant.restaurant_id = review.restaurant_id
-                LIMIT $4
-                OFFSET $3`,
-                [ownUserId, status, offset, limit]);
-            if (res.rowCount > 0) {
-                jsonObj = JSON.parse(JSON.stringify(res.rows)); 
-            }
-        }
-        if (status == 1) {
-            const res = await client.query(
-                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
-                    rating_reliability, rating_variety, rating_service_and_quality,
-                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id), accepted
-                FROM review, review_diet, restaurant, review_accept_log
-                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                    AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
-                    AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
-                    AND review_accept_log.restaurant_id = review.restaurant_id AND review_accept_log.review_posted = posted
-                LIMIT $4
-                OFFSET $3`,
-                [ownUserId, status, offset, limit]);
-            if (res.rowCount > 0) {
-                jsonObj = JSON.parse(JSON.stringify(res.rows));
-            }
-        }
-        if (status == 2) {
-            const res = await client.query(
-                `SELECT posted, title, restaurant.name, review.image_url, free_text, rating_overall,
-                    rating_reliability, rating_variety, rating_service_and_quality,
-                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id), rejected, reason
-                FROM review, review_diet, restaurant, review_reject_log
-                WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                    AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
-                    AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
-                    AND review_reject_log.restaurant_id = review.restaurant_id AND review_reject_log.review_posted = posted
-                LIMIT $4
-                OFFSET $3`,
-                [ownUserId, status, offset, limit]);
-            if (res.rowCount > 0) {
-                jsonObj = JSON.parse(JSON.stringify(res.rows));
-            }
-        }
-    } finally {
-        await client.end();
-    }
-    return jsonObj;
-}
-
-
-exports.getOwnReviewsLambda = async (event, context) => {
-    try {
-        //TODO: get own user id using cognito
-        const ownUserId = await getOwnUserId(event);
-        if (ownUserId === null) {
-            throw {
-                'statusCode': 400,
-                'error': "Not logged in"
-            }
-        }
-        const countryId = parseParam('country_id', event);
-
-        const status = parseIntParam('status', event);
-        if (status < 0 | status > 2) {
-            throw {
-                'statusCode': 400,
-                'error': "invalid status code"
-            }
-        }
-        const limit = parseIntParam('limit', event);
-        const offset = parseIntParam('offset', event);
-
-        var jsonObj = await getReviews(ownUserId, status, offset, limit);
-
-        response = packResponse(jsonObj);
 
     } catch (err) {
         response = errorHandler(err);

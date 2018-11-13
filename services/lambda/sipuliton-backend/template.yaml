@@ -77,11 +77,11 @@ Resources:
                       Path: /profile/edit
                       Method: get
 
-    ProfileCreateFunction:
+    UserCreateFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: profile/
-          Handler: profile.createUserLambda
+          CodeUri: user/
+          Handler: user.createUserLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -90,14 +90,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /profile/create
+                      Path: /user/create
                       Method: get
 
-    ProfileDeleteDietFunction:
+    UserDeleteFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: profile/
-          Handler: profile.deleteDietLambda
+          CodeUri: user/
+          Handler: user.deleteUserLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -106,14 +106,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /profile/deleteDiet
+                      Path: /user/delete
                       Method: get
 
-    ProfileDeleteFunction:
+    OwnReviewsFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: profile/
-          Handler: profile.deleteUserLambda
+          CodeUri: own_review/
+          Handler: own_review.getOwnReviewsLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -122,14 +122,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /profile/delete
+                      Path: /ownReviews
                       Method: get
 
-    ProfileOwnDietsFunction:
+    OwnReviewsEditFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: profile/
-          Handler: profile.getOwnDietsLambda
+          CodeUri: own_review/
+          Handler: own_review.editReviewLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -138,14 +138,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /profile/ownDiets
+                      Path: /ownReviews/edit
                       Method: get
 
-    ProfileOwnDietsFunction:
+    OwnReviewsDeleteFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: profile/
-          Handler: profile.getOwnReviewsLambda
+          CodeUri: own_review/
+          Handler: own_review.deleteReviewLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -154,14 +154,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /profile/ownReviews
+                      Path: /ownReviews/delete
                       Method: get
 
-    GetApiFoodGroupsFunction:
+    OwnDietsFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: getApi/
-          Handler: getApi.getFoodGroupsLambda
+          CodeUri: own_diet/
+          Handler: own_diet.getOwnDietsLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -170,14 +170,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /getApi/foodGroups
+                      Path: /ownDiets
                       Method: get
 
-    GetApiPresetDietsFunction:
+    OwnDietsDeleteFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: getApi/
-          Handler: getApi.getPresetDietsLambda
+          CodeUri: own_diet/
+          Handler: own_diet.deleteDietLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -186,14 +186,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /getApi/presetDiets
+                      Path: /ownDiets/delete
                       Method: get
 
-    GetApiCountriesFunction:
+    LocationCitiesFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: getApi/
-          Handler: getApi.getCountriesLambda
+          CodeUri: location/
+          Handler: location.getCitiesLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -202,14 +202,14 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /getApi/countries
+                      Path: /location/cities
                       Method: get
 
-    GetApiCitiesFunction:
+    LocationCountriesFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
-          CodeUri: getApi/
-          Handler: getApi.getCitiesLambda
+          CodeUri: location/
+          Handler: location.getCountriesLambda
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
@@ -218,7 +218,39 @@ Resources:
               Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
-                      Path: /getApi/cities
+                      Path: /location/countries
+                      Method: get
+
+    DietPresetsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.getPresetDietsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /diet/presets
+                      Method: get
+
+    DietGroupsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.getFoodGroupsLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /diet/groups
                       Method: get
 
 Outputs:
@@ -251,23 +283,5 @@ Outputs:
       Description: "API Gateway endpoint URL for Prod stage for Profile page function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Profile/"
 
-    ProfileFunction:
-      Description: "Profile pageLambda Function ARN"
-      Value: !GetAtt ProfileFunction.Arn
-
-    ProfileFunctionIamRole:
-      Description: "Implicit IAM Role created for Profile page function"
-      Value: !GetAtt ProfileFunctionRole.Arn
-
-    GetApi:
-      Description: "API Gateway endpoint URL for Prod stage for Profile page function"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/getApi/"
-
-    GetApiFunction:
-      Description: "GetApi Function ARN"
-      Value: !GetAtt GetApiFunction.Arn
-
-    GetApiIamRole:
-      Description: "Implicit IAM Role created for Profile page function"
-      Value: !GetAtt GetApiFunctionRole.Arn
+    
 

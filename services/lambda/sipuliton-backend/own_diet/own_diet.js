@@ -36,8 +36,16 @@ let response;
  * 
  */
 
-
 // shared functions
+
+async function getOwnUserId(client, event) {
+    const AWS = require('aws-sdk');
+    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
+    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
+    //console.log("user sub:" + userSub);
+    return 0;
+    return null;
+}
 
 async function getPsqlClient() {
     var pg = require("pg");
@@ -168,204 +176,106 @@ async function getLanguage(client, language) {
 
 // start of module functions
 
-
-async function getGroups(client, languageId, alternativeLanguageId) {
-    const res = await client.query(
-        `SELECT name_join.food_group_id, name, array_agg(food_group_id2) as groups
-        FROM (SELECT food_group.food_group_id, name
-            FROM food_group, food_group_name
-            WHERE food_group.food_group_id = food_group_name.food_group_id AND (
-                language_id = $1 OR (language_id = $2 AND food_group.food_group_id NOT IN (
-                    SELECT food_group.food_group_id
-                    FROM food_group, food_group_name
-                    WHERE food_group.food_group_id = food_group_name.food_group_id AND
-                    language_id = $1 AND name != ''
-                )
-            ))
-        ) AS name_join
-        LEFT JOIN food_group_groups ON name_join.food_group_id = food_group_groups.food_group_id 
-        GROUP BY name_join.food_group_id, name`,
-        [languageId, alternativeLanguageId]);
-    if (res.rowCount > 0) {
-        console.log(res.rows);
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
+async function deleteDiet(client, userId, dietId) {
+    await client.query(
+        `DELETE FROM diet_name
+        WHERE user_id = $1 AND diet_id = $2`,
+        [userId, dietId]);
+    return;
 }
 
-async function getPresetDiets(client, languageId, alternativeLanguageId) {
-    const res = await client.query(
-        `SELECT name_join.global_diet_id, name, array_agg(food_group_id) as groups
-        FROM (SELECT global_diet.global_diet_id, name
-            FROM global_diet, global_diet_name
-            WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND (
-                language_id = $1 OR (language_id = $2 AND global_diet.global_diet_id NOT IN (
-                    SELECT global_diet.global_diet_id
-                    FROM global_diet, global_diet_name
-                    WHERE preset = TRUE AND global_diet.global_diet_id = global_diet_name.global_diet_id AND
-                    language_id = $1 AND name != ''
-                )
-            ))
-        ) AS name_join
-        LEFT JOIN diet_groups ON name_join.global_diet_id = diet_groups.global_diet_id 
-        GROUP BY name_join.global_diet_id, name`,
-        [languageId, alternativeLanguageId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-async function getCities(client, countryId, languageId, alternativeLanguageId) {
-    if (countryId && countryId !== "") {
-        const res = await client.query(
-            `SELECT city.city_id, name
-            FROM city INNER JOIN city_name ON city.city_id = city_name.city_id
-            WHERE (language_id = $1 AND city.country_id = $3) OR ((language_id = $2 AND city.country_id = $3) AND city.city_id NOT IN (
-                SELECT city.city_id
-                FROM city INNER JOIN city_name ON city.city_id = city_name.city_id
-                WHERE language_id = $1 AND name != '' AND city.country_id = $3
-                )
-            )`,
-            [languageId, alternativeLanguageId, countryId]);
-        if (res.rowCount > 0) {
-            var jsonObj = JSON.parse(JSON.stringify(res.rows));
-            return jsonObj;
-        }
-    }
-    return null;
-}
-
-async function getCountries(client, languageId, alternativeLanguageId) {
-    const res = await client.query(
-        `SELECT country_id, name
-        FROM country_name
-        WHERE language_id = $1 OR (language_id = $2 AND country_id NOT IN (
-                SELECT country_id FROM Country_name
-                WHERE language_id = $1 AND name != ''
-            )
-        )`,
-        [languageId, alternativeLanguageId]);
-    if (res.rowCount > 0) {
-        var jsonObj = JSON.parse(JSON.stringify(res.rows));
-        return jsonObj;
-    }
-    return null;
-}
-
-
-exports.getFoodGroupsLambda = async (event, context) => {
+exports.deleteDietLambda = async (event, context) => {
     try {
         const client = await getPsqlClient();
         try {
-            var temp = parseParam("language", event);
-
-            const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
-
-            const alternativeLanguageId = await getLanguage(client, 'EN');
-
-            jsonObj = await getGroups(client, languageId, alternativeLanguageId);
-
-            response = packResponse(jsonObj);
-        } finally {
-            await client.end();
-        }
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-exports.getPresetDietsLambda = async (event, context) => {
-    try {
-        const client = await getPsqlClient();
-
-        try {
-            var temp = parseParam("language", event);
-
-            const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
-
-            const alternativeLanguageId = await getLanguage(client, 'EN');
-
-            const jsonObj = await getPresetDiets(client, languageId, alternativeLanguageId);
-
-            response = packResponse(jsonObj);
-        } finally {
-            await client.end();
-        }
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-exports.getCountriesLambda = async (event, context) => {
-    try {
-        const client = await getPsqlClient();
-
-        try {
-            var temp = parseParam("language", event);
-
-            const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
-
-            const alternativeLanguageId = await getLanguage(client, 'EN');
-
-            const jsonObj = await getCountries(client, languageId, alternativeLanguageId);
-
-            response = packResponse(jsonObj);
-        } finally {
-            await client.end();
-        }
-
-    } catch (err) {
-        response = errorHandler(err);
-    }
-
-    console.log(response);
-    return response;
-};
-
-
-exports.getCitiesLambda = async (event, context) => {
-    try {
-        const countryId = parseParam('country_id', event);
-        if (countryId === null) {
-            throw {
-                'statusCode': 400,
-                'error' : "country_id not set"
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
             }
-        }
 
+            const dietId = parseIntParam("diet_id", event);
+
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid diet id"
+                }
+            }
+
+            await deleteDiet(client, ownUserId, dietId);
+
+            response = packResponse({ 'message': "Diet removed succesfully" });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+async function getOwnDiets(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id, diet_name.global_diet_id, name, array_agg(food_group_id) as groups
+        FROM diet_name LEFT JOIN diet_groups ON diet_name.global_diet_id = diet_groups.global_diet_id
+        WHERE user_id = $1
+        GROUP BY diet_id, diet_name.global_diet_id, name
+        ORDER BY name`,
+        [userId]);
+    if (res.rowCount > 0) {
+        var jsonObj = JSON.parse(JSON.stringify(res.rows));
+        return jsonObj;
+    }
+    return null;
+}
+
+async function getSelectedDiet(client, userId) {
+    const res = await client.query(
+        `SELECT diet_id
+        FROM user_profile
+        WHERE user_id = $1`,
+        [userId]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No user diet found"
+        }
+    }
+    var dietId = res.rows[0]['diet_id'];
+    return dietId;
+}
+
+
+exports.getOwnDietsLambda = async (event, context) => {
+    try {
+        var jsonObj = {};
         const client = await getPsqlClient();
 
         try {
-            var temp = parseParam("language", event);
-
-            const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
-
-            const alternativeLanguageId = await getLanguage(client, 'EN');
-
-            var jsonObj = await getCities(client, countryId, languageId, alternativeLanguageId);
-
-            response = packResponse(jsonObj);
+        //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+            jsonObj['selected_diet_id'] = await getSelectedDiet(client, ownUserId);
+            jsonObj['own_diets'] = await getOwnDiets(client, ownUserId);
         } finally {
             await client.end();
         }
         
+        response = packResponse(jsonObj);
+
     } catch (err) {
         response = errorHandler(err);
     }
@@ -373,4 +283,76 @@ exports.getCitiesLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+
+exports.editOwnDietLambda = async (event, context) => {
+    try {
+        var jsonObj = {};
+        const client = await getPsqlClient();
+
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            var temp = parseIntParam("diet_id", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "user diet id not set"
+                }
+            }
+            const userDietId = temp;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+            
+            temp = parseIntParam("global_diet_id", event);
+            var dietId = temp;
+            if (groups !== null) {
+                //TODO: something like in saveDiet
+            }
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "diet id not set"
+                }
+            }
+            //TODO: db logic
+            throw {
+                'statusCode': 501,
+                'error': "diet editing not implemented"
+            }
+
+        } finally {
+            await client.end();
+        }
+
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+exports.createOwnDietLambda = async (event, context) => {
+    //TODO: pretty similar to to editOwnDietLambda/createDietLambda
+}
 
