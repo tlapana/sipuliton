@@ -7,9 +7,11 @@ import {
 	FormGroup,
 	Input,
 	Label,
+	Popover, PopoverBody, PopoverHeader
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ReviewList from './Review_List.js'
+import ReviewList from './Review_List.js';
+import WriteReview from '/client/src/modules/home';
 const restaurantDataUrl = "/services/lambda/sipuliton-backend/restaurant";
 
 export default class Restaurant extends React.Component {
@@ -85,7 +87,7 @@ export default class Restaurant extends React.Component {
 
 	renderRedirect = () => {
 		if (this.state.redirect) {
-			return <Redirect to='/writeReview' />
+			//return <Redirect to='/writeReview' />
 		}
 	}
 	render() {
@@ -98,7 +100,13 @@ export default class Restaurant extends React.Component {
 		{this.looper(this.restaurant.allergyTags())}</div><br>
 		<div id="restaurantDesc">{this.restaurant.description()}</div><br>
 		{this.renderRedirect()}
-		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.setRedirect}>Lisää arvostelu></Input><br>
+		<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover}>Lisää arvostelu></Input><br>
+		<Popover placement="bottom" isOpen={this.state.popoverOpen} target="filter_popover" toggle={this.togglePopover}>
+		<PopoverHeader></PopoverHeader>
+        <PopoverBody>
+		</WriteReview>
+		</PopoverBody>
+        </Popover>
 		</ReviewList>
 		</div>
 	}
