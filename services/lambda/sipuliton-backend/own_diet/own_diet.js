@@ -176,6 +176,50 @@ async function getLanguage(client, language) {
 
 // start of module functions
 
+async function deleteDiet(client, userId, dietId) {
+    await client.query(
+        `DELETE FROM diet_name
+        WHERE user_id = $1 AND diet_id = $2`,
+        [userId, dietId]);
+    return;
+}
+
+exports.deleteDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            const dietId = parseIntParam("diet_id", event);
+
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid diet id"
+                }
+            }
+
+            await deleteDiet(client, ownUserId, dietId);
+
+            response = packResponse({ 'message': "Diet removed succesfully" });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
 
 async function getOwnDiets(client, userId) {
     const res = await client.query(
@@ -239,4 +283,76 @@ exports.getOwnDietsLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+
+exports.editOwnDietLambda = async (event, context) => {
+    try {
+        var jsonObj = {};
+        const client = await getPsqlClient();
+
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            var temp = parseIntParam("diet_id", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "user diet id not set"
+                }
+            }
+            const userDietId = temp;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+            
+            temp = parseIntParam("global_diet_id", event);
+            var dietId = temp;
+            if (groups !== null) {
+                //TODO: something like in saveDiet
+            }
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "diet id not set"
+                }
+            }
+            //TODO: db logic
+            throw {
+                'statusCode': 501,
+                'error': "diet editing not implemented"
+            }
+
+        } finally {
+            await client.end();
+        }
+
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+exports.createOwnDietLambda = async (event, context) => {
+    //TODO: pretty similar to to editOwnDietLambda/createDietLambda
+}
 
