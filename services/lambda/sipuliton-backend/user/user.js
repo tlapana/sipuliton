@@ -220,41 +220,35 @@ exports.createUserLambda = async (event, context) => {
             var username = null;
             var email = null;
             var fieldValue;
-
-            if (hasParam('username', event)) {
-                fieldValue = parseParam('username', event);
-                if (fieldValue !== null && fieldValue !== '') {
-                    username = fieldValue;
-                }
-                else {
-                    throw {
-                        'statusCode': 400,
-                        'error': "username can't be empty"
-                    }
+            
+            fieldValue = parseParam('username', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                username = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "username can't be empty"
                 }
             }
-            if (hasParam('cognito_sub', event)) {
-                fieldValue = parseParam('cognito_sub', event);
-                if (fieldValue !== null && fieldValue !== '') {
-                    cognitoSub = fieldValue;
-                }
-                else {
-                    throw {
-                        'statusCode': 400,
-                        'error': "cognito_sub can't be empty"
-                    }
+            fieldValue = parseParam('cognito_sub', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                cognitoSub = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "cognito_sub can't be empty"
                 }
             }
-            if (hasParam('email', event)) {
-                fieldValue = parseParam('email', event);
-                if (fieldValue !== null && fieldValue !== '') {
-                    email = fieldValue;
-                }
-                else {
-                    throw {
-                        'statusCode': 400,
-                        'error': "email can't be empty"
-                    }
+            fieldValue = parseParam('email', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                email = fieldValue;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "email can't be empty"
                 }
             }
 
@@ -353,7 +347,7 @@ exports.deleteUserLambda = async (event, context) => {
 
             await deleteUser(client, ownUserId, keepReviews, permanent);
 
-            response = packResponse({ 'message': "User removed succesfully" });
+            response = packResponse({ 'message': "User removed successfully" });
         }
         finally {
             client.end();

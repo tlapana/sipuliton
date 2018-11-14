@@ -247,7 +247,7 @@ exports.getCountriesLambda = async (event, context) => {
 
 exports.getCitiesLambda = async (event, context) => {
     try {
-        const countryId = parseParam('country_id', event);
+        const countryId = parseIntParam('country_id', event);
         if (countryId === null) {
             throw {
                 'statusCode': 400,
