@@ -1,5 +1,5 @@
-import React, { } from 'react';
-import { Button, Container, Row, Col } from 'reactstrap';
+import React from 'react';
+import { Row, Col } from 'reactstrap';
   
   
 class Profile extends React.Component {
