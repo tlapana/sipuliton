@@ -36,7 +36,7 @@ export default class Restaurant extends React.Component {
 		this.renderRedirect = this.renderRedirect.bind(this);
 	}
 	componentDidMount() {    
-		fetch(restaurantDataUrl)
+		fetch(restaurantDataUrl + "?restaurantId=" + restaurant.id)
 		.then(res => res.json())
 		.then(
 			(result) => {

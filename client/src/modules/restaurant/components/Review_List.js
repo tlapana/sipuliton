@@ -25,6 +25,8 @@ export default class ReviewList extends React.Component {
 			this.reviewList.allergyAwareness: [];
 			this.reviewList.serviceQuality : [];
 			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
+			this.pageNumber : 0;
+			this.pageSize : 20;
 			this isLoaded : false;
 		};
 		this.loadReviews = this.componentDidMount.bind(this);
@@ -32,7 +34,7 @@ export default class ReviewList extends React.Component {
 		this.changeReview = this.changeReview.bind(this);
 	}
 	componentDidMount() {
-		fetch(reviewsDataUrl, restaurant.id)
+		fetch(reviewsDataUrl + "?restaurantId=" + restaurant.id + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
 		.then(res => res.json())
 		.then(
 			(result) => {
