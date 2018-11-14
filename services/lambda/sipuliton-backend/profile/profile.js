@@ -192,6 +192,7 @@ async function getCountryName(client, countryId, languageId, alternativeLanguage
                 [countryId, alternativeLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
+                return null;
             }
         }
         if (res.rowCount >= 2) {
@@ -221,6 +222,7 @@ async function getCityName(client, cityId, languageId, alternativeLanguageId) {
                 [cityId, alternativeLanguageId]);
             if (res.rowCount == 0) {
                 //TODO: maybe should differentiate between name not found and id being null?
+                return null;
             }
         }
         if (res.rowCount >= 2) {
@@ -292,8 +294,8 @@ async function fetchUser(client, userId, ownUserId, languageId) {
     }
 
     if (!jsonObj['own_profile']) {
-        delete jsonObj['username'];
-        delete jsonObj['email'];
+        jsonObj['username'] = null;
+        jsonObj['email'] = null;
     }
 
     jsonObj['country_name'] = await getCountryName(client, jsonObj['country_id'], languageId, alternativeLanguageId);
