@@ -16,18 +16,18 @@ export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			this.reviewList.titles : [];
-			this.reviewList.pictures : [];
-			this.reviewList.reviews : [];
-			this.reviewList.users : [];
-			this.reviewList.allergyTags : [];
-			this.reviewList.relevance : [];
-			this.reviewList.allergyAwareness: [];
-			this.reviewList.serviceQuality : [];
-			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
-			this.pageNumber : 0;
-			this.pageSize : 20;
-			this isLoaded : false;
+			this.reviewList.titles : [],
+			this.reviewList.pictures : [],
+			this.reviewList.reviews : [],
+			this.reviewList.users : [],
+			this.reviewList.allergyTags : [],
+			this.reviewList.relevance : [],
+			this.reviewList.allergyAwareness: [],
+			this.reviewList.serviceQuality : [],
+			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1,
+			this.pageNumber : 0,
+			this.pageSize : 20,
+			this isLoaded : false
 		};
 		this.loadReviews = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
