@@ -8,6 +8,8 @@ import Footer from './Footer';
 import home from '../../home';
 import login from '../../login';
 import Reviews from '../../myReviews'
+import Profile from '../../userProfile'
+
 import NotFound from './NotFound';
 import NavigationBar from './NavigationBar'
 
@@ -29,6 +31,8 @@ const App = ({ store }) => (
               <Route exact path="/" component={Home} />
               <Route path="/login" component={Login} />
             <Route path="/myReviews" component={Reviews} />
+            <Route path="/userProfile" component={Profile} />
+
               <Route component={NotFound} />
             </Switch>
           </div>

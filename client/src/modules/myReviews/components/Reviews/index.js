@@ -1,6 +1,5 @@
 import React, { } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
-import Pagination from "react-js-pagination";
  import ReactDOM from "react-dom";
 
 class Profile extends React.Component {
