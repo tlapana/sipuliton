@@ -106,7 +106,7 @@ class Profile extends React.Component {
                         this.setState({ activitypoints: responseJson.activity_level });
                         this.setState({ cities_visited: responseJson.cities_visited });
 
-                        alert('ok');
+                       
                   })
                   .catch((error) => {
                         alert(error);
