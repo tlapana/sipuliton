@@ -93,7 +93,7 @@ class Profile extends React.Component {
                   .then((response) => response.json())
                   .then((responseJson) => {
 
-
+ 
                         this.setState({ username: responseJson.display_name });
 
                         this.setState({ email: responseJson.email });
