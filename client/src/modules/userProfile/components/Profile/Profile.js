@@ -1,7 +1,7 @@
 import React, { } from 'react';
 import { Button, Container, Row, Col } from 'reactstrap';
   
-  
+
 class Profile extends React.Component {
       constructor(props) {
             super(props);
@@ -92,20 +92,21 @@ class Profile extends React.Component {
             fetch('http://127.0.0.1:3000/profile')
                   .then((response) => response.json())
                   .then((responseJson) => {
-                        this.setState({ url: responseJson.url });
 
+ 
                         this.setState({ username: responseJson.display_name });
+
                         this.setState({ email: responseJson.email });
-                        this.setState({ city: responseJson.city_name });
-                        this.setState({ desc: responseJson.description });
-                        this.setState({ reviews: responseJson.reviews });
-
+			this.setState({ reviews: responseJson.reviews });
+                        this.setState({ url: responseJson.image_url });
+                        this.setState({ city: responseJson.city_id });
+                       
+			this.setState({ desc: responseJson.description });
                         this.setState({ countries_visited: responseJson.countries_visited });
-
+                        this.setState({ activitypoints: responseJson.activity_level });
                         this.setState({ cities_visited: responseJson.cities_visited });
 
-                        this.setState({ activitypoints: responseJson.activity_level });
-
+                       
                   })
                   .catch((error) => {
                         alert(error);
