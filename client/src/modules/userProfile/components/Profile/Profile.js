@@ -93,11 +93,12 @@ class Profile extends React.Component {
                   .then((response) => response.json())
                   .then((responseJson) => {
 
- 
+       
                         this.setState({ username: responseJson.display_name });
 
                         this.setState({ email: responseJson.email });
 			this.setState({ reviews: responseJson.reviews });
+                        //image
                         this.setState({ url: responseJson.image_url });
                         this.setState({ city: responseJson.city_id });
                        
