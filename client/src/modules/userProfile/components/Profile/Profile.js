@@ -98,7 +98,7 @@ class Profile extends React.Component {
 
                         this.setState({ email: responseJson.email });
 			this.setState({ reviews: responseJson.reviews });
-                        this.setState({ url: responseJson.image_url });
+                         this.setState({ url: responseJson.image_url });
                         this.setState({ city: responseJson.city_id });
                        
 			this.setState({ desc: responseJson.description });
