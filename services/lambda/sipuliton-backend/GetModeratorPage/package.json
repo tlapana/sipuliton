@@ -1,0 +1,13 @@
+{
+  "name": "moderate_get",
+  "version": "0.1.1",
+  "description": "GET endpoint for moderator page",
+  "main": "src/GetModeratorPage.js",
+  "repository": "",
+  "author": "Sergei Häyrynen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.5.0"
+  },
+  "devDependencies": {}
+}
