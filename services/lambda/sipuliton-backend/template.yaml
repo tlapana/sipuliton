@@ -62,6 +62,55 @@ Resources:
                       Method: get
 
 
+    SearchFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: search/
+          Handler: search.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /search
+                      Method: get
+
+    RestaurantFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: restaurant/
+          Handler: restaurant.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /restaurant
+                      Method: get
+
+    ReviewsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: reviews/
+          Handler: reviews.lambdaHandler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /reviews
+                      Method: get
+
+
 Outputs:
 
     HelloWorldApi:
@@ -99,4 +148,42 @@ Outputs:
     ProfileFunctionIamRole:
       Description: "Implicit IAM Role created for Profile page function"
       Value: !GetAtt ProfileFunctionRole.Arn
+
+    SearchApi:
+      Description: "API Gateway endpoint URL for Prod stage for search functionality"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Search/"
+
+    SearchFunction:
+      Description: "Restaurant search Lambda Function ARN"
+      Value: !GetAtt SearchFunction.Arn
+
+    SearchFunctionIamRole:
+      Description: "Implicit IAM Role created for Search function"
+      Value: !GetAtt SearchFunctionRole.Arn
+      
+    RestaurantApi:
+      Description: "API Gateway endpoint URL for Prod stage for Restaurant page function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Restaurant/"
+
+    RestaurantFunction:
+      Description: "Restaurant page Lambda Function ARN"
+      Value: !GetAtt RestaurantFunction.Arn
+
+    RestaurantFunctionIamRole:
+      Description: "Implicit IAM Role created for Restaurant page function"
+      Value: !GetAtt RestaurantFunctionRole.Arn
+
+    ReviewsApi:
+      Description: "API Gateway endpoint URL for Prod stage for reviews function"
+      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Reviews/"
+
+    ReviewsFunction:
+      Description: "Reviews Lambda Function ARN"
+      Value: !GetAtt ReviewsFunction.Arn
+
+    ReviewsFunctionIamRole:
+      Description: "Implicit IAM Role created for Reviews page function"
+      Value: !GetAtt ReviewsFunctionRole.Arn
+
+
 
