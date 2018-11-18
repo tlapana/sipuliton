@@ -146,6 +146,10 @@ export default class Register extends React.Component {
   handleRegistration = async event => {
     /*use signUp function to register*/
     event.preventDefault();
+    if (this.state.isLoading) {
+      return;
+    }
+    
     this.setState({ isLoading: true });
     try {
       const newUser = await Auth.signUp({

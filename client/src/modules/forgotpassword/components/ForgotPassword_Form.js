@@ -43,6 +43,7 @@ export default class ForgotPassword_Form extends React.Component{
       codeIsValid:true,
       usernameIsValid:true,
       newPasswordIsValid:true,
+      isLoading:false,
 
     };
     this.sendCodeAgain = this.sendCodeAgain.bind(this);
@@ -67,6 +68,7 @@ export default class ForgotPassword_Form extends React.Component{
       codeIsValid:true,
       usernameIsValid:true,
       newPasswordIsValid:true,
+      isLoading:false,
     })
   }
 
@@ -76,9 +78,9 @@ export default class ForgotPassword_Form extends React.Component{
   */
   sendCode = (event) => {
       event.preventDefault();
-      if(this.state.usernameIsValid){
+      if (this.state.usernameIsValid && !this.state.isLoading) {
         /* Implements forgot password code sending. */
-        this.setState({codeSendingFailed: false, limitExceeded: false});
+        this.setState({ codeSendingFailed: false, limitExceeded: false, isLoading: true, });
         Auth.forgotPassword(this.state.username)
           .then(data => {
             console.log(data);
@@ -87,27 +89,31 @@ export default class ForgotPassword_Form extends React.Component{
               email: data.CodeDeliveryDetails.Destination,
               codeSendingFailed: false,
               limitExceeded: false,
+              isLoading: false,
             });
           })
           .catch(err => {
             /* Exception when code is sent too many times in a short time period.*/
-            if(err.code === "LimitExceededException"){
+            if (err.code === "LimitExceededException") {
               this.setState({
-                limitExceeded:true,
-                codeSendingFailed:false
+                limitExceeded: true,
+                codeSendingFailed: false,
+                isLoading: false,
               });
             }
-            else{
+            else {
               this.setState({
-                limitExceeded:false,
-                codeSendingFailed:true
+                limitExceeded: false,
+                codeSendingFailed: true,
+                isLoading: false,
               });
             }
           });
       }
-      else{
+      else {
         this.setState({
-          codeSendingFailed:true
+          codeSendingFailed: true,
+          isLoading: false,
         });
       }
 
@@ -130,8 +136,8 @@ export default class ForgotPassword_Form extends React.Component{
     strings.setLanguage(this.props.language);
 
     if(this.state.passwordsMatch && this.state.codeIsValid
-      && this.state.newPasswordIsValid) {
-      this.setState({passwordChangingFailed:false});
+      && this.state.newPasswordIsValid && !this.state.isLoading) {
+      this.setState({ passwordChangingFailed: false, isLoading: true, });
       /* Changes user password for the user. */
       Auth.forgotPasswordSubmit(
         this.state.username,
@@ -139,18 +145,20 @@ export default class ForgotPassword_Form extends React.Component{
         this.state.newPassword
       )
         .then(data => {
-          this.setState({passwordChangedSuccesfully: true});
+          this.setState({ passwordChangedSuccesfully: true, isLoading: false, });
           alert(strings.changeSuccess);
         })
         .catch(err => this.setState({
           passwordChangedSuccesfully:false,
-          passwordChangingFailed: true
+          passwordChangingFailed: true, 
+          isLoading: false,
         }));
     }
     else{
       this.setState({
-        passwordChangedSuccesfully:false,
-        passwordChangingFailed: true
+        passwordChangedSuccesfully: false,
+        passwordChangingFailed: true, 
+        isLoading: false,
       });
     }
 
@@ -238,6 +246,7 @@ export default class ForgotPassword_Form extends React.Component{
       en:{
         username:"Username:",
         sendCode:"Send code",
+        sending:"Sending...",
         usernotfound:"User not found or username is invalid.",
         limitexceeded:"You send a code too many times in a row, try again later.",
         passwordchangedidntsuccee:"Password didn't succeed, password or code is invalid.",
@@ -248,6 +257,7 @@ export default class ForgotPassword_Form extends React.Component{
         didntGetEmail:"Didn't get email? ",
         sendcodeagain:"Send code again",
         changePassword:"Change password",
+        loading:"Loading...",
         passwordError:"Password must be at least 8 characters long and " + 
 					"contain numbers lower case characters and numbers",
 				passwordAgainError:"Passwords must match",
@@ -256,6 +266,7 @@ export default class ForgotPassword_Form extends React.Component{
       fi: {
         username:"Käyttäjänimi:",
         sendCode:"Lähetä koodi",
+        sending:"Lähetetään...",
         usernotfound:"Käyttäjää ei löydy tai käyttäjänimi ei ole validi.",
         limitexceeded:"Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
         passwordchangedidntsuccee:"Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.",
@@ -266,6 +277,7 @@ export default class ForgotPassword_Form extends React.Component{
         didntGetEmail:"Etkö saanut sähköpostia? ",
         sendcodeagain:"Lähetä koodi uudelleen",
         changePassword:"Vaihda salasana",
+        loading:"Ladataan...",
         passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
           "siinä tulee olla pieniä kirjaimia ja numeroita",
         passwordAgainError:"Salasanojen tulee olla samat",
@@ -273,7 +285,8 @@ export default class ForgotPassword_Form extends React.Component{
       }
     });
     strings.setLanguage(this.props.language);
-
+    const sendCodeBtnStr = this.state.isLoading ? strings.sending : strings.sendCode;
+    const changePasswordBtnStr = this.state.isLoading ? strings.loading : strings.changePassword;
 
     return (
       <div>
@@ -286,7 +299,7 @@ export default class ForgotPassword_Form extends React.Component{
               <Label>{strings.username}</Label>
               <VInput isValid={this.state.usernameIsValid} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required autoFocus={true} />
             </FormGroup>
-            <VInput className="main-btn big-btn max-w-10" type="submit" value={strings.sendCode} />
+            <VInput className="main-btn big-btn max-w-10" type="submit" value={sendCodeBtnStr} isValid={!this.state.isLoading} />
           </Form>
         }
         
@@ -312,7 +325,7 @@ export default class ForgotPassword_Form extends React.Component{
                 <Label>{strings.code}</Label>
                 <VInput isValid={this.state.codeIsValid} errormsg={strings.codeError} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
               </FormGroup>
-              <VInput type="submit" value={strings.changePassword} isValid={this.validateChangeForm} className="main-btn big-btn max-w-10"/>
+              <VInput type="submit" value={changePasswordBtnStr} isValid={this.validateChangeForm() && !this.state.isLoading} className="main-btn big-btn max-w-10"/>
             </Form>
           </div>
         }
