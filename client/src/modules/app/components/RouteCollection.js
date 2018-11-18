@@ -17,7 +17,7 @@ class RouteCollection extends React.Component {
 
   render() {
     const { Home } = home;
-    const { Login } = login;
+    const { Login, Logout } = login;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
     const { Profile } = profile;
@@ -27,6 +27,7 @@ class RouteCollection extends React.Component {
         <Redirect exact from="/" to="/fi" />
         <Route exact path="/:language" component={Home} />
         <Route path="/:language/login/" component={Login} />
+        <Route path="/:language/logout/" component={Logout} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route path="/:language/userProfile/" component={Profile} />
