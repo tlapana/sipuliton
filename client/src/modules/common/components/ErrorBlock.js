@@ -1,6 +1,10 @@
 import React from 'react'
 
-
+/* 
+A block that shows an error message. 
+Takes "hidden" (true/false) and "errormsg" props. 
+Shows the error message if "hidden" is false and errormsg is not null/empty.
+*/
 export default class ErrorBlock extends React.Component {
   constructor(props) {
     super(props);
