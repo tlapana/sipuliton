@@ -7,20 +7,18 @@ import {
   Navbar,
   NavbarToggler,
   Nav,
-  NavItem,
   NavLink,
   Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
 /* Styles and icons */
-import styles from '../../../styles/navigationbar.css';
+import '../../../styles/navigationbar.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import MainMenu_ListItem from '../../mainmenu/components/MainMenu_ListItem'
-import MainMenu_LogoutButton from '../../mainmenu/components/MainMenu_LogoutButton'
+import { LanguageSelection, MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -41,10 +39,11 @@ class NavigationBar extends React.Component {
       redirectUrl:"",
       languageChanged:false
     };
+
     this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
-    this.ChangeToEngland = this.ChangeToEngland.bind(this);
-    this.ChangeToFinland = this.ChangeToFinland.bind(this);
+    this.checkAccessRights = this.checkAccessRights.bind(this);
+    this.changeLanguage = this.changeLanguage.bind(this);
   }
 
   /* Function which will be called when menu button is clicked. */
@@ -65,7 +64,7 @@ class NavigationBar extends React.Component {
   }
 
   /* This function checks logged in users rights. */
-  checkAccessRights(){
+  checkAccessRights() {
     /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
@@ -128,72 +127,20 @@ class NavigationBar extends React.Component {
 
   }
 
-  ChangeToFinland(){
-    var url = window.location.href
-    url = url.replace(this.state.language,'fi');
+  changeLanguage(language) {
+    var url = window.location.href;
+    url = url.replace(this.state.language, language);
     var index = url.search('://');
-    url = url.slice(index+3);
+    url = url.slice(index + 3);
     index = url.search('/');
     url = url.slice(index);
     console.log(url);
-    this.setState({language:'fi',redirectUrl:url,languageChanged:true});
-
-  }
-  ChangeToEngland(){
-    var url = window.location.href
-    url = url.replace(this.state.language,'en');
-    var index = url.search('://');
-    url = url.slice(index+3);
-    index = url.search('/');
-    url = url.slice(index);
-    console.log(url);
-    this.setState({language:'en',redirectUrl:url,languageChanged:true});
+    this.setState({language: language, redirectUrl: url, languageChanged: true});
   }
 
   render() {
-      /* Navigation bar inline styles. */
-      const navBarStyle = {
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'inlineblock',
-        'width':'100%',
-        'alignItems':'left',
-        'position':'fixed',
-        'bottom':'0'
-      }
-
-      const iconStyles = {
-        'color':'black',
-        'width':'50px',
-        'height':'50px'
-      }
-
-      const flagStyles = {
-        'width':'50px',
-        'height':'50px',
-        'display': 'inlineblock',
-        'margin':'0px 0px 0px 30px',
-      }
-
-      const menuItemsBox = {
-        'margin':'25px 0 0 0'
-      }
-
       /* Menu appearance styles. */
-      const duration = 200;
-      const defaultStyle = {
-        transition: `opacity ${duration}ms ease-in-out`,
-        opacity: 0,
-        'backgroundColor':'#99ff99',
-        'color': 'white',
-        'display': 'block',
-        'width':'25%',
-        'left':'-500px',
-        'height':'100%',
-        'position': 'fixed',
-        'top':'0px',
-      }
-
+      const duration = 0;
       const transitionStyles = {
         entering: { opacity: 0, 'left':'-500px' },
         entered:  { opacity: 1, 'left':'0px' },
@@ -229,78 +176,73 @@ class NavigationBar extends React.Component {
         }
       });
 
-      if(this.state.language == "fi"){
+      if(this.state.language === "fi"){
         strings.setLanguage('fi');
       }
-      if(this.state.language == "en"){
+      if(this.state.language === "en"){
         strings.setLanguage('en');
       }
 
       /* URL Paths to pages*/
-      const pathToMenu = "/"+this.state.language
-      const pathToMap = "/"+this.state.language+"/map"
-      const pathToRestaurantList = "/"+this.state.language+"/restaurant_list"
-      const pathToRestaurantManagement = "/"+this.state.language+"/restaurant_management"
-      const pathToAdmin = "/"+this.state.language+"/admin"
-      const pathToModerating = "/"+this.state.language+"/moderating"
-      const pathToProfile = "/"+this.state.language+"/profile"
-      const pathToLogin = "/"+this.state.language+"/login"
-      const pathToRegister = "/"+this.state.language+"/register"
+      const pathToMenu = "/" + this.state.language;
+      const pathToMap = "/" + this.state.language+"/map";
+      const pathToRestaurantList = "/" + this.state.language + "/restaurant_list";
+      const pathToRestaurantManagement = "/" + this.state.language + "/restaurant_management";
+      const pathToAdmin = "/" + this.state.language + "/admin";
+      const pathToModerating = "/" + this.state.language + "/moderating";
+      const pathToProfile = "/" + this.state.language + "/profile";
+      const pathToLogin = "/" + this.state.language + "/login";
+      const pathToRegister = "/" + this.state.language + "/register";
 
       /* Changed correct language to page after clicking change language. */
       if(this.state.languageChanged){
         this.setState({languageChanged:false});
         return(
           <Redirect to={this.state.redirectUrl}/>
-        )
+        );
       }
 
       return (
 
         <div>
           <div>
-          <Transition in={this.state.visible} out={!this.state.visible}
-            timeout={duration}
-            >
-            {(state) => (
-              <Nav style={{
-                ...defaultStyle,
-                ...transitionStyles[state]
-              }} onClick={this.mainMenu}>
-                <div className="menuItems" style={menuItemsBox}>
-                  <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
-                  <MainMenu_ListItem path={pathToMap} text={strings.map} />
-                  <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
-                  {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
-                  {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
-                  {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
-                  {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
-                  {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
-                  {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
-                  {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
-                </div>
+            <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
+              {(state) => (
                 <div>
-                    <img src={require('../../../resources/suomilippu_logo.ico')}
-                      onClick={this.ChangeToFinland}
-                      style={flagStyles} />
-                    <img src={require('../../../resources/englanninlippu_logo.ico')}
-                      onClick={this.ChangeToEngland}
-                      style={flagStyles} />
+                  <Nav 
+                    vertical
+                    className="side-menu" 
+                    onClick={this.mainMenu} 
+                    style={{...transitionStyles[state]}}
+                  >
+                    <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
+                    <MainMenu_ListItem path={pathToMap} text={strings.map} />
+                    <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                    {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                    {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
+                    {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
+                    {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
+                    {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
+                    {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    <li>
+                      <LanguageSelection changeLanguage={this.changeLanguage} />
+                    </li>
+                  </Nav>
                 </div>
-              </Nav>
-            )}
-          </Transition>
-
+              )}
+            </Transition>
           </div>
-          <Navbar id="navBar" style={navBarStyle}>
+
+          <Navbar id="navBar" className="fixed-bottom bottom-bar">
             <NavbarToggler onClick={this.mainMenu}>
-              <FontAwesomeIcon className="icon" style={iconStyles} icon="bars"/>
+              <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
             </NavbarToggler>
             <header className="header" style={{'Align':'center'}}>
               <h1>{this.props.header_text}</h1>
             </header>
             <NavLink tag={Link} to={pathToMenu}>
-              <FontAwesomeIcon className="icon" style={iconStyles} icon="home" onClick={this.home}/>
+              <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
             </NavLink>
           </Navbar>
         </div>
