@@ -19,17 +19,17 @@ export default class Restaurant extends React.Component {
 		super(props);
 		this.state = {
 			//How the restaurant properties is made up, for now
-			this.restaurant.name : "Test",
-			this.restaurant.pictures : ["", "", ""],
-			this.restaurant.priceLevel : 2,
-			this.restaurant.userScore : 3,
-			this.restaurant.allergyTags : ["Sipuliton", "Munaton"],
-			this.restaurant.openingHours : {monFri: 08002100, sat: 09002100, sun: 09001800},
-			this.restaurant.description : "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.",
-			this.restaurant.id : 1,
-			this.redirect : false,
-			this isLoaded : false,
-			this.popoverOpen: false
+			restaurant.name : "Test",
+			restaurant.pictures : ["", "", ""],
+			restaurant.priceLevel : 2,
+			restaurant.userScore : 3,
+			restaurant.allergyTags : ["Sipuliton", "Munaton"],
+			restaurant.openingHours : {monFri: 08002100, sat: 09002100, sun: 09001800},
+			restaurant.description : "Qwertyuiop. Asdfghjkl.<br>Zxcvbnm.",
+			restaurant.id : 1,
+			redirect : false,
+			isLoaded : false,
+			popoverOpen: false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
