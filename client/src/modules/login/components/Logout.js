@@ -2,11 +2,13 @@ import React from 'react';
 import { Button } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
-/* Localization */
 import LocalizedStrings from 'react-localization';
 
+/*
+Component for a separate logout view. 
+When a user navigates to this view, they will be logged out.
+*/
 class Logout extends React.Component {
-  /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
     this.state = { logoutError: false };
