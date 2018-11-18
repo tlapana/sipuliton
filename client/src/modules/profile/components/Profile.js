@@ -92,7 +92,7 @@ class Profile extends React.Component {
             fetch('http://127.0.0.1:3000/profile')
                   .then((response) => response.json())
                   .then((responseJson) => {
-                        this.setState({ url: responseJson.url });
+                        this.setState({ url: responseJson.image_url });
 
                         this.setState({ username: responseJson.display_name });
                         this.setState({ email: responseJson.email });
