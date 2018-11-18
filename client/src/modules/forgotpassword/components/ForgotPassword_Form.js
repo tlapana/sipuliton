@@ -233,7 +233,7 @@ export default class ForgotPassword_Form extends React.Component{
   }
 
   render(){
-    const { VInput, } = commonComponents;
+    const { VInput, ErrorBlock } = commonComponents;
     let strings = new LocalizedStrings({
       en:{
         username:"Username:",
@@ -248,6 +248,10 @@ export default class ForgotPassword_Form extends React.Component{
         didntGetEmail:"Didn't get email? ",
         sendcodeagain:"Send code again",
         changePassword:"Change password",
+        passwordError:"Password must be at least 8 characters long and " + 
+					"contain numbers lower case characters and numbers",
+				passwordAgainError:"Passwords must match",
+        codeError:"Code must be 2-9 characters long",
       },
       fi: {
         username:"Käyttäjänimi:",
@@ -262,28 +266,31 @@ export default class ForgotPassword_Form extends React.Component{
         didntGetEmail:"Etkö saanut sähköpostia? ",
         sendcodeagain:"Lähetä koodi uudelleen",
         changePassword:"Vaihda salasana",
+        passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
+          "siinä tulee olla pieniä kirjaimia ja numeroita",
+        passwordAgainError:"Salasanojen tulee olla samat",
+        codeError:"Koodin tulee olla 2-9 merkkiä pitkä",
       }
     });
     strings.setLanguage(this.props.language);
 
+
     return (
       <div>
-        {this.state.codeSendingFailed && <div>{strings.usernotfound}</div>}
-        {this.state.limitExceeded && <div>{strings.limitexceeded}</div>}
+        <ErrorBlock hidden={!this.state.codeSendingFailed} errormsg={strings.usernotfound} />
+        <ErrorBlock hidden={!this.state.limitExceeded} errormsg={strings.limitexceeded} />
+
         {!this.state.codeSentSuccesfully &&
           <Form onSubmit={this.sendCode}>
             <FormGroup>
               <Label>{strings.username}</Label>
-              <VInput isValid={this.state.usernameIsValid} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required autoFocus="true" />
+              <VInput isValid={this.state.usernameIsValid} value={this.state.username} onChange={this.changeUsername} type="text" name="username" required autoFocus={true} />
             </FormGroup>
             <VInput className="main-btn big-btn max-w-10" type="submit" value={strings.sendCode} />
           </Form>
         }
-        {this.state.passwordChangingFailed &&
-          <div>
-            {strings.passwordchangedidntsuccee}
-          </div>
-        }
+        
+        <ErrorBlock hidden={!this.state.passwordChangingFailed} errormsg={strings.passwordchangedidntsuccee} />
 
         {this.state.codeSentSuccesfully && 
           <div>
@@ -295,15 +302,15 @@ export default class ForgotPassword_Form extends React.Component{
             <Form onSubmit={this.changePassword}>
               <FormGroup>
                 <Label>{strings.newpassword}</Label>
-                <VInput isValid={this.state.newPasswordIsValid} value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required autoFocus="true" />
+                <VInput isValid={this.state.newPasswordIsValid} errormsg={strings.passwordError} value={this.state.newPassword} onChange={this.changeNewPassword} type="password" name="password" required autoFocus={true} />
               </FormGroup>
               <FormGroup>
                 <Label>{strings.newpasswordagain}</Label>
-                <VInput isValid={this.state.passwordsMatch} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password2" required />
+                <VInput isValid={this.state.passwordsMatch} errormsg={strings.passwordAgainError} value={this.state.newPasswordAgain} onChange={this.changeNewPasswordAgain} type="password" name="password2" required />
               </FormGroup>
               <FormGroup>
                 <Label>{strings.code}</Label>
-                <VInput isValid={this.state.codeIsValid} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
+                <VInput isValid={this.state.codeIsValid} errormsg={strings.codeError} value={this.state.code} onChange={this.changeCode} type="text" name="password" required />
               </FormGroup>
               <VInput type="submit" value={strings.changePassword} isValid={this.validateChangeForm} className="main-btn big-btn max-w-10"/>
             </Form>

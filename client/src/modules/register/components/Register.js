@@ -1,20 +1,15 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { render } from 'react-dom';
+import { Link, Redirect } from 'react-router-dom';
 import {
   Button,
 	Form,
 	FormGroup,
-	Input,
 	Label,
 } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
 import commonComponents from '../../common'
 
 import config from "../../../config.js"
-
-/* Localization */
 import LocalizedStrings from 'react-localization';
 
 export default class Register extends React.Component {
@@ -24,6 +19,7 @@ export default class Register extends React.Component {
 
 		this.state = {
 			isLoading: false,
+			loggedInAlready: false,
 			username: "",
 			mail: "",
 			password: "",
@@ -52,6 +48,14 @@ export default class Register extends React.Component {
 		this.renderForm = this.renderForm.bind(this);
 	}
 
+  componentDidMount() {
+    Auth.currentAuthenticatedUser()
+        .then(user => {
+          this.setState({ loggedInAlready: true });
+        })
+        .catch(err => {});
+	}
+	
 	validateForm() {
 		/*Make sure all fields are okay*/
 		const isValid = (
@@ -192,7 +196,7 @@ export default class Register extends React.Component {
 			<div>
 				<h2>{strings.successHeader}</h2>
 				<p>{strings.successText}</p>
-				<Button className="main-btn">{strings.loginBtnText}</Button>
+				<Button className="main-btn" href={"/" + this.props.match.params.language + "/login"}>{strings.loginBtnText}</Button>
 			</div>
 		);
 	}
@@ -203,6 +207,7 @@ export default class Register extends React.Component {
       en:{
         username:"Username:",
         register:"Register",
+        registering:"Registering...",
         password:"Password:",
         passwordAgain:"Password again:",
         email:"Email:",
@@ -210,10 +215,18 @@ export default class Register extends React.Component {
 				acceptUla:"I Accept the User Agreement",
 				alreadyRegistered:"Already registered? ",
 				loginHere:"Login here!",
+				usernameError:"Length must be 4-30 characters",
+				passwordError:"Password must be at least 8 characters long and " + 
+					"contain numbers lower case characters and numbers",
+				passwordAgainError:"Passwords must match",
+				emailError:"Email is invalid",
+				emailAgainError:"Emails must match",
+				
       },
       fi: {
         username:"Käyttäjätunnus:",
         register:"Rekisteröidy",
+        registering:"Rekisteröidään...",
         password:"Salasana:",
         passwordAgain:"Salasana uudelleen:",
         email:"Sähköposti:",
@@ -221,11 +234,16 @@ export default class Register extends React.Component {
         acceptUla:"Hyväksyn käyttäjäehdot",
 				alreadyRegistered:"Oletko jo rekisteröitynyt? ",
 				loginHere:"Kirjaudu sisään tästä!",
+				usernameError:"Pituuden tulee olla 4-30 merkkiä",
+				passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
+					"siinä tulee olla pieniä kirjaimia ja numeroita",
+				passwordAgainError:"Salasanojen tulee olla samat",
+				emailError:"Sähköpostiosoite on virheellinen",
+				emailAgainError:"Sähköpostiosoitteiden tulee olla samat",
       }
     });
     strings.setLanguage(this.props.match.params.language);
-
-
+    let registerBtnStr = this.state.isLoading ? strings.registering : strings.register;
 
 		/*The first form where the user enters info needed for an account*/
 		return (
@@ -234,23 +252,23 @@ export default class Register extends React.Component {
 				<Form onSubmit={this.handleRegistration}>
 					<FormGroup>
 						<Label>{strings.username}</Label>
-						<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
+						<VInput type="text" name="username" errormsg={strings.usernameError} isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.password}</Label>
-						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
+						<VInput type="password" name="password" errormsg={strings.passwordError} isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.passwordAgain}</Label>
-						<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
+						<VInput type="password" name="retypePass" errormsg={strings.passwordAgainError} isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.email}</Label>
-						<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
+						<VInput type="email" name="mail" errormsg={strings.emailError} isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
 					</FormGroup>
 					<FormGroup>
 						<Label>{strings.emailAgain}</Label>
-						<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
+						<VInput type="email" name="retypeMail" errormsg={strings.emailAgainError} isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
 					</FormGroup>
 					<FormGroup check>
 						<Label check>{' '}
@@ -259,7 +277,7 @@ export default class Register extends React.Component {
 						</Label>
 					</FormGroup>
 
-					<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
+					<VInput type="submit" value={registerBtnStr} isValid={this.validateForm() && !this.state.isLoading} className="main-btn big-btn max-w-10" />
 				</Form>
 				<div>
 					{strings.alreadyRegistered}
@@ -273,6 +291,10 @@ export default class Register extends React.Component {
 	}
 
 	render() {
+    if (this.state.loggedInAlready) {
+      return (<Redirect to={"/" + this.props.match.params.language + "/profile"} />);
+    }
+
 		/*decide which form to show, based on whether there is a 'newUser'*/
 		return (
 			this.state.newUser === null
