@@ -21,6 +21,7 @@ class CustomMap extends React.Component {
     const position = [this.state.lat, this.state.lng]
 
     //icon for the search result
+    //TODO: Create and change icons.
     const redIcon = L.icon({
          iconUrl: require('../../../resources/suomilippu_logo.ico'),
          iconSize: [64,64],
@@ -32,6 +33,7 @@ class CustomMap extends React.Component {
      });
 
      // icon for the non search result
+    //TODO: Create and change icons.
      const greyIcon = L.icon({
           iconUrl: require('../../../resources/englanninlippu_logo.ico'),
           iconSize: [64,64],
