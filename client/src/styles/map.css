@@ -1,9 +1,19 @@
-.leaflet-container {
-  height: 600px;
+.full {
+  height: 100vh;
+  width: 100%;
+  margin-bottom: auto;
+}
+
+.mini {
+  height: 300px;
   width: 100%;
   margin-bottom: auto;
 }
 
 #map {
   border:0px;
+}
+
+.HiddenPopUp {
+  visibility: hidden;
 }
