@@ -11,6 +11,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const reviewsDataUrl = "/services/lambda/sipuliton-backend/reviews";
 var reviewIndex = 0;
+var numberOfRevs = 0;
 
 export default class ReviewList extends React.Component {
 	constructor(props) {
@@ -24,7 +25,6 @@ export default class ReviewList extends React.Component {
 			relevance : [],
 			allergyAwareness: [],
 			serviceQuality : [],
-			numberOfRevs : this.titles.length - 1,
 			pageNumber : 0,
 			pageSize : 20,
 			isLoaded : false
@@ -32,6 +32,7 @@ export default class ReviewList extends React.Component {
 		this.loadReviews = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
+		numberOfRevs = this.state.titles.length - 1;
 	}
 	componentDidMount() {
 		fetch(reviewsDataUrl + "?restaurantId=" + this.id + "&pageNumber=" + this.pageNumber + "&pageSize=" + this.pageSize)
@@ -57,9 +58,9 @@ export default class ReviewList extends React.Component {
 					users : usrs,
 					relevance : rlvnce,
 					allergyAwareness: allergyAware,
-					serviceQuality : serviceQual,
-					numberOfRevs : this.titles.length - 1
+					serviceQuality : serviceQual
 				});
+				numberOfRevs = this.state.titles.length - 1;
 			},
 
 			(error) => {
@@ -74,19 +75,16 @@ export default class ReviewList extends React.Component {
 	}
 	looper(tags) {
 		var tagString = "";
-		if (Array.isArray(tags)) {
+		{/*if (typeof tags !== 'undefined') {
 			for (var i = 0; i < tags.length; i++) {
-				if (i > 0) {
-					tagString = tagString + ", " + tags[i];
-				}
-				else {
-					tagString = tagString + tags[i];
-				}
+			if (i > 0) {
+				tagString = tagString + ", " + tags[i];
+			}
+			else {
+				tagString = tagString + tags[i];
 			}
 		}
-		else {
-			tagString = tags;
-		}
+		}*/}
 		return tagString;
 	}
 	changeReview() {
@@ -103,14 +101,14 @@ export default class ReviewList extends React.Component {
 	render() {
 		return (
 			<div id="reviewList" onClick={this.changeReview()}>
-			<h3>{this.titles[reviewIndex]()}</h3>
-			<div id="reviewPicture"><img src={this.pictures[reviewIndex]()} alt="Review picture"></img></div><br/>
-			<div id="reviewText">{this.reviews[reviewIndex]()}</div><br/>
-			<div id="reviewUser">Arvostelija: {this.users[reviewIndex]()}</div>
-			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.allergyTags[reviewIndex]())}</div><br/>
-			<div id="reviewRelevance">Vastasi hakua: {this.relevance[reviewIndex]()}</div><br/>
-			<div id="reviewAwareness">Allergioiden huomioon otto: {this.allergyAwareness[reviewIndex]()}</div><br/>
-			<div id="reviewQuality">Palvelu ja laatu: {this.serviceQuality[reviewIndex]()}</div>
+			<h3>{this.state.titles[reviewIndex]}</h3>
+			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
+			<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
+			<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
+			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
+			<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
+			<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
+			<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>
 			</div>
 		);
 	}

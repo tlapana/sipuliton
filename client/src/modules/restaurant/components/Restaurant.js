@@ -67,19 +67,16 @@ export default class Restaurant extends React.Component {
 	}
 	looper(tags) {
 		var tagString = "";
-		if (Array.isArray(tags)) {
+		{/*if (typeof tags !== 'undefined') {
 			for (var i = 0; i < tags.length; i++) {
-				if (i > 0) {
-					tagString = tagString + ", " + tags[i];
-				}
-				else {
-					tagString = tagString + tags[i];
-				}
+			if (i > 0) {
+				tagString = tagString + ", " + tags[i];
+			}
+			else {
+				tagString = tagString + tags[i];
 			}
 		}
-		else {
-			tagString = tags;
-		}
+		}*/}
 		return tagString;
 	}
 	/*setRedirect = () => {
@@ -104,21 +101,20 @@ export default class Restaurant extends React.Component {
 	render () {
 		return (
 			<div id="restaurant">
-			<h2>{this.name()}</h2><br/>
+			<h2>{this.state.name}</h2><br/>
 			<div id="restaurantPictures">
-			<img src={this.pictures[0]()} alt="Restaurant picture1"></img><br/>
-			<img src={this.pictures[1]()} alt="Restaurant picture2"></img>
-			<img src={this.pictures[2]()} alt="Restaurant picture3"></img>
+			<img src={this.state.pictures[0]} alt="Restaurant picture1"></img><br/>
+			<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
+			<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
 			</div>
-			<div id="restaurantStats">Hintataso: {this.restaurant.priceLevel()}<br/>
-			Käyttäjien arvio: {this.userScore()}<br/>
+			<div id="restaurantStats">Hintataso: {this.state.priceLevel}<br/>
+			Käyttäjien arvio: {this.state.userScore}<br/>
 			Allergiatunnisteet:<br/>
-			{this.looper(this.allergyTags())}</div><br/>
-			<div id="restaurantDesc">{this.description()}</div><br/>
-			//{this.renderRedirect()}
+			{this.looper(this.state.allergyTags)}</div><br/>
+			<div id="restaurantDesc">{this.state.description}</div><br/>
 			<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover}>Lisää arvostelu></Input><br/>
 			//render review writing view as a popover element, after the button above has been clicked
-			<Popover placement="bottom" isOpen={this.state.popoverOpen} target="filter_popover" toggle={this.togglePopover}>
+			<Popover placement="bottom" isOpen={this.state.popoverOpen} toggle={this.togglePopover}>
 			<PopoverHeader></PopoverHeader>
 			<PopoverBody>
 			<WriteReview/>
