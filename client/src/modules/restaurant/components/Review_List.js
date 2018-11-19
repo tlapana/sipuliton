@@ -16,42 +16,49 @@ export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			this.reviewList.titles : [],
-			this.reviewList.pictures : [],
-			this.reviewList.reviews : [],
-			this.reviewList.users : [],
-			this.reviewList.allergyTags : [],
-			this.reviewList.relevance : [],
-			this.reviewList.allergyAwareness: [],
-			this.reviewList.serviceQuality : [],
-			this.reviewList.numberOfRevs : this.reviewList.titles.length - 1,
-			this.pageNumber : 0,
-			this.pageSize : 20,
-			this isLoaded : false
+			titles : [],
+			pictures : [],
+			reviews : [],
+			users : [],
+			allergyTags : [],
+			relevance : [],
+			allergyAwareness: [],
+			serviceQuality : [],
+			numberOfRevs : this.titles.length - 1,
+			pageNumber : 0,
+			pageSize : 20,
+			isLoaded : false
 		};
 		this.loadReviews = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
 	}
 	componentDidMount() {
-		fetch(reviewsDataUrl + "?restaurantId=" + restaurant.id + "&pageNumber=" + pageNumber + "&pageSize=" + pageSize)
+		fetch(reviewsDataUrl + "?restaurantId=" + this.id + "&pageNumber=" + this.pageNumber + "&pageSize=" + this.pageSize)
 		.then(res => res.json())
 		.then(
 			(result) => {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
+				var i;
+				for (i = 0; i < result.length; i++) {
+					var obj = result[i];
+					var titls = titls.push(obj.title);
+					var revws = revws.push(obj.free_text);
+					var usrs = usrs.push(obj.user_id);
+					var rlvnce = rlvnce.push(obj.rating_reliability);
+					var allergyAware = allergyAware.push(obj.rating_variety);
+					var serviceQual = serviceQual.push(obj.rating_service_and_quality);
+				}
 				this.setState({
-					isLoaded: true;
-					for (var i = 0; i < result.length; i++) {
-						var obj = result[i];
-						this.reviewList.titles : this.reviewList.titles.push(obj.title);
-						this.reviewList.reviews : this.reviewList.reviews.push(obj.free_text);
-						this.reviewList.users : this.reviewList.users.push(obj.user_id);
-						this.reviewList.relevance : this.reviewList.relevance.push(obj.rating_reliability);
-						this.reviewList.allergyAwareness: this.reviewList.allergyAwareness.push(obj.rating_variety);
-						this.reviewList.serviceQuality : this.reviewList.serviceQuality.push(obj.rating_service_and_quality);
-					}
-					this.reviewList.numberOfRevs : this.reviewList.titles.length - 1;
+					isLoaded: true,
+					titles : titls,
+					reviews : revws,
+					users : usrs,
+					relevance : rlvnce,
+					allergyAwareness: allergyAware,
+					serviceQuality : serviceQual,
+					numberOfRevs : this.titles.length - 1
 				});
 			},
 
@@ -83,27 +90,28 @@ export default class ReviewList extends React.Component {
 		return tagString;
 	}
 	changeReview() {
-		if (reviewIndex < this.reviewList.numberOfRevs) {
+		if (reviewIndex < this.numberOfRevs) {
 			reviewIndex++;
 		}
 		else {
 			reviewIndex = 0;
 		}
 		this.setState({
-			isLoaded: true;
+			isLoaded: true,
 		});
 	}
 	render() {
-		<div id="reviewList" onClick={this.changeReview()}>
-		<h3>{this.reviewList.titles[reviewIndex]()}</h3>
-		<div id="reviewPicture"><img src={this.reviewList.pictures[reviewIndex]()} alt="Review picture"></div><br>
-		<div id="reviewText">{this.reviewList.reviews[reviewIndex]()}</div><br>
-		<div id="reviewUser">Arvostelija: {this.reviewList.users[reviewIndex]()}</div>
-		<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.reviewIndex.allergyTags[reviewIndex]())}</div><br>
-		<div id="reviewRelevance">Vastasi hakua: {this.reviewList.relevance[reviewIndex]()}</div><br>
-		<div id="reviewAwareness">Allergioiden huomioon otto: {this.reviewList.allergyAwareness[reviewIndex]()}</div><br>
-		<div id="reviewQuality">Palvelu ja laatu: {this.reviewList.serviceQuality[reviewIndex]()}</div>
-		</div>
+		return (
+			<div id="reviewList" onClick={this.changeReview()}>
+			<h3>{this.titles[reviewIndex]()}</h3>
+			<div id="reviewPicture"><img src={this.pictures[reviewIndex]()} alt="Review picture"></img></div><br/>
+			<div id="reviewText">{this.reviews[reviewIndex]()}</div><br/>
+			<div id="reviewUser">Arvostelija: {this.users[reviewIndex]()}</div>
+			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.allergyTags[reviewIndex]())}</div><br/>
+			<div id="reviewRelevance">Vastasi hakua: {this.relevance[reviewIndex]()}</div><br/>
+			<div id="reviewAwareness">Allergioiden huomioon otto: {this.allergyAwareness[reviewIndex]()}</div><br/>
+			<div id="reviewQuality">Palvelu ja laatu: {this.serviceQuality[reviewIndex]()}</div>
+			</div>
+		);
 	}
 }
-export default ReviewList;
