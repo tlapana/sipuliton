@@ -11,29 +11,31 @@
 }
 
 input.invalid, input.invalid:focus {
-  border: 1px solid red !important;
+  border: 1px solid #ef4949 !important;
+  -webkit-box-shadow: 0 0 0 0.2rem #F58F8F;
   box-shadow: 0 0 0 0.2rem #F58F8F;
 }
 
 .centered-block {
   margin: auto;
   display: block;
+  text-align: center;
 }
 
 .app .main-btn,
 .app .secondary-btn,
 .app .tertiary-btn {
   cursor: pointer;
-  -webkit-box-shadow: 0px 0px 2px 0px #c5c5c5;
-  box-shadow: 0px 0px 2px 0px #c5c5c5;
+  -webkit-box-shadow: 1px 1px 2px 0px #c5c5c5;
+  box-shadow: 1px 1px 2px 0px #c5c5c5;
   transition: background-color .15s, opacity .15s;
   
 }
 .app .main-btn:hover,
 .app .secondary-btn:hover,
 .app .tertiary-btn:hover {
-  -webkit-box-shadow: 0px 0px 5px 0px #c5c5c5;
-  box-shadow: 0px 0px 5px 0px #c5c5c5;
+  -webkit-box-shadow: 0px 0px 5px 1px #c5c5c5;
+  box-shadow: 0px 0px 5px 1px #c5c5c5;
 }
 
 .main-btn.big-btn,
@@ -77,6 +79,71 @@ form .main-btn {
   margin: auto;
 }
 
+.w-100-percent {
+  width: 100%;
+}
+
+.errormsg {
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+}
+.errormsg.visible {
+  height: auto;
+  background-color: #F58F8F;
+  padding: .5em;
+  border-radius: .25em;
+  margin-top: .5em;
+  margin-bottom: .5em;
+  opacity: 1;
+  -webkit-transition: opacity 250ms ease-in-out 0ms, height 250ms ease-in-out 0ms, margin 250ms ease-in-out 0ms, padding 250ms ease-in-out 0ms;
+  transition: opacity 250ms ease-in-out 0ms, height 250ms ease-in-out 0ms, margin 250ms ease-in-out 0ms, padding 250ms ease-in-out 0ms;
+}
+
+.input-wrapper {
+  position: relative;
+}
+.input-errormsg {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50%;
+  top: 3rem;
+  -ms-transform: translate(-50%, 0);
+  -o-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+  font-size: 12px;
+  color: black;
+  background-color: #F58F8F;
+  border: #ef4949 1px solid;
+  border-radius: .25rem;
+  z-index: 1000;
+  padding: .2rem;
+  -webkit-box-shadow: #F58F8F 0px 0px 2px 1px;
+  box-shadow: #F58F8F 0px 0px 2px 1px;
+  transition: opacity 250ms ease-in-out 0ms;
+}
+.input-errormsg.visible {
+  visibility: visible;
+  opacity: .75;
+}
+.input-errormsg.input-errormsg.visible::before {
+  content: "\25b2";
+  color: #ef4949;
+  font-size: 12px;
+  position: absolute;
+  top: -.9rem;
+  left: 50%;  
+  -ms-transform: translate(-50%, 0);
+  -o-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  -webkit-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
 
 /* Theme specific css */
 .theme-1 .bottom-bar.navbar, 
@@ -90,20 +157,26 @@ form .main-btn {
 }
 .theme-1 .main-btn, 
 .theme-1 .main-btn:disabled,
-.theme-1 .form-control[type="submit"]:focus {
+.theme-1 .form-control[type="submit"]:focus,
+.theme-1 .btn:active,
+.theme-1 .btn:focus {
   background-color: #72c567;
   color: white;
-  border-color: #66b15c;
 }
-.theme-1 .form-control:focus {
+.theme-1 .form-control:focus,
+.theme-1 .btn:active,
+.theme-1 .btn:focus {
   color: #495057;
   background-color: #fff;
   border-color: #66b15c;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(91, 157, 82, 0.25);
 }
-.theme-1 .form-control[type="submit"]:focus {
+.theme-1 .form-control[type="submit"]:focus,
+.theme-1 .btn:active,
+.theme-1 .btn:focus {
   background-color: #66b15c;
+  color: white;
 }
 .theme-1 .main-btn:disabled {
   opacity: 0.6;
@@ -120,20 +193,27 @@ form .main-btn {
 }
 .theme-2 .main-btn, 
 .theme-2 .main-btn:disabled,
-.theme-2 .form-control[type="submit"]:focus {
+.theme-2 .form-control[type="submit"]:focus,
+.theme-2 .btn:active,
+.theme-2 .btn:focus {
   background-color: #84b1da;
   color: white;
   border-color: #769fc4;
 }
-.theme-2 .form-control:focus {
+.theme-2 .form-control:focus,
+.theme-2 .btn:active,
+.theme-2 .btn:focus {
   color: #495057;
   background-color: #fff;
   border-color: #769fc4;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(105, 141, 174, 0.25);
 }
-.theme-2 .form-control[type="submit"]:focus {
+.theme-2 .form-control[type="submit"]:focus,
+.theme-2 .btn:active,
+.theme-2 .btn:focus {
   background-color: #769fc4;
+  color: white;
 }
 .theme-2 .main-btn:disabled {
   opacity: 0.6;
@@ -150,20 +230,27 @@ form .main-btn {
 }
 .theme-3 .main-btn, 
 .theme-3 .main-btn:disabled,
-.theme-3 .form-control[type="submit"]:focus {
+.theme-3 .form-control[type="submit"]:focus,
+.theme-3 .btn:active,
+.theme-3 .btn:focus {
   background-color: #e15527;
   color: white;
   border-color: #ca4c23;
 }
-.theme-3 .form-control:focus {
+.theme-3 .form-control:focus,
+.theme-3 .btn:active,
+.theme-3 .btn:focus {
   color: #495057;
   background-color: #fff;
   border-color: #ca4c23;
   outline: 0;
   box-shadow: 0 0 0 0.2rem rgba(225, 85, 39, 0.25);
 }
-.theme-3 .form-control[type="submit"]:focus {
+.theme-3 .form-control[type="submit"]:focus,
+.theme-3 .btn:active,
+.theme-3 .btn:focus {
   background-color: #ca4c23;
+  color: white;
 }
 .theme-3 .main-btn:disabled {
   opacity: 0.6;
@@ -185,12 +272,16 @@ form .main-btn {
 }
 .theme-old .main-btn, 
 .theme-old .main-btn:disabled,
-.theme-old .form-control[type="submit"]:focus {
+.theme-old .form-control[type="submit"]:focus,
+.theme-old .btn:active,
+.theme-old .btn:focus {
   background-color: #99ff99;
   color: white;
   border-color: #89e589;
 }
-.theme-old .form-control:focus {
+.theme-old .form-control:focus,
+.theme-old .btn:active,
+.theme-old .btn:focus {
   color: #495057;
   background-color: #fff;
   border-color: #89e589;
