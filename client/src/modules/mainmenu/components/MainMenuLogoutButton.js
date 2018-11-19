@@ -1,16 +1,13 @@
 /* This file implements logout button implementation. */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import {
   NavItem,
-  NavLink,
-  Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 import { Redirect } from "react-router-dom";
 
-export default class MainMenu_ListItem extends React.Component{
+export default class MainMenuListItem extends React.Component{
   constructor(props) {
     super(props);
     this.state = { logoutSuccesfully: true };

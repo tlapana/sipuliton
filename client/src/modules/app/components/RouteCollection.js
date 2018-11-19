@@ -6,7 +6,7 @@ import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
-
+import map from '../../map'
 import NotFound from './NotFound';
 
 /* This is where all routes should be */
@@ -21,7 +21,7 @@ class RouteCollection extends React.Component {
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
     const { Profile } = profile;
-
+    const { Map } = map;
     return (
       <Switch>
         <Redirect exact from="/" to="/fi" />
@@ -30,6 +30,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route path="/:language/userProfile/" component={Profile} />
+        <Route path="/:language/map/" component={Map} />
         <Route component={NotFound} />
       </Switch>
     );

@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NavLink, } from 'reactstrap';
 import '../../../styles/login.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import LoginForm from './Login_Form.js'
 import SocialLogin from './Social_Login.js'
@@ -11,10 +9,7 @@ import SocialLogin from './Social_Login.js'
 import LocalizedStrings from 'react-localization';
 
 class Login extends React.Component {
-  /* Constructor of the navication bar class. */
-  constructor(props) {
-    super(props);
-  }
+
   render() {
     /* Localization */
     let strings = new LocalizedStrings({
@@ -43,12 +38,12 @@ class Login extends React.Component {
     return(
       <div id="login" className="max-w-40">
         <h2>{strings.login}</h2>
-        <LoginForm language={this.props.match.params.language}/> 
+        <LoginForm language={this.props.match.params.language}/>
         <div className="social-login-container">
           <h5>{strings.or}</h5>
-          <SocialLogin language={this.props.match.params.language}/> 
+          <SocialLogin language={this.props.match.params.language}/>
         </div>
-        
+
         <span>{strings.notRegisteredYet} </span>
         <Link to={pathToRegister}>
           {strings.registerNow}
