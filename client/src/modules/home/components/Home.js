@@ -7,10 +7,9 @@
 import React from 'react';
 import ReactLoading from 'react-loading';
 import styles from '../../../styles/landingpage.css';
-import SearchBar from './SearchBar.js';
-import Events from './Events.js';
-import SearchResults from './SearchResults.js';
-
+import SearchBar from './SearchBar.js'
+import Events from './Events.js'
+import SearchResults from './SearchResults.js'
 import { Redirect } from 'react-router-dom';
 
 /* Localization */
