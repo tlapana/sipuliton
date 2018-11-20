@@ -11,6 +11,7 @@ class Profile extends React.Component {
                   email: '-',
                   city: '-',
                   desc: '-',
+                  disp:'-',
                   reviews: '-1',
                   url: "",
                   activitypoints: 0,
@@ -27,20 +28,26 @@ class Profile extends React.Component {
 
       saveData() {
             var data1 = {};
+            var t=this;
             data1.name = document.getElementById("name").value;
             data1.email = document.getElementById("email").value;
             data1.city = document.getElementById("city").value;
             data1.desc = document.getElementById("desc").value;
+            data1.disp1 = document.getElementById("disp").value;
+            var url='http://127.0.0.1:3000/profile/edit'
 
-            fetch('test/students/', {
-                  method: 'POST',
+            url+='?description='+data1.desc;
+            url+='&display_name='+data1.disp1;
+
+            fetch(url, {
+                  method: 'GET',
                   headers: {
 
                   },
-                  body: JSON.stringify(data1),
+                  
             })
                   .then(function (response) {
-
+                        t.handleClick();
                         return response;
                   }).then(function (body) {
                         console.log(body);
@@ -48,7 +55,7 @@ class Profile extends React.Component {
 
 
 
-            this.handleClick();
+         
       }
 
 
@@ -92,7 +99,7 @@ class Profile extends React.Component {
             fetch('http://127.0.0.1:3000/profile')
                   .then((response) => response.json())
                   .then((responseJson) => {
-                        this.setState({ url: responseJson.url });
+                        this.setState({ url: responseJson.image_url });
 
                         this.setState({ username: responseJson.display_name });
                         this.setState({ email: responseJson.email });
@@ -191,6 +198,16 @@ class Profile extends React.Component {
                                                 <input type="text" id="desc" name="desc" defaultValue={this.state.desc} />
                                           </Col>
                                     </Row>
+
+                                      <Row>
+                                          <Col xs="2">
+                                                <p>Näyttönimi</p>
+                                          </Col>
+                                          <Col xs="7">
+                                                <input type="text" id="disp" name="disp" defaultValue={this.state.disp} />
+                                          </Col>
+                                    </Row>
+
                                     <br />
                                     <br />
                                     <input type="text" id="allerg" name="allerg" /> <br />
