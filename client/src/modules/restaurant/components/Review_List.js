@@ -21,7 +21,7 @@ export default class ReviewList extends React.Component {
 			pictures : [],
 			reviews : [],
 			users : [],
-			allergyTags : [],
+			allergyTags : [["Sipuliton", "Munaton"], ["Sipuliton", "Munaton"]],
 			relevance : [],
 			allergyAwareness: [],
 			serviceQuality : [],
@@ -105,7 +105,7 @@ export default class ReviewList extends React.Component {
 			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
 			<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
 			<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
-			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
+			<div id="reviewAllergies">Allergiatunnisteet: {this.state.allergyTags[reviewIndex]}</div><br/>
 			<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
 			<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
 			<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>

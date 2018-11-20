@@ -49,7 +49,7 @@ export default class Restaurant extends React.Component {
 					isLoaded: true,
 					name : result.name,
 					userScore : result.rating_overall,
-					allergyTags : result.restaurant_diet_stats,
+					allergyTags : ["Sipuliton", "Munaton"],
 					description : result.email + ", " + result.website + ", " + result.street_address,
 					id : result.restaurant_id
 				});
@@ -110,7 +110,7 @@ export default class Restaurant extends React.Component {
 			<div id="restaurantStats">Hintataso: {this.state.priceLevel}<br/>
 			Käyttäjien arvio: {this.state.userScore}<br/>
 			Allergiatunnisteet:<br/>
-			{this.looper(this.state.allergyTags)}</div><br/>
+			{this.state.allergyTags}</div><br/>
 			<div id="restaurantDesc">{this.state.description}</div><br/>
 			<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover}>Lisää arvostelu></Input><br/>
 			//render review writing view as a popover element, after the button above has been clicked
