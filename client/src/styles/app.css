@@ -27,7 +27,7 @@ input.invalid, input.invalid:focus {
   -webkit-box-shadow: 0px 0px 2px 0px #c5c5c5;
   box-shadow: 0px 0px 2px 0px #c5c5c5;
   transition: background-color .15s, opacity .15s;
-  
+
 }
 .app .main-btn:hover,
 .app .secondary-btn:hover,
@@ -79,16 +79,16 @@ form .main-btn {
 
 
 /* Theme specific css */
-.theme-1 .bottom-bar.navbar, 
+.theme-1 .bottom-bar.navbar,
 .theme-1 .side-menu {
   background-color: #72c567;
   color: white;
 }
-.theme-1 .main-btn:hover, 
+.theme-1 .main-btn:hover,
 .theme-1 .main-btn:focus {
   background-color: #66b15c;
 }
-.theme-1 .main-btn, 
+.theme-1 .main-btn,
 .theme-1 .main-btn:disabled,
 .theme-1 .form-control[type="submit"]:focus {
   background-color: #72c567;
@@ -110,7 +110,7 @@ form .main-btn {
 }
 
 
-.theme-2 .bottom-bar.navbar, 
+.theme-2 .bottom-bar.navbar,
 .theme-2 .side-menu {
   background-color: #84b1da;
   color: white;
@@ -118,7 +118,7 @@ form .main-btn {
 .theme-2 .main-btn:hover {
   background-color: #769fc4;
 }
-.theme-2 .main-btn, 
+.theme-2 .main-btn,
 .theme-2 .main-btn:disabled,
 .theme-2 .form-control[type="submit"]:focus {
   background-color: #84b1da;
@@ -140,7 +140,7 @@ form .main-btn {
 }
 
 
-.theme-3 .bottom-bar.navbar, 
+.theme-3 .bottom-bar.navbar,
 .theme-3 .side-menu {
   background-color: #e15527;
   color: white;
@@ -148,7 +148,7 @@ form .main-btn {
 .theme-3 .main-btn:hover {
   background-color: #ca4c23;
 }
-.theme-3 .main-btn, 
+.theme-3 .main-btn,
 .theme-3 .main-btn:disabled,
 .theme-3 .form-control[type="submit"]:focus {
   background-color: #e15527;
@@ -173,7 +173,7 @@ form .main-btn {
 .theme-old, .theme-old .main-btn {
   text-shadow: 0px 0px 1px #cccccc;
 }
-.theme-old .bottom-bar.navbar, 
+.theme-old .bottom-bar.navbar,
 .theme-old .side-menu {
   background-color: #99ff99;
   color: white;
@@ -183,7 +183,7 @@ form .main-btn {
   color: #4d4d4d;
   border-color: #4d4d4d;
 }
-.theme-old .main-btn, 
+.theme-old .main-btn,
 .theme-old .main-btn:disabled,
 .theme-old .form-control[type="submit"]:focus {
   background-color: #99ff99;

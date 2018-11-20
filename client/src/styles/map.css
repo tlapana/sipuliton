@@ -1,19 +1,86 @@
 .full {
   height: 100vh;
-  width: 100%;
+  width: 99.5vw;
   margin-bottom: auto;
 }
 
 .mini {
   height: 300px;
-  width: 100%;
+  width: 99.5vw;
   margin-bottom: auto;
 }
 
 #map {
   border:0px;
+  position: fixed;
+  left: 4px;
+  top: 4px;
 }
 
 .HiddenPopUp {
   visibility: hidden;
+}
+
+#enterToRestaurantPageBtn {
+  text-align: center;
+  -moz-box-shadow: 0px 1px;
+  -webkit-box-shadow: 0px 1px;
+  box-shadow: 0px 1px;
+  bottom: 0px;
+  -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  box-shadow: 0px 0px 5px 1px #8b8b8b;
+  margin:2em 2em 0em 2em;
+  background-color: #72c567;
+  color:white;
+}
+
+#address{
+  margin-left: 2em;
+  text-align: center;
+  color: rgb(80, 80, 80);
+}
+
+.ratings {
+  margin-left: 2em;
+  text-align: center;
+}
+
+#overallReview {
+  display:inline-block;
+  text-align: center;
+  margin-left: auto;
+}
+
+#service {
+  display:inline-block;
+  text-align: center;
+  margin-left: 1em;
+}
+
+#openingHours {
+  margin-left: 2em;
+}
+
+#restaurantName {
+  text-align: center;
+  margin: auto;
+}
+
+#enterToRestaurantPageBtn:hover {
+  color: #2b2b2b;
+  background-color: white;
+}
+
+.restaurant-info {
+  display: block;
+  left:2.5vw;
+  position: fixed;
+  width: 95vw;
+  -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  box-shadow: 0px 0px 5px 1px #8b8b8b;
+  padding-bottom: 2em;
+  margin-top: 1em;
+  margin-right: 1em;
 }

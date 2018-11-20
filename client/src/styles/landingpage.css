@@ -3,6 +3,10 @@
 .landingDiv
 {
   width: 100vh;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .searchDiv {
@@ -29,7 +33,7 @@ form.search input[type=text] {
   width: 80%;
   b1ackground: #f1f1f1;
   border-radius: 25px 0px 0px 25px;
-  
+
 }
 form.search button.searchBtn {
   float: left;
@@ -116,7 +120,7 @@ a.event {
   position: absolute;
   width: 80%;
   min-height: 100%;
-  
+
 }
 
 .loadingSpinner

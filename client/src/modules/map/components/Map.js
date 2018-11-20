@@ -10,7 +10,7 @@ class Map extends React.Component {
   render() {
     return(
       <div id="map" >
-        <MapComponent/>
+        <MapComponent language={this.props.match.params.language}/>
       </div>
     )
   }
