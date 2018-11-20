@@ -6,7 +6,7 @@
 
 import React from 'react';
 import ReactStars from 'react-stars'
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from 'react-select';
 import '../../../styles/writereview.css';
 
@@ -18,6 +18,7 @@ export default class WriteReview extends React.Component {
     
     //Bind the functions
     this.setState = this.setState.bind(this);
+    this.toggleForm = this.toggleForm.bind(this);
     this.getRestaurant = this.getRestaurant.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeReview = this.changeReview.bind(this);
@@ -38,7 +39,8 @@ export default class WriteReview extends React.Component {
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
-      restaurant : null,
+      showForm: false,
+      restaurant : this.props.restaurant,
       title : '',
       reviewText : '',
       options : [],
@@ -53,52 +55,13 @@ export default class WriteReview extends React.Component {
   //Actios to be caried upon mounting
   componentDidMount() {
     this._isMounted = true;    
-    this.getRestaurant(this.state.id); 
     this.getOptions();
   }
   
-  getRestaurant(id)
-  {
-    //For testing purposes use hard coded datas
-    const all_restaurants = [
-      { id: 1, name: 'Kallen Kala', street_address : "Kalastajankylä 1" },
-      { id: 2, name: 'Vegaani Pupula', street_address : "Puputie 2" },
-      { id: 3, name: 'Lihameisterin Grillaamo', street_address : "Grillaajankat 3" },
-      { id: 4, name: 'Gennan Geneerinen', street_address : "Geenitie 4" },
-      { id: 5, name: 'Iso 5', street_address : "Bigstreet 5" }
-    ];
-    
-    var target = null;
-    
-    for(var i = 0; i < all_restaurants.length; i++) {
-      
-      var r = all_restaurants[i];
-      
-      if( r.id == id)
-      {
-        target = r;
-      }
-      
-    }
-      
-    console.log("Checking that restaurant " + id + " exists");
-    
-    //If we found the target, set it as the selected restaurant. Otherwise, give error
-    if(target != null) {  
-      console.log("Restaurant exists")
-      this.setState({
-        restaurant : target,
-        loadingData : false
-      });
-    }
-    else {    
-      console.log("Restaurant doesn't exists")  
-      this.setState({
-        error : "Ravintolaa ei ole",
-        loadingData : false
-      });
-      
-    }    
+  toggleForm() {
+    this.setState({
+      showForm : !this.state.showForm
+    });
   }
   
   //Gets all the filtering options
@@ -175,6 +138,9 @@ export default class WriteReview extends React.Component {
       submitingReview : true
     });
     
+    //Close form
+    toggleForm();
+    
     //Generate JSON
     var obj = new Object();
     
@@ -202,6 +168,16 @@ export default class WriteReview extends React.Component {
   
   //Review button functionality
   reviewButton() {
+    
+    let strings = new LocalizedStrings({
+      en:{
+        message : "Send"
+      },
+      fi: {
+        message : "Lähetä"
+      }
+    });
+    
     if(this.state.submitingReview){
       return (
         'Lähetetään...'
@@ -210,112 +186,121 @@ export default class WriteReview extends React.Component {
     else {
       return (
         <button type="submit" className="submitBtn" onClick={this.submitReview}>
-          Lähetä
+          {strings.message}
         </button> 
       );
     }
-  }
-  
-  //Function to print the review form
-  reviewForm() {
-    return (
-      <div className="reviewDiv">
-        <form className="review">
-          <h3 className="restaurantName"> {this.state.restaurant.name} </h3>
-          
-          <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={'Otsikko...'} /> <br/>
-          <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={'Kirjoita arvostely tähän...'} />
-              
-          Ruokavaliot:
-          <Select
-            defaultValue={ this.state.defaultValues }
-            isMulti
-            name="filtersDrop"
-            options={ this.state.options }
-            className="basic-multi-select"
-            classNamePrefix="select"
-            onChange={this.changeFilter}
-          />
-          <br />      
-            
-          Erikoisruokavalion luotettavuus: 
-          <ReactStars
-            value = {this.state.reliability}
-            count = {5}
-            size = {24}
-            onChange = {this.changeReliability}
-          />
-          <br />  
-            
-          Valinnanvara: 
-          <ReactStars
-            value = {this.state.choice}
-            count = {5}
-            size = {24}
-            onChange = {this.changeChoice}
-          />
-          <br />
-            
-          Palvelu ja laatu: 
-          <ReactStars
-            value = {this.state.quality}
-            count = {5}
-            size = {24}
-            onChange = {this.changeQuality}
-          />
-          <br />
-           
-          Hintataso: 
-          <ReactStars
-            value = {this.state.cost}
-            count = {3}
-            size = {24}
-            char = {'€'}
-            half = {false}
-            onChange = {this.changeCost}
-          />
-          <br />
-            
-          {this.reviewButton()}  
-             
-        </form>        
-      </div>
-    );
-  }
-  
+  }  
   render() {
     
     //Localization here
-    
-    
-    
-    if(this.state.loadingData || this.state.loadingOptions) {
-      return (  
-      <div className="reviewDiv">  
-        Ladataan tietoja...
-      </div>
-      );
-    }
-    else {
-      if(this.state.error != null) {
-        return (  
-        <div className="reviewDiv">  
-          Tapahtui virhe: {this.state.error}
-        </div>
-        );      
+    let strings = new LocalizedStrings({
+      en:{
+        modalTitle : "Rate restaurant",
+        titlePlaceholder : "Title",
+        textPlaceholder : "Write review here"
+        diets : "Diet",
+        reliability : "Diet reliability",
+        variety : "Variety",
+        service : "Service and quality",
+        pricing : "Pricing",
+        cancel : "Cancel",        
+        search:"Search..."
+      },
+      fi: {
+        modalTitle : "Arvostele ravinstola",
+        diets: "Ruokavaliot",
+        titlePlaceholder : "Otsikko",
+        textPlaceholder : "Kirjoita arvostelu tähän"
+        diets : "Ruokavaliot",
+        reliability : "Erikoisruokavalion luotettavuus",
+        variety : "Valinnanvara",
+        service : "Palvelu ja laatu",
+        pricing : "Hintataso",
+        cancel : "Peruuta",
+        search:"Hae..."
       }
-      else if(this.state.reviewSubmitted) {
-        return (
+    });
+    
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
+    return ( 
+      <button className="filterBtn" onClick={this.toggleForm} type="button" >{strings.filter}</button>  
+      
+      <Modal isOpen={this.state.modalState} toggle={this.showForm}>
+        <ModalHeader> {strings.modalTitle} </ModalHeader>
+        <ModalBody>
           <div className="reviewDiv">
-            <h3> Arvostelu lähetetty! </h3>
+            <form className="review">
+              <h3 className="restaurantName"> {this.state.restaurant.name} </h3>
+              
+              <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
+              <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
+                  
+              {strings.pricing}:
+              <Select
+                defaultValue={ this.state.defaultValues }
+                isMulti
+                name="filtersDrop"
+                options={ this.state.options }
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={this.changeFilter}
+              />
+              <br />      
+                
+              {strings.reliability}: 
+              <ReactStars
+                value = {this.state.reliability}
+                count = {5}
+                size = {24}
+                onChange = {this.changeReliability}
+              />
+              <br />  
+               
+              {strings.variety}:
+              <ReactStars
+                value = {this.state.choice}
+                count = {5}
+                size = {24}
+                onChange = {this.changeChoice}
+              />
+              <br />
+                
+              {strings.service}:
+              <ReactStars
+                value = {this.state.quality}
+                count = {5}
+                size = {24}
+                onChange = {this.changeQuality}
+              />
+              <br />
+               
+              {strings.pricing}: 
+              <ReactStars
+                value = {this.state.cost}
+                count = {3}
+                size = {24}
+                char = {'€'}
+                half = {false}
+                onChange = {this.changeCost}
+              />
+              <br />
+              
+            </form>        
           </div>
-        );
-      }
-      else {
-        return ( this.reviewForm() );
-      }
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={this.submitReview}> {strings.submit} </Button> 
+          <Button color="secondary" onClick={this.toggleModal}> {strings.cancel} </Button> 
+        </ModalFooter>
+      </Modal>
+    );
     }
-    
     
   }
   
