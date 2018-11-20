@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
   
-  
+   
 class Profile extends React.Component {
       constructor(props) {
             super(props);
