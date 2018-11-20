@@ -84,3 +84,9 @@
   margin-top: 1em;
   margin-right: 1em;
 }
+
+.RadiusSelect {
+  left:15px;
+  position: fixed;
+  top:100px;
+}

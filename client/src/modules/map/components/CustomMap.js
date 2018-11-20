@@ -5,9 +5,12 @@ import {
   NavLink,} from 'reactstrap';
 
 /* Map imports */
-import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
+import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
 import L from 'leaflet';
 import '../../../styles/map.css';
+
+/* Location imports */
+import {geolocated} from 'react-geolocated';
 
 /* Router imports */
 import { Link } from 'react-router-dom';
@@ -21,7 +24,6 @@ class CustomMap extends React.Component {
     super(props);
 
     this.CloseRestaurantInfo = this.CloseRestaurantInfo.bind(this);
-
     //TODO: Fetch marker locations based on search or current location.
 
     //Mock restaurant green markers.
@@ -128,6 +130,17 @@ class CustomMap extends React.Component {
           shadowAnchor: null
       });
 
+    // your current location marker
+    const curLocMark = L.icon({
+         iconUrl: require('../../../resources/CurrentLocationMark.png'),
+         iconSize: [104,74],
+         iconAnchor: [32, 64],
+         popupAnchor: [20, -55],
+         shadowUrl: null,
+         shadowSize: null,
+         shadowAnchor: null
+     });
+
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -142,6 +155,7 @@ class CustomMap extends React.Component {
         openingHours:"Opening hours",
         overallRating: "Overall rating",
         serviceRating: "Service rating",
+        youAreHere: "You are here!",
       },
       fi: {
         mon:"Ma",
@@ -155,17 +169,28 @@ class CustomMap extends React.Component {
         openingHours:"Aukioloajat",
         overallRating: "Kokonaisarvosana",
         serviceRating: "Palvelu",
+        youAreHere: "Olet tässä!",
       }
     });
-
+    console.log(this.props);
     strings.setLanguage(this.props.language);
+    var center = this.state.center
+    if(this.props.latitude !== undefined && this.props.longitude !== undefined){
+      center = [this.props.latitude,this.props.longitude]
+    }
+    console.log(center);
     return(
-      <div>
-        <Map center={this.state.center} zoom={this.state.zoom} className={this.state.mapClass}>
+        <div>
+        <Map center={center} zoom={this.state.zoom} className={this.state.mapClass}>
           <TileLayer
             url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
             attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
           />
+          <Marker key={`current-location`} position={center} icon={curLocMark}>
+            <Popup>
+              {strings.youAreHere}
+            </Popup>
+          </Marker>
           {this.state.greenMarkers.map((position, idx) =>
             <Marker key={`marker-${idx}`} position={position[0]} icon={greenIcon}>
               <Popup onOpen={() => this.OpenRestaurantInfo(position)} onClose={this.CloseRestaurantInfo} className="HiddenPopUp"/>
@@ -176,19 +201,25 @@ class CustomMap extends React.Component {
               <Popup onOpen={() => this.OpenRestaurantInfo(position)} onClose={this.CloseRestaurantInfo} className="HiddenPopUp"/>
             </Marker>
           )}
+          <Circle center={center}
+                  radius={this.props.searchRadiusInKm}
+                  color={'red'}
+                  fillOpacity={0.05}/>
         </Map>
         {this.state.restaurantInfoOpen &&
           <div className="restaurant-info">
-            <h1 className="restaurant-info-item" id="restaurantName">{this.state.restaurantInfo.name}</h1>
-              <div className="restaurant-info-item" id="address">
-                {this.state.restaurantInfo.city}, {this.state.restaurantInfo.postcode}, {this.state.restaurantInfo.address}
-              </div>
-            <div className="ratings">
-              <div className="restaurant-info-item" id="overallReview">
-                {strings.overallRating}: {this.state.restaurantInfo.overallRating}/5
-              </div>
-              <div className="restaurant-info-item" id="service">
-                {strings.serviceRating}: {this.state.restaurantInfo.serviceRating}/5
+            <div>
+              <h1 className="restaurant-info-item" id="restaurantName">{this.state.restaurantInfo.name}</h1>
+                <div className="restaurant-info-item" id="address">
+                  {this.state.restaurantInfo.city}, {this.state.restaurantInfo.postcode}, {this.state.restaurantInfo.address}
+                </div>
+              <div className="ratings">
+                <div className="restaurant-info-item" id="overallReview">
+                  {strings.overallRating}: {this.state.restaurantInfo.overallRating}/5
+                </div>
+                <div className="restaurant-info-item" id="service">
+                  {strings.serviceRating}: {this.state.restaurantInfo.serviceRating}/5
+                </div>
               </div>
             </div>
             <div className="restaurant-info-item" id="openingHours">
@@ -207,7 +238,6 @@ class CustomMap extends React.Component {
           </div>
         }
         </div>
-
     )
   }
 }
