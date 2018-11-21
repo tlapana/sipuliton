@@ -1,6 +1,6 @@
 /*
-  This file contains the landing page. Or at least the basic shape.
-  Functionalities are spread into separate components
+  This file contains everthing needed to write and submit a review. Just include this in the page
+  and give it props restaurantID and language and it will handle the rest.
 
 */
 
@@ -8,7 +8,12 @@ import React from 'react';
 import ReactStars from 'react-stars'
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Select from 'react-select';
+import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
+
+
+/* Localization */
+import LocalizedStrings from 'react-localization';
 
 export default class WriteReview extends React.Component {
   
@@ -19,7 +24,6 @@ export default class WriteReview extends React.Component {
     //Bind the functions
     this.setState = this.setState.bind(this);
     this.toggleForm = this.toggleForm.bind(this);
-    this.getRestaurant = this.getRestaurant.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeReview = this.changeReview.bind(this);
     this.changeQuality = this.changeQuality.bind(this);
@@ -27,20 +31,16 @@ export default class WriteReview extends React.Component {
     this.changeChoice = this.changeChoice.bind(this);
     this.changeCost = this.changeCost.bind(this);
     this.changeFilter = this.changeFilter.bind(this);
-    this.reviewForm = this.reviewForm.bind(this);
     this.submitReview = this.submitReview.bind(this);
-  
-    const { match: { params } } = this.props;
     
     this.state = {
-      id : params.restaurantID,
+      id : this.props.restaurantID,
       error: null,
       loadingData: true,
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
       showForm: false,
-      restaurant : this.props.restaurant,
       title : '',
       reviewText : '',
       options : [],
@@ -59,6 +59,7 @@ export default class WriteReview extends React.Component {
   }
   
   toggleForm() {
+    console.log("Changing showForm from: " + this.state.showForm)
     this.setState({
       showForm : !this.state.showForm
     });
@@ -80,9 +81,7 @@ export default class WriteReview extends React.Component {
       loadingOptions : false
     });
    
-  }
-  
-  
+  }  
   
   //Following four just change the values
   changeTitle(event) {
@@ -139,10 +138,10 @@ export default class WriteReview extends React.Component {
     });
     
     //Close form
-    toggleForm();
+    this.toggleForm();
     
     //Generate JSON
-    var obj = new Object();
+    var obj = {};
     
     obj.id = this.state.id;
     obj.title = this.state.title;
@@ -171,16 +170,18 @@ export default class WriteReview extends React.Component {
     
     let strings = new LocalizedStrings({
       en:{
-        message : "Send"
+        message : "Send",
+        submitting: "Submitting..."
       },
       fi: {
-        message : "Lähetä"
+        message : "Lähetä",
+        submitting: "Lähetet''n..."
       }
     });
     
     if(this.state.submitingReview){
       return (
-        'Lähetetään...'
+        <span className="SendHelpIHateJSX">{strings.submitting}</span>
       );
     }
     else {
@@ -193,32 +194,36 @@ export default class WriteReview extends React.Component {
   }  
   render() {
     
-    //Localization here
+    /* Localization */
     let strings = new LocalizedStrings({
       en:{
         modalTitle : "Rate restaurant",
         titlePlaceholder : "Title",
-        textPlaceholder : "Write review here"
+        textPlaceholder : "Write review here",
         diets : "Diet",
         reliability : "Diet reliability",
         variety : "Variety",
         service : "Service and quality",
         pricing : "Pricing",
         cancel : "Cancel",        
-        search:"Search..."
+        search: "Search...",
+        submitTxt : "Lähetä",
+        buttonTxt : "Review"
       },
       fi: {
-        modalTitle : "Arvostele ravinstola",
+        modalTitle : "Arvostele ravintola",
         diets: "Ruokavaliot",
         titlePlaceholder : "Otsikko",
-        textPlaceholder : "Kirjoita arvostelu tähän"
+        textPlaceholder : "Kirjoita arvostelu tähän",
         diets : "Ruokavaliot",
         reliability : "Erikoisruokavalion luotettavuus",
         variety : "Valinnanvara",
         service : "Palvelu ja laatu",
         pricing : "Hintataso",
         cancel : "Peruuta",
-        search:"Hae..."
+        search: "Hae...",
+        submitTxt : "Lähetä",
+        buttonTxt : "Arvostele"
       }
     });
     
@@ -228,80 +233,87 @@ export default class WriteReview extends React.Component {
     else{
       strings.setLanguage('fi');
     }
-    return ( 
-      <button className="filterBtn" onClick={this.toggleForm} type="button" >{strings.filter}</button>  
-      
-      <Modal isOpen={this.state.modalState} toggle={this.showForm}>
-        <ModalHeader> {strings.modalTitle} </ModalHeader>
-        <ModalBody>
-          <div className="reviewDiv">
-            <form className="review">
-              <h3 className="restaurantName"> {this.state.restaurant.name} </h3>
-              
-              <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
-              <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
+    return (
+      <div>
+        <button className="filterBtn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
+        
+        <Modal isOpen={this.state.showForm} toggle={this.toggleForm} dialogClassName="reviewModal">
+          <ModalHeader> {strings.modalTitle} </ModalHeader>
+          <ModalBody>
+              <form className="review">
+                
+                <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
+                <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
+                    
+                {strings.pricing}:
+                <Select
+                  defaultValue={ this.state.defaultValues }
+                  isMulti
+                  name="filtersDrop"
+                  options={ this.state.options }
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={this.changeFilter}
+                />
+                <br />      
                   
-              {strings.pricing}:
-              <Select
-                defaultValue={ this.state.defaultValues }
-                isMulti
-                name="filtersDrop"
-                options={ this.state.options }
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={this.changeFilter}
-              />
-              <br />      
+                {strings.reliability}: 
+                <ReactStars
+                  value = {this.state.reliability}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeReliability}
+                />
+                <br />  
+                 
+                {strings.variety}:
+                <ReactStars
+                  value = {this.state.choice}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeChoice}
+                />
+                <br />
+                  
+                {strings.service}:
+                <ReactStars
+                  value = {this.state.quality}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeQuality}
+                />
+                <br />
+                 
+                {strings.pricing}: 
+                <ReactStars
+                  value = {this.state.cost}
+                  count = {3}
+                  size = {24}
+                  char = {'€'}
+                  half = {false}
+                  onChange = {this.changeCost}
+                />
+                <br />
                 
-              {strings.reliability}: 
-              <ReactStars
-                value = {this.state.reliability}
-                count = {5}
-                size = {24}
-                onChange = {this.changeReliability}
-              />
-              <br />  
-               
-              {strings.variety}:
-              <ReactStars
-                value = {this.state.choice}
-                count = {5}
-                size = {24}
-                onChange = {this.changeChoice}
-              />
-              <br />
-                
-              {strings.service}:
-              <ReactStars
-                value = {this.state.quality}
-                count = {5}
-                size = {24}
-                onChange = {this.changeQuality}
-              />
-              <br />
-               
-              {strings.pricing}: 
-              <ReactStars
-                value = {this.state.cost}
-                count = {3}
-                size = {24}
-                char = {'€'}
-                half = {false}
-                onChange = {this.changeCost}
-              />
-              <br />
+              </form>      
+          </ModalBody>
+          { this.state.submitingReview ? (
               
-            </form>        
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.submitReview}> {strings.submit} </Button> 
-          <Button color="secondary" onClick={this.toggleModal}> {strings.cancel} </Button> 
-        </ModalFooter>
-      </Modal>
+              <ModalFooter>
+                <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" height={'20%'} width={'20%'} />
+              </ModalFooter>
+            ) : ( 
+              <ModalFooter>
+                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button> 
+                <Button color="secondary" onClick={this.toggleForm} > {strings.cancel} </Button>
+              </ModalFooter>
+            )
+          
+          }
+             
+        </Modal>
+      </div>
     );
-    }
-    
   }
-  
+    
 }

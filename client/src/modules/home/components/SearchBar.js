@@ -11,6 +11,9 @@ import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from '../../../styles/landingpage.css';
 
+/* THIS IS A TEST SECTION! REMOVE ONCE NO LONGER NEEDED! */
+import WriteReview from '../../writereview/components/WriteReview.js';
+
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
@@ -350,6 +353,7 @@ class SearchBar extends React.Component {
         </Modal>
 
         </form>
+        <WriteReview language={this.props.language} id={1} />
       </div>
     );
   }
