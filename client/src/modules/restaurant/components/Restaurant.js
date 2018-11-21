@@ -37,8 +37,9 @@ export default class Restaurant extends React.Component {
 		//this.renderRedirect = this.renderRedirect.bind(this);
 		this.togglePopover = this.togglePopover.bind(this);
 	}
-	componentDidMount() {    
-		fetch(restaurantDataUrl + "?restaurantId=" + this.id)
+	componentDidMount() {
+		const { resId } = this.props.match.params;
+		fetch(restaurantDataUrl + "?restaurantId=" + resId)
 		.then(res => res.json())
 		.then(
 			(result) => {
@@ -110,7 +111,7 @@ export default class Restaurant extends React.Component {
 			<div id="restaurantStats">Hintataso: {this.state.priceLevel}<br/>
 			Käyttäjien arvio: {this.state.userScore}<br/>
 			Allergiatunnisteet:<br/>
-			{this.state.allergyTags}</div><br/>
+			{this.looper(this.state.allergyTags)}</div><br/>
 			<div id="restaurantDesc">{this.state.description}</div><br/>
 			<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover}>Lisää arvostelu></Input><br/>
 			//render review writing view as a popover element, after the button above has been clicked

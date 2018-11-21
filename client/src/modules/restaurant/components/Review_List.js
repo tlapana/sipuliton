@@ -17,14 +17,14 @@ export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			titles : [],
-			pictures : [],
-			reviews : [],
-			users : [],
+			titles : ["", ""],
+			pictures : ["", ""],
+			reviews : ["", ""],
+			users : ["", ""],
 			allergyTags : [["Sipuliton", "Munaton"], ["Sipuliton", "Munaton"]],
-			relevance : [],
-			allergyAwareness: [],
-			serviceQuality : [],
+			relevance : [0, 0],
+			allergyAwareness: [0, 0],
+			serviceQuality : [0, 0],
 			pageNumber : 0,
 			pageSize : 20,
 			isLoaded : false
@@ -35,7 +35,8 @@ export default class ReviewList extends React.Component {
 		numberOfRevs = this.state.titles.length - 1;
 	}
 	componentDidMount() {
-		fetch(reviewsDataUrl + "?restaurantId=" + this.id + "&pageNumber=" + this.pageNumber + "&pageSize=" + this.pageSize)
+		const { resId } = this.props.match.params;
+		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
 		.then(res => res.json())
 		.then(
 			(result) => {
@@ -105,7 +106,7 @@ export default class ReviewList extends React.Component {
 			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
 			<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
 			<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
-			<div id="reviewAllergies">Allergiatunnisteet: {this.state.allergyTags[reviewIndex]}</div><br/>
+			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
 			<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
 			<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
 			<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>
