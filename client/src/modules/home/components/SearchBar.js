@@ -353,6 +353,8 @@ class SearchBar extends React.Component {
         </Modal>
 
         </form>
+        
+        /* ONLY FOR TESTING! REMOVE ONCE NO LONGER NEEDED */
         <WriteReview language={this.props.language} id={1} />
       </div>
     );
