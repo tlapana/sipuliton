@@ -18,6 +18,9 @@ import { Link } from 'react-router-dom';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
+/* Restaurant info */
+import MapSmallRestaurantInfo from './MapSmallRestaurantInfo'
+
 class CustomMap extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
@@ -26,40 +29,17 @@ class CustomMap extends React.Component {
     this.CloseRestaurantInfo = this.CloseRestaurantInfo.bind(this);
     //TODO: Fetch marker locations based on search or current location.
 
-    //Mock restaurant green markers.
-    let markers = [
-      [[61.457239,23.848175],[1]],
-      [[61.426239,23.854175],[2]],
-      [[61.445239,23.839175],[3]],
-      [[61.487239,23.808175],[4]],
-      [[61.459239,23.918175],[5]],
-      [[61.476239,23.768175],[6]],
-      [[61.492239,23.798175],[7]]];
-
-    //Mock restaurant grey markers.
-    let greyMarks = [
-      [[61.463871,23.829619],[8]],
-      [[61.463999,23.830000],[9]],
-      [[61.467252,23.851854],[10]]];
-
     this.state = {
       center: [61.450239,23.858175],
       zoom: 13,
       restaurantInfoOpen: false,
       mapClass:"full",
       restaurantInfo:{},
-      greenMarkers: markers,
-      greyMarkers: greyMarks,
+      greenMarkers: [],
+      greyMarkers: [],
       selectedRestaurant: 0
     }
 
-  }
-
-  //Method adds new marker to map.
-  AddMarker(position){
-    var markers = this.state.markers
-    markers.push(position)
-    this.setState({markers:markers})
   }
 
 
@@ -172,71 +152,62 @@ class CustomMap extends React.Component {
         youAreHere: "Olet tässä!",
       }
     });
-    console.log(this.props);
     strings.setLanguage(this.props.language);
     var center = this.state.center
     if(this.props.latitude !== undefined && this.props.longitude !== undefined){
       center = [this.props.latitude,this.props.longitude]
     }
+    var greyMarkers = [];
+    var greenMarkers = [];
+    if(this.props.greyMarkersData !== undefined){
+      greyMarkers = this.props.greyMarkersData;
+    }
+    if(this.props.greenMarkersData !== undefined){
+      greenMarkers = this.props.greenMarkersData;
+    }
     console.log(center);
     return(
         <div>
-        <Map center={center} zoom={this.state.zoom} className={this.state.mapClass}>
-          <TileLayer
-            url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-            attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-          />
-          <Marker key={`current-location`} position={center} icon={curLocMark}>
-            <Popup>
-              {strings.youAreHere}
-            </Popup>
-          </Marker>
-          {this.state.greenMarkers.map((position, idx) =>
-            <Marker key={`marker-${idx}`} position={position[0]} icon={greenIcon}>
-              <Popup onOpen={() => this.OpenRestaurantInfo(position)} onClose={this.CloseRestaurantInfo} className="HiddenPopUp"/>
+          <Map
+            center={center}
+            zoom={this.state.zoom}
+            className={this.state.mapClass}
+          >
+            <TileLayer
+              url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+              attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
+            />
+            <Marker key={`current-location`} position={center} icon={curLocMark}>
+              <Popup>
+                {strings.youAreHere}
+              </Popup>
             </Marker>
-          )}
-          {this.state.greyMarkers.map((position, idx) =>
-            <Marker key={`marker-${idx}`} position={position[0]} icon={greyIcon}>
-              <Popup onOpen={() => this.OpenRestaurantInfo(position)} onClose={this.CloseRestaurantInfo} className="HiddenPopUp"/>
-            </Marker>
-          )}
-          <Circle center={center}
-                  radius={this.props.searchRadiusInKm}
-                  color={'red'}
-                  fillOpacity={0.05}/>
-        </Map>
-        {this.state.restaurantInfoOpen &&
-          <div className="restaurant-info">
-            <div>
-              <h1 className="restaurant-info-item" id="restaurantName">{this.state.restaurantInfo.name}</h1>
-                <div className="restaurant-info-item" id="address">
-                  {this.state.restaurantInfo.city}, {this.state.restaurantInfo.postcode}, {this.state.restaurantInfo.address}
-                </div>
-              <div className="ratings">
-                <div className="restaurant-info-item" id="overallReview">
-                  {strings.overallRating}: {this.state.restaurantInfo.overallRating}/5
-                </div>
-                <div className="restaurant-info-item" id="service">
-                  {strings.serviceRating}: {this.state.restaurantInfo.serviceRating}/5
-                </div>
-              </div>
-            </div>
-            <div className="restaurant-info-item" id="openingHours">
-              {strings.openingHours}:<br/>
-              {strings.mon}: {this.state.restaurantInfo.openMon}<br/>
-              {strings.tue}: {this.state.restaurantInfo.openTue}<br/>
-              {strings.wed}: {this.state.restaurantInfo.openWed}<br/>
-              {strings.thu}: {this.state.restaurantInfo.openThu}<br/>
-              {strings.fri}: {this.state.restaurantInfo.openFri}<br/>
-              {strings.sat}: {this.state.restaurantInfo.openSat}<br/>
-              {strings.sun}: {this.state.restaurantInfo.openSun}<br/>
-            </div>
-            <NavLink className="restaurant-info-item" id="enterToRestaurantPageBtn" onMouseLeave={this.hover} tag={Link} to={"/"+this.props.language+"/restaurantPage"}>
-              {strings.enterToRestaurantPage}
-            </NavLink>
-          </div>
-        }
+            {greenMarkers.map((position, idx) =>
+              <Marker key={`marker-${idx}`} position={position[0]} icon={greenIcon}>
+                <Popup
+                  onOpen={() => this.OpenRestaurantInfo(position)}
+                  onClose={this.CloseRestaurantInfo}
+                  className="HiddenPopUp"/>
+              </Marker>
+            )}
+            {greyMarkers.map((position, idx) =>
+              <Marker key={`marker-${idx}`} position={position[0]} icon={greyIcon}>
+                <Popup
+                  onOpen={() => this.OpenRestaurantInfo(position)}
+                  onClose={this.CloseRestaurantInfo}
+                  className="HiddenPopUp"/>
+              </Marker>
+            )}
+            <Circle center={center}
+                    radius={this.props.searchRadiusInKm}
+                    color={'red'}
+                    fillOpacity={0.05}/>
+          </Map>
+          {this.state.restaurantInfoOpen &&
+            <MapSmallRestaurantInfo
+              restaurantInfo={this.state.restaurantInfo}
+              language={this.props.language}/>
+          }
         </div>
     )
   }

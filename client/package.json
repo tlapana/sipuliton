@@ -20,6 +20,8 @@
     "react-cognito": "^1.5.4",
     "react-dom": "^16.6.3",
     "react-facebook-login": "^4.1.1",
+    "react-geolocated": "^2.4.0",
+    "react-geolocation": "^1.0.4",
     "react-google-login": "^3.2.1",
     "react-leaflet": "^2.1.2",
     "react-loading": "^2.0.3",

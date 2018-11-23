@@ -90,3 +90,15 @@
   position: fixed;
   top:100px;
 }
+
+.modal-filter-button {
+  position: fixed;
+  left:55px;
+  top:25px;
+  z-index: 300;
+  width:300px
+}
+.modal-filter-button button.filterBtn{
+  margin-left: 0%;
+  margin-right:0%;
+}
