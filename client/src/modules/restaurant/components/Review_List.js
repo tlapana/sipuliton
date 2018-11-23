@@ -29,13 +29,14 @@ export default class ReviewList extends React.Component {
 			pageSize : 20,
 			isLoaded : false
 		};
-		this.loadReviews = this.componentDidMount.bind(this);
+
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
 		numberOfRevs = this.state.titles.length - 1;
 	}
+
 	componentDidMount() {
-		const { resId } = this.props.match.params;
+		const { resId } = 0;//this.props.match.params;
 		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
 		.then(res => res.json())
 		.then(
@@ -72,8 +73,9 @@ export default class ReviewList extends React.Component {
 					error
 				});
 			}
-		)
+		);
 	}
+
 	looper(tags) {
 		var tagString = "";
 		{/*if (typeof tags !== 'undefined') {
@@ -88,8 +90,9 @@ export default class ReviewList extends React.Component {
 		}*/}
 		return tagString;
 	}
+
 	changeReview() {
-		if (reviewIndex < this.numberOfRevs) {
+		if (reviewIndex < numberOfRevs) {
 			reviewIndex++;
 		}
 		else {
@@ -99,17 +102,18 @@ export default class ReviewList extends React.Component {
 			isLoaded: true,
 		});
 	}
+
 	render() {
 		return (
-			<div id="reviewList" onClick={this.changeReview()}>
-			<h3>{this.state.titles[reviewIndex]}</h3>
-			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
-			<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
-			<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
-			<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
-			<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
-			<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
-			<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>
+			<div id="reviewList" onClick={this.changeReview}>
+				<h3>{this.state.titles[reviewIndex]}</h3>
+				<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
+				<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
+				<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
+				<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
+				<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
+				<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
+				<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>
 			</div>
 		);
 	}

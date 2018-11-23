@@ -31,12 +31,13 @@ export default class Restaurant extends React.Component {
 			isLoaded : false,
 			popoverOpen: false
 		};
-		this.componentDidMount = this.componentDidMount.bind(this);
+		//this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
 		//this.setRedirect = this.setRedirect.bind(this);
 		//this.renderRedirect = this.renderRedirect.bind(this);
 		this.togglePopover = this.togglePopover.bind(this);
 	}
+
 	componentDidMount() {
 		const { resId } = this.props.match.params;
 		fetch(restaurantDataUrl + "?restaurantId=" + resId)
@@ -66,6 +67,7 @@ export default class Restaurant extends React.Component {
 			}
 		)
 	}
+
 	looper(tags) {
 		var tagString = "";
 		{/*if (typeof tags !== 'undefined') {
@@ -80,6 +82,7 @@ export default class Restaurant extends React.Component {
 		}*/}
 		return tagString;
 	}
+
 	/*setRedirect = () => {
 		this.setState({
 			redirect: true
@@ -91,6 +94,7 @@ export default class Restaurant extends React.Component {
 			//return <Redirect to='/writeReview' />
 		}
 	}*/
+
 	//Instead of redirecting, we use Popover
 	togglePopover() {
 		this.setState({
@@ -102,27 +106,38 @@ export default class Restaurant extends React.Component {
 	render () {
 		return (
 			<div id="restaurant">
-			<h2>{this.state.name}</h2><br/>
-			<div id="restaurantPictures">
-			<img src={this.state.pictures[0]} alt="Restaurant picture1"></img><br/>
-			<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
-			<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
-			</div>
-			<div id="restaurantStats">Hintataso: {this.state.priceLevel}<br/>
-			Käyttäjien arvio: {this.state.userScore}<br/>
-			Allergiatunnisteet:<br/>
-			{this.looper(this.state.allergyTags)}</div><br/>
-			<div id="restaurantDesc">{this.state.description}</div><br/>
-			<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover}>Lisää arvostelu></Input><br/>
-			//render review writing view as a popover element, after the button above has been clicked
-			<Popover placement="bottom" isOpen={this.state.popoverOpen} toggle={this.togglePopover}>
-			<PopoverHeader></PopoverHeader>
-			<PopoverBody>
-			<WriteReview/>
-			</PopoverBody>
-			</Popover>
-			//render the reviews list from its own file
-			<ReviewList/>
+				<h2>{this.state.name}</h2><br/>
+				<div id="restaurantPictures">
+					<img src={this.state.pictures[0]} alt="Restaurant picture1"></img><br/>
+					<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
+					<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
+				</div>
+
+				<div id="restaurantStats">
+					Hintataso: {this.state.priceLevel}
+					<br/>
+					Käyttäjien arvio: {this.state.userScore}
+					<br/>
+					Allergiatunnisteet:<br/>
+					{this.looper(this.state.allergyTags)}
+				</div>
+				<br/>
+				<div id="restaurantDesc">
+					{this.state.description}
+				</div>
+				<br/>
+
+				<Input id="writeReviewBtn" type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover} value="Lisää arvostelu" />
+				<br/>
+				//render review writing view as a popover element, after the button above has been clicked
+				<Popover target="writeReviewBtn" placement="bottom" isOpen={this.state.popoverOpen} toggle={this.togglePopover}>
+					<PopoverHeader></PopoverHeader>
+					<PopoverBody>
+						<WriteReview/>
+					</PopoverBody>
+				</Popover>
+				//render the reviews list from its own file
+				<ReviewList/>
 			</div>
 		);
 	}
