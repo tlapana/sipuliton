@@ -38,7 +38,6 @@ let response;
 exports.lambdaHandler = async (event, context) => {
     try {
         // Result of this query will later go to the returned json
-        //TODO: fix reliability typo in database
         var pageSize = event.queryStringParameters.pageSize
         const restaurantId = event.queryStringParameters.restaurantId
         var pageNumber = event.queryStringParameters.pageNumber
