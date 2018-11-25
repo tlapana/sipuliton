@@ -16,6 +16,7 @@ CREATE TABLE review(
     pricing real,
     thumbs_up int NOT NULL,
     thumbs_down int NOT NULL,
+    accepted BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (restaurant_id, user_id, posted)
 );
 

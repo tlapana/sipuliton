@@ -10,7 +10,8 @@ CREATE TABLE restaurant(
     city_id bigint NOT NULL REFERENCES city,
     postal_code varchar(20) NOT NULL,
     street_address varchar(70) NOT NULL,
-    geo_location point NOT NULL
+    geo_location point NOT NULL,
+    restaurant_accepted boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE open_hours(
