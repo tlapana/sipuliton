@@ -1,11 +1,19 @@
 --init review and related stuff
+CREATE TABLE review_status(
+    status_id int,
+    status_desc varchar(20),
+    PRIMARY KEY(status_id)
+);
+INSERT INTO review_status VALUES (0, 'pending')
+, (1, 'accepted')
+, (-1, 'rejected');
 
 --possible status: posted, accepted, rejected
 CREATE TABLE review(
     restaurant_id bigint REFERENCES restaurant,
     user_id bigint REFERENCES user_profile,
     posted timestamp,
-    status int NOT NULL,
+    status int NOT NULL REFERENCES review_status(status_id) DEFAULT 0,
     title varchar(20) NOT NULL,
 	image_url text,
     free_text text,
@@ -16,9 +24,9 @@ CREATE TABLE review(
     pricing real,
     thumbs_up int NOT NULL,
     thumbs_down int NOT NULL,
-    accepted BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (restaurant_id, user_id, posted)
 );
+
 
 CREATE TABLE review_diet(
     restaurant_id bigint REFERENCES restaurant,

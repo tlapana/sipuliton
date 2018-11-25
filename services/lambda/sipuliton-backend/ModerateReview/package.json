@@ -1,8 +1,8 @@
 {
-  "name": "ModerateItem",
+  "name": "ModerateReview",
   "version": "0.1.1",
-  "description": "POST endpoints for moderating items",
-  "main": "src/ModerateItem.js",
+  "description": "POST endpoints for moderating reviews",
+  "main": "src/ModerateReview.js",
   "repository": "",
   "author": "Sergei Häyrynen",
   "license": "",
