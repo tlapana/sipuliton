@@ -432,7 +432,7 @@ async function updateDiet(client, languageId, name, preset, dietId, groups) {
 }
 
 
-exports.createDietLambda = async (event, context) => {
+exports.createDietAdminLambda = async (event, context) => {
     try {
         const client = await getPsqlClient();
 
@@ -457,6 +457,46 @@ exports.createDietLambda = async (event, context) => {
             temp = parseParam("name", event);
             const name = temp === null ? null : temp;
             
+            const jsonObj = await saveDiet(client, languageId, name, preset, groups);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.createDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            var temp = parseParam("language", event);
+
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+                await getLanguage(client, temp.toUpperCase());
+            
+            const preset = false;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+
             const jsonObj = await saveDiet(client, languageId, name, preset, groups);
 
             response = packResponse(jsonObj);
