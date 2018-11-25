@@ -414,7 +414,7 @@ exports.editProfileLambda = async (event, context) => {
 
             if (hasParam('username', event)) {
                 fieldValue = parseParam('username', event);
-                if (fieldValue !== null && fieldValue.length > 3 && /^[A-Za-z-_]+$/.test(fieldValue)) {
+                if (fieldValue !== null && fieldValue.length > 3 && /^[0-9A-Za-z-_]+$/.test(fieldValue)) {
                     cognitoChanges['username'] = fieldValue;
                 }
                 else {
@@ -450,7 +450,7 @@ exports.editProfileLambda = async (event, context) => {
             }
             if (hasParam('display_name', event)) {
                 fieldValue = parseParam('display_name', event);
-                if (fieldValue !== null && fieldValue.length > 3 && /^[A-Za-z-_\d\s]+$/.test(fieldValue)) {
+                if (fieldValue !== null && fieldValue.length > 3 && /^[0-9A-Za-z-_\d\s]+$/.test(fieldValue)) {
                     userChanges['display_name'] = fieldValue;
                 }
                 else {
@@ -523,14 +523,14 @@ exports.editProfileLambda = async (event, context) => {
                 fieldValue = parseIntParam('diet_id', event)
                 userChanges['diet_id'] = fieldValue;
                 throw {
-                    'statusCode': 500,
+                    'statusCode': 501,
                     'error': "Changing diet should be possible elsewhere too"
                 }
             }
             if (hasParam('new_diet', event)) {
-                fieldValue = parseParam('diet', event)
+                fieldValue = parseParam('new_diet', event)
                 throw {
-                    'statusCode': 500,
+                    'statusCode': 501,
                     'error': "Adding own diet should be possible elsewhere too"
                 }
             }
