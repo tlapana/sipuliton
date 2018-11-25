@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
+
 import RouteCollection from './RouteCollection';
 import NavigationBar from './NavigationBar';
 
 import '../../../styles/app.css';
-import { Link, withRouter, Redirect } from "react-router-dom";
 
 
 class App extends React.Component {
