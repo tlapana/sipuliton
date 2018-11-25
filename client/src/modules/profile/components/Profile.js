@@ -161,7 +161,6 @@ class Profile extends React.Component {
                   .then((response) => response.json())
                   .then((responseJson) => {
                         try {
-
                               this.setState({ city: responseJson.city_name });
                               this.setState({ current_city: responseJson.city_id });
                               this.setState({ current_country: responseJson.country_id });

@@ -1,0 +1,13 @@
+{
+  "name": "profile",
+  "version": "0.1.0",
+  "description": "endpoint for user diets",
+  "main": "src/own_diet.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

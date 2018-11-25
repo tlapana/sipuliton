@@ -1,3 +1,4 @@
-restaurant_id,user_id,posted,status,title,free_text,rating_overall,rating_realiability,rating_variety,rating_service_and_quality,pricing,thumbs_up,thumbs_down
-1,0,2018-11-1 10:23:54,1,Hyvä ravintola,Vapaata arvostelutekstiä,4,4,4,4,4,100,50
-1,1,2018-11-1 10:23:54,1,Hyvä ravintola 2,Vapaata arvostelutekstiä,1,1,1,1,1,100,500
+restaurant_id,user_id,posted,status,title,image_url,free_text,rating_overall,rating_reliability,rating_variety,rating_service_and_quality,pricing,thumbs_up,thumbs_down
+1,0,2018-09-22 6:30:25-07,0,asd,,,5,5,5,5,3,0,0
+1,0,2018-11-1 10:23:54,1,Hyvä ravintola,,Vapaata arvostelutekstiä,4,4,4,4,4,100,50
+1,1,2018-11-1 10:23:54,1,Hyvä ravintola 2,,Vapaata arvostelutekstiä,1,1,1,1,1,100,500

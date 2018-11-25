@@ -23,13 +23,13 @@ def commajoin(array, elements_to_quote, indent=0):
 
 def getorder(columns, langs):
     """Gets what column matches which language."""
-    i = 0
     order = []
-    for col in columns:
-        for lang in langs:
+    for lang in langs:
+        i = 0
+        for col in columns:
             if col == lang:
                 order.append(i)
-        i += 1
+            i += 1
     if len(order) != len(langs):
         print("Either missing a language or have a duplicate\n")
     return order
@@ -240,6 +240,7 @@ def write_groups_diets(sql, langs):
 def write_test_data(sql):
     """simply converts all csv files in mock data into insert statements"""
     for fname in sorted(glob.glob("mock_data/*.csv")):
+        print(fname)
         with open(fname, 'r', encoding='utf8') as csvfile:
             reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
             i = 0
@@ -269,7 +270,7 @@ def main():
         langs = write_lang_city(sql)
         write_groups_diets(sql, langs)
 
-    with open("sql/10_populate_test_data.sql", 'w') as sql:
+    with open("sql/10_populate_test_data.sql", 'w', encoding='utf8') as sql:
         sql.write("--this file is generated from csv files in moc_data folder\n\n")
         write_test_data(sql)
 
