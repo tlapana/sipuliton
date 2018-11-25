@@ -299,9 +299,9 @@ async function saveDiet(client, groups) {
         if (res.rowCount == 0) {
             const res2 = await client.query(
                 `INSERT INTO global_diet
-                VALUES ((SELECT coalesce(max(global_diet),0)+1 FROM global_diet), FALSE)
+                VALUES ((SELECT coalesce(max(global_diet_id),0)+1 FROM global_diet), FALSE)
                 RETURNING global_diet_id`);
-            jsonObj = JSON.parse(JSON.stringify(res2.row[0]));
+            jsonObj = JSON.parse(JSON.stringify(res2.rows[0]));
             var len = groups.length;
             for (var i = 0; i < len; i++) {
                 await client.query(
@@ -311,7 +311,7 @@ async function saveDiet(client, groups) {
             }
         }
         else if (res.rowCount == 1) {
-            jsonObj = JSON.parse(JSON.stringify(res.row[0]));
+            jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
         }
         else {
             throw {
@@ -398,7 +398,7 @@ exports.editOwnDietLambda = async (event, context) => {
                     'error': "global diet id not set"
                 }
             }
-            await editOwnDiet(client, userId, userDietId, dietId, name);
+            await editOwnDiet(client, ownUserId, userDietId, dietId, name);
 
         } finally {
             await client.end();
@@ -428,8 +428,6 @@ exports.createOwnDietLambda = async (event, context) => {
                     'error': "Not logged in"
                 }
             }
-            
-            const userDietId = temp;
 
             temp = JSON.parse(parseParam("groups", event));
             if (temp !== null && temp.length < 1) {
@@ -461,7 +459,7 @@ exports.createOwnDietLambda = async (event, context) => {
                     'error': "global diet id not set"
                 }
             }
-            await saveOwnDiet(client, userId, dietId, name);
+            await saveOwnDiet(client, ownUserId, dietId, name);
 
         } finally {
             await client.end();

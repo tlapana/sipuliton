@@ -173,7 +173,7 @@ Resources:
                       Path: /ownDiets
                       Method: get
 
-    OwnDietsFunction:
+    OwnDietsEditFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: own_diet/
@@ -189,7 +189,7 @@ Resources:
                       Path: /ownDiets/edit
                       Method: get
 
-    OwnDietsFunction:
+    OwnDietsCreateFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: own_diet/
@@ -301,7 +301,7 @@ Resources:
                       Path: /diet/groups
                       Method: get
 
-    DietGroupsFunction:
+    DietCreateAdminFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: diet/
@@ -317,7 +317,7 @@ Resources:
                       Path: /diet/createAdmin
                       Method: get
 
-    DietGroupsFunction:
+    DietCreateFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: diet/
@@ -333,7 +333,7 @@ Resources:
                       Path: /diet/create
                       Method: get
 
-    DietGroupsFunction:
+    DietUpdateFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
           CodeUri: diet/

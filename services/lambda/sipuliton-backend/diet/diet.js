@@ -352,10 +352,10 @@ async function saveDiet(client, languageId, name, preset, groups) {
         if (res.rowCount == 0) {
             const res2 = await client.query(
                 `INSERT INTO global_diet
-                VALUES ((SELECT coalesce(max(global_diet),0)+1 FROM global_diet), $1)
+                VALUES ((SELECT coalesce(max(global_diet_id),0)+1 FROM global_diet), $1)
                 RETURNING global_diet_id`,
                 [preset]);
-            jsonObj = JSON.parse(JSON.stringify(res2.row[0]));
+            jsonObj = JSON.parse(JSON.stringify(res2.rows[0]));
             if (name !== null) {
                 await client.query(
                     `INSERT INTO global_diet_name
