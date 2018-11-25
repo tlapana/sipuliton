@@ -189,33 +189,34 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
     var jsonObj = {};
     if (status === null) {
         const res = await client.query(
-            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted, rejected, reason
+            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
+                review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
+                rating_service_and_quality, pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets,
+                accepted, rejected, reason
             FROM review_diet, restaurant, review
                 LEFT JOIN review_accept_log ON review.review_id = review_accept_log.review_id
                 LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id
             WHERE review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
-            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, accepted, rejected, reason
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
+            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
+                review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
+                rating_service_and_quality, pricing, thumbs_up, thumbs_down, accepted, rejected, reason
+            LIMIT $3
+            OFFSET $2`,
+            [ownUserId, offset, limit]);
         if (res.rowCount > 0) {
             jsonObj = JSON.parse(JSON.stringify(res.rows)); 
         }
     }
     if (status == 0) {
         const res = await client.query(
-            `SELECT review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets
             FROM review, review_diet, restaurant
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
-            GROUP BY review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down
             LIMIT $4
@@ -227,14 +228,13 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
     }
     if (status == 1) {
         const res = await client.query(
-            `SELECT review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted
             FROM review, review_diet, restaurant, review_accept_log
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
-                AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
-                AND review_accept_log.restaurant_id = review.restaurant_id AND review_accept_log.review_id = review.review_id
-            GROUP BY review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                AND restaurant.restaurant_id = review.restaurant_id AND review.review_id = review_accept_log.review_id
+            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down, accepted
             LIMIT $4
@@ -246,13 +246,13 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
     }
     if (status == 2) {
         const res = await client.query(
-            `SELECT review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason
             FROM review, review_diet, restaurant, review_reject_log
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id AND review_reject_log.review_id = review.review_id
-            GROUP BY review.review_id, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
                 pricing, thumbs_up, thumbs_down, rejected, reason
             LIMIT $4
