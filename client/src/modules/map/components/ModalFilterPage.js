@@ -4,6 +4,7 @@ import {
   NavItem,
   NavLink,Modal, ModalHeader, ModalBody, ModalFooter,	Form,
   Label} from 'reactstrap';
+import ReactStars from 'react-stars';
 import styles from '../../../styles/landingpage.css';
 import '../../../styles/map.css';
 /* Router imports */
@@ -26,12 +27,24 @@ class ModalFilterPage extends React.Component {
         fifth:false,
         sixth:false,
       },
+      radius : this.props.filters.radius,
+      minOverall : this.props.filters.minOverall,
+      minReliability : this.props.filters.minReliability,
+      minVariety : this.props.filters.minVariety,
+      minService : this.props.filters.minService,
+      pricing: this.props.filters.pricing
     }
     this.toggleModal = this.toggleModal.bind(this);
-
+    this.changeOverall = this.changeOverall.bind(this);
+    this.changeReliability = this.changeReliability.bind(this);
+    this.changeVariety = this.changeVariety.bind(this);
+    this.changeService = this.changeService.bind(this);
+    this.changePricing = this.changePricing.bind(this);
+    this.saveFilters = this.saveFilters.bind(this);
   }
 
   RadiusChanged = event =>{
+    this.setState({radius:event.target.value});
     if(event.target.value === "2000"){
       this.setState({
         checkboxes:{
@@ -98,7 +111,18 @@ class ModalFilterPage extends React.Component {
               sixth:true,
             }})
     }
-    this.props.ChangeRadius(event.target.value);
+  }
+
+  saveFilters(){
+    this.toggleModal();
+    this.props.FiltersChanged(
+      this.state.radius,
+      this.state.minOverall,
+      this.state.minReliability,
+      this.state.minVariety,
+      this.state.minService,
+      this.state.pricing,
+    );
   }
 
   //Toggles modal
@@ -111,6 +135,38 @@ class ModalFilterPage extends React.Component {
     console.log("showModal: Toggling modal to " + this.state.modalState)
   }
 
+  //Used to change star rating values
+  changeOverall(newRating, name)
+  {
+    this.setState({
+      minOverall : newRating
+    });
+  }
+  changeReliability(newRating, name)
+  {
+    this.setState({
+      minReliability : newRating
+    });
+  }
+  changeService(newRating, name)
+  {
+    this.setState({
+      minService : newRating
+    });
+  }
+  changeVariety(newRating, name)
+  {
+    this.setState({
+      minVariety : newRating
+    });
+  }
+  changePricing(newRating, name)
+  {
+    this.setState({
+      pricing : newRating
+    });
+  }
+
   render() {
     /* Localization */
     let strings = new LocalizedStrings({
@@ -119,12 +175,24 @@ class ModalFilterPage extends React.Component {
         closeModal:"Close",
         includeinsearch:"Sisällytä hakuun:",
         selectRadius: "Select search radius:",
+        overall:"Overall rating",
+        reliability:"Menu reliability",
+        service:"Service & Food",
+        variety:"Menu variety",
+        pricing:"Pricing",
+        filter:"Rajaa",
       },
       fi: {
         filter:"Rajaa",
         closeModal:"Sulje",
         includeinsearch:"Sisällytä hakuun:",
         selectRadius: "Valitse etsintä säde:",
+        overall:"Keskiarvo",
+        reliability:"Ruokavalion luotettavuus",
+        service:"Ruoka ja palvelu",
+        variety:"Ruokalajien laajuus",
+        pricing:"Hintaluokka",
+        filter:"Rajaa"
       }
     });
 
@@ -150,8 +218,46 @@ class ModalFilterPage extends React.Component {
               <input type="radio" name="group1" value="25000" checked={this.state.checkboxes.fifth} /> 25 km <br/>
               <input type="radio" name="group1" value="50000" checked={this.state.checkboxes.sixth} /> 50 km <br/>
             </form>
+            {strings.overall}
+            <ReactStars
+              value = {this.state.minOverall}
+              count = {5}
+              size = {24}
+              onChange = {this.changeOverall}
+            />
+            {strings.reliability}
+            <ReactStars
+              value = {this.state.minReliability}
+              count = {5}
+              size = {24}
+              onChange = {this.changeReliability}
+            />
+            {strings.service}
+            <ReactStars
+              value = {this.state.minService}
+              count = {5}
+              size = {24}
+              onChange = {this.changeService}
+            />
+            {strings.variety}
+            <ReactStars
+              value = {this.state.minVariety}
+              count = {5}
+              size = {24}
+              onChange = {this.changeVariety}
+            />
+            {strings.pricing}
+            <ReactStars
+              value = {this.state.pricing}
+              count = {3}
+              size = {24}
+              char = '€'
+              half = {false}
+              onChange = {this.changePricing}
+            />
           </ModalBody>
           <ModalFooter>
+            <Button color="primary" onClick={this.saveFilters}> {strings.filter} </Button>
             <Button color="primary" onClick={this.toggleModal}> {strings.closeModal} </Button>
           </ModalFooter>
         </Modal>
