@@ -1,0 +1,13 @@
+{
+  "name": "own_review",
+  "version": "0.1.0",
+  "description": "endpoints for own reviews",
+  "main": "src/own_review.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}
