@@ -69,6 +69,7 @@ button.filterBtn {
   margin-top: 20px;
   padding-left: 20px;
   padding-right: 20px;
+  text-align: center;
   clear: both;
 }
 
@@ -85,6 +86,21 @@ button.filterBtn {
  border-width: 1px;
 }
 
+a.event {
+ display: block;
+ width: 100%;
+ padding-left: 30px;
+ margin-top: 10px;
+ margin-bottom: 10px;
+ margin-left: 5px;
+ margin-right: 5px;
+ border-radius: 10px;
+ border-color: #e5e5e5;
+ border-style: solid;
+ border-width: 1px;
+ text-decoration: none;
+}
+
 .instructions {
   font-size: small;
   color: gray;
@@ -93,4 +109,20 @@ button.filterBtn {
   margin-left: 40%;
   margin-right: 40%;
   min-width: 20%;
+}
+
+.filterBox
+{
+  position: absolute;
+  width: 80%;
+  min-height: 100%;
+  
+}
+
+.loadingSpinner
+{
+  margin-left: auto;
+  margin-right: auto;
+  height: 50px;
+  width: 50px;
 }
