@@ -42,6 +42,8 @@ class Map extends React.Component {
 		this.FiltersChanged = this.FiltersChanged.bind(this);
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
+    this.CenterChanged = this.CenterChanged.bind(this);
+
     var markers = this.GetRestaurantsMarkers();
 
     this.state = {
@@ -68,6 +70,9 @@ class Map extends React.Component {
 
   }
 
+  CenterChanged(newCenter){
+    this.setState({center:newCenter})
+  }
 
 	GetRestaurantsMarkers(){
     //TODO: Implement restaurant fetch based on filters.
@@ -145,7 +150,12 @@ class Map extends React.Component {
 						language={this.props.match.params.language}
           	latitude={this.state.center[0]}
 						longitude={this.state.center[1]}
-          	searchRadiusInKm={this.state.filters.radius}/>
+          	searchRadiusInKm={this.state.filters.radius}
+            greenMarkersData={this.state.greenMarkers}
+            greyMarkersData={this.state.greyMarkers}
+            centerChanged={this.CenterChanged}
+            center={this.state.center}
+          />
         </div>
       </div>
       :this.props.coords
@@ -161,6 +171,8 @@ class Map extends React.Component {
 	        searchRadiusInKm={this.state.filters.radius}
 					greenMarkersData={this.state.greenMarkers}
 					greyMarkersData={this.state.greyMarkers}
+          centerChanged={this.CenterChanged}
+          center={this.state.center}
 				/>
       </div>
       : <div>Getting the location data&hellip; </div>

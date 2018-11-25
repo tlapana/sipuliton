@@ -31,6 +31,8 @@ class MapSmallRestaurantInfo extends React.Component {
         openingHours:"Opening hours",
         overallRating: "Overall rating",
         serviceRating: "Service rating",
+        varietyRating: "Variety rating",
+        reliabilityRating: "Reliability rating"
       },
       fi: {
         mon:"Ma",
@@ -44,6 +46,10 @@ class MapSmallRestaurantInfo extends React.Component {
         openingHours:"Aukioloajat",
         overallRating: "Kokonaisarvosana",
         serviceRating: "Palvelu",
+        varietyRating: "Valinnanvara",
+        reliabilityRating: "Luotettavuus",
+        email:"Sähköposti osoite",
+        website:"Verkkosivu"
       }
     });
     strings.setLanguage(this.props.language);
@@ -54,13 +60,22 @@ class MapSmallRestaurantInfo extends React.Component {
           <div className="restaurant-info-item" id="address">
             {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode}, {this.props.restaurantInfo.address}
           </div>
+          <div className="restaurant-info-item" id="contact">
+            {strings.email}:{this.props.restaurantInfo.email}, {strings.website}:{this.props.restaurantInfo.website}
+          </div>
           <div className="ratings">
-            <div className="restaurant-info-item" id="overallReview">
+            <div className="restaurant-info-item rating" id="overallReview">
               {strings.overallRating}: {this.props.restaurantInfo.overallRating}/5
             </div>
-          <div className="restaurant-info-item" id="service">
-            {strings.serviceRating}: {this.props.restaurantInfo.serviceRating}/5
-          </div>
+            <div className="restaurant-info-item rating" id="service">
+              {strings.serviceRating}: {this.props.restaurantInfo.serviceRating}/5
+            </div>
+            <div className="restaurant-info-item rating" id="variety">
+              {strings.varietyRating}: {this.props.restaurantInfo.varietyRating}/5
+            </div>
+            <div className="restaurant-info-item rating" id="reliability">
+              {strings.reliabilityRating}: {this.props.restaurantInfo.reliabilityRating}/5
+            </div>
         </div>
       </div>
       <div className="restaurant-info-item" id="openingHours">
@@ -73,7 +88,13 @@ class MapSmallRestaurantInfo extends React.Component {
         {strings.sat}: {this.props.restaurantInfo.openSat}<br/>
         {strings.sun}: {this.props.restaurantInfo.openSun}<br/>
       </div>
-      <NavLink className="restaurant-info-item" id="enterToRestaurantPageBtn" onMouseLeave={this.hover} tag={Link} to={"/"+this.props.language+"/restaurantPage"}>
+      <NavLink
+        className="restaurant-info-item RestaurantPageBtn"
+        id="enterToRestaurantPageBtn"
+        onMouseLeave={this.hover}
+        tag={Link}
+        to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
+      >
         {strings.enterToRestaurantPage}
       </NavLink>
     </div>

@@ -22,7 +22,12 @@
   visibility: hidden;
 }
 
-#enterToRestaurantPageBtn {
+#BackToMapBtn {
+  width: 50%;
+  height: 40px;
+}
+
+.RestaurantPageBtn {
   text-align: center;
   -moz-box-shadow: 0px 1px;
   -webkit-box-shadow: 0px 1px;
@@ -42,21 +47,29 @@
   color: rgb(80, 80, 80);
 }
 
+#contact{
+  margin-left: 2em;
+  text-align: center;
+  color: rgb(80, 80, 80);
+}
+
 .ratings {
   margin-left: 2em;
   text-align: center;
 }
 
-#overallReview {
+.rating {
   display:inline-block;
-  text-align: center;
-  margin-left: auto;
+  margin-left: 1em;
 }
 
-#service {
-  display:inline-block;
+.SearchBox{
+  margin-top: 50px;
+}
+
+.ErrorBox{
+  margin-top: 50px;
   text-align: center;
-  margin-left: 1em;
 }
 
 #openingHours {
@@ -68,10 +81,11 @@
   margin: auto;
 }
 
-#enterToRestaurantPageBtn:hover {
+.RestaurantPageBtn:hover {
   color: #2b2b2b;
   background-color: white;
 }
+
 
 .restaurant-info {
   display: block;
