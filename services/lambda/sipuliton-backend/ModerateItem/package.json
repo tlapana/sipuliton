@@ -1,8 +1,8 @@
 {
-  "name": "GetModeratorPage",
+  "name": "ModerateItem",
   "version": "0.1.1",
-  "description": "GET endpoint for moderator page",
-  "main": "src/GetModeratorPage.js",
+  "description": "POST endpoints for moderating items",
+  "main": "src/ModerateItem.js",
   "repository": "",
   "author": "Sergei Häyrynen",
   "license": "",
