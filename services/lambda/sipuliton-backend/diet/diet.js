@@ -367,7 +367,7 @@ async function saveDiet(client, languageId, name, preset, groups) {
                 await client.query(
                     `INSERT INTO diet_groups
                     VALUES ($1, $2)`,
-                    [dietId, groups[i]]);
+                    [jsonObj['global_diet_id'], groups[i]]);
             }
         }
         else if (res.rowCount == 1) {
