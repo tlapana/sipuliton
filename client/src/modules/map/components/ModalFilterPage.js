@@ -32,7 +32,23 @@ class ModalFilterPage extends React.Component {
       minReliability : this.props.filters.minReliability,
       minVariety : this.props.filters.minVariety,
       minService : this.props.filters.minService,
-      pricing: this.props.filters.pricing
+      pricing: this.props.filters.pricing,
+      originalStage: {
+        checkboxes:{
+          first:false,
+          second:false,
+          third:true,
+          fourth:false,
+          fifth:false,
+          sixth:false,
+        },
+        radius : this.props.filters.radius,
+        minOverall : this.props.filters.minOverall,
+        minReliability : this.props.filters.minReliability,
+        minVariety : this.props.filters.minVariety,
+        minService : this.props.filters.minService,
+        pricing: this.props.filters.pricing,
+      }
     }
     this.toggleModal = this.toggleModal.bind(this);
     this.changeOverall = this.changeOverall.bind(this);
@@ -114,7 +130,18 @@ class ModalFilterPage extends React.Component {
   }
 
   saveFilters(){
-    this.toggleModal();
+    this.setState({
+      modalState: !this.state.modalState,
+      originalStage: {
+        checkboxes:this.state.checkboxes,
+        radius : this.state.radius,
+        minOverall : this.state.minOverall,
+        minReliability : this.state.minReliability,
+        minVariety : this.state.minVariety,
+        minService : this.state.minService,
+        pricing: this.state.pricing,
+      }
+    })
     this.props.FiltersChanged(
       this.state.radius,
       this.state.minOverall,
@@ -127,7 +154,17 @@ class ModalFilterPage extends React.Component {
 
   //Toggles modal
   toggleModal() {
-
+    if(this.state.modalState){
+      this.setState({
+        checkboxes:this.state.originalStage.checkboxes,
+        radius : this.state.originalStage.radius,
+        minOverall : this.state.originalStage.minOverall,
+        minReliability : this.state.originalStage.minReliability,
+        minVariety : this.state.originalStage.minVariety,
+        minService : this.state.originalStage.minService,
+        pricing: this.state.originalStage.pricing,
+      })
+    }
     this.setState({
       modalState: !this.state.modalState
     });

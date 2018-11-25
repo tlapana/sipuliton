@@ -2,7 +2,7 @@ import React from 'react';
 import {
   Button,
   NavItem,
-  NavLink,} from 'reactstrap';
+  NavLink} from 'reactstrap';
 
 /* Map imports */
 import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
@@ -20,6 +20,7 @@ import LocalizedStrings from 'react-localization';
 
 /* Restaurant info */
 import MapSmallRestaurantInfo from './MapSmallRestaurantInfo'
+const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class CustomMap extends React.Component {
   /* Constructor of the navication bar class. */
@@ -44,37 +45,57 @@ class CustomMap extends React.Component {
 
 
   OpenRestaurantInfo(position){
-    var fixLat = position[0][0]-0.007
-    this.setState({
-      restaurantInfoOpen: true,
-      mapClass:"mini",
-      center: [fixLat,position[0][1]],
-      zoom:15,
-      selectedRestaurant: position[1][0]
-    });
-
-    //Implement restaurant info fetch.
-    this.setState({
-      restaurantInfo:{
-        id:position[1][0],
-        name:"Grilli",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Insinöörinkatu 17",
-        overallRating:"3.5",
-        serviceRating:"4",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-      }
-    })
 
     console.log("Restaurant id: "+position[1][0])
-    this.render();
+    console.log(restaurantDataUrl + "?restaurantId=" + position[1][0]);
+    fetch(restaurantDataUrl + "?restaurantId=" + position[1][0])
+    		.then(res => res.json())
+    		.then(
+    			(result) => {
+    				console.log("DEBUG: loadRestaurant success");
+            var fixLat = position[0][0]-0.1
+            var restaurantInfo = result.restaurant[0]
+            this.setState({
+              restaurantInfoOpen: true,
+              mapClass:"mini",
+              center: [fixLat,position[0][1]],
+              zoom:15,
+              selectedRestaurant: position[1][0],
+              restaurantInfo:{
+                id:restaurantInfo.restaurant_id,
+                name:restaurantInfo.name,
+                city:"Hervanta",
+                postcode:"33990",
+                address:restaurantInfo.street_address,
+                overallRating:restaurantInfo.rating_overall,
+                serviceRating:restaurantInfo.rating_service_and_quality,
+                varietyRating:restaurantInfo.rating_variety,
+                reliabilityRating: restaurantInfo.rating_reliability,
+                website: restaurantInfo.website,
+                email: restaurantInfo.email,
+                openMon:"9:00-15:00",
+                openTue:"9:00-15:00",
+                openWed:"9:00-15:00",
+                openThu:"9:00-13:00",
+                openFri:"9:00-16:00",
+                openSat:"8:00-17:00",
+                openSun:"10:00-18:00",
+              }
+            })
+            console.log(this.state);
+            this.render();
+    			},
+
+    			(error) => {
+    				console.log("DEBUG: loadRestaurant error");
+    				console.log(error);
+    				this.setState({
+    					isLoaded: true,
+    					error
+    				});
+    			}
+        )
+
   }
 
   CloseRestaurantInfo(){
@@ -154,7 +175,10 @@ class CustomMap extends React.Component {
     });
     strings.setLanguage(this.props.language);
     var center = this.state.center
-    if(this.props.latitude !== undefined && this.props.longitude !== undefined){
+    if(this.props.latitude !== undefined
+      && this.props.longitude !== undefined
+      && !this.state.restaurantInfoOpen)
+    {
       center = [this.props.latitude,this.props.longitude]
     }
     var greyMarkers = [];
@@ -165,7 +189,6 @@ class CustomMap extends React.Component {
     if(this.props.greenMarkersData !== undefined){
       greenMarkers = this.props.greenMarkersData;
     }
-    console.log(center);
     return(
         <div>
           <Map
@@ -177,7 +200,7 @@ class CustomMap extends React.Component {
               url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
               attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
             />
-            <Marker key={`current-location`} position={center} icon={curLocMark}>
+            <Marker key={`current-location`} position={[this.props.latitude,this.props.longitude]} icon={curLocMark}>
               <Popup>
                 {strings.youAreHere}
               </Popup>
@@ -198,7 +221,7 @@ class CustomMap extends React.Component {
                   className="HiddenPopUp"/>
               </Marker>
             )}
-            <Circle center={center}
+            <Circle center={[this.props.latitude,this.props.longitude]}
                     radius={this.props.searchRadiusInKm}
                     color={'red'}
                     fillOpacity={0.05}/>
