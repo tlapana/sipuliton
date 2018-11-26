@@ -25,7 +25,8 @@ class Map extends React.Component {
         minReliability : 0,
         minVariety : 0,
         minService : 0,
-        pricing: 0
+        pricing: 0,
+        city:"test"
       },
       center:[60.168182,24.940886],
       checkboxes:{
@@ -53,7 +54,8 @@ class Map extends React.Component {
         minReliability : 0,
         minVariety : 0,
         minService : 0,
-        pricing: 0
+        pricing: 0,
+        city:""
       },
       center:[60.168182,24.940886],
       checkboxes:{
@@ -105,7 +107,8 @@ class Map extends React.Component {
     newMinReliability,
     newMinVariety,
     newMinService,
-    newMinPricing
+    newMinPricing,
+    newCity
   )
   {
 		this.setState({
@@ -115,7 +118,8 @@ class Map extends React.Component {
         minReliability : newMinReliability,
         minVariety : newMinVariety,
         minService : newMinService,
-        pricing: newMinPricing
+        pricing: newMinPricing,
+        city: newCity,
       }
     });
     this.GetRestaurantsMarkers();

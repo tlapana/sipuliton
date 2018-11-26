@@ -10,6 +10,9 @@ import '../../../styles/map.css';
 /* Router imports */
 import { Link } from 'react-router-dom';
 
+//Place to position imports
+import { ReactLeafletSearch } from 'react-leaflet-search'
+
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
@@ -35,7 +38,7 @@ class ModalFilterPage extends React.Component {
       minVariety : this.props.filters.minVariety,
       minService : this.props.filters.minService,
       pricing: this.props.filters.pricing,
-      city: "",
+      city: this.props.filters.city,
       originalStage: {
         checkboxes:{
           first:false,
@@ -45,6 +48,7 @@ class ModalFilterPage extends React.Component {
           fifth:false,
           sixth:false,
         },
+        city: this.props.filters.city,
         radius : this.props.filters.radius,
         minOverall : this.props.filters.minOverall,
         minReliability : this.props.filters.minReliability,
@@ -62,11 +66,14 @@ class ModalFilterPage extends React.Component {
     this.saveFilters = this.saveFilters.bind(this);
     this.answerNo = this.answerNo.bind(this);
     this.answerYes = this.answerYes.bind(this);
-    this.handleCityChange = this.handleCityChange.bind(this);
   }
 
-  handleCityChange(){
-
+  handleCityChange = event => {
+    console.log("kutsuttu")
+    console.log(event)
+    this.setState({
+      city:event.target.value,
+    })
   }
 
   RadiusChanged = event =>{
@@ -164,6 +171,7 @@ class ModalFilterPage extends React.Component {
         minVariety : this.state.minVariety,
         minService : this.state.minService,
         pricing: this.state.pricing,
+        city: this.state.city,
       }
     })
     this.props.FiltersChanged(
@@ -173,6 +181,7 @@ class ModalFilterPage extends React.Component {
       this.state.minVariety,
       this.state.minService,
       this.state.pricing,
+      this.state.city
     );
   }
 
@@ -187,6 +196,7 @@ class ModalFilterPage extends React.Component {
         minVariety : this.state.originalStage.minVariety,
         minService : this.state.originalStage.minService,
         pricing: this.state.originalStage.pricing,
+        city: this.state.originalStage.city
       })
     }
     this.setState({
@@ -228,6 +238,7 @@ class ModalFilterPage extends React.Component {
     });
   }
 
+
   render() {
     /* Localization */
     let strings = new LocalizedStrings({
@@ -245,7 +256,8 @@ class ModalFilterPage extends React.Component {
         doYouWantToUseLocationInSearch:"Do you want to search restaurants based on your location?",
         yes:"Yes",
         no:"No",
-        enterCity:"Enter city..."
+        enterCity:"Enter city...",
+        cityWhereToFindRestaurants:"City where we search restaurants"
       },
       fi: {
         filter:"Rajaa",
@@ -261,7 +273,8 @@ class ModalFilterPage extends React.Component {
         doYouWantToUseLocationInSearch:"Haluatko etsiä ravintoloita, jotka ovat lähellä sinua?",
         yes:"Kyllä",
         no:"En",
-        enterCity:"Syötä kaupunki..."
+        enterCity:"Syötä kaupunki...",
+        cityWhereToFindRestaurants:"Kaupunki, josta ravintoloita etsitään"
       }
     });
 
@@ -281,8 +294,10 @@ class ModalFilterPage extends React.Component {
             {this.props.geolocationEnabled &&
               <div>
                 <div>{strings.doYouWantToUseLocationInSearch}</div>
-                <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerYes}>{strings.yes}</Button>
-                <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerNo}>{strings.no}</Button>
+                <div className="Location-Question-Answere-Box">
+                  <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerYes}>{strings.yes}</Button>
+                  <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerNo}>{strings.no}</Button>
+                </div>
                 {this.state.useUserLocation &&
                   <form name="Select radius" onChange={this.RadiusChanged}>
                     <div><Label>{strings.selectRadius}</Label></div>
@@ -298,7 +313,17 @@ class ModalFilterPage extends React.Component {
                   <div>
                     {this.state.userHasAnswered &&
                       <div>
-                        <input type="text" value={this.state.city} onChange={this.handleCityChange} className="round" placeholder={strings.enterCity} autoFocus />
+                        <div>
+                          {strings.cityWhereToFindRestaurants}
+                        </div>
+                        <input
+                          type="text"
+                          value={this.state.city}
+                          onChange={this.handleCityChange}
+                          className="city-search-input"
+                          placeholder={strings.enterCity}
+                          autoFocus
+                        />
                       </div>
                     }
                   </div>
@@ -306,47 +331,73 @@ class ModalFilterPage extends React.Component {
 
               </div>
             }
-            {strings.overall}
-            <ReactStars
-              value = {this.state.minOverall}
-              count = {5}
-              size = {24}
-              onChange = {this.changeOverall}
-            />
-            {strings.reliability}
-            <ReactStars
-              value = {this.state.minReliability}
-              count = {5}
-              size = {24}
-              onChange = {this.changeReliability}
-            />
-            {strings.service}
-            <ReactStars
-              value = {this.state.minService}
-              count = {5}
-              size = {24}
-              onChange = {this.changeService}
-            />
-            {strings.variety}
-            <ReactStars
-              value = {this.state.minVariety}
-              count = {5}
-              size = {24}
-              onChange = {this.changeVariety}
-            />
-            {strings.pricing}
-            <ReactStars
-              value = {this.state.pricing}
-              count = {3}
-              size = {24}
-              char = '€'
-              half = {false}
-              onChange = {this.changePricing}
-            />
+            {!this.props.geolocationEnabled &&
+              <div>
+                <div>
+                  {strings.cityWhereToFindRestaurants}
+                </div>
+                <input
+                  type="text"
+                  value={this.state.city}
+                  onChange={this.handleCityChange}
+                  className="city-search-input"
+                  placeholder={strings.enterCity}
+                  autoFocus />
+              </div>
+            }
+            <div className="rating-filters-box">
+              {strings.overall}
+              <ReactStars
+                value = {this.state.minOverall}
+                count = {5}
+                size = {24}
+                onChange = {this.changeOverall}
+              />
+              {strings.reliability}
+              <ReactStars
+                value = {this.state.minReliability}
+                count = {5}
+                size = {24}
+                onChange = {this.changeReliability}
+              />
+              {strings.service}
+              <ReactStars
+                value = {this.state.minService}
+                count = {5}
+                size = {24}
+                onChange = {this.changeService}
+              />
+              {strings.variety}
+              <ReactStars
+                value = {this.state.minVariety}
+                count = {5}
+                size = {24}
+                onChange = {this.changeVariety}
+              />
+              {strings.pricing}
+              <ReactStars
+                value = {this.state.pricing}
+                count = {3}
+                size = {24}
+                char = '€'
+                half = {false}
+                onChange = {this.changePricing}
+              />
+            </div>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.saveFilters}> {strings.filter} </Button>
-            <Button color="primary" onClick={this.toggleModal}> {strings.closeModal} </Button>
+            <Button
+              color="primary"
+              onClick={this.saveFilters}
+            >
+              {strings.filter}
+            </Button>
+            <Button
+              color="primary"
+              onClick={this.toggleModal}
+            >
+              {strings.closeModal}
+            </Button>
           </ModalFooter>
         </Modal>
       </div>

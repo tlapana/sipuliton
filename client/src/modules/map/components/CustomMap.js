@@ -251,6 +251,7 @@ class CustomMap extends React.Component {
                     radius={this.props.searchRadiusInKm}
                     color={'red'}
                     fillOpacity={0.05}/>
+                    
           </Map>
           {this.state.restaurantInfoOpen &&
             <div>
