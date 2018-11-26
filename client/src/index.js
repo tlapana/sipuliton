@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
 
-import AppContainer from './modules/app/components/App';
+import AppContainer from './modules/app/containers/AppContainer';
 import rootReducer from './rootReducer';
 import * as serviceWorker from './serviceWorker';
 import Amplify from 'aws-amplify';
@@ -30,7 +30,6 @@ Amplify.configure({
 });
 
 const store = createStore(rootReducer);
-
 withAuthenticator(AppContainer);
 
 render(

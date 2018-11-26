@@ -4,21 +4,21 @@ import App from '../components/App';
 
 
 const mapStateToProps = state => {
-  console.log("test",state);
   return {
-    isLoading: state.isLoading,
-    isRounding: state.isRounding,
-    theme: state.theme
+    isLoading: state.app.isLoading,
+    isRounding: state.app.isRounding,
+    theme: state.app.theme
   }
-  
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    changeLoading: isLoading => dispatch(changeLoading(isLoading)),
+    changeRounding: isRounding => dispatch(changeRounding(isRounding)),
+    changeTheme: newTheme => dispatch(changeTheme(newTheme))
+  }
 };
-​
-const mapDispatchToProps = dispatch => ({
-  changeLoading: isLoading => dispatch(changeLoading(isLoading)),
-  changeRounding: isRounding => dispatch(changeRounding(isRounding)),
-  changeTheme: newTheme => dispatch(changeTheme(newTheme))
-});
-​
+
 const AppContainer = connect(
   mapStateToProps,
   mapDispatchToProps

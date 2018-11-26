@@ -17,7 +17,6 @@ class App extends React.Component {
     super(props);
 
     this.getAppClasses = this.getAppClasses.bind(this);
-    props.store.dispatch(changeTheme('theme-2'))
   }
 
 
@@ -65,23 +64,4 @@ App.propTypes = {
   theme: PropTypes.string,
 };
 
-
-const mapStateToProps = state => {
-  console.log("test",state);
-  return {
-    isLoading: state.isLoading,
-    isRounding: state.isRounding,
-    theme: state.theme
-  }
-}
-
-const mapDispatchToProps = dispatch => ({
-  changeLoading: isLoading => dispatch(changeLoading(isLoading)),
-  changeRounding: isRounding => dispatch(changeRounding(isRounding)),
-  changeTheme: newTheme => dispatch(changeTheme(newTheme))
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(App);
+export default App;

@@ -3,7 +3,7 @@ import * as t from './actionTypes';
 
 const initialState = {
   isLoading: false,
-  isRounding: false,
+  isRounding: true,
   theme: 'theme-1',
 };
 
