@@ -5,11 +5,13 @@
 */
 
 import React from 'react';
-import { Button, UncontrolledTooltip, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
+import { 
+  Button, Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
+  Modal, ModalHeader, ModalBody, ModalFooter
+} from 'reactstrap';
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import styles from '../../../styles/landingpage.css';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -235,11 +237,10 @@ class SearchBar extends React.Component {
   }
 
   render() {
-
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
-        search:"Search...",
+        search:"Search restaurants...",
         usecommaasaseparator:"Use comma ( , ) as a separator.",
         filter:"Filter",
         includeinsearch:"Include in search:",
@@ -252,7 +253,7 @@ class SearchBar extends React.Component {
         pricing:"Pricing"
       },
       fi: {
-        search:"Hae...",
+        search:"Hae ravintoloita...",
         usecommaasaseparator:"Käytä pilkkua ( , ) erottimena.",
         filter:"Rajaa",
         includeinsearch:"Sisällytä hakuun:",
@@ -278,19 +279,21 @@ class SearchBar extends React.Component {
       <div className="searchDiv">
         <form id="search-form" className="search" onSubmit={this.login}>
 
-          <input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} autoFocus />
-           <button type="submit" className="searchBtn" onClick={this.doSearch}>
-              <FontAwesomeIcon icon="search" />
-          </button>
+          <InputGroup>
+            <Input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} aria-label={strings.search} autoFocus />
+            <InputGroupAddon addonType="append">
+            <button type="submit" className="searchBtn main-btn btn" onClick={this.doSearch}>
+                <FontAwesomeIcon icon="search" />
+            </button>
+            </InputGroupAddon>
+          </InputGroup>
 
           <span className="instructions" id="instructions-symbol"> ??? </span>
            <UncontrolledTooltip placement="right" target="instructions-symbol">
             {strings.usecommaasaseparator}
           </UncontrolledTooltip>
 
-          <br />
-
-          <button className="filterBtn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
+          <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
           <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>

@@ -145,6 +145,42 @@ form .main-btn {
 }
 
 
+.rounded .form-control,
+.rounded .btn,
+.rounded button,
+.rounded .select__control {
+  border-radius: 5em 5em 5em 5em;
+}
+
+.multi-wrapper .form-control:not(:first-child):not(:last-child),
+.multi-wrapper .btn:not(:first-child):not(:last-child),
+.multi-wrapper button:not(:first-child):not(:last-child) {
+  border-radius: 0px 0px 0px 0px;
+  margin: 0;
+}
+
+.multi-wrapper .form-control:first-child,
+.multi-wrapper .btn:first-child,
+.multi-wrapper button:first-child {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  margin-right: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.multi-wrapper .form-control:last-child,
+.multi-wrapper .btn:last-child,
+.multi-wrapper button:last-child {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  margin-left: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+
+
 /* Theme specific css */
 .theme-1 .bottom-bar.navbar, 
 .theme-1 .side-menu {

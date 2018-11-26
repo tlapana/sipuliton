@@ -1,14 +1,13 @@
 /*Landing page CSS file*/
 
 .searchDiv {
-  height: 25%;
-  width: 100%;
   padding-top: 50px;
   padding-bottom: 50px;
   margin-top: 50px;
   margin-bottom: 50px;
   padding-left: 20px;
   padding-right: 20px;
+  text-align: center;
 }
 
 form.search {
@@ -16,40 +15,15 @@ form.search {
   margin-bottom: 20px;
 }
 
-form.search input[type=text] {
-  padding: 10px;
-  font-size: 17px;
-  border: 1px solid grey;
-  float: left;
-  width: 80%;
-  background: #f1f1f1;
-  border-radius: 25px 0px 0px 25px;
-  
-}
 form.search button.searchBtn {
-  float: left;
-  width: 20%;
-  padding: 10px;
-  background: #2196F3;
-  color: white;
-  font-size: 17px;
-  border: 1px solid grey;
-  border-left: none;
-  cursor: pointer;
-  border-radius: 0px 25px 25px 0px;
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  margin: 0;
 }
 
 button.filterBtn {
-  float: left;
   width: 40%;
   padding: 10px;
-  background: #2196F3;
-  color: white;
-  font-size: 17px;
-  border: 1px solid grey;
-  border-left: none;
-  cursor: pointer;
-  border-radius: 25px 25px 25px 25px;
   margin-left: 30%;
   margin-right: 30%;
 }
