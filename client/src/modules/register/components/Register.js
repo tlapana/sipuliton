@@ -11,12 +11,12 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
 import commonComponents from '../../common';
-import SocialRegister from './SocialRegister.js';
-
 import config from "../../../config.js"
-
 /* Localization */
 import LocalizedStrings from 'react-localization';
+{/*import SocialRegister from './SocialRegister.js';*/}
+
+
 
 export default class Register extends React.Component {
 	constructor(props) {
@@ -32,7 +32,7 @@ export default class Register extends React.Component {
 			retypePass: "",
 			newUser: null,
 			ula: false,
-			socialCredentials: null,
+			socialCredentials: "",
 
 			usernameValid: true,
 			mailValid: true,
@@ -173,13 +173,13 @@ export default class Register extends React.Component {
 		this.setState({ isLoading: false });
 	}
 	
-	getSocialCredentials = (dataFromChild) => {
+	/*getSocialCredentials = (dataFromChild) => {
 		this.setState({
 			socialCredentials: dataFromChild,
 			socialReg: true
 			});
-		console.log(dataFromChild + ", " + socialCredentials);
-	}
+		//console.log(dataFromChild + ", " + socialCredentials);
+	}*/
 
 	renderConfirmation() {
 		let strings = new LocalizedStrings({
@@ -278,7 +278,7 @@ export default class Register extends React.Component {
           	{strings.loginHere}
         	</Link>
 				</div>
-				<SocialRegister callbackFromReg={this.getSocialCredentials}/>
+				{/*<SocialRegister onSuccess={this.getSocialCredentials}/>*/}
 			</div>
 		);
 	}

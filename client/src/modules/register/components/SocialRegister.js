@@ -1,5 +1,5 @@
-/** This file has mostly the same functions as SocialLogin, but there is an additional function to send the information
-back to Register class, which then finishes the registration with social media accounts**/
+/* This file has mostly the same functions as SocialLogin, but there is an additional function to send the information
+back to Register class, which then finishes the registration with social media accounts*/
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,7 +25,7 @@ export default class SocialRegister extends React.Component {
 	  regCredentials: "",
       loggingFailed: false,
       loggingSucceeded:false,
-	  allowSending: false
+	  allowSending: false,
     };
 	
     this.responseFailure = this.responseFailure.bind(this);
@@ -108,8 +108,11 @@ export default class SocialRegister extends React.Component {
   }
   
   sendToRegister = () => {
-	  if(allowSending) {
-		  this.props.callbackFromReg(regCredentials);
+	  if (typeof regCredentials === 'undefined') {
+		  
+	  }
+	  else {
+		//this.props.onSuccess(regCredentials);
 	  }
   }
   
@@ -131,8 +134,8 @@ export default class SocialRegister extends React.Component {
           clientId={config.google.CLIENT_ID}
           responseType="id_token"
           className="google-login-btn"
-          onSuccess={this.responseGoogle,
-		  this.setState({allowSending: true});}
+          onSuccess={this.responseGoogle}
+		  onComplete={this.sendToRegister}
           onFailure={this.responseFailure}
         >
           {/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
@@ -145,8 +148,8 @@ export default class SocialRegister extends React.Component {
           cssClass="facebook-login-btn"
           icon={<FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />}
           textButton={strings.fbLogin}
-          callback={this.responseFacebookSuccess,
-		  this.setState({allowSending: true});}
+          callback={this.responseFacebookSuccess}
+		  onSuccess={this.sendToRegister}
           onFailure={this.responseFailure}
         >
         </FacebookLogin>
