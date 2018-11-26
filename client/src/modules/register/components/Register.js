@@ -10,7 +10,8 @@ import {
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Auth } from "aws-amplify";
-import commonComponents from '../../common'
+import commonComponents from '../../common';
+import SocialLogin from '/client/src/modules/login/components/Social_Login.js';
 
 import config from "../../../config.js"
 
@@ -37,6 +38,7 @@ export default class Register extends React.Component {
 			retypeMailValid: true,
 			passwordValid: true,
 			retypePassValid: true,
+			socialReg: false
 		};
 
 		this.onUsernameChanged = this.onUsernameChanged.bind(this);
@@ -267,7 +269,7 @@ export default class Register extends React.Component {
           	{strings.loginHere}
         	</Link>
 				</div>
-				{/*<Social_Login/>*/}
+				<Social_Login/>
 			</div>
 		);
 	}
