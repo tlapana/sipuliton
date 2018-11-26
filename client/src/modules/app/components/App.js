@@ -1,11 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Provider } from 'react-redux';
+import { Provider, connect } from 'react-redux';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
 import RouteCollection from './RouteCollection';
 import NavigationBar from './NavigationBar';
+import { changeLoading, changeRounding, changeTheme } from '../actions';
 
 import '../../../styles/app.css';
 
@@ -15,23 +16,28 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-			theme: 'theme-1',
-    };
-
-    this.changeTheme = this.changeTheme.bind(this);
+    this.getAppClasses = this.getAppClasses.bind(this);
+    props.store.dispatch(changeTheme('theme-2'))
   }
 
-  changeTheme(theme) {
-    // TODO: this can be used later to add theme support
-    this.setState({theme: theme});
-  }
 
-  render() {
-    let classes = 'app ' + this.state.theme;
+  getAppClasses() {
+    let classes = 'app';
+    if (this.props.theme) {
+      classes += ' ' + this.props.theme;
+    }
+    if (this.props.isRounding) {
+      classes += ' rounded';
+    }
     if (this.props.isLoading) {
       classes += ' loading';
     }
+    return classes;
+  }
+
+  render() {
+
+    let classes = this.getAppClasses();
 
     return(
       <Provider store={this.props.store}>
@@ -50,11 +56,32 @@ class App extends React.Component {
       </Provider>
     );
   }
-
 }
 
 App.propTypes = {
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  isLoading: PropTypes.bool,
+  isRounding: PropTypes.bool,
+  theme: PropTypes.string,
 };
 
-export default App;
+
+const mapStateToProps = state => {
+  console.log("test",state);
+  return {
+    isLoading: state.isLoading,
+    isRounding: state.isRounding,
+    theme: state.theme
+  }
+}
+
+const mapDispatchToProps = dispatch => ({
+  changeLoading: isLoading => dispatch(changeLoading(isLoading)),
+  changeRounding: isRounding => dispatch(changeRounding(isRounding)),
+  changeTheme: newTheme => dispatch(changeTheme(newTheme))
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App);
