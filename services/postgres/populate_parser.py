@@ -11,6 +11,8 @@ def commajoin(array, elements_to_quote, indent=0):
     for i in elements_to_quote:
         if array[i] == '':
             array[i] = "NULL"
+        elif array[i] == "DEFAULT":
+            continue
         else:
             array[i] = "'" + str(array[i]) + "'"
     j = 0
