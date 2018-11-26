@@ -148,22 +148,29 @@ form .main-btn {
 .rounded .form-control,
 .rounded .btn,
 .rounded button,
-.rounded .select__control {
-  border-radius: 5em 5em 5em 5em;
+.rounded .select__control,
+.rounded .select__multi-value,
+.rounded .modal-content {
+  border-radius: 2em;
+}
+
+.rounded .select__menu,
+.rounded .select__menu-list {
+  border-radius: 1em;
 }
 
 .multi-wrapper .form-control:not(:first-child):not(:last-child),
 .multi-wrapper .btn:not(:first-child):not(:last-child),
 .multi-wrapper button:not(:first-child):not(:last-child) {
-  border-radius: 0px 0px 0px 0px;
+  border-radius: 0;
   margin: 0;
 }
 
 .multi-wrapper .form-control:first-child,
 .multi-wrapper .btn:first-child,
 .multi-wrapper button:first-child {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
   margin-right: 0;
   margin-top: 0;
   margin-bottom: 0;
@@ -172,11 +179,15 @@ form .main-btn {
 .multi-wrapper .form-control:last-child,
 .multi-wrapper .btn:last-child,
 .multi-wrapper button:last-child {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
   margin-left: 0;
   margin-top: 0;
   margin-bottom: 0;
+}
+
+.select__menu .select__menu-list {
+  padding: 0;
 }
 
 
@@ -195,13 +206,16 @@ form .main-btn {
 .theme-1 .main-btn:disabled,
 .theme-1 .form-control[type="submit"]:focus,
 .theme-1 .btn:active,
-.theme-1 .btn:focus {
+.theme-1 .btn:focus,
+.theme-1 .select__option--is-focused {
   background-color: #72c567;
   color: white;
 }
 .theme-1 .form-control:focus,
 .theme-1 .btn:active,
-.theme-1 .btn:focus {
+.theme-1 .btn:focus,
+.theme-1 .select__control--is-focused,
+.theme-1 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
   border-color: #66b15c;
@@ -231,14 +245,17 @@ form .main-btn {
 .theme-2 .main-btn:disabled,
 .theme-2 .form-control[type="submit"]:focus,
 .theme-2 .btn:active,
-.theme-2 .btn:focus {
+.theme-2 .btn:focus,
+.theme-2 .select__option--is-focused {
   background-color: #84b1da;
   color: white;
   border-color: #769fc4;
 }
 .theme-2 .form-control:focus,
 .theme-2 .btn:active,
-.theme-2 .btn:focus {
+.theme-2 .btn:focus,
+.theme-2 .select__control--is-focused,
+.theme-2 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
   border-color: #769fc4;
@@ -268,14 +285,17 @@ form .main-btn {
 .theme-3 .main-btn:disabled,
 .theme-3 .form-control[type="submit"]:focus,
 .theme-3 .btn:active,
-.theme-3 .btn:focus {
+.theme-3 .btn:focus,
+.theme-3 .select__option--is-focused {
   background-color: #e15527;
   color: white;
   border-color: #ca4c23;
 }
 .theme-3 .form-control:focus,
 .theme-3 .btn:active,
-.theme-3 .btn:focus {
+.theme-3 .btn:focus,
+.theme-3 .select__control--is-focused,
+.theme-3 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
   border-color: #ca4c23;
@@ -310,14 +330,17 @@ form .main-btn {
 .theme-old .main-btn:disabled,
 .theme-old .form-control[type="submit"]:focus,
 .theme-old .btn:active,
-.theme-old .btn:focus {
+.theme-old .btn:focus,
+.theme-old .select__option--is-focused {
   background-color: #99ff99;
   color: white;
   border-color: #89e589;
 }
 .theme-old .form-control:focus,
 .theme-old .btn:active,
-.theme-old .btn:focus {
+.theme-old .btn:focus,
+.theme-old .select__control--is-focused,
+.theme-old .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
   border-color: #89e589;

@@ -5,6 +5,7 @@
 */
 
 import React from 'react';
+import {connect} from 'react-redux';
 import { 
   Button, Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
   Modal, ModalHeader, ModalBody, ModalFooter
@@ -12,6 +13,8 @@ import {
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
+import AppImports from  '../../app';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -274,6 +277,13 @@ class SearchBar extends React.Component {
       strings.setLanguage('fi');
     }
 
+    let modalClasses = 'filterBox';
+    if (this.props.theme) {
+      modalClasses += ' ' + this.props.theme;
+    }
+    if (this.props.isRounding) {
+      modalClasses += ' rounded';
+    }
 
     return (
       <div className="searchDiv">
@@ -295,7 +305,7 @@ class SearchBar extends React.Component {
 
           <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
-          <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+          <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className={modalClasses}>
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
           <ModalBody className="filterBox">
             {strings.diets}
@@ -348,7 +358,7 @@ class SearchBar extends React.Component {
               
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.toggleModal}> {strings.closeModal} </Button>
+            <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
           </ModalFooter>
         </Modal>
 
@@ -358,4 +368,27 @@ class SearchBar extends React.Component {
   }
 }
 
-export default SearchBar;
+const {changeLoading, changeRounding, changeTheme} = AppImports;
+
+const mapStateToProps = state => {
+  return {
+    isLoading: state.app.isLoading,
+    isRounding: state.app.isRounding,
+    theme: state.app.theme
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    changeLoading: isLoading => dispatch(changeLoading(isLoading)),
+    changeRounding: isRounding => dispatch(changeRounding(isRounding)),
+    changeTheme: newTheme => dispatch(changeTheme(newTheme))
+  }
+};
+
+const SearchBarContainer = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SearchBar);
+
+export default SearchBarContainer;
