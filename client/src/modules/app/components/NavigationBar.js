@@ -8,7 +8,6 @@ import {
   NavbarToggler,
   Nav,
   NavLink,
-  Button
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
@@ -18,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import { LanguageSelection, MainMenu_ListItem, MainMenu_LogoutButton } from '../../mainmenu/index';
+import { LanguageSelection, MainMenu_ListItem } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -49,10 +48,11 @@ class NavigationBar extends React.Component {
   /* Function which will be called when menu button is clicked. */
   mainMenu() {
       /* Sets menu visibility to visible or not visible. */
-      this.setState({ visible: !this.state.visible});
-      if(this.state.visible){
+      let isVisible = !this.state.visible;
+      if (isVisible) {
         this.checkAccessRights();
       }
+      this.setState({ visible: isVisible });
   }
 
   /* Function which will be called when home button is clicked. */
@@ -192,6 +192,7 @@ class NavigationBar extends React.Component {
       const pathToModerating = "/" + this.state.language + "/moderating";
       const pathToProfile = "/" + this.state.language + "/profile";
       const pathToLogin = "/" + this.state.language + "/login";
+      const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
 
       /* Changed correct language to page after clicking change language. */
@@ -224,7 +225,7 @@ class NavigationBar extends React.Component {
                     {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
                     {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
                     {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
-                    {this.state.userLogged && <MainMenu_LogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    {this.state.userLogged && <MainMenu_ListItem path={pathToLogout} text={strings.logout}/>}
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
                     </li>
