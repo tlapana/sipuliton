@@ -145,7 +145,8 @@ class Map extends React.Component {
 					<ModalFilterPage
             filters={this.state.filters}
 						FiltersChanged={this.FiltersChanged}
-						language={this.props.match.params.language}/>
+						language={this.props.match.params.language}
+            geolocationEnabled={false}/>
           <MapComponent
 						language={this.props.match.params.language}
           	latitude={this.state.center[0]}
@@ -163,7 +164,9 @@ class Map extends React.Component {
 			  <ModalFilterPage
           filters={this.state.filters}
 					FiltersChanged={this.FiltersChanged}
-					language={this.props.match.params.language}/>
+					language={this.props.match.params.language}
+          geolocationEnabled={true}
+        />
         <MapComponent
 					language={this.props.match.params.language}
 	        latitude={this.props.coords.latitude}

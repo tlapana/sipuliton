@@ -18,7 +18,7 @@ class ModalFilterPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalState: false,
+      modalState: true,
       checkboxes:{
         first:false,
         second:false,
@@ -27,12 +27,15 @@ class ModalFilterPage extends React.Component {
         fifth:false,
         sixth:false,
       },
+      useUserLocation:false,
+      userHasAnswered:false,
       radius : this.props.filters.radius,
       minOverall : this.props.filters.minOverall,
       minReliability : this.props.filters.minReliability,
       minVariety : this.props.filters.minVariety,
       minService : this.props.filters.minService,
       pricing: this.props.filters.pricing,
+      city: "",
       originalStage: {
         checkboxes:{
           first:false,
@@ -57,6 +60,13 @@ class ModalFilterPage extends React.Component {
     this.changeService = this.changeService.bind(this);
     this.changePricing = this.changePricing.bind(this);
     this.saveFilters = this.saveFilters.bind(this);
+    this.answerNo = this.answerNo.bind(this);
+    this.answerYes = this.answerYes.bind(this);
+    this.handleCityChange = this.handleCityChange.bind(this);
+  }
+
+  handleCityChange(){
+
   }
 
   RadiusChanged = event =>{
@@ -127,6 +137,20 @@ class ModalFilterPage extends React.Component {
               sixth:true,
             }})
     }
+  }
+
+  answerNo(){
+    this.setState({
+      useUserLocation:false,
+      userHasAnswered:true,
+    })
+  }
+
+  answerYes(){
+      this.setState({
+        useUserLocation:true,
+        userHasAnswered:true,
+      })
   }
 
   saveFilters(){
@@ -217,7 +241,11 @@ class ModalFilterPage extends React.Component {
         service:"Service & Food",
         variety:"Menu variety",
         pricing:"Pricing",
-        filter:"Rajaa",
+        filter:"Filter",
+        doYouWantToUseLocationInSearch:"Do you want to search restaurants based on your location?",
+        yes:"Yes",
+        no:"No",
+        enterCity:"Enter city..."
       },
       fi: {
         filter:"Rajaa",
@@ -229,7 +257,11 @@ class ModalFilterPage extends React.Component {
         service:"Ruoka ja palvelu",
         variety:"Ruokalajien laajuus",
         pricing:"Hintaluokka",
-        filter:"Rajaa"
+        filter:"Rajaa",
+        doYouWantToUseLocationInSearch:"Haluatko etsiä ravintoloita, jotka ovat lähellä sinua?",
+        yes:"Kyllä",
+        no:"En",
+        enterCity:"Syötä kaupunki..."
       }
     });
 
@@ -246,15 +278,34 @@ class ModalFilterPage extends React.Component {
         <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
           <ModalBody className="filterBox">
-            <form name="Select radius" onChange={this.RadiusChanged}>
-              <div><Label>{strings.selectRadius}</Label></div>
-              <input type="radio" name="group1" value="2000"  checked={this.state.checkboxes.first} /> 2 km <br/>
-              <input type="radio" name="group1" value="5000"  checked={this.state.checkboxes.second} /> 5 km <br/>
-              <input type="radio" name="group1" value="10000" checked={this.state.checkboxes.third} /> 10 km <br/>
-              <input type="radio" name="group1" value="15000" checked={this.state.checkboxes.fourth} /> 15 km <br/>
-              <input type="radio" name="group1" value="25000" checked={this.state.checkboxes.fifth} /> 25 km <br/>
-              <input type="radio" name="group1" value="50000" checked={this.state.checkboxes.sixth} /> 50 km <br/>
-            </form>
+            {this.props.geolocationEnabled &&
+              <div>
+                <div>{strings.doYouWantToUseLocationInSearch}</div>
+                <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerYes}>{strings.yes}</Button>
+                <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerNo}>{strings.no}</Button>
+                {this.state.useUserLocation &&
+                  <form name="Select radius" onChange={this.RadiusChanged}>
+                    <div><Label>{strings.selectRadius}</Label></div>
+                    <input type="radio" name="group1" value="2000"  checked={this.state.checkboxes.first} /> 2 km <br/>
+                    <input type="radio" name="group1" value="5000"  checked={this.state.checkboxes.second} /> 5 km <br/>
+                    <input type="radio" name="group1" value="10000" checked={this.state.checkboxes.third} /> 10 km <br/>
+                    <input type="radio" name="group1" value="15000" checked={this.state.checkboxes.fourth} /> 15 km <br/>
+                    <input type="radio" name="group1" value="25000" checked={this.state.checkboxes.fifth} /> 25 km <br/>
+                    <input type="radio" name="group1" value="50000" checked={this.state.checkboxes.sixth} /> 50 km <br/>
+                  </form>
+                }
+                {!this.state.useUserLocation &&
+                  <div>
+                    {this.state.userHasAnswered &&
+                      <div>
+                        <input type="text" value={this.state.city} onChange={this.handleCityChange} className="round" placeholder={strings.enterCity} autoFocus />
+                      </div>
+                    }
+                  </div>
+                }
+
+              </div>
+            }
             {strings.overall}
             <ReactStars
               value = {this.state.minOverall}
