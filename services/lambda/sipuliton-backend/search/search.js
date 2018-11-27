@@ -13,6 +13,36 @@ function getWhereStatement(paramName, operator, paramIndex){
         return `${paramName} ${operator} $${paramIndex}`
 
 };
+
+
+// Convert degrees to radians
+if (typeof(Number.prototype.toRadians) === "undefined") {
+    Number.prototype.toRadians = function() {
+      return this * Math.PI / 180;
+    }
+  }
+// Returns distance between two GPS points as meters
+function getDistance(coord1, coord2){
+    const lat1 = coord1.x
+    const lat2 = coord2.x
+
+    const lon1 = coord1.y
+    const lon2 = coord2.y
+
+    var R = 6371e3; // metres
+    var φ1 = lat1.toRadians();
+    var φ2 = lat2.toRadians();
+    var Δφ = (lat2-lat1).toRadians();
+    var Δλ = (lon2-lon1).toRadians();
+
+    var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+            Math.cos(φ1) * Math.cos(φ2) *
+            Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    var d = R * c;
+    return d
+}
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -135,9 +165,15 @@ exports.lambdaHandler = async (event, context) => {
         var paramObject = searchParameters.restaurantParameters;
         for (var key in searchParameters.restaurantParameters){
 
-            // TODO: Implement checking distance
             if (key == 'maxDistance'){
-                continue;
+                var currentLocation = searchParameters.restaurantParameters.currentLocation;
+                if (currentLocation === undefined){
+                    throw("Max distance parameter given but no current location")
+                }
+                console.log(currentLocation)
+                var lon = currentLocation.x
+                var lat = currentLocation.y
+
             } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null){
                 continue;
             } else {
