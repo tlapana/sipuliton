@@ -47,7 +47,7 @@ exports.lambdaHandler = async (event, context) => {
         console.log(event)
         var collectReviews = `
         SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
-            rating_realiability as rating_reliability, rating_variety, rating_service_and_quality,
+            rating_reliability, rating_variety, rating_service_and_quality,
             pricing, thumbs_up, thumbs_down
         FROM review WHERE restaurant_id = $1
         ORDER BY posted DESC

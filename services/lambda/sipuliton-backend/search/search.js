@@ -85,7 +85,7 @@ exports.lambdaHandler = async (event, context) => {
                     operator: '>='
                 },
                 minReliabilityRating: {
-                    sql_name: 'rating_realiability',
+                    sql_name: 'rating_reliability',
                     value: checkQueryParameter(event.queryStringParameters, 'minReliabilityRating', defaultMinReliabilityRating),
                     operator: '>='
                 },
@@ -120,7 +120,7 @@ exports.lambdaHandler = async (event, context) => {
 
         var collectRestaurants = `
         SELECT restaurant.restaurant_id AS restaurant_id, restaurant.name as restaurant_name, email,
-               city_name.name as city_name, website, street_address, rating_overall, rating_realiability as rating_reliability,
+               city_name.name as city_name, website, street_address, rating_overall, rating_reliability,
                rating_variety, rating_service_and_quality, pricing, trending
         FROM restaurant 
             INNER JOIN restaurant_diet_stats

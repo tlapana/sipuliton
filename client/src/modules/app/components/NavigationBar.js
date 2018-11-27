@@ -7,7 +7,7 @@ import {
   Navbar,
   NavbarToggler,
   Nav,
-  NavLink
+  NavLink,
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
@@ -48,10 +48,11 @@ class NavigationBar extends React.Component {
   /* Function which will be called when menu button is clicked. */
   mainMenu() {
       /* Sets menu visibility to visible or not visible. */
-      this.setState({ visible: !this.state.visible});
-      if(this.state.visible){
+      let isVisible = !this.state.visible;
+      if (isVisible) {
         this.checkAccessRights();
       }
+      this.setState({ visible: isVisible });
   }
 
   /* Function which will be called when home button is clicked. */
@@ -191,6 +192,7 @@ class NavigationBar extends React.Component {
       const pathToModerating = "/" + this.state.language + "/moderating";
       const pathToProfile = "/" + this.state.language + "/profile";
       const pathToLogin = "/" + this.state.language + "/login";
+      const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
 
 
