@@ -6,13 +6,14 @@
 
 import React from 'react';
 import ReactLoading from 'react-loading';
+import { Redirect } from 'react-router-dom';
+import LocalizedStrings from 'react-localization';
+
 import SearchBar from './SearchBar.js'
 import Events from './Events.js'
 import SearchResults from './SearchResults.js'
-import { Redirect } from 'react-router-dom';
 
-/* Localization */
-import LocalizedStrings from 'react-localization';
+import '../../../styles/landingpage.css';
 
 class Home extends React.Component {
 
@@ -147,8 +148,7 @@ class Home extends React.Component {
     
     if(!this.state.searchDone)
     {
-      if (this.state.error != null)
-      {
+      if (this.state.error != null) {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
@@ -171,14 +171,17 @@ class Home extends React.Component {
           </div>
         );        
       }
-      else{
+      else {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}
             />
             <div className="eventsDiv"> 
-              <h3> {strings.search} <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" />     </h3>
+              <h3>
+                {strings.search}
+                <ReactLoading type={'spokes'} className="loadingSpinner" />
+              </h3>
             </div>
           </div>
         );       

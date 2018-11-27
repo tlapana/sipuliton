@@ -6,10 +6,8 @@
 
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../../../styles/landingpage.css';
-
-/* Localization */
 import LocalizedStrings from 'react-localization';
+import EventBlock from './EventBlock';
 
 class SearchResults extends React.Component {
 
@@ -28,8 +26,7 @@ constructor(props) {
   }
 
   //Prints out how many stars the restaurant has
-  renderStars(starCount)
-  {
+  renderStars(starCount) {
     //console.log("DEBUG: Starcount");
     //console.log(starCount);
 
@@ -49,8 +46,7 @@ constructor(props) {
     return starIcons
   }
   
-  renderWeblink(address)
-  {
+  renderWeblink(address) {
     if(address != null) {
       return ([<a href={address}> {address} </a>, <br/>]);
     }
@@ -60,11 +56,9 @@ constructor(props) {
   }
 
   render() {
-
-    /* Localization */
     let strings = new LocalizedStrings({
       en:{
-        searchresults:"In search found ",
+        searchresults:"Search found ",
         restaurants:" restaurants: ",
       },
       fi: {
@@ -72,25 +66,23 @@ constructor(props) {
         restaurants:" ravintolaa: ",
       }
     });
-    if(typeof this.props.language !== 'undefined'){
-      strings.setLanguage(this.props.language);
-    }
-    else{
-      strings.setLanguage('fi');
-    }
+
+    const language = this.props.language == null ? 'fi' : this.props.language;
+    strings.setLanguage(language);
 
     const restaurants = this.state.restaurants;
 
     return (
       <div className="eventsDiv">
-        <h3> {strings.searchresults}{restaurants.length}{strings.restaurants}</h3>
+        <h3>{strings.searchresults + restaurants.length + strings.restaurants}</h3>
 
-          {restaurants.map((restaurant) =>
-            <div className="event" key={restaurant.name}>
-            <a href={'/restaurant/${restaurant.restaurant_id}'}> {restaurant.restaurant_name} </a>  {this.renderStars(restaurant.rating_overall)} <br/>
-            {restaurant.street_address}, {restaurant.city_name}
-            </div>
-          )}
+        {restaurants.map((restaurant) =>
+          <EventBlock 
+            restaurant={restaurant}
+            language={language}
+            key={restaurant.name}
+          />
+        )}
 
       </div>
     );

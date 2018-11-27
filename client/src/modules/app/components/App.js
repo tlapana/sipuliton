@@ -1,14 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Provider, connect } from 'react-redux';
+import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 import { Container } from 'reactstrap';
 
 import RouteCollection from './RouteCollection';
 import NavigationBar from './NavigationBar';
-import { changeLoading, changeRounding, changeTheme } from '../actions';
 
 import '../../../styles/app.css';
+import '../../../styles/themes.css';
 
 
 class App extends React.Component {
