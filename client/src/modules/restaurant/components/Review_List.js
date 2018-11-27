@@ -1,3 +1,4 @@
+/*In this file the reviews list of the viewed restaurant is rendered*/
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { render } from 'react-dom';
@@ -9,34 +10,33 @@ import {
 	Label,
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-const reviewsDataUrl = "/services/lambda/sipuliton-backend/reviews";
-var reviewIndex = 0;
-var numberOfRevs = 0;
+const reviewsDataUrl = "http://localhost:3000/reviews";
 
 export default class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			titles : ["", ""],
+			titles : ["Perus ravintola", "Loistavaa"],
 			pictures : ["", ""],
-			reviews : ["", ""],
-			users : ["", ""],
+			reviews : ["Tämä ravintola oli hyvää keskitasoa, ei mitään yllättävää.", "Uskomattoman hyvää ruokaa. Halpaa ja terveellistäkin kaiken lisäksi."],
+			users : ["Juha", "Tuomas"],
 			allergyTags : [["Sipuliton", "Munaton"], ["Sipuliton", "Munaton"]],
-			relevance : [0, 0],
-			allergyAwareness: [0, 0],
-			serviceQuality : [0, 0],
+			relevance : [3, 2],
+			allergyAwareness: [2, 4],
+			serviceQuality : [3, 5],
 			pageNumber : 0,
 			pageSize : 20,
+			reviewIndex: 0,
+			numberOfRevs: 2,
 			isLoaded : false
 		};
 
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
-		numberOfRevs = this.state.titles.length - 1;
 	}
-
+/*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
-		const { resId } = 0;//this.props.match.params;
+		const { resId } = 1;//this.props.match.params;
 		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
 		.then(res => res.json())
 		.then(
@@ -44,6 +44,7 @@ export default class ReviewList extends React.Component {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
 				var i;
+				/*no looping in setState, so build the arrays here first*/
 				for (i = 0; i < result.length; i++) {
 					var obj = result[i];
 					var titls = titls.push(obj.title);
@@ -60,9 +61,9 @@ export default class ReviewList extends React.Component {
 					users : usrs,
 					relevance : rlvnce,
 					allergyAwareness: allergyAware,
-					serviceQuality : serviceQual
+					serviceQuality : serviceQual,
+					numberOfRevs : titls.length - 1
 				});
-				numberOfRevs = this.state.titles.length - 1;
 			},
 
 			(error) => {
@@ -75,10 +76,10 @@ export default class ReviewList extends React.Component {
 			}
 		);
 	}
-
+/*Function that loops through an array and builds a string out of it*/
 	looper(tags) {
 		var tagString = "";
-		{/*if (typeof tags !== 'undefined') {
+		if (Array.isArray(tags)) {
 			for (var i = 0; i < tags.length; i++) {
 			if (i > 0) {
 				tagString = tagString + ", " + tags[i];
@@ -87,33 +88,36 @@ export default class ReviewList extends React.Component {
 				tagString = tagString + tags[i];
 			}
 		}
-		}*/}
+		}
 		return tagString;
 	}
-
+/*Function that changes the review shown, when clicked on it*/
 	changeReview() {
-		if (reviewIndex < numberOfRevs) {
-			reviewIndex++;
+		if (this.state.reviewIndex < this.state.numberOfRevs) {
+			this.setState({
+				reviewIndex: this.state.reviewIndex + 1,
+				isLoaded: true
+			});
 		}
 		else {
-			reviewIndex = 0;
+			this.setState({
+				reviewIndex: 0,
+				isLoaded: true
+			});
 		}
-		this.setState({
-			isLoaded: true,
-		});
 	}
-
+/*Render the items shown in review inside a div that can be clicked to show another review*/
 	render() {
 		return (
 			<div id="reviewList" onClick={this.changeReview}>
-				<h3>{this.state.titles[reviewIndex]}</h3>
-				<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div><br/>
-				<div id="reviewText">{this.state.reviews[reviewIndex]}</div><br/>
-				<div id="reviewUser">Arvostelija: {this.state.users[reviewIndex]}</div>
-				<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[reviewIndex])}</div><br/>
-				<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[reviewIndex]}</div><br/>
-				<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[reviewIndex]}</div><br/>
-				<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[reviewIndex]}</div>
+				<h3>{this.state.titles[this.state.reviewIndex]}</h3>
+				<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div><br/>
+				<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div><br/>
+				<div id="reviewUser">Arvostelija: {this.state.users[this.state.reviewIndex]}</div>
+				<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[this.state.reviewIndex])}</div><br/>
+				<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[this.state.reviewIndex]}</div><br/>
+				<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[this.state.reviewIndex]}</div><br/>
+				<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[this.state.reviewIndex]}</div>
 			</div>
 		);
 	}
