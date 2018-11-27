@@ -10,8 +10,6 @@ import '../../../styles/map.css';
 /* Router imports */
 import { Link } from 'react-router-dom';
 
-//Place to position imports
-import { ReactLeafletSearch } from 'react-leaflet-search'
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
