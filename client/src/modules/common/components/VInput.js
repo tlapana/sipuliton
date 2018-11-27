@@ -10,6 +10,8 @@ import { Input, } from 'reactstrap';
 export default class VInput extends React.Component {
   constructor(props) {
     super(props);
+    this.isString = this.isString.bind(this);
+    this.checkIfValid = this.checkIfValid.bind(this);
   }
 
   isString(value) {
@@ -38,33 +40,46 @@ export default class VInput extends React.Component {
   }
 
   render() {
-    var { isValid, className, value, type, ...other } = this.props;
+    var { isValid, className, value, errormsg, type, ...other } = this.props;
     const valid = this.checkIfValid(isValid, value);
-    
+    const errorClassName = valid || errormsg == null || errormsg == "" ? "input-errormsg" : "input-errormsg visible";
+
     if (!valid) {
       if (type === "submit") {
         return (
-          <Input
-            {...other}
-            value={value}
-            type={type}
-            className={className}
-            disabled="true"
-          />
+          <div className="input-wrapper">
+            <Input
+              {...other}
+              value={value}
+              type={type}
+              className={className}
+              disabled="true"
+            />
+            <span className={errorClassName}>{errormsg != null ? errormsg : ""}</span>
+          </div>
+          
         )
       }
       else {
-        className += ' invalid';
+        if (className != null) {
+          className += ' invalid';
+        }
+        else {
+          className = 'invalid';
+        }
       }
     }
 
     return (
-      <Input
-        {...other}
-        value={value}
-        type={type}
-        className={className}
-      />
+      <div className="input-wrapper">
+        <Input
+          {...other}
+          value={value}
+          type={type}
+          className={className}
+        />
+        <span className={errorClassName}>{errormsg != null ? errormsg : ""}</span>
+      </div>
     );
   }
 }

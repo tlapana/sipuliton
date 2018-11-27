@@ -42,7 +42,7 @@ exports.lambdaHandler = async (event, context) => {
         var collectRestaurantPage = `
         SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
                rating_overall,
-               rating_realiability AS rating_reliability,
+               rating_reliability,
                rating_variety,
                rating_service_and_quality 
         FROM restaurant INNER JOIN restaurant_diet_stats
