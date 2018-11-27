@@ -32,7 +32,8 @@ class MapSmallRestaurantInfo extends React.Component {
         overallRating: "Overall rating",
         serviceRating: "Service rating",
         varietyRating: "Variety rating",
-        reliabilityRating: "Reliability rating"
+        reliabilityRating: "Reliability rating",
+        backToMap: "Back to map"
       },
       fi: {
         mon:"Ma",
@@ -48,8 +49,9 @@ class MapSmallRestaurantInfo extends React.Component {
         serviceRating: "Palvelu",
         varietyRating: "Valinnanvara",
         reliabilityRating: "Luotettavuus",
-        email:"Sähköposti osoite",
-        website:"Verkkosivu"
+        email:"Sähköpostiosoite",
+        website:"Verkkosivu",
+        backToMap: "Takaisin karttaan"
       }
     });
     strings.setLanguage(this.props.language);
@@ -61,7 +63,7 @@ class MapSmallRestaurantInfo extends React.Component {
             {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode}, {this.props.restaurantInfo.address}
           </div>
           <div className="restaurant-info-item" id="contact">
-            {strings.email}:{this.props.restaurantInfo.email}, {strings.website}:{this.props.restaurantInfo.website}
+            {strings.email}: {this.props.restaurantInfo.email}, {strings.website}: {this.props.restaurantInfo.website}
           </div>
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">
@@ -88,15 +90,24 @@ class MapSmallRestaurantInfo extends React.Component {
         {strings.sat}: {this.props.restaurantInfo.openSat}<br/>
         {strings.sun}: {this.props.restaurantInfo.openSun}<br/>
       </div>
-      <NavLink
-        className="restaurant-info-item RestaurantPageBtn"
-        id="enterToRestaurantPageBtn"
-        onMouseLeave={this.hover}
-        tag={Link}
-        to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
-      >
-        {strings.enterToRestaurantPage}
-      </NavLink>
+      <div className="small-restaurant-info-btn-box">
+        <NavLink
+          className="restaurant-info-item RestaurantPageBtn"
+          id="enterToRestaurantPageBtn"
+          onMouseLeave={this.hover}
+          tag={Link}
+          to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
+        >
+          {strings.enterToRestaurantPage}
+        </NavLink>
+        <button
+          className="RestaurantPageBtn"
+          id="BackToMapBtn-Small-Restaurant-Info"
+          onClick={this.props.CloseRestaurantInfo}
+        >
+          {strings.backToMap}
+        </button>
+      </div>
     </div>
     )
   }

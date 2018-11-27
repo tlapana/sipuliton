@@ -137,3 +137,23 @@
 .filterBox{
   margin:auto;
 }
+
+.loadingSpinner-map{
+  position:fixed;
+  bottom:50vh;
+  left:50vw;
+  z-index: 100;
+}
+ #enterToRestaurantPageBtn{
+   display: inline-block;
+   width: 40%;
+ }
+ #BackToMapBtn-Small-Restaurant-Info{
+   display: inline-block;
+   width: 40%;
+   padding: 0.5rem 1rem;
+ }
+ .small-restaurant-info-btn-box{
+   text-align: center;
+   margin: auto;
+ }
