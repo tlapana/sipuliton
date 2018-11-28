@@ -44,9 +44,9 @@ button.filterBtn {
 
 .event {
   margin: 1em .5em 1em .5em;
-  -webkit-box-shadow: 0px 0px 1px 0px #838383;
   border-radius: .25em;
-  box-shadow: 0px 0px 1px 0px #838383;
+  -webkit-box-shadow: 0px 0px 2px 0px #838383;
+  box-shadow: 0px 0px 2px 0px #838383;
 }
 
 .rounded .event {

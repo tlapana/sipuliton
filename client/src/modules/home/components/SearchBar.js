@@ -253,7 +253,8 @@ class SearchBar extends React.Component {
         reliability:"Menu reliability",
         service:"Service & Food",
         variety:"Menu variety",
-        pricing:"Pricing"
+        pricing:"Pricing",
+        selectPlaceholder:"Select diets...",
       },
       fi: {
         search:"Hae ravintoloita...",
@@ -266,7 +267,8 @@ class SearchBar extends React.Component {
         reliability:"Ruokavalion luotettavuus",
         service:"Ruoka ja palvelu",
         variety:"Ruokalajien laajuus",
-        pricing:"Hintaluokka"
+        pricing:"Hintaluokka",
+        selectPlaceholder:"Valitse ruokavalioita...",
       }
     });
     
@@ -317,6 +319,7 @@ class SearchBar extends React.Component {
               className="basic-multi-select"
               classNamePrefix="select"
               onChange={this.handleFilterChange}
+              placeholder={strings.selectPlaceholder}
             />
             {strings.overall}
             <ReactStars
