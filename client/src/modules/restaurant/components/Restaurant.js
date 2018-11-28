@@ -5,12 +5,16 @@ import { render } from 'react-dom';
 import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReviewList from './Review_List.js';
-import WriteReview from '../../writereview';
+import WriteReviewComponents from '../../writereview';
+
+const { WriteReview } = WriteReviewComponents;
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
+		
+		const { id } = this.props.match.params;
 		this.state = {
 			name : "TestiRavintola",
 			pictures : ["", "", ""],
@@ -19,10 +23,11 @@ class Restaurant extends React.Component {
 			allergyTags : ["Sipuliton", "Munaton", "Laktoositon"],
 			openingHours : {monFri: "08.00 - 21.00", sat: "09.00 - 21.00", sun: "09.00 - 18.00"},
 			description : "Tämä ravintola tarjoaa monipuolisia aterioita ja allergikoille sovivia vaihtoehtoja testitarkoituksessa.",
-			id : 1,
+			id : id,
 			redirect : false,
 			isLoaded : false,
-			modalState: false
+			modalState: false,
+			error: null,
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
@@ -30,21 +35,27 @@ class Restaurant extends React.Component {
 	}
 	/*loads data from database, sets new values to the state*/
 	componentDidMount() {
-		const { resId } = this.props.match.params;
-		fetch(restaurantDataUrl + "?restaurantId=" + resId)
+		fetch(restaurantDataUrl + "?restaurantId=" + this.state.id)
 		.then(res => res.json())
 		.then(
 			(result) => {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
+				if (result.restaurant.length == 0) {
+					console.log('result length 0');
+					this.setState({ isLoaded: true, error: 'No restaurants found', });
+					return;
+				}
+				
+				const restaurant = result.restaurant[0];
 				this.setState({
 					//Note: not all info seen in the mockup exist currently in the database, may require changing what to show?
 					isLoaded: true,
-					name : result.name,
-					userScore : result.rating_overall,
-					allergyTags : result.restaurant_diet_stats,
-					description : result.email + ", " + result.website + ", " + result.street_address,
-					id : result.restaurant_id
+					name : restaurant.name,
+					userScore : restaurant.rating_overall,
+					allergyTags : restaurant.restaurant_diet_stats,
+					description : restaurant.email + ", " + restaurant.website + ", " + restaurant.street_address,
+					id : restaurant.restaurant_id
 				});
 			},
 
@@ -53,7 +64,7 @@ class Restaurant extends React.Component {
 				console.log(error);
 				this.setState({
 					isLoaded: true,
-					error
+					error: error,
 				});
 			}
 		)
@@ -100,7 +111,7 @@ class Restaurant extends React.Component {
 			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
 			<ModalHeader></ModalHeader>
 			<ModalBody className="writeReview">
-			<WriteReview/>
+			<WriteReview restaurantId={this.state.id} />
 			</ModalBody>
 			<ModalFooter>
             <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>

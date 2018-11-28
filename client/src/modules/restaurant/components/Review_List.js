@@ -34,7 +34,7 @@ class ReviewList extends React.Component {
 	}
 /*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
-		const { resId } = this.props.idFromParent;
+		const resId = this.props.idFromParent;
 		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
 		.then(res => res.json())
 		.then(

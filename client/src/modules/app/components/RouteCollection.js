@@ -22,7 +22,7 @@ class RouteCollection extends React.Component {
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
     const { Profile } = profile;
-	const { Restaurant } = restaurant;
+	  const { Restaurant } = restaurant;
 
     return (
       <Switch>
@@ -32,7 +32,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route path="/:language/userProfile/" component={Profile} />
-		<Route path="/:language/restaurant/" component={Restaurant} />
+        <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route component={NotFound} />
       </Switch>
     );
