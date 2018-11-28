@@ -4,15 +4,13 @@ import { Link } from 'react-router-dom';
 import { render } from 'react-dom';
 import {
 	Button,
-	Form,
-	FormGroup,
 	Input,
-	Label,
+	Label
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const reviewsDataUrl = "http://localhost:3000/reviews";
 
-export default class ReviewList extends React.Component {
+class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -27,16 +25,16 @@ export default class ReviewList extends React.Component {
 			pageNumber : 0,
 			pageSize : 20,
 			reviewIndex: 0,
-			numberOfRevs: 2,
+			numberOfRevs: 1,
 			isLoaded : false
 		};
-
+		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
 		this.changeReview = this.changeReview.bind(this);
 	}
 /*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
-		const { resId } = 1;//this.props.match.params;
+		const { resId } = this.props.idFromParent;
 		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
 		.then(res => res.json())
 		.then(
@@ -122,3 +120,4 @@ export default class ReviewList extends React.Component {
 		);
 	}
 }
+export default ReviewList;

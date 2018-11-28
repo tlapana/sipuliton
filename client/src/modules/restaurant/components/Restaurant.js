@@ -2,20 +2,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { render } from 'react-dom';
-import {
-	Button,
-	Form,
-	FormGroup,
-	Input,
-	Label,
-	Popover, PopoverBody, PopoverHeader
-} from 'reactstrap';
+import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReviewList from './Review_List.js';
-import WriteReview from '../../home';
+import WriteReview from '../../writereview';
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
-export default class Restaurant extends React.Component {
+class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -29,11 +22,11 @@ export default class Restaurant extends React.Component {
 			id : 1,
 			redirect : false,
 			isLoaded : false,
-			popoverOpen: false
+			modalState: false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
-		this.togglePopover = this.togglePopover.bind(this);
+		this.toggleModal = this.toggleModal.bind(this);
 	}
 	/*loads data from database, sets new values to the state*/
 	componentDidMount() {
@@ -80,13 +73,13 @@ export default class Restaurant extends React.Component {
 		}
 		return tagString;
 	}
-	/*Instead of redirecting, we use Popover*/
-	togglePopover() {
+  //Toggles modal
+	toggleModal() {
 		this.setState({
-		popoverOpen: !this.state.popoverOpen
+			modalState: !this.state.modalState
 		});
-		//console.log("Toggling popover, new state is: " + this.state.popoverOpen);
-	}
+		console.log("showModal: Toggling modal to " + this.state.modalState)
+	}  
 /*Renders the restaurant info, button to open the writing view and links the review list at the bottom*/
 	render () {
 		return (
@@ -101,16 +94,21 @@ export default class Restaurant extends React.Component {
 			Käyttäjien arvio: {this.state.userScore}<br/>
 			Allergiatunnisteet:<br/>
 			{this.looper(this.state.allergyTags)}</div><br/>
-			<div id="restaurantDesc">{this.state.description}</div><br/>
-			<Input type="button" value="Lisää arvostelu" className="btn btn-primary mb-2" onClick={this.togglePopover()}>Lisää arvostelu></Input><br/>
-			<Popover placement="bottom" isOpen={this.state.popoverOpen} toggle={this.togglePopover()}>
-			<PopoverHeader></PopoverHeader>
-			<PopoverBody>
+			<div id="restaurantDesc">{this.state.description}<br/>
+			Aukioloajat - Ma-Pe: {this.state.openingHours.monFri} La: {this.state.openingHours.sat} Su: {this.state.openingHours.sun}</div><br/>
+			<Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>Lisää arvostelu</Button><br/>
+			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
+			<ModalHeader></ModalHeader>
+			<ModalBody className="writeReview">
 			<WriteReview/>
-			</PopoverBody>
-			</Popover>
-			<ReviewList/>
+			</ModalBody>
+			<ModalFooter>
+            <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>
+			</ModalFooter>
+			</Modal>
+			<ReviewList idFromParent={this.state.id}/>
 			</div>
 		);
 	}
 }
+export default Restaurant;
