@@ -108,13 +108,13 @@ export default class SocialRegister extends React.Component {
   }
   
   sendToRegister = () => {
-	  if (typeof regCredentials === 'undefined') {
+	if (typeof regCredentials === 'undefined') {
 		  
-	  }
-	  else {
-		//this.props.onSuccess(regCredentials);
-	  }
-  }
+		}
+	else {
+		this.props.onSuccess(regCredentials);
+		}
+	}
   
   render() {
     let strings = new LocalizedStrings({
