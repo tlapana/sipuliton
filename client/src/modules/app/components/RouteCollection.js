@@ -7,6 +7,7 @@ import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
 import restaurant from '../../restaurant';
+import register2 from '../../register2';
 
 import NotFound from './NotFound';
 
@@ -23,6 +24,7 @@ class RouteCollection extends React.Component {
     const { ForgotPassword } = forgotPassword;
     const { Profile } = profile;
 	const { Restaurant } = restaurant;
+	const { Register2 } = register2;
 
     return (
       <Switch>
@@ -33,6 +35,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route path="/:language/userProfile/" component={Profile} />
 		<Route path="/:language/restaurant/" component={Restaurant} />
+		<Route path="/:language/register2/" component={Register2} />
         <Route component={NotFound} />
       </Switch>
     );
