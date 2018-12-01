@@ -1,0 +1,13 @@
+{
+  "name": "diet",
+  "version": "0.1.0",
+  "description": "endpoints for diet management",
+  "main": "src/diet.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

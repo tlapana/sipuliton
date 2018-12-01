@@ -46,7 +46,7 @@ class CustomMap extends React.Component {
 
   }
 
-
+  //Fetches restaurant info and opens restaurant info box
   OpenRestaurantInfo(position){
     var fixLat = position[0][0]-0.1
     this.setState({
@@ -59,8 +59,8 @@ class CustomMap extends React.Component {
       errorWhileLoading:false
     })
     this.props.centerChanged(this.state.center);
-    console.log("Restaurant id: "+position[1][0])
-    console.log(restaurantDataUrl + "?restaurantId=" + position[1][0]);
+
+    // Fetch restaurant info
     fetch(restaurantDataUrl + "?restaurantId=" + position[1][0])
     		.then(res => res.json())
     		.then(
@@ -69,12 +69,14 @@ class CustomMap extends React.Component {
             var restaurantInfo = result.restaurant[0]
             console.log(restaurantInfo);
             if(restaurantInfo === undefined){
+              // Restaurant not exist in database
               this.setState({
                 isSearching:false,
                 errorWhileLoading:true
               });
             }
             else{
+              // set restaurant details.
               this.setState({
                 isSearching:false,
                 restaurantInfo:{
@@ -115,6 +117,7 @@ class CustomMap extends React.Component {
     this.render();
   }
 
+  //Closes restaurant info box
   CloseRestaurantInfo(){
     this.setState({
       restaurantInfoOpen: false,
@@ -197,16 +200,18 @@ class CustomMap extends React.Component {
       }
     });
     strings.setLanguage(this.props.language);
+
+    /* map center init */
     var center = this.props.center
-    console.log(this.props);
     if(this.props.latitude !== undefined
       && this.props.longitude !== undefined
       && this.props.center[0] === 60.168182
       && this.props.center[1] === 24.940886)
     {
-      console.log("sijainti asetettu");
       center = [this.props.latitude,this.props.longitude]
     }
+
+    /* markers init */
     var greyMarkers = [];
     var greenMarkers = [];
     var restaurants = [];

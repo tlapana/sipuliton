@@ -1,6 +1,8 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import '../../../styles/login.css';
+import { Auth } from 'aws-amplify';
+
 
 import LoginForm from './Login_Form.js'
 import SocialLogin from './Social_Login.js'
@@ -9,9 +11,27 @@ import SocialLogin from './Social_Login.js'
 import LocalizedStrings from 'react-localization';
 
 class Login extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      loggedInAlready: false,
+    };
+  }
+
+  componentDidMount() {
+    Auth.currentAuthenticatedUser()
+        .then(user => {
+          this.setState({loggedInAlready: true});
+        })
+        .catch(err => {});
+  }
 
   render() {
-    /* Localization */
+    if (this.state.loggedInAlready) {
+      return <Redirect to={"/" + this.props.match.params.language + "/profile"} />
+    }
+
     let strings = new LocalizedStrings({
       en:{
         forgotpassword:"Forgot password?",
@@ -29,7 +49,6 @@ class Login extends React.Component {
       }
     });
     strings.setLanguage(this.props.match.params.language);
-    console.log(this.props.location);
 
     /* URL paths */
     const pathToRegister = '/' + this.props.match.params.language + '/register/';

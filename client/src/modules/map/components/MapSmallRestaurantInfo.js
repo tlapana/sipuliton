@@ -27,7 +27,8 @@ class MapSmallRestaurantInfo extends React.Component {
         overallRating: "Overall rating",
         serviceRating: "Service rating",
         varietyRating: "Variety rating",
-        reliabilityRating: "Reliability rating"
+        reliabilityRating: "Reliability rating",
+        backToMap: "Back to map"
       },
       fi: {
         openToday:"Auki tänään",
@@ -37,8 +38,9 @@ class MapSmallRestaurantInfo extends React.Component {
         serviceRating: "Palvelu",
         varietyRating: "Valinnanvara",
         reliabilityRating: "Luotettavuus",
-        email:"Sähköposti osoite",
-        website:"Verkkosivu"
+        email:"Sähköpostiosoite",
+        website:"Verkkosivu",
+        backToMap: "Takaisin karttaan"
       }
     });
     strings.setLanguage(this.props.language);
@@ -84,15 +86,24 @@ class MapSmallRestaurantInfo extends React.Component {
         {strings.openingHours}:<br/>
         {strings.openToday}: {todayOpenHours}<br/>
       </div>
-      <NavLink
-        className="restaurant-info-item RestaurantPageBtn"
-        id="enterToRestaurantPageBtn"
-        onMouseLeave={this.hover}
-        tag={Link}
-        to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
-      >
-        {strings.enterToRestaurantPage}
-      </NavLink>
+      <div className="small-restaurant-info-btn-box">
+        <NavLink
+          className="restaurant-info-item RestaurantPageBtn"
+          id="enterToRestaurantPageBtn"
+          onMouseLeave={this.hover}
+          tag={Link}
+          to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
+        >
+          {strings.enterToRestaurantPage}
+        </NavLink>
+        <button
+          className="RestaurantPageBtn"
+          id="BackToMapBtn-Small-Restaurant-Info"
+          onClick={this.props.CloseRestaurantInfo}
+        >
+          {strings.backToMap}
+        </button>
+      </div>
     </div>
     )
   }
