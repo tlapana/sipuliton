@@ -183,3 +183,42 @@
   }
 
 }
+
+.errorBox{
+  position: fixed;
+  top:38vh;
+  left:38vw;
+  margin: 20px;
+  background-color: white;
+  z-index: 100;
+}
+.errorText{
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  margin: auto auto auto auto;
+}
+
+.ErrorBoxBtn{
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  -moz-box-shadow: 0px 1px;
+  -webkit-box-shadow: 0px 1px;
+  box-shadow: 0px 1px;
+  -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  box-shadow: 0px 0px 5px 1px #8b8b8b;
+  margin:auto;
+  background-color: #72c567;
+  color:white;
+}
+.ErrorBoxBtn:hover{
+  color: #2b2b2b;
+  background-color: white;
+}
+.error-button-box{
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}

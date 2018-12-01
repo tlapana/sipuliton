@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactLoading from 'react-loading';
-
+import {
+  Button,
+} from 'reactstrap';
 /* Map component import */
 import MapComponent from "./CustomMap"
 import '../../../styles/map.css';
 import GoogleMap from "./GoogleMapsMap"
+import Geocoder from 'react-native-geocoding';
 
 /* Location imports */
 import {geolocated} from 'react-geolocated';
@@ -14,6 +17,8 @@ import LocalizedStrings from 'react-localization';
 
 /* Filter Page */
 import ModalFilterPage from './ModalFilterPage'
+
+import Config from '../../../config.js'
 
 class Map extends React.Component {
   /* Constructor of the map class. */
@@ -42,7 +47,7 @@ class Map extends React.Component {
       greenMarkers: [],
       greyMarkers: [],
     }
-
+    Geocoder.init(Config.google.API_KEY);
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
@@ -73,6 +78,8 @@ class Map extends React.Component {
 			greenMarkers: markers.greenMarkers,
 			greyMarkers: markers.greyMarkers,
       restaurants: markers.restaurants,
+      searchLoc:[60.168182,24.940886],
+      errors:{errorWhileGeocoding:false},
     }
 
   }
@@ -196,7 +203,6 @@ class Map extends React.Component {
     return newMarkers
 
     //Basic search portion
-    /*
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
                 + '&minReliabilityRating=' + this.state.filters.minReliability
@@ -239,7 +245,7 @@ class Map extends React.Component {
           console.log("DEBUG: ComponentsDidMount error");
           console.log(error);
         }
-      )*/
+      )
 	}
 
   // Method handles filter change
@@ -250,7 +256,8 @@ class Map extends React.Component {
     newMinVariety,
     newMinService,
     newMinPricing,
-    newCity
+    newCity,
+    useUserLocation,
   )
   {
 		this.setState({
@@ -264,7 +271,26 @@ class Map extends React.Component {
         city: newCity,
       }
     });
-    this.GetRestaurantsMarkers();
+    if(useUserLocation){
+      this.setState({
+        searchLoc:[this.props.coords.latitude,this.props.coords.longitude],
+        errors:{errorWhileGeocoding:false}
+      });
+      this.GetRestaurantsMarkers();
+    }
+    else{
+      Geocoder.from(newCity)
+      .then(json => {
+        var location = json.results[0].geometry.location;
+        console.log(location);
+        this.setState({searchLoc:location,errors:{errorWhileGeocoding:false}});
+        this.GetRestaurantsMarkers();
+      })
+      .catch(error => {
+        this.setState({errors:{errorWhileGeocoding:true}})
+        console.warn(error)
+      });
+    }
 	}
 
 	//Method adds new green marker to map.
@@ -282,6 +308,19 @@ class Map extends React.Component {
   }
 
   render() {
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        errorWhileGeocoding:"Error, your search location couldn't find!",
+        Ok:"OK",
+      },
+      fi: {
+        errorWhileGeocoding:"Virhe, syöttämääsi paikkaa ei löytynyt!",
+        Ok:"OK",
+      }
+    });
+    strings.setLanguage(this.props.match.params.language);
+
     return(
       !this.props.isGeolocationAvailable? <div>Your browser does not support Geolocation</div>
       : !this.props.isGeolocationEnabled
@@ -328,10 +367,25 @@ class Map extends React.Component {
             className="loadingSpinner-map"
           />
         }
+        {this.state.errors.errorWhileGeocoding &&
+          <div className="errorBox">
+            <div className="errorText">
+              {strings.errorWhileGeocoding}
+            </div>
+            <div className="error-button-box">
+              <Button
+                className="ErrorBoxBtn"
+                onClick={() => this.setState({errors:{errorWhileGeocoding:false}})}
+                >
+                {strings.Ok}
+              </Button>
+            </div>
+          </div>
+        }
         <MapComponent
 					language={this.props.match.params.language}
-	        latitude={this.props.coords.latitude}
-					longitude={this.props.coords.longitude}
+	        latitude={this.state.searchLoc[0]}
+					longitude={this.state.searchLoc[1]}
 	        searchRadiusInKm={this.state.filters.radius}
 					greenMarkersData={this.state.greenMarkers}
 					greyMarkersData={this.state.greyMarkers}

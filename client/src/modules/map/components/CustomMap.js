@@ -265,7 +265,7 @@ class CustomMap extends React.Component {
           </Map>
             <div className="restaurants-list">
                 {restaurants.map((data, idx) =>
-                  <div className="restaurant-info-block">
+                  <div key={`info-${idx}`} className="restaurant-info-block">
                     <MapSmallRestaurantInfo
                       restaurantInfo={data}
                       language={this.props.language}/>

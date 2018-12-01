@@ -27,6 +27,7 @@
     "react-leaflet": "^2.1.2",
     "react-loading": "^2.0.3",
     "react-localization": "^1.0.13",
+    "react-native-geocoding": "^0.3.0",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "react-scripts": "2.0.4",

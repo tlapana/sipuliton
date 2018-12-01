@@ -67,8 +67,6 @@ class ModalFilterPage extends React.Component {
   }
 
   handleCityChange = event => {
-    console.log("kutsuttu")
-    console.log(event)
     this.setState({
       city:event.target.value,
     })
@@ -179,7 +177,8 @@ class ModalFilterPage extends React.Component {
       this.state.minVariety,
       this.state.minService,
       this.state.pricing,
-      this.state.city
+      this.state.city,
+      this.state.useUserLocation,
     );
   }
 
