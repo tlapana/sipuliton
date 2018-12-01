@@ -36,13 +36,13 @@
   -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
   -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
   box-shadow: 0px 0px 5px 1px #8b8b8b;
-  margin:2em 2em 0em 2em;
+  margin:0.5em 2em 0em 2em;
   background-color: #72c567;
   color:white;
 }
 
 #address{
-  margin-left: 2em;
+  margin: auto;
   text-align: center;
   color: rgb(80, 80, 80);
 }
@@ -54,13 +54,13 @@
 }
 
 .ratings {
-  margin-left: 2em;
+  margin: auto;
   text-align: center;
 }
 
 .rating {
   display:inline-block;
-  margin-left: 1em;
+  margin: auto;
 }
 
 .SearchBox{
@@ -73,7 +73,8 @@
 }
 
 #openingHours {
-  margin-left: 2em;
+  text-align: center;
+  margin: auto;
 }
 
 #restaurantName {
@@ -86,19 +87,6 @@
   background-color: white;
 }
 
-
-.restaurant-info {
-  display: block;
-  width: 95vw;
-  height: 100%;
-  -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
-  -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
-  box-shadow: 0px 0px 5px 1px #8b8b8b;
-  padding-bottom: 2em;
-  margin-top: 1em;
-  margin-right: 1em;
-  margin-left: 2.5vw;
-}
 
 .RadiusSelect {
   left:15px;
@@ -136,4 +124,62 @@
 
 .filterBox{
   margin:auto;
+}
+
+@media only screen and (min-width: 768px) {
+  .restaurants-list{
+    position: fixed;
+    top: 10px;
+    z-index: 100;
+    width:300px;
+    right: 10px;
+    text-align: right;
+    overflow-y: scroll;
+    height: 90vh;
+  }
+  .restaurant-info {
+    display: block;
+    height: auto;
+    -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    box-shadow: 0px 0px 5px 1px #8b8b8b;
+    padding-bottom: 2em;
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-left: 1em;
+    background-color: white;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .restaurants-list{
+    position: fixed;
+    bottom: 10px;
+    z-index: 100;
+    height:300px;
+    left: 10px;
+    text-align: left;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .restaurant-info {
+    display: inline-block;
+    height: 200px;
+    width: 300px;
+    -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    box-shadow: 0px 0px 5px 1px #8b8b8b;
+    padding-bottom: 2em;
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-left: 1em;
+    background-color: white;
+  }
+  .restaurant-info-block{
+    display: inline-block;
+    width: auto;
+    height: 100%;
+  }
+
 }

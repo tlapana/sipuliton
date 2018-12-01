@@ -4,7 +4,7 @@ import {
   NavItem,
   NavLink} from 'reactstrap';
 import ReactLoading from 'react-loading';
-
+import ScrollArea from 'react-scrollbar';
 /* Map imports */
 import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
 import L from 'leaflet';
@@ -209,12 +209,17 @@ class CustomMap extends React.Component {
     }
     var greyMarkers = [];
     var greenMarkers = [];
+    var restaurants = [];
     if(this.props.greyMarkersData !== undefined){
       greyMarkers = this.props.greyMarkersData;
     }
     if(this.props.greenMarkersData !== undefined){
       greenMarkers = this.props.greenMarkersData;
     }
+    if(this.props.restaurants != undefined){
+      restaurants = this.props.restaurants;
+    }
+
     return(
         <div>
           <Map
@@ -251,46 +256,17 @@ class CustomMap extends React.Component {
                     radius={this.props.searchRadiusInKm}
                     color={'red'}
                     fillOpacity={0.05}/>
-                    
-          </Map>
-          {this.state.restaurantInfoOpen &&
-            <div>
-            {!this.state.isSearching &&
-              <div>
-                {!this.state.errorWhileLoading &&
-                  <MapSmallRestaurantInfo
-                    restaurantInfo={this.state.restaurantInfo}
-                    language={this.props.language}/>
-                }
-              </div>
-            }
-            {this.state.isSearching &&
-              <div className="SearchBox">
-                <h3>
-                  {strings.search}
-                  <ReactLoading
-                    type={'spokes'}
-                    color={'#2196F3'}
-                    className="loadingSpinner"
-                  />
-                </h3>
-              </div>
-            }
-            {this.state.errorWhileLoading &&
-              <div className="ErrorBox">
-                <h2>{strings.restaurantNotFound}</h2>
-                <button
-                  className="RestaurantPageBtn"
-                  id="BackToMapBtn"
-                  onClick={this.CloseRestaurantInfo}
-                >
-                  {strings.backToMap}
-                </button>
-              </div>
-            }
-            </div>
 
-          }
+          </Map>
+            <div className="restaurants-list">
+                {restaurants.map((data, idx) =>
+                  <div className="restaurant-info-block">
+                    <MapSmallRestaurantInfo
+                      restaurantInfo={data}
+                      language={this.props.language}/>
+                  </div>
+                )}
+            </div>
         </div>
     )
   }

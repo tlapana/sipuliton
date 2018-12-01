@@ -68,6 +68,7 @@ class Map extends React.Component {
       },
 			greenMarkers: markers.greenMarkers,
 			greyMarkers: markers.greyMarkers,
+      restaurants: markers.restaurants,
     }
 
   }
@@ -97,7 +98,95 @@ class Map extends React.Component {
 	      [[61.463999,23.830000],[9]],
 	      [[61.467252,23.851854],[10]]];
 		}
-    newMarkers = {greyMarkers: greyMarks,greenMarkers:markers}
+
+    let restaurantData = [
+      {
+        id:0,
+        name:"First",
+        city:"Hervanta",
+        postcode:"33990",
+        address:"Ravintolan 1 osoite",
+        overallRating:"2",
+        serviceRating:"3",
+        varietyRating:"3",
+        reliabilityRating: "4",
+        website: "www.eka.fi",
+        email: "eka@eka.fi",
+        openMon:"9:00-15:00",
+        openTue:"9:00-15:00",
+        openWed:"9:00-15:00",
+        openThu:"9:00-13:00",
+        openFri:"9:00-16:00",
+        openSat:"8:00-17:00",
+        openSun:"10:00-18:00",
+      },
+      {
+        id:0,
+        name:"First",
+        city:"Hervanta",
+        postcode:"33990",
+        address:"Ravintolan 1 osoite",
+        overallRating:"2",
+        serviceRating:"3",
+        varietyRating:"3",
+        reliabilityRating: "4",
+        website: "www.eka.fi",
+        email: "eka@eka.fi",
+        openMon:"9:00-15:00",
+        openTue:"9:00-15:00",
+        openWed:"9:00-15:00",
+        openThu:"9:00-13:00",
+        openFri:"9:00-16:00",
+        openSat:"8:00-17:00",
+        openSun:"10:00-18:00",
+      },
+      {
+        id:0,
+        name:"First",
+        city:"Hervanta",
+        postcode:"33990",
+        address:"Ravintolan 1 osoite",
+        overallRating:"2",
+        serviceRating:"3",
+        varietyRating:"3",
+        reliabilityRating: "4",
+        website: "www.eka.fi",
+        email: "eka@eka.fi",
+        openMon:"9:00-15:00",
+        openTue:"9:00-15:00",
+        openWed:"9:00-15:00",
+        openThu:"9:00-13:00",
+        openFri:"9:00-16:00",
+        openSat:"8:00-17:00",
+        openSun:"10:00-18:00",
+      },
+      {
+        id:0,
+        name:"First",
+        city:"Hervanta",
+        postcode:"33990",
+        address:"Ravintolan 1 osoite",
+        overallRating:"2",
+        serviceRating:"3",
+        varietyRating:"3",
+        reliabilityRating: "4",
+        website: "www.eka.fi",
+        email: "eka@eka.fi",
+        openMon:"9:00-15:00",
+        openTue:"9:00-15:00",
+        openWed:"9:00-15:00",
+        openThu:"9:00-13:00",
+        openFri:"9:00-16:00",
+        openSat:"8:00-17:00",
+        openSun:"10:00-18:00",
+      }
+    ]
+
+    newMarkers = {
+      greyMarkers: greyMarks,
+      greenMarkers:markers,
+      restaurants:restaurantData
+    }
     return newMarkers
 	}
 
@@ -160,6 +249,7 @@ class Map extends React.Component {
             greyMarkersData={this.state.greyMarkers}
             centerChanged={this.CenterChanged}
             center={this.state.center}
+            restaurants={this.state.restaurants}
           />
         </div>
       </div>
@@ -180,6 +270,7 @@ class Map extends React.Component {
 					greyMarkersData={this.state.greyMarkers}
           centerChanged={this.CenterChanged}
           center={this.state.center}
+          restaurants={this.state.restaurants}
 				/>
       </div>
       : <div>Getting the location data&hellip; </div>

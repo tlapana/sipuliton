@@ -6,6 +6,7 @@ import {
 
 import '../../../styles/map.css';
 
+
 /* Router imports */
 import { Link } from 'react-router-dom';
 
@@ -20,13 +21,7 @@ class MapSmallRestaurantInfo extends React.Component {
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
-        mon:"Mon",
-        tue:"Tue",
-        wed:"Wed",
-        thu:"Thu",
-        fri:"Fri",
-        sat:"Sat",
-        sun:"Sun",
+        openToday:"Opening hours today",
         enterToRestaurantPage:"Enter to restaurant page",
         openingHours:"Opening hours",
         overallRating: "Overall rating",
@@ -35,13 +30,7 @@ class MapSmallRestaurantInfo extends React.Component {
         reliabilityRating: "Reliability rating"
       },
       fi: {
-        mon:"Ma",
-        tue:"Ti",
-        wed:"Ke",
-        thu:"To",
-        fri:"Pe",
-        sat:"La",
-        sun:"Su",
+        openToday:"Auki tänään",
         enterToRestaurantPage:"Siirry ravintolan sivulle",
         openingHours:"Aukioloajat",
         overallRating: "Kokonaisarvosana",
@@ -53,6 +42,31 @@ class MapSmallRestaurantInfo extends React.Component {
       }
     });
     strings.setLanguage(this.props.language);
+
+    var d = new Date();
+    var n = d.getDay()
+    var todayOpenHours = "";
+    if(n === 0){
+      todayOpenHours = this.props.restaurantInfo.openSun
+    }
+    if(n === 1){
+      todayOpenHours = this.props.restaurantInfo.openMon
+    }
+    if(n === 2){
+      todayOpenHours = this.props.restaurantInfo.openTue
+    }
+    if(n === 3){
+      todayOpenHours = this.props.restaurantInfo.openWed
+    }
+    if(n === 4){
+      todayOpenHours = this.props.restaurantInfo.openThu
+    }
+    if(n === 5){
+      todayOpenHours = this.props.restaurantInfo.openFri
+    }
+    if(n === 6){
+      todayOpenHours = this.props.restaurantInfo.openSat
+    }
     return(
       <div className="restaurant-info">
         <div>
@@ -60,33 +74,15 @@ class MapSmallRestaurantInfo extends React.Component {
           <div className="restaurant-info-item" id="address">
             {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode}, {this.props.restaurantInfo.address}
           </div>
-          <div className="restaurant-info-item" id="contact">
-            {strings.email}:{this.props.restaurantInfo.email}, {strings.website}:{this.props.restaurantInfo.website}
-          </div>
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">
               {strings.overallRating}: {this.props.restaurantInfo.overallRating}/5
-            </div>
-            <div className="restaurant-info-item rating" id="service">
-              {strings.serviceRating}: {this.props.restaurantInfo.serviceRating}/5
-            </div>
-            <div className="restaurant-info-item rating" id="variety">
-              {strings.varietyRating}: {this.props.restaurantInfo.varietyRating}/5
-            </div>
-            <div className="restaurant-info-item rating" id="reliability">
-              {strings.reliabilityRating}: {this.props.restaurantInfo.reliabilityRating}/5
             </div>
         </div>
       </div>
       <div className="restaurant-info-item" id="openingHours">
         {strings.openingHours}:<br/>
-        {strings.mon}: {this.props.restaurantInfo.openMon}<br/>
-        {strings.tue}: {this.props.restaurantInfo.openTue}<br/>
-        {strings.wed}: {this.props.restaurantInfo.openWed}<br/>
-        {strings.thu}: {this.props.restaurantInfo.openThu}<br/>
-        {strings.fri}: {this.props.restaurantInfo.openFri}<br/>
-        {strings.sat}: {this.props.restaurantInfo.openSat}<br/>
-        {strings.sun}: {this.props.restaurantInfo.openSun}<br/>
+        {strings.openToday}: {todayOpenHours}<br/>
       </div>
       <NavLink
         className="restaurant-info-item RestaurantPageBtn"
