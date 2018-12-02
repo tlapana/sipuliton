@@ -246,22 +246,38 @@ exports.lambdaHandler = async (event, context) => {
     return response
 };
 
-async function postReview(client, review, images, diets) {
-    if (images !== null) {
-        //TODO: add images to s3
-        throw {
-            'statusCode': 501,
-            'error': "Not implemented"
-        }
-    }
-
-    var len = diets.length;
-    for (var i = 0; i < len; i++) {
-        await client.query(`INSERT INTO review_diet (review_id, global_diet_id)
+async function postReview(client, userId, restaurantId, review, images, diets) {
+    await client.query(`BEGIN`);
+    try {
+        // TODO: define where image url is
+        const res = await client.query(
+            `INSERT INTO review (restaurant_id, user_id, posted, status, title, image_url, free_text, rating_overall,
+                    rating_reliability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down)
+                VALUES ($1, $2, timezone('utc', now()), 0, $3, NULL, $4, $5,
+                    $6, $7, $8, $9, 0, 0)
+                RETURNING review_id`,
+            [restaurantId, userId, review['title'], review['free_text'], review['rating_overall'],
+            review['rating_reliability'], review['rating_variety'], review['rating_service_and_quality'], review['pricing']]);
+        const reviewId = res.rows[0]['review_id'];
+        var len = diets.length;
+        for (var i = 0; i < len; i++) {
+            await client.query(`INSERT INTO review_diet (review_id, global_diet_id)
                 VALUES ($1, $2)`,
-            [reviewId, diets[i]]);
+                [reviewId, diets[i]]);
+        }
+        if (images !== null) {
+            //TODO: add images to s3
+            throw {
+                'statusCode': 501,
+                'error': "Not implemented"
+            }
+        }
+        await client.query('COMMIT');
     }
-    await client.query('UPDATE review SET ' + columns + ' WHERE status = 0 AND review_id = $1', values);
+    catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    }
     return
 }
 
@@ -281,7 +297,18 @@ exports.postReviewLambda = async (event, context) => {
             var review = {};
             var diets = null;
             var images = null;
+            var restaurantId = null;
 
+            var temp = parseIntParam("restaurant_id", event);
+            if (temp !== null) {
+                restaurantId = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid restaurant id"
+                }
+            }
             var temp = parseParam("title", event);
             if (temp !== null) {
                 review['title'] = temp;
@@ -374,11 +401,11 @@ exports.postReviewLambda = async (event, context) => {
             else {
                 throw {
                     'statusCode': 400,
-                    'error': "Pricing not set"
+                    'error': "Diets not set"
                 }
             }
 
-            await postReview(client, review, images, diets);
+            await postReview(client, ownUserId, restaurantId, review, images, diets);
 
             response = packResponse({ 'message': "Operation completed successfully" });
         } finally {
