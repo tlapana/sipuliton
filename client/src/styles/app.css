@@ -124,7 +124,7 @@ input.invalid, input.invalid:focus {
   box-shadow: #F58F8F 0px 0px 2px 1px;
   transition: opacity 250ms ease-in-out 0ms;
 }
-.input-errormsg.visible {
+input.invalid:focus + .input-errormsg.visible {
   visibility: visible;
   opacity: .75;
 }

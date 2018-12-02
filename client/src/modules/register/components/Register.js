@@ -7,9 +7,9 @@ import {
   Label,
 } from 'reactstrap';
 import { Auth } from "aws-amplify";
-import commonComponents from '../../common'
+import commonComponents from '../../common';
 
-import config from "../../../config.js"
+import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 
 export default class Register extends React.Component {
@@ -71,11 +71,7 @@ export default class Register extends React.Component {
 
   onUsernameChanged(e) {
     const username = e.target.value;
-    const isValid = (
-      username != null && 
-      username.length >= config.login.USERNAME_MIN_LENGTH && 
-      username.length <= config.login.USERNAME_MAX_LENGTH
-    );
+    const isValid = validationUtil.validateUsername(username);
     this.setState({
       username: username,
       usernameValid: isValid,
@@ -85,12 +81,8 @@ export default class Register extends React.Component {
   onMailChanged(e) {
     const mail = e.target.value;
     const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    const isValid = (
-      mail != null && 
-      mail.length >= config.login.EMAIL_MIN_LENGTH && 
-      mail.length <= config.login.EMAIL_MAX_LENGTH && 
-      re.test(mail)
-    );
+   
+    const isValid = validationUtil.validateEmail(mail);
     const retypeMailValid = (mail === this.state.retypeMail);
     this.setState({
       mail: mail,
@@ -112,13 +104,8 @@ export default class Register extends React.Component {
     const password = e.target.value;
     const reLowerCase = /[a-z]/;
     const reNumber = /[0-9]/;
-    const isValid = (
-      password != null && 
-      password.length >= config.login.PASSWORD_MIN_LENGTH && 
-      password.length <= config.login.PASSWORD_MAX_LENGTH && 
-      reLowerCase.test(password) && 
-      reNumber.test(password)
-    );
+    
+    const isValid = validationUtil.validatePassword(password);
     const retypePassValid = (password === this.state.retypePass);
     this.setState({
       password: password,

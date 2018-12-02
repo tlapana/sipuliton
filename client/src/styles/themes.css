@@ -11,6 +11,7 @@
 .theme-1 .main-btn, 
 .theme-1 .main-btn:disabled,
 .theme-1 .form-control[type="submit"]:focus,
+.theme-1 .form-control[type="button"]:focus,
 .theme-1 .btn:active,
 .theme-1 .btn:focus,
 .theme-1 .select__option--is-focused {
@@ -31,6 +32,7 @@
   box-shadow: 0 0 .2rem .2rem rgba(91, 157, 82, 0.3);
 }
 .theme-1 .form-control[type="submit"]:focus,
+.theme-1 .form-control[type="button"]:focus,
 .theme-1 .btn:active,
 .theme-1 .btn:focus {
   background-color: #66b15c;
@@ -56,6 +58,7 @@
 .theme-2 .main-btn, 
 .theme-2 .main-btn:disabled,
 .theme-2 .form-control[type="submit"]:focus,
+.theme-2 .form-control[type="button"]:focus,
 .theme-2 .btn:active,
 .theme-2 .btn:focus,
 .theme-2 .select__option--is-focused {
@@ -76,6 +79,7 @@
   box-shadow: 0 0 .2rem .2rem rgba(105, 141, 174, 0.3);
 }
 .theme-2 .form-control[type="submit"]:focus,
+.theme-2 .form-control[type="button"]:focus,
 .theme-2 .btn:active,
 .theme-2 .btn:focus {
   background-color: #769fc4;
@@ -101,6 +105,7 @@
 .theme-3 .main-btn, 
 .theme-3 .main-btn:disabled,
 .theme-3 .form-control[type="submit"]:focus,
+.theme-3 .form-control[type="button"]:focus,
 .theme-3 .btn:active,
 .theme-3 .btn:focus,
 .theme-3 .select__option--is-focused {
@@ -121,6 +126,7 @@
   box-shadow: 0 0 .2rem .2rem rgba(225, 85, 39, 0.3);
 }
 .theme-3 .form-control[type="submit"]:focus,
+.theme-3 .form-control[type="button"]:focus,
 .theme-3 .btn:active,
 .theme-3 .btn:focus {
   background-color: #ca4c23;
@@ -151,6 +157,7 @@
 .theme-old .main-btn, 
 .theme-old .main-btn:disabled,
 .theme-old .form-control[type="submit"]:focus,
+.theme-old .form-control[type="button"]:focus,
 .theme-old .btn:active,
 .theme-old .btn:focus,
 .theme-old .select__option--is-focused {
