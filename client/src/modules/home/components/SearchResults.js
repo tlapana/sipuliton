@@ -1,7 +1,5 @@
 /*
-
   This file contains how the search results are shown
-
 */
 
 import React from 'react';
@@ -13,37 +11,25 @@ class SearchResults extends React.Component {
 
 constructor(props) {
     super(props);
-    
     this.renderWeblink = this.renderWeblink.bind(this);
     
     this.state = {
       error: null,
       restaurants: props.restaurants.restaurants
     };
-
-    console.log("SearchResults: Received following props:")
-    console.log(props);
   }
 
   //Prints out how many stars the restaurant has
   renderStars(starCount) {
-    //console.log("DEBUG: Starcount");
-    //console.log(starCount);
-
     const starIcons = [];
-    while(starCount >= 1)
-    {
+    while(starCount >= 1) {
       starIcons.push(<FontAwesomeIcon icon="star" key={starIcons.length} />);
       starCount = starCount - 1;
     }
-    //console.log(starCount);
-    if(starCount >= 0.5)
-    {
+    if(starCount >= 0.5) {
       starIcons.push(<FontAwesomeIcon icon="star-half" key={0.5} />);
-      //console.log("Half star added");
     }
-    //console.log(starIcons);
-    return starIcons
+    return starIcons;
   }
   
   renderWeblink(address) {
@@ -69,7 +55,6 @@ constructor(props) {
 
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
-
     const restaurants = this.state.restaurants;
 
     return (
@@ -80,7 +65,7 @@ constructor(props) {
           <EventBlock 
             restaurant={restaurant}
             language={language}
-            key={restaurant.name}
+            key={restaurant.restaurant_id}
           />
         )}
 

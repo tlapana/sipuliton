@@ -1,7 +1,5 @@
 /*
-
   This file contains the events(restaurants) that are show on the landing page below the search bar
-
 */
 
 import React from 'react';
@@ -35,9 +33,6 @@ class Events extends React.Component {
             restaurants: result.restaurants
           });
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           console.log("DEBUG: ComponentsDidMount error");
           console.log(error);
@@ -98,7 +93,6 @@ class Events extends React.Component {
       
     }
   }
-  
 }
 
 export default Events;

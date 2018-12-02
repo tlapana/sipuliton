@@ -13,7 +13,7 @@ class EventBlock extends React.Component {
     if(starCount >= 0.5) {
       starIcons.push(<FontAwesomeIcon icon="star-half" key={starCount} />);
     }
-    return starIcons
+    return starIcons;
   }
   
   render() {
@@ -37,7 +37,6 @@ class EventBlock extends React.Component {
             {address}
           </span>
         </div>
-
       </div>
     );
   }
