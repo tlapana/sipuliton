@@ -327,7 +327,7 @@ async function editReview(client, reviewId, changes, images, diets) {
         var len = diets.length;
         for (var i = 0; i < len; i++) {
             await client.query(`INSERT INTO review_diet (review_id, global_diet_id)
-                VALUES ($1, $4)`,
+                VALUES ($1, $2)`,
                 [reviewId, diets[i]]);
         }
     }
