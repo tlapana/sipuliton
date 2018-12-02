@@ -35,10 +35,159 @@ let response;
  * @returns {Object} object.body - JSON Payload to be returned
  * 
  */
+
+// shared functions
+
+async function getOwnUserId(client, event) {
+    const AWS = require('aws-sdk');
+    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
+    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
+    //console.log("user sub:" + userSub);
+    return 0;
+    return null;
+}
+
+async function getPsqlClient() {
+    var pg = require("pg");
+    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+    const client = new pg.Client(conn);
+    await client.connect((err) => {
+        if (err) {
+            //TODO: Remove + err before deployment
+            console.error("Failed to connect client");
+            console.error(err);
+            throw {
+                'statusCode': 500,
+                'error': "Failed to connect to database" + err
+            }
+        }
+    });
+    return client
+}
+
+function errorHandler(err) {
+    console.log(err);
+    response = {
+        'statusCode': 500,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+    };
+    if ("statusCode" in err) {
+        response['statusCode'] = err['statusCode'];
+    }
+    if ("error" in err) {
+        response['body'] = JSON.stringify({ 'error': err['error'] });
+    }
+    return response;
+}
+
+function packResponse(jsonObj) {
+    response = {
+        'statusCode': 200,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify(jsonObj)
+    };
+    return response;
+}
+
+function parseParam(varStr, event) {
+    if (event[varStr] && event[varStr] !== "") {
+        return event[varStr];
+    } else if (event.body && event.body !== "") {
+        var body = JSON.parse(event.body);
+        if (body[varStr] && body[varStr] !== "") {
+            return body[varStr];
+        }
+    } else if (event.queryStringParameters && event.queryStringParameters[varStr] && event.queryStringParameters[varStr] !== "") {
+        return event.queryStringParameters[varStr];
+    } else if (event.multiValueHeaders && event.multiValueHeaders[varStr] && event.multiValueHeaders[varStr] != "") {
+        return event.multiValueHeaders[varStr].join(" and ");
+    } else if (event.headers && event.headers[varStr] && event.headers[varStr] != "") {
+        return event.headers[varStr];
+    }
+    return null;
+}
+
+function hasParam(varStr, event) {
+    if (event[varStr] && event[varStr] !== "") {
+        return true;
+    } else if (event.body && event.body !== "") {
+        var body = JSON.parse(event.body);
+        if (body[varStr] && body[varStr] !== "") {
+            return true;
+        }
+    } else if (event.queryStringParameters && event.queryStringParameters[varStr] && event.queryStringParameters[varStr] !== "") {
+        return true;
+    } else if (event.multiValueHeaders && event.multiValueHeaders[varStr] && event.multiValueHeaders[varStr] != "") {
+        return true;
+    } else if (event.headers && event.headers[varStr] && event.headers[varStr] != "") {
+        return true;
+    }
+    return false;
+}
+
+function parseIntParam(varStr, event) {
+    var val = parseParam(varStr, event);
+    var parsed = parseInt(val);
+    if (isNaN(parsed)) {
+        return null;
+    }
+    return parsed;
+}
+
+function parseFloatParam(varStr, event) {
+    var val = parseParam(varStr, event);
+    var parsed = parseFloat(val);
+    if (isNaN(parsed)) {
+        return null;
+    }
+    return parsed;
+}
+
+Object.prototype.isEmpty = function () {
+    for (var key in this) {
+        if (this.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
+
+async function getLanguage(client, language) {
+    res = await client.query(
+        `SELECT language_id
+        FROM languages
+        WHERE languages.iso2 = $1`,
+        [language]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No language found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more languages"
+        }
+    }
+    return res.rows[0]['language_id'];
+}
+
+
+// start of module functions
+
 exports.lambdaHandler = async (event, context) => {
     try {
         // Result of this query will later go to the returned json
-        //TODO: fix reliability typo in database
         var pageSize = event.queryStringParameters.pageSize
         const restaurantId = event.queryStringParameters.restaurantId
         var pageNumber = event.queryStringParameters.pageNumber
@@ -95,4 +244,150 @@ exports.lambdaHandler = async (event, context) => {
 
     console.log(response)
     return response
+};
+
+async function postReview(client, review, images, diets) {
+    if (images !== null) {
+        //TODO: add images to s3
+        throw {
+            'statusCode': 501,
+            'error': "Not implemented"
+        }
+    }
+
+    var len = diets.length;
+    for (var i = 0; i < len; i++) {
+        await client.query(`INSERT INTO review_diet (review_id, global_diet_id)
+                VALUES ($1, $2)`,
+            [reviewId, diets[i]]);
+    }
+    await client.query('UPDATE review SET ' + columns + ' WHERE status = 0 AND review_id = $1', values);
+    return
+}
+
+exports.postReviewLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            var review = {};
+            var diets = null;
+            var images = null;
+
+            var temp = parseParam("title", event);
+            if (temp !== null) {
+                review['title'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Title not set"
+                }
+            }
+            temp = JSON.parse(parseParam("images", event));
+            if (temp !== null) {
+                images = temp;
+            }
+            temp = parseParam("text", event);
+            if (temp !== null) {
+                review['free_text'] = temp;
+            }
+            else {
+                review['free_text'] = '';
+            }
+            temp = parseFloatParam("rating_overall", event);
+            if (temp !== null) {
+                if (temp < 0 | temp > 5) {
+                    throw {
+                        'statusCode': 400,
+                        'error': "Invalid rating overall"
+                    }
+                }
+                review['rating_overall'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Overall rating not set"
+                }
+            }
+            temp = parseFloatParam("rating_variety", event);
+            if (temp !== null) {
+                if (temp < 0 | temp > 5) {
+                    throw {
+                        'statusCode': 400,
+                        'error': "Invalid rating variety"
+                    }
+                }
+                review['rating_variety'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Variety rating not set"
+                }
+            }
+            temp = parseFloatParam("rating_service_and_quality", event);
+            if (temp !== null) {
+                if (temp < 0 | temp > 5) {
+                    throw {
+                        'statusCode': 400,
+                        'error': "Invalid rating service and quality"
+                    }
+                }
+                review['rating_service_and_quality'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Service & Quality rating not set"
+                }
+            }
+            temp = parseFloatParam("pricing", event);
+            if (temp !== null) {
+                if (temp < 0 | temp > 3) {
+                    throw {
+                        'statusCode': 400,
+                        'error': "Invalid pricing"
+                    }
+                }
+                review['pricing'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Pricing not set"
+                }
+            }
+            temp = JSON.parse(parseParam("diets", event));
+            if (temp !== null) {
+                diets = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Pricing not set"
+                }
+            }
+
+            await postReview(client, review, images, diets);
+
+            response = packResponse({ 'message': "Operation completed successfully" });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
 };
