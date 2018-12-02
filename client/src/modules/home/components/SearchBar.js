@@ -5,19 +5,19 @@
 */
 
 import React from 'react';
-import {connect} from 'react-redux';
 import { 
-  Button, Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
-  Modal, ModalHeader, ModalBody, ModalFooter
+  Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
+  ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap';
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import AppImports from  '../../app';
+import * as AppImports from  '../../app';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
+import { string } from 'prop-types';
 
 class SearchBar extends React.Component {
 
@@ -255,6 +255,7 @@ class SearchBar extends React.Component {
         variety:"Menu variety",
         pricing:"Pricing",
         selectPlaceholder:"Select diets...",
+        noOptionsMessage:"No diets",
       },
       fi: {
         search:"Hae ravintoloita...",
@@ -269,6 +270,7 @@ class SearchBar extends React.Component {
         variety:"Ruokalajien laajuus",
         pricing:"Hintaluokka",
         selectPlaceholder:"Valitse ruokavalioita...",
+        noOptionsMessage:"Ei ruokavalioita",
       }
     });
     
@@ -279,14 +281,7 @@ class SearchBar extends React.Component {
       strings.setLanguage('fi');
     }
 
-    let modalClasses = 'filterBox';
-    if (this.props.theme) {
-      modalClasses += ' ' + this.props.theme;
-    }
-    if (this.props.isRounding) {
-      modalClasses += ' rounded';
-    }
-
+    const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
     return (
       <div className="searchDiv">
         <form id="search-form" className="search" onSubmit={this.login}>
@@ -307,63 +302,64 @@ class SearchBar extends React.Component {
 
           <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
-          <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className={modalClasses}>
-          <ModalHeader>{strings.includeinsearch}</ModalHeader>
-          <ModalBody className="filterBox">
-            {strings.diets}
-            <Select
-              defaultValue={ this.state.defaultValues }
-              isMulti
-              name="filtersDrop"
-              options={ this.state.options }
-              className="basic-multi-select"
-              classNamePrefix="select"
-              onChange={this.handleFilterChange}
-              placeholder={strings.selectPlaceholder}
-            />
-            {strings.overall}
-            <ReactStars
-              value = {this.state.minOverall}
-              count = {5}
-              size = {24}
-              onChange = {this.changeOverall}
-            />
-            {strings.reliability}
-            <ReactStars
-              value = {this.state.minReliability}
-              count = {5}
-              size = {24}
-              onChange = {this.changeReliability}
-            />
-            {strings.service}
-            <ReactStars
-              value = {this.state.minService}
-              count = {5}
-              size = {24}
-              onChange = {this.changeService}
-            />
-            {strings.variety}
-            <ReactStars
-              value = {this.state.minVariety}
-              count = {5}
-              size = {24}
-              onChange = {this.changeVariety}
-            />
-            {strings.pricing}
-            <ReactStars
-              value = {this.state.pricing}
-              count = {3}
-              size = {24}
-              char = '€'
-              half = {false}
-              onChange = {this.changePricing}
-            />
-              
-          </ModalBody>
-          <ModalFooter>
-            <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
-          </ModalFooter>
-        </Modal>
+          <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+            <ModalHeader>{strings.includeinsearch}</ModalHeader>
+            <ModalBody className="filterBox">
+              {strings.diets}
+              <Select
+                defaultValue={ this.state.defaultValues }
+                isMulti
+                name="filtersDrop"
+                options={ this.state.options }
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={this.handleFilterChange}
+                placeholder={strings.selectPlaceholder}
+                noOptionsMessage={() => {return strings.noOptionsMessage}}
+              />
+              {strings.overall}
+              <ReactStars
+                value = {this.state.minOverall}
+                count = {5}
+                size = {24}
+                onChange = {this.changeOverall}
+              />
+              {strings.reliability}
+              <ReactStars
+                value = {this.state.minReliability}
+                count = {5}
+                size = {24}
+                onChange = {this.changeReliability}
+              />
+              {strings.service}
+              <ReactStars
+                value = {this.state.minService}
+                count = {5}
+                size = {24}
+                onChange = {this.changeService}
+              />
+              {strings.variety}
+              <ReactStars
+                value = {this.state.minVariety}
+                count = {5}
+                size = {24}
+                onChange = {this.changeVariety}
+              />
+              {strings.pricing}
+              <ReactStars
+                value = {this.state.pricing}
+                count = {3}
+                size = {24}
+                char = '€'
+                half = {false}
+                onChange = {this.changePricing}
+              />
+                
+            </ModalBody>
+            <ModalFooter>
+              <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
+            </ModalFooter>
+          </ThemedModalContainer>
 
         </form>
       </div>
@@ -371,27 +367,4 @@ class SearchBar extends React.Component {
   }
 }
 
-const {changeLoading, changeRounding, changeTheme} = AppImports;
-
-const mapStateToProps = state => {
-  return {
-    isLoading: state.app.isLoading,
-    isRounding: state.app.isRounding,
-    theme: state.app.theme
-  }
-}
-
-const mapDispatchToProps = dispatch => {
-  return {
-    changeLoading: isLoading => dispatch(changeLoading(isLoading)),
-    changeRounding: isRounding => dispatch(changeRounding(isRounding)),
-    changeTheme: newTheme => dispatch(changeTheme(newTheme))
-  }
-};
-
-const SearchBarContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(SearchBar);
-
-export default SearchBarContainer;
+export default SearchBar;

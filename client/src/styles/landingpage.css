@@ -45,12 +45,12 @@ button.filterBtn {
 .event {
   margin: 1em .5em 1em .5em;
   border-radius: .25em;
-  -webkit-box-shadow: 0px 0px 2px 0px #838383;
-  box-shadow: 0px 0px 2px 0px #838383;
+  -webkit-box-shadow: 0px 0px .05rem .05rem rgba(131, 131, 131, .5);
+  box-shadow: 0px 0px .05rem .05rem rgba(131, 131, 131, .5);
 }
 
 .rounded .event {
-  border-radius: 1.5em;
+  border-radius: 1em;
 }
 
 .event .restaurant-name {

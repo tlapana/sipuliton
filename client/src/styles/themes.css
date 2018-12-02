@@ -16,6 +16,7 @@
 .theme-1 .select__option--is-focused {
   background-color: #72c567;
   color: white;
+  border-width: 0;
 }
 .theme-1 .form-control:focus,
 .theme-1 .btn:active,
@@ -24,9 +25,10 @@
 .theme-1 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
-  border-color: #66b15c;
+  border-color: #ced4da;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(91, 157, 82, 0.25);
+  -webkit-box-shadow: 0 0 .2rem .2rem rgba(91, 157, 82, 0.3);
+  box-shadow: 0 0 .2rem .2rem rgba(91, 157, 82, 0.3);
 }
 .theme-1 .form-control[type="submit"]:focus,
 .theme-1 .btn:active,
@@ -39,6 +41,7 @@
 }
 .theme-1 .loadingSpinner {
   fill: #72c567 !important;
+  opacity: 0.6;
 }
 
 
@@ -58,7 +61,7 @@
 .theme-2 .select__option--is-focused {
   background-color: #84b1da;
   color: white;
-  border-color: #769fc4;
+  border-width: 0;
 }
 .theme-2 .form-control:focus,
 .theme-2 .btn:active,
@@ -67,9 +70,10 @@
 .theme-2 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
-  border-color: #769fc4;
+  border-color: #ced4da;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(105, 141, 174, 0.25);
+  -webkit-box-shadow: 0 0 .2rem .2rem rgba(105, 141, 174, 0.3);
+  box-shadow: 0 0 .2rem .2rem rgba(105, 141, 174, 0.3);
 }
 .theme-2 .form-control[type="submit"]:focus,
 .theme-2 .btn:active,
@@ -82,6 +86,7 @@
 }
 .theme-2 .loadingSpinner {
   fill: #84b1da !important;
+  opacity: 0.6;
 }
 
 
@@ -101,7 +106,7 @@
 .theme-3 .select__option--is-focused {
   background-color: #e15527;
   color: white;
-  border-color: #ca4c23;
+  border-width: 0;
 }
 .theme-3 .form-control:focus,
 .theme-3 .btn:active,
@@ -110,9 +115,10 @@
 .theme-3 .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
-  border-color: #ca4c23;
+  border-color: #ced4da;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(225, 85, 39, 0.25);
+  -webkit-box-shadow: 0 0 .2rem .2rem rgba(225, 85, 39, 0.3);
+  box-shadow: 0 0 .2rem .2rem rgba(225, 85, 39, 0.3);
 }
 .theme-3 .form-control[type="submit"]:focus,
 .theme-3 .btn:active,
@@ -125,6 +131,7 @@
 }
 .theme-3 .loadingSpinner {
   fill: #e15527 !important;
+  opacity: 0.6;
 }
 
 
@@ -139,7 +146,7 @@
 .theme-old .main-btn:hover {
   background-color: #ffffff;
   color: #4d4d4d;
-  border-color: #4d4d4d;
+  border-width: 0;
 }
 .theme-old .main-btn, 
 .theme-old .main-btn:disabled,
@@ -149,7 +156,7 @@
 .theme-old .select__option--is-focused {
   background-color: #99ff99;
   color: white;
-  border-color: #89e589;
+  border-width: 0;
 }
 .theme-old .form-control:focus,
 .theme-old .btn:active,
@@ -158,13 +165,15 @@
 .theme-old .select__control--is-focused:hover {
   color: #495057;
   background-color: #fff;
-  border-color: #89e589;
+  border-color: #ced4da;
   outline: 0;
-  box-shadow: 0 0 0 0.2rem rgba(122, 204, 122, 0.25);
+  -webkit-box-shadow: 0 0 .2rem .2rem rgba(122, 204, 122, 0.3);
+  box-shadow: 0 0 .2rem .2rem rgba(122, 204, 122, 0.3);
 }
 .theme-old .main-btn:disabled {
   opacity: 0.6;
 }
 .theme-old .loadingSpinner {
   fill: #99ff99 !important;
+  opacity: 0.6;
 }

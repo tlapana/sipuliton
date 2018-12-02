@@ -180,7 +180,7 @@ class Home extends React.Component {
             <div className="eventsDiv"> 
               <h3>
                 {strings.search}
-                <ReactLoading type={'spokes'} className="loadingSpinner" />
+                <ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
               </h3>
             </div>
           </div>

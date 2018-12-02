@@ -10,12 +10,6 @@
   padding-bottom: 0;
 }
 
-input.invalid, input.invalid:focus {
-  border: 1px solid #ef4949 !important;
-  -webkit-box-shadow: 0 0 0 0.2rem #F58F8F;
-  box-shadow: 0 0 0 0.2rem #F58F8F;
-}
-
 .centered-block {
   margin: auto;
   display: block;
@@ -83,6 +77,11 @@ form .main-btn {
   width: 100%;
 }
 
+
+input.invalid, input.invalid:focus {
+  -webkit-box-shadow: 0px 0px .2rem .2rem #F58F8F !important;
+  box-shadow: 0px 0px .2rem .2rem #F58F8F !important;
+}
 .errormsg {
   height: 0;
   opacity: 0;
@@ -118,7 +117,6 @@ form .main-btn {
   font-size: 12px;
   color: black;
   background-color: #F58F8F;
-  border: #ef4949 1px solid;
   border-radius: .25rem;
   z-index: 1000;
   padding: .2rem;
