@@ -344,12 +344,18 @@ async function editReview(client, reviewId, changes, images, diets) {
     for (var key in changes) {
         // check if the property/key is defined in the object itself, not in parent
         if (changes.hasOwnProperty(key)) {
-            if (arrayIndex > 4) {
+            if (arrayIndex > 2) {
                 columns += ', ';
             }
             columns += key + ' = $' + arrayIndex.toString();
             values.push(changes[key]);
             arrayIndex++;
+        }
+    }
+    if (columns === '') {
+        throw {
+            'statusCode': 400,
+            'error': "No changes given"
         }
     }
     await client.query('UPDATE review SET ' + columns + ' WHERE status = 0 AND review_id = $1', values);
@@ -414,7 +420,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating overall"
                     }
                 }
                 changes['rating_overall'] = temp;
@@ -424,7 +430,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating variety"
                     }
                 }
                 changes['rating_variety'] = temp;
@@ -434,7 +440,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating service and quality"
                     }
                 }
                 changes['rating_service_and_quality'] = temp;
@@ -444,7 +450,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 3) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid pricing"
                     }
                 }
                 changes['pricing'] = temp;
