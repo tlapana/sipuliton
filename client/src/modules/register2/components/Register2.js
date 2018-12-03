@@ -278,7 +278,7 @@ export default class Register2 extends React.Component {
           	{strings.loginHere}
         	</Link>
 				</div>
-				<SocialRegister2 onSuccess={this.getSocialCredentials}/>
+				<SocialRegister2 onSuccess={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
 			</div>
 		);
 	}

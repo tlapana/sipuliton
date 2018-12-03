@@ -122,7 +122,7 @@ export default class SocialRegister2 extends React.Component {
         googleLogin: 'Google kirjautuminen',
       }
     });
-    strings.setLanguage(this.props.language);
+    strings.setLanguage(this.props.parentLanguage);
     return (
       <div>
         <GoogleLogin
