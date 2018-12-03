@@ -94,7 +94,7 @@ class MapSmallRestaurantInfo extends React.Component {
           id="enterToRestaurantPageBtn"
           onMouseLeave={this.hover}
           tag={Link}
-          to={"/"+this.props.language+"/restaurantPage?restaurantId="+this.props.restaurantInfo.id}
+          to={"/"+this.props.language+"/restaurant/"+this.props.restaurantInfo.id}
         >
           {strings.enterToRestaurantPage}
         </NavLink>
