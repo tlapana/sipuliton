@@ -1,0 +1,28 @@
+//Review writing page CSS file
+
+div.reviewDiv {
+  width: 100%;
+  color: red;
+  padding-left: 500px;
+}
+
+form.review {
+  padding-left: 50px;
+  
+}
+
+h3.restaurantName {
+  text-align: center
+}
+
+button.submitBtn {
+}
+
+.title {
+  width: 100%;
+}
+
+.reviewTextArea {
+  width: 100%;
+  height: 150px;
+}
