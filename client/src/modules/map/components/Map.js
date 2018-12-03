@@ -52,9 +52,8 @@ class Map extends React.Component {
 		this.FiltersChanged = this.FiltersChanged.bind(this);
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
-    this.CenterChanged = this.CenterChanged.bind(this);
-
-    var markers = this.GetRestaurantsMarkers();
+    this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
+    var restaurantData = this.GetRestaurantsMarkers();
 
     this.state = {
       filters:{
@@ -75,47 +74,92 @@ class Map extends React.Component {
         fifth:false,
         sixth:false,
       },
-			greenMarkers: markers.greenMarkers,
-			greyMarkers: markers.greyMarkers,
-      restaurants: markers.restaurants,
+      restaurants: restaurantData.restaurants,
+
       searchLoc:[60.168182,24.940886],
       errors:{errorWhileGeocoding:false},
     }
 
   }
 
-  // method handles map center change
-  CenterChanged(newCenter){
-    this.setState({center:newCenter})
+  SelectedRestaurantChanged(idx,color){
+    var selected = {};
+    var tempGreen = this.state.restaurants.green;
+    var tempGrey = this.state.restaurants.grey;
+    var curSelectedColor = this.state.restaurants.selectedColour;
+    var newColor = "";
+    if(color === "green"){
+      if(this.state.restaurants.green.length === 1){
+        selected = this.state.restaurants.green[0];
+        tempGreen = [];
+      }
+      else{
+        selected = this.state.restaurants.green[idx];
+        var temp = [];
+        for(var j = 0; j<tempGreen.length; ++j){
+          if(j !== idx){
+            temp.push(tempGreen[j]);
+          }
+        }
+        tempGreen = temp;
+      }
+      newColor = "green";
+    }
+    if(color === "grey"){
+      if(this.state.restaurants.grey.length === 1){
+        selected = this.state.restaurants.grey[0];
+        tempGrey = [];
+      }
+      else{
+        selected = this.state.restaurants.grey[idx];
+        var temp = [];
+        for(var j = 0; j<tempGrey.length; ++j){
+          if(j !== idx){
+            temp.push(tempGrey[j]);
+          }
+        }
+        tempGrey = temp;
+      }
+      newColor = "grey";
+    }
+    if(curSelectedColor === "green"){
+      if(this.state.restaurants.green === undefined || this.state.restaurants.green.length === 0){
+        tempGreen = [this.state.restaurants.selected[0]]
+      }
+      else{
+        tempGreen.push(this.state.restaurants.selected[0]);
+      }
+    }
+    if(curSelectedColor === "grey"){
+      if(this.state.restaurants.grey === undefined || this.state.restaurants.grey.length === 0){
+        tempGrey = [this.state.restaurants.selected[0]]
+      }
+      else{
+        tempGrey.push(this.state.restaurants.selected[0]);
+      }
+    }
+    console.log(tempGrey)
+    console.log(tempGreen)
+    this.setState({
+      center:selected.position,
+      restaurants:{
+        green: tempGreen,
+        grey: tempGrey,
+        selected: [selected],
+        selectedColour: newColor,
+      }
+    })
   }
 
   // method handles fetching restaurants marker data from database
 	GetRestaurantsMarkers(){
     //TODO: Implement restaurant fetch based on filters.
 
-		//Mock restaurant green markers.
-    var newMarkers = {}
-    let markers = [
-      [[61.457239,23.848175],[1]],
-      [[61.426239,23.854175],[2]],
-      [[61.445239,23.839175],[3]],
-      [[61.487239,23.808175],[4]],
-      [[61.459239,23.918175],[5]],
-      [[61.476239,23.768175],[6]],
-      [[61.492239,23.798175],[7]]];
-    let greyMarks = []
-		if(markers.count <= 10){
-			//Mock restaurant grey markers.
-	    greyMarks = [
-	      [[61.463871,23.829619],[8]],
-	      [[61.463999,23.830000],[9]],
-	      [[61.467252,23.851854],[10]]];
-		}
-
-    let restaurantData = [
+		//Mock restaurants.
+    let greenRestaurantData = [
       {
         id:0,
-        name:"First",
+        name:"Eka",
         city:"Hervanta",
         postcode:"33990",
         address:"Ravintolan 1 osoite",
@@ -132,6 +176,7 @@ class Map extends React.Component {
         openFri:"9:00-16:00",
         openSat:"8:00-17:00",
         openSun:"10:00-18:00",
+        position:[61.454239,23.849175],
       },
       {
         id:1,
@@ -152,6 +197,7 @@ class Map extends React.Component {
         openFri:"9:00-16:00",
         openSat:"8:00-17:00",
         openSun:"10:00-18:00",
+        position: [61.426239,23.854175]
       },
       {
         id:2,
@@ -172,6 +218,7 @@ class Map extends React.Component {
         openFri:"9:00-16:00",
         openSat:"8:00-17:00",
         openSun:"10:00-18:00",
+        position: [61.445239,23.839175],
       },
       {
         id:3,
@@ -192,13 +239,40 @@ class Map extends React.Component {
         openFri:"9:00-16:00",
         openSat:"8:00-17:00",
         openSun:"10:00-18:00",
+        position: [61.487239,23.808175],
       }
     ]
 
-    newMarkers = {
-      greyMarkers: greyMarks,
-      greenMarkers:markers,
-      restaurants:restaurantData
+    let greyRestaurantData = [
+      {
+        id:4,
+        name:"Harmaa",
+        city:"Hervanta",
+        postcode:"33990",
+        address:"Ravintolan 1 osoite",
+        overallRating:"2",
+        serviceRating:"3",
+        varietyRating:"3",
+        reliabilityRating: "4",
+        website: "www.eka.fi",
+        email: "eka@eka.fi",
+        openMon:"9:00-15:00",
+        openTue:"9:00-15:00",
+        openWed:"9:00-15:00",
+        openThu:"9:00-13:00",
+        openFri:"9:00-16:00",
+        openSat:"8:00-17:00",
+        openSun:"10:00-18:00",
+        position:[61.457239,23.848175],
+      }]
+
+    let newMarkers = {
+      restaurants:{
+        green:greenRestaurantData,
+        grey:greyRestaurantData,
+        selected:[],
+        selectedColour:"",
+      }
     }
     return newMarkers
 
@@ -344,9 +418,7 @@ class Map extends React.Component {
           	latitude={this.state.center[0]}
 						longitude={this.state.center[1]}
           	searchRadiusInKm={this.state.filters.radius}
-            greenMarkersData={this.state.greenMarkers}
-            greyMarkersData={this.state.greyMarkers}
-            centerChanged={this.CenterChanged}
+            selectedRestaurantChanged = {this.SelectedRestaurantChanged}
             center={this.state.center}
             restaurants={this.state.restaurants}
           />
@@ -387,11 +459,9 @@ class Map extends React.Component {
 	        latitude={this.state.searchLoc[0]}
 					longitude={this.state.searchLoc[1]}
 	        searchRadiusInKm={this.state.filters.radius}
-					greenMarkersData={this.state.greenMarkers}
-					greyMarkersData={this.state.greyMarkers}
-          centerChanged={this.CenterChanged}
           center={this.state.center}
           restaurants={this.state.restaurants}
+          selectedRestaurantChanged = {this.SelectedRestaurantChanged}
 				/>
       </div>
       : <div>Getting the location data&hellip; </div>

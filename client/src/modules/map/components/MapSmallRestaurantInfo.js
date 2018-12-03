@@ -69,8 +69,11 @@ class MapSmallRestaurantInfo extends React.Component {
     if(n === 6){
       todayOpenHours = this.props.restaurantInfo.openSat
     }
+
+    var additionalClassName = this.props.pinColor+"-restaurant"
+    var fullClass = "restaurant-info "+additionalClassName
     return(
-      <div className="restaurant-info">
+      <div className={fullClass}>
         <div>
           <h1 className="restaurant-info-item" id="restaurantName">{this.props.restaurantInfo.name}</h1>
           <div className="restaurant-info-item" id="address">
@@ -83,7 +86,6 @@ class MapSmallRestaurantInfo extends React.Component {
         </div>
       </div>
       <div className="restaurant-info-item" id="openingHours">
-        {strings.openingHours}:<br/>
         {strings.openToday}: {todayOpenHours}<br/>
       </div>
       <div className="small-restaurant-info-btn-box">

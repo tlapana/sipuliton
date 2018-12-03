@@ -28,18 +28,8 @@ class CustomMap extends React.Component {
   constructor(props) {
     super(props);
 
-    this.CloseRestaurantInfo = this.CloseRestaurantInfo.bind(this);
-    //TODO: Fetch marker locations based on search or current location.
-
     this.state = {
-      center: [61.450239,23.858175],
       zoom: 13,
-      restaurantInfoOpen: false,
-      mapClass:"full",
-      restaurantInfo:{},
-      greenMarkers: [],
-      greyMarkers: [],
-      selectedRestaurant: 0,
       isSearching:false,
       errorWhileLoading:false
     }
@@ -47,85 +37,17 @@ class CustomMap extends React.Component {
   }
 
   //Fetches restaurant info and opens restaurant info box
-  OpenRestaurantInfo(position){
-    var fixLat = position[0][0]-0.1
+  OpenRestaurantInfo(position,color,idx){
     this.setState({
-      restaurantInfoOpen: true,
-      mapClass:"mini",
-      center: [fixLat,position[0][1]],
-      zoom:15,
-      selectedRestaurant: position[1][0],
+      zoom:17,
       isSearching:true,
       errorWhileLoading:false
     })
-    this.props.centerChanged(this.state.center);
-
-    // Fetch restaurant info
-    fetch(restaurantDataUrl + "?restaurantId=" + position[1][0])
-    		.then(res => res.json())
-    		.then(
-    			(result) => {
-    				console.log("DEBUG: loadRestaurant success");
-            var restaurantInfo = result.restaurant[0]
-            console.log(restaurantInfo);
-            if(restaurantInfo === undefined){
-              // Restaurant not exist in database
-              this.setState({
-                isSearching:false,
-                errorWhileLoading:true
-              });
-            }
-            else{
-              // set restaurant details.
-              this.setState({
-                isSearching:false,
-                restaurantInfo:{
-                  id:restaurantInfo.restaurant_id,
-                  name:restaurantInfo.name,
-                  city:"Hervanta",
-                  postcode:"33990",
-                  address:restaurantInfo.street_address,
-                  overallRating:restaurantInfo.rating_overall,
-                  serviceRating:restaurantInfo.rating_service_and_quality,
-                  varietyRating:restaurantInfo.rating_variety,
-                  reliabilityRating: restaurantInfo.rating_reliability,
-                  website: restaurantInfo.website,
-                  email: restaurantInfo.email,
-                  openMon:"9:00-15:00",
-                  openTue:"9:00-15:00",
-                  openWed:"9:00-15:00",
-                  openThu:"9:00-13:00",
-                  openFri:"9:00-16:00",
-                  openSat:"8:00-17:00",
-                  openSun:"10:00-18:00",
-                },
-                errorWhileLoading:false
-              })
-            }
-            this.render();
-    			},
-
-    			(error) => {
-    				console.log("DEBUG: loadRestaurant error");
-    				console.log(error);
-    				this.setState({
-              isSearching:false,
-    					errorWhileLoading:true
-    				});
-    			}
-        )
+    this.props.selectedRestaurantChanged(idx,color);
     this.render();
   }
 
   //Closes restaurant info box
-  CloseRestaurantInfo(){
-    this.setState({
-      restaurantInfoOpen: false,
-      mapClass:"full",
-      selectedRestaurant: 0,
-    });
-    this.render();
-  }
 
   render() {
 
@@ -139,6 +61,17 @@ class CustomMap extends React.Component {
          shadowSize: null,
          shadowAnchor: null
      });
+
+     // icon for the search result
+     const yellowIcon = L.icon({
+          iconUrl: require('../../../resources/YellowPin.png'),
+          iconSize: [84,64],
+          iconAnchor: [32, 64],
+          popupAnchor: [-3, -76],
+          shadowUrl: null,
+          shadowSize: null,
+          shadowAnchor: null
+      });
 
      // icon for the non search result
      const greyIcon = L.icon({
@@ -214,15 +147,19 @@ class CustomMap extends React.Component {
     /* markers init */
     var greyMarkers = [];
     var greenMarkers = [];
+    var selectedMarker = [];
     var restaurants = [];
-    if(this.props.greyMarkersData !== undefined){
-      greyMarkers = this.props.greyMarkersData;
+    if(this.props.restaurants.grey !== undefined &&
+      this.props.restaurants.grey[0] !== undefined){
+      greyMarkers = this.props.restaurants.grey;
     }
-    if(this.props.greenMarkersData !== undefined){
-      greenMarkers = this.props.greenMarkersData;
+    if(this.props.restaurants.green !== undefined &&
+      this.props.restaurants.green[0] !== undefined){
+      greenMarkers = this.props.restaurants.green;
     }
-    if(this.props.restaurants != undefined){
-      restaurants = this.props.restaurants;
+    if(this.props.restaurants.selected !== undefined &&
+      this.props.restaurants.selected[0] !== undefined){
+      selectedMarker = this.props.restaurants.selected;
     }
 
     return(
@@ -230,7 +167,7 @@ class CustomMap extends React.Component {
           <Map
             center={center}
             zoom={this.state.zoom}
-            className={this.state.mapClass}
+            className="full"
           >
             <TileLayer
               url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
@@ -241,19 +178,24 @@ class CustomMap extends React.Component {
                 {strings.youAreHere}
               </Popup>
             </Marker>
-            {greenMarkers.map((position, idx) =>
-              <Marker key={`marker-${idx}`} position={position[0]} icon={greenIcon}>
+            {selectedMarker.map((data, idx) =>
+              <Marker key={`marker-${idx}`} position={data.position} icon={yellowIcon}>
                 <Popup
-                  onOpen={() => this.OpenRestaurantInfo(position)}
-                  onClose={this.CloseRestaurantInfo}
+                  onOpen={() => this.OpenRestaurantInfo(data,"",idx)}
                   className="HiddenPopUp"/>
               </Marker>
             )}
-            {greyMarkers.map((position, idx) =>
-              <Marker key={`marker-${idx}`} position={position[0]} icon={greyIcon}>
+            {greenMarkers.map((data, idx) =>
+              <Marker key={`marker-${idx}`} position={data.position} icon={greenIcon}>
                 <Popup
-                  onOpen={() => this.OpenRestaurantInfo(position)}
-                  onClose={this.CloseRestaurantInfo}
+                  onOpen={() => this.OpenRestaurantInfo(data,"green",idx)}
+                  className="HiddenPopUp"/>
+              </Marker>
+            )}
+            {greyMarkers.map((data, idx) =>
+              <Marker key={`marker-${idx}`} position={data.position} icon={greyIcon}>
+                <Popup
+                  onOpen={() => this.OpenRestaurantInfo(data,"grey",idx)}
                   className="HiddenPopUp"/>
               </Marker>
             )}
@@ -264,11 +206,28 @@ class CustomMap extends React.Component {
 
           </Map>
             <div className="restaurants-list">
-                {restaurants.map((data, idx) =>
+                {selectedMarker.map((data, idx) =>
                   <div key={`info-${idx}`} className="restaurant-info-block">
                     <MapSmallRestaurantInfo
                       restaurantInfo={data}
-                      language={this.props.language}/>
+                      language={this.props.language}
+                      pinColor={"yellow"}/>
+                  </div>
+                )}
+                {greenMarkers.map((data, idx) =>
+                  <div key={`info-${idx}`} className="restaurant-info-block">
+                    <MapSmallRestaurantInfo
+                      restaurantInfo={data}
+                      language={this.props.language}
+                      pinColor={"green"}/>
+                  </div>
+                )}
+                {greyMarkers.map((data, idx) =>
+                  <div key={`info-${idx}`} className="restaurant-info-block">
+                    <MapSmallRestaurantInfo
+                      restaurantInfo={data}
+                      language={this.props.language}
+                      pinColor={"grey"}/>
                   </div>
                 )}
             </div>
