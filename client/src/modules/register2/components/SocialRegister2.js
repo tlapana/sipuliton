@@ -53,7 +53,7 @@ export default class SocialRegister2 extends React.Component {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
         this.setState({
-			regCredentials: credentials,
+			regCredentials: [response.profileObj, "google"],
 			loggingSucceeded:true
 			});
         
@@ -86,7 +86,7 @@ export default class SocialRegister2 extends React.Component {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
         this.setState({
-			regCredentials: credentials,
+			regCredentials: [response, "facebook"],
 			loggingSucceeded:true
 			});
         

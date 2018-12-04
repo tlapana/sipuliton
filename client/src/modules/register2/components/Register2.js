@@ -39,7 +39,8 @@ export default class Register2 extends React.Component {
 			retypeMailValid: true,
 			passwordValid: true,
 			retypePassValid: true,
-			socialReg: false
+			googleReg: false,
+			faceReg: false
 		};
 
 		this.onUsernameChanged = this.onUsernameChanged.bind(this);
@@ -147,7 +148,20 @@ export default class Register2 extends React.Component {
 		event.preventDefault();
 		this.setState({ isLoading: true });
 		try {
-			const newUser = await Auth.signUp({
+			if (this.state.googleReg) {
+				const newUser = await Auth.signUp({
+				username: this.state.socialCredentials.name,
+				password: this.state.socialCredentials.googleId,
+				attributes: {
+					email: this.state.socialCredentials.email,
+				},
+			});
+			this.setState({
+				newUser
+			});
+			}
+			else if (this.state.faceReg) {
+				const newUser = await Auth.signUp({
 				username: this.state.username,
 				password: this.state.password,
 				attributes: {
@@ -157,6 +171,19 @@ export default class Register2 extends React.Component {
 			this.setState({
 				newUser
 			});
+			}
+			else {
+				const newUser = await Auth.signUp({
+				username: this.state.username,
+				password: this.state.password,
+				attributes: {
+					email: this.state.mail,
+				},
+			});
+			this.setState({
+				newUser
+			});
+			}
 		} catch (e) {
 			if (e.code === 'UsernameExistsException') {
 				let strings = new LocalizedStrings({
@@ -173,13 +200,23 @@ export default class Register2 extends React.Component {
 		this.setState({ isLoading: false });
 	}
 	
-	/*getSocialCredentials = (dataFromChild) => {
-		this.setState({
-			socialCredentials: dataFromChild,
-			socialReg: true
+	getSocialCredentials = (dataFromChild) => {
+		if (dataFromChild[1] == "google") {
+			this.setState({
+				socialCredentials: dataFromChild,
+				googleReg: true,
+				faceReg: false
 			});
-		//console.log(dataFromChild + ", " + socialCredentials);
-	}*/
+		}
+		else if (dataFromChild[1] == "facebook") {
+			this.setState({
+				socialCredentials: dataFromChild,
+				googleReg: false,
+				faceReg: true
+			});
+		}
+		console.log(this.state.socialCredentials);
+	}
 
 	renderConfirmation() {
 		let strings = new LocalizedStrings({
