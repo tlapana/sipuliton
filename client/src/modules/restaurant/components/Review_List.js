@@ -8,6 +8,10 @@ import {
 	Label
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactStars from 'react-stars';
+/* Localization */
+import LocalizedStrings from 'react-localization';
+
 const reviewsDataUrl = "http://localhost:3000/reviews";
 
 class ReviewList extends React.Component {
@@ -106,16 +110,39 @@ class ReviewList extends React.Component {
 	}
 /*Render the items shown in review inside a div that can be clicked to show another review*/
 	render() {
+		let strings = new LocalizedStrings({
+			en:{
+				preTitle: "Restaurant's reviews: ",
+				reviewer: "Reviewer: ",
+				allergyTags: "Allergy information: ",
+				relevance: "Relevance for the search: ",
+				allergyAwareness: "Allergy awareness: ",
+				quality: "Service and quality: "
+			},
+			fi: {
+				preTitle: "Ravintolan arvostelut: ",
+				reviewer: "Arvostelija: ",
+				allergyTags: "Allergiatunnisteet: ",
+				relevance: "Vastasi hakua: ",
+				allergyAwareness: "Allergioiden huomioon otto: ",
+				quality: "Palvelu ja laatu: "
+			}
+		});
+		strings.setLanguage(this.props.language);
 		return (
 			<div id="reviewList" onClick={this.changeReview}>
+				<div id="preTitle">{strings.preTitle}</div>
 				<h3>{this.state.titles[this.state.reviewIndex]}</h3>
-				<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div><br/>
-				<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div><br/>
-				<div id="reviewUser">Arvostelija: {this.state.users[this.state.reviewIndex]}</div>
-				<div id="reviewAllergies">Allergiatunnisteet: {this.looper(this.state.allergyTags[this.state.reviewIndex])}</div><br/>
-				<div id="reviewRelevance">Vastasi hakua: {this.state.relevance[this.state.reviewIndex]}</div><br/>
-				<div id="reviewAwareness">Allergioiden huomioon otto: {this.state.allergyAwareness[this.state.reviewIndex]}</div><br/>
-				<div id="reviewQuality">Palvelu ja laatu: {this.state.serviceQuality[this.state.reviewIndex]}</div>
+				<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
+				<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
+				<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
+				<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
+				<div id="reviewRelevance">{strings.relevance}
+				<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/></div>
+				<div id="reviewAwareness">{strings.allergyAwareness}
+				<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/></div>
+				<div id="reviewQuality">{strings.quality}
+				<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/></div>
 			</div>
 		);
 	}
