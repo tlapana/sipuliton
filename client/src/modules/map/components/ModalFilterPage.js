@@ -17,9 +17,9 @@ import LocalizedStrings from 'react-localization';
 class ModalFilterPage extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
-    super(props);  
+    super(props);
     this.state = {
-      modalState: this.props.showFilterBox,
+      modalState: this.props.showFilterBoxAtStart,
       checkboxes:{
         first:false,
         second:false,
@@ -64,6 +64,7 @@ class ModalFilterPage extends React.Component {
     this.saveFilters = this.saveFilters.bind(this);
     this.answerNo = this.answerNo.bind(this);
     this.answerYes = this.answerYes.bind(this);
+    console.log(this.state);
   }
 
   handleCityChange = event => {

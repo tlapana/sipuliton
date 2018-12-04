@@ -32,40 +32,42 @@ class Map extends React.Component {
     var minPricing = 0;
     var city = "";
     var searchRadius = 10000;
-    var showFilterBox = false;
-
-    if(this.props.match.params.searchParameters !== undefined){
-      var variables = this.props.match.params.searchParameters.replace("?","");
+    var showFilterBox = true;
+    if(this.props.location.search !== undefined
+      && this.props.location.search !== ""
+      && this.props.location.search.includes("?")
+    ){
+      var variables = this.props.location.search.replace("?","");
       var varArray = variables.split("&");
       for(var i = 0; i<varArray.length; i++){
         var el = varArray[i];
         var varValPair = el.split("=");
         if(varValPair[0] === "minOverallRating"){
-          overallRating = varValPair[1];
+          overallRating = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "minReliabilityRating"){
-          minRel = varValPair[1];
+          minRel = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "minVarietyRating"){
-          minVariety = varValPair[1];
+          minVariety = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "minServiceAndQualityRating"){
-          minService = varValPair[1];
+          minService = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "searchRadius"){
-          searchRadius = varValPair[1];
+          searchRadius = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "minServiceAndQualityRating"){
-          minService = varValPair[1];
+          minService = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "minPricing"){
-          minPricing = varValPair[1];
+          minPricing = parseInt(varValPair[1]);
         }
         if(varValPair[0] === "city"){
           city = varValPair[1];
         }
       }
-      showFilterBox = true;
+      showFilterBox = false;
     }
 
     this.state = {
@@ -90,8 +92,8 @@ class Map extends React.Component {
       },
       greenMarkers: [],
       greyMarkers: [],
-    }
-    console.log(this.state)
+    };
+    console.log(this.state);
     Geocoder.init(Config.google.API_KEY);
     this.compare = this.compare.bind(this);
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
@@ -99,20 +101,20 @@ class Map extends React.Component {
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
-    console.log(this.props.match.params.searchParameters);
 
     var restaurantData = this.GetRestaurantsMarkers();
 
     this.state = {
       filters:{
-        radius:10000,
-        minOverall : 0,
-        minReliability : 0,
-        minVariety : 0,
-        minService : 0,
-        pricing: 0,
-        city:""
+        radius:searchRadius,
+        minOverall : overallRating,
+        minReliability : minRel,
+        minVariety : minVariety,
+        minService : minService,
+        pricing: minPricing,
+        city:city,
       },
+      showFilterBox: showFilterBox,
       center:[60.168182,24.940886],
       checkboxes:{
         first:false,
@@ -123,10 +125,9 @@ class Map extends React.Component {
         sixth:false,
       },
       restaurants: restaurantData.restaurants,
-
       searchLoc:[60.168182,24.940886],
       errors:{errorWhileGeocoding:false},
-    }
+    };
   }
 
   compare(a,b){
@@ -394,6 +395,7 @@ class Map extends React.Component {
                 grey:greyMarks,
                 selected:[],
                 selectedColour:"",
+              }
             }
           )
 
