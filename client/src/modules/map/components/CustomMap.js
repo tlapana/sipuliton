@@ -149,15 +149,18 @@ class CustomMap extends React.Component {
     var greenMarkers = [];
     var selectedMarker = [];
     var restaurants = [];
-    if(this.props.restaurants.grey !== undefined &&
+    if(this.props.restaurants !== undefined &&
+      this.props.restaurants.grey !== undefined &&
       this.props.restaurants.grey[0] !== undefined){
       greyMarkers = this.props.restaurants.grey;
     }
-    if(this.props.restaurants.green !== undefined &&
+    if(this.props.restaurants !== undefined &&
+      this.props.restaurants.green !== undefined &&
       this.props.restaurants.green[0] !== undefined){
       greenMarkers = this.props.restaurants.green;
     }
-    if(this.props.restaurants.selected !== undefined &&
+    if(this.props.restaurants !== undefined &&
+      this.props.restaurants.selected !== undefined &&
       this.props.restaurants.selected[0] !== undefined){
       selectedMarker = this.props.restaurants.selected;
     }

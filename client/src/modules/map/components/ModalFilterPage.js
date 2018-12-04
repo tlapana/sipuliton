@@ -17,9 +17,9 @@ import LocalizedStrings from 'react-localization';
 class ModalFilterPage extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
-    super(props);
+    super(props);  
     this.state = {
-      modalState: true,
+      modalState: this.props.showFilterBox,
       checkboxes:{
         first:false,
         second:false,

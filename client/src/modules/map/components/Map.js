@@ -25,16 +25,60 @@ class Map extends React.Component {
   constructor(props) {
     super(props);
 
+    var overallRating = 0;
+    var minRel = 0;
+    var minVariety = 0;
+    var minService = 0;
+    var minPricing = 0;
+    var city = "";
+    var searchRadius = 10000;
+    var showFilterBox = false;
+
+    if(this.props.match.params.searchParameters !== undefined){
+      var variables = this.props.match.params.searchParameters.replace("?","");
+      var varArray = variables.split("&");
+      for(var i = 0; i<varArray.length; i++){
+        var el = varArray[i];
+        var varValPair = el.split("=");
+        if(varValPair[0] === "minOverallRating"){
+          overallRating = varValPair[1];
+        }
+        if(varValPair[0] === "minReliabilityRating"){
+          minRel = varValPair[1];
+        }
+        if(varValPair[0] === "minVarietyRating"){
+          minVariety = varValPair[1];
+        }
+        if(varValPair[0] === "minServiceAndQualityRating"){
+          minService = varValPair[1];
+        }
+        if(varValPair[0] === "searchRadius"){
+          searchRadius = varValPair[1];
+        }
+        if(varValPair[0] === "minServiceAndQualityRating"){
+          minService = varValPair[1];
+        }
+        if(varValPair[0] === "minPricing"){
+          minPricing = varValPair[1];
+        }
+        if(varValPair[0] === "city"){
+          city = varValPair[1];
+        }
+      }
+      showFilterBox = true;
+    }
+
     this.state = {
       filters:{
-        radius:10000,
-        minOverall : 0,
-        minReliability : 0,
-        minVariety : 0,
-        minService : 0,
-        pricing: 0,
-        city:"test"
+        radius:searchRadius,
+        minOverall : overallRating,
+        minReliability : minRel,
+        minVariety : minVariety,
+        minService : minService,
+        pricing: minPricing,
+        city:city,
       },
+      showFilterBox: showFilterBox,
       center:[60.168182,24.940886],
       checkboxes:{
         first:false,
@@ -47,12 +91,15 @@ class Map extends React.Component {
       greenMarkers: [],
       greyMarkers: [],
     }
+    console.log(this.state)
     Geocoder.init(Config.google.API_KEY);
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
+    console.log(this.props.match.params.searchParameters);
+
     var restaurantData = this.GetRestaurantsMarkers();
 
     this.state = {
@@ -79,7 +126,6 @@ class Map extends React.Component {
       searchLoc:[60.168182,24.940886],
       errors:{errorWhileGeocoding:false},
     }
-
   }
 
   SelectedRestaurantChanged(idx,color){
@@ -154,7 +200,7 @@ class Map extends React.Component {
   // method handles fetching restaurants marker data from database
 	GetRestaurantsMarkers(){
     //TODO: Implement restaurant fetch based on filters.
-
+/*
 		//Mock restaurants.
     let greenRestaurantData = [
       {
@@ -274,7 +320,7 @@ class Map extends React.Component {
         selectedColour:"",
       }
     }
-    return newMarkers
+    return newMarkers*/
 
     //Basic search portion
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
@@ -291,25 +337,58 @@ class Map extends React.Component {
           console.log(result);
           //Send data via props
           //Mock restaurant green markers.
-          var newMarkers = {}
-          let markers = [
-            [[61.457239,23.848175],[1]],
-            [[61.426239,23.854175],[2]],
-            [[61.445239,23.839175],[3]],
-            [[61.487239,23.808175],[4]],
-            [[61.459239,23.918175],[5]],
-            [[61.476239,23.768175],[6]],
-            [[61.492239,23.798175],[7]]];
-          let greyMarks = []
+          var newMarkers = {};
+          let markers = [];
+          let greyMarks = [];
+          for(var i = 0; i<result.restaurants.length; ++i){
+            var res = result.restaurants[i];
+            var resObj = {
+              id:res.restaurant_id,
+              name:res.restaurant_name,
+              city:res.city_name,
+              postcode:"33990",
+              address:res.street_address,
+              overallRating:res.rating_overall,
+              serviceRating:res.rating_service_and_quality,
+              varietyRating:res.rating_variety,
+              reliabilityRating: res.rating_reliability,
+              pricingRating: res.pricing,
+              website: res.website,
+              email: res.email,
+              openMon:"9:00-15:00",
+              openTue:"9:00-15:00",
+              openWed:"9:00-15:00",
+              openThu:"9:00-13:00",
+              openFri:"9:00-16:00",
+              openSat:"8:00-17:00",
+              openSun:"10:00-18:00",
+              position: [61.487239,23.808175],
+            }
+            markers.push(resObj);
+          }
           if(markers.count <= 10){
             //Mock restaurant grey markers.
-            greyMarks = [
-              [[61.463871,23.829619],[8]],
-              [[61.463999,23.830000],[9]],
-              [[61.467252,23.851854],[10]]];
+
           }
-          this.setState({loading:false,greyMarkers: greyMarks,greenMarkers:markers})
-          newMarkers = {greyMarkers: greyMarks,greenMarkers:markers}
+          this.setState(
+            {
+              loading:false,
+              restaurants:{
+                green:markers,
+                grey:greyMarks,
+                selected:[],
+                selectedColour:"",
+            }
+          )
+
+          newMarkers = {
+            restaurants:{
+              green:markers,
+              grey:greyMarks,
+              selected:[],
+              selectedColour:"",
+            }
+          }
           return newMarkers
         },
         // Note: it's important to handle errors here
@@ -405,7 +484,8 @@ class Map extends React.Component {
             filters={this.state.filters}
 						FiltersChanged={this.FiltersChanged}
 						language={this.props.match.params.language}
-            geolocationEnabled={false}/>
+            geolocationEnabled={false}
+            showFilterBoxAtStart={this.state.showFilterBox}/>
           {this.state.loading &&
             <ReactLoading
               type={'spokes'}
@@ -431,6 +511,7 @@ class Map extends React.Component {
 					FiltersChanged={this.FiltersChanged}
 					language={this.props.match.params.language}
           geolocationEnabled={true}
+          showFilterBoxAtStart={this.state.showFilterBox}
         />
         {this.state.loading &&
           <ReactLoading
