@@ -31,18 +31,12 @@ class CustomMap extends React.Component {
     this.state = {
       zoom: 13,
       isSearching:false,
-      errorWhileLoading:false
     }
 
   }
 
   //Fetches restaurant info and opens restaurant info box
   OpenRestaurantInfo(position,color,idx){
-    this.setState({
-      zoom:17,
-      isSearching:true,
-      errorWhileLoading:false
-    })
     this.props.selectedRestaurantChanged(idx,color);
     this.render();
   }
@@ -207,7 +201,9 @@ class CustomMap extends React.Component {
           </Map>
             <div className="restaurants-list">
                 {selectedMarker.map((data, idx) =>
-                  <div key={`info-${idx}`} className="restaurant-info-block">
+                  <div key={`info-${idx}`}
+                    className="restaurant-info-block"
+                  >
                     <MapSmallRestaurantInfo
                       restaurantInfo={data}
                       language={this.props.language}
@@ -215,7 +211,10 @@ class CustomMap extends React.Component {
                   </div>
                 )}
                 {greenMarkers.map((data, idx) =>
-                  <div key={`info-${idx}`} className="restaurant-info-block">
+                  <div key={`info-${idx}`}
+                    className="restaurant-info-block"
+                    onClick={() => this.OpenRestaurantInfo(data,"green",idx)}
+                  >
                     <MapSmallRestaurantInfo
                       restaurantInfo={data}
                       language={this.props.language}
@@ -223,7 +222,10 @@ class CustomMap extends React.Component {
                   </div>
                 )}
                 {greyMarkers.map((data, idx) =>
-                  <div key={`info-${idx}`} className="restaurant-info-block">
+                  <div key={`info-${idx}`}
+                    className="restaurant-info-block"
+                    onClick={() => this.OpenRestaurantInfo(data,"grey",idx)}
+                  >
                     <MapSmallRestaurantInfo
                       restaurantInfo={data}
                       language={this.props.language}

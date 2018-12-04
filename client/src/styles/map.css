@@ -224,16 +224,16 @@
 }
 .green-restaurant{
   border-color: green;
-  border-width: 3px;
+  border-width: 5px;
   border-style: solid;
 }
 .grey-restaurant{
   border-color: grey;
-  border-width: 3px;
+  border-width: 5px;
   border-style: solid;
 }
 .yellow-restaurant{
   border-color: yellow;
-  border-width: 3px;
+  border-width: 5px;
   border-style: solid;
 }

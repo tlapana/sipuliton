@@ -48,6 +48,7 @@ class Map extends React.Component {
       greyMarkers: [],
     }
     Geocoder.init(Config.google.API_KEY);
+    this.compare = this.compare.bind(this);
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
@@ -80,6 +81,18 @@ class Map extends React.Component {
       errors:{errorWhileGeocoding:false},
     }
 
+  }
+
+  compare(a,b){
+    var distToA = Math.sqrt(Math.pow(a.position[0] - this.state.center[0])+Math.pow(a.position[1]-this.state.center[1]))
+    var distToB = Math.sqrt(Math.pow(b.position[0] - this.state.center[0])+Math.pow(b.position[1]-this.state.center[1]))
+    if( distToA < distToB){
+      return -1;
+    }
+    if(distToA > distToB){
+      return 1;
+    }
+    return 0;
   }
 
   SelectedRestaurantChanged(idx,color){
@@ -138,8 +151,8 @@ class Map extends React.Component {
         tempGrey.push(this.state.restaurants.selected[0]);
       }
     }
-    console.log(tempGrey)
-    console.log(tempGreen)
+    tempGreen = tempGreen.sort(this.compare);
+    tempGrey = tempGrey.sort(this.compare);
     this.setState({
       center:selected.position,
       restaurants:{
@@ -265,6 +278,9 @@ class Map extends React.Component {
         openSun:"10:00-18:00",
         position:[61.457239,23.848175],
       }]
+
+    greenRestaurantData = greenRestaurantData.sort(this.compare);
+    greyRestaurantData = greyRestaurantData.sort(this.compare);
 
     let newMarkers = {
       restaurants:{
