@@ -187,16 +187,16 @@ async function getLanguage(client, language) {
 
 async function getOwnReviews(client, ownUserId, status, offset, limit) {
     var jsonObj = {};
+    jsonObj['review_count'] = 0;
     if (status === null) {
         const res = await client.query(
             `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
                 review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
                 rating_service_and_quality, pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets,
-                accepted, rejected, reason, review_count
+                accepted, rejected, reason
             FROM review_diet, restaurant, review
                 LEFT JOIN review_accept_log ON review.review_id = review_accept_log.review_id
-                LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id,
-                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1)
+                LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id
             WHERE review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
             GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
@@ -206,64 +206,75 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
             OFFSET $2`,
             [ownUserId, offset, limit]);
         if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows)); 
+            jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows)); 
+        }
+        const res2 = await client.query(
+            `SELECT COUNT(*) AS review_count FROM review WHERE user_id = $1`,
+            [ownUserId]);
+        if (res2.rowCount > 0) {
+            jsonObj['review_count'] = res2.rows[0]['review_count'];
         }
     }
-    if (status == 0) {
-        const res = await client.query(
-            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, review_count
-            FROM review, review_diet, restaurant,
-                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
-                AND restaurant.restaurant_id = review.restaurant_id
-            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
-        if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows)); 
+    else {
+        if (status == 0) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets
+                FROM review, review_diet, restaurant
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows)); 
+            }
         }
-    }
-    if (status == 1) {
-        const res = await client.query(
-            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted, review_count
-            FROM review, review_diet, restaurant, review_accept_log,
-                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
-                AND restaurant.restaurant_id = review.restaurant_id AND review.review_id = review_accept_log.review_id
-            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, accepted
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
-        if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows));
+        if (status == 1) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted
+                FROM review, review_diet, restaurant, review_accept_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id AND review.review_id = review_accept_log.review_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, accepted
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows));
+            }
         }
-    }
-    if (status == 2) {
-        const res = await client.query(
-            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason, review_count
-            FROM review, review_diet, restaurant, review_reject_log,
-                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
-                AND restaurant.restaurant_id = review.restaurant_id AND review_reject_log.review_id = review.review_id
-            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, rejected, reason
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
-        if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows));
+        if (status == 2) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason
+                FROM review, review_diet, restaurant, review_reject_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id AND review_reject_log.review_id = review.review_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, rejected, reason
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows));
+            }
+        }
+        const res2 = await client.query(
+            `SELECT COUNT(*) AS review_count FROM review WHERE user_id = $1 AND status = $2`,
+            [ownUserId, status]);
+        if (res2.rowCount > 0) {
+            jsonObj['review_count'] = res2.rows[0]['review_count'];
         }
     }
     //TODO: get images from url
