@@ -192,10 +192,11 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
             `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
                 review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
                 rating_service_and_quality, pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets,
-                accepted, rejected, reason
+                accepted, rejected, reason, review_count
             FROM review_diet, restaurant, review
                 LEFT JOIN review_accept_log ON review.review_id = review_accept_log.review_id
-                LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id
+                LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id,
+                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1)
             WHERE review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
             GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
@@ -212,8 +213,9 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
         const res = await client.query(
             `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets
-            FROM review, review_diet, restaurant
+                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, review_count
+            FROM review, review_diet, restaurant,
+                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
             GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
@@ -230,8 +232,9 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
         const res = await client.query(
             `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted
-            FROM review, review_diet, restaurant, review_accept_log
+                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted, review_count
+            FROM review, review_diet, restaurant, review_accept_log,
+                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id AND review.review_id = review_accept_log.review_id
             GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
@@ -248,8 +251,9 @@ async function getOwnReviews(client, ownUserId, status, offset, limit) {
         const res = await client.query(
             `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
                 rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason
-            FROM review, review_diet, restaurant, review_reject_log
+                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason, review_count
+            FROM review, review_diet, restaurant, review_reject_log,
+                    (SELECT count(*) AS review_count FROM review WHERE review.user_id = $1 AND status = $2)
             WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id AND review_reject_log.review_id = review.review_id
             GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
