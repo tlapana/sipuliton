@@ -10,14 +10,13 @@
 }
 
 .searchDiv {
-  height: 25%;
-  width: 100%;
   padding-top: 50px;
   padding-bottom: 50px;
   margin-top: 50px;
   margin-bottom: 50px;
   padding-left: 20px;
   padding-right: 20px;
+  text-align: center;
 }
 
 form.search {
@@ -25,40 +24,15 @@ form.search {
   margin-bottom: 20px;
 }
 
-form.search input[type=text] {
-  padding: 10px;
-  font-size: 17px;
-  border: 1px solid grey;
-  float: left;
-  width: 80%;
-  background: #f1f1f1;
-  border-radius: 25px 0px 0px 25px;
-
-}
 form.search button.searchBtn {
-  float: left;
-  width: 20%;
-  padding: 10px;
-  background: #2196F3;
-  color: white;
-  font-size: 17px;
-  border: 1px solid grey;
-  border-left: none;
-  cursor: pointer;
-  border-radius: 0px 25px 25px 0px;
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  margin: 0;
 }
 
 button.filterBtn {
-  float: left;
   width: 40%;
   padding: 10px;
-  background: #2196F3;
-  color: white;
-  font-size: 17px;
-  border: 1px solid grey;
-  border-left: none;
-  cursor: pointer;
-  border-radius: 25px 25px 25px 25px;
   margin-left: 30%;
   margin-right: 30%;
 }
@@ -78,32 +52,24 @@ button.filterBtn {
 }
 
 .event {
- width: 100%;
- padding-left: 30px;
- margin-top: 10px;
- margin-bottom: 10px;
- margin-left: 5px;
- margin-right: 5px;
- border-radius: 10px;
- border-color: #e5e5e5;
- border-style: solid;
- border-width: 1px;
+  margin: 1em .5em 1em .5em;
+  border-radius: .25em;
+  -webkit-box-shadow: 0px 0px 1px 1px rgba(131, 131, 131, .5);
+  box-shadow: 0px 0px 1px 1px rgba(131, 131, 131, .5);
 }
 
-a.event {
- display: block;
- width: 100%;
- padding-left: 30px;
- margin-top: 10px;
- margin-bottom: 10px;
- margin-left: 5px;
- margin-right: 5px;
- border-radius: 10px;
- border-color: #e5e5e5;
- border-style: solid;
- border-width: 1px;
- text-decoration: none;
+.rounded .event {
+  border-radius: 1em;
 }
+
+.event .restaurant-name {
+  font-size: 1.5rem;
+}
+
+.event .restaurant-stars {
+  margin-right: .5rem;
+}
+
 
 .instructions {
   font-size: small;
@@ -115,16 +81,14 @@ a.event {
   min-width: 20%;
 }
 
-.filterBox
-{
+.filterBox {
   position: absolute;
   width: 80%;
   min-height: 100%;
 
 }
 
-.loadingSpinner
-{
+.loadingSpinner {
   margin-left: auto;
   margin-right: auto;
   height: 50px;

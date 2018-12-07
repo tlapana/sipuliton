@@ -6,19 +6,18 @@
 
 import React from 'react';
 import ReactLoading from 'react-loading';
-import styles from '../../../styles/landingpage.css';
+import { Redirect } from 'react-router-dom';
+import LocalizedStrings from 'react-localization';
+
 import SearchBar from './SearchBar.js'
 import Events from './Events.js'
 import SearchResults from './SearchResults.js'
-import { Redirect } from 'react-router-dom';
 
-/* Localization */
-import LocalizedStrings from 'react-localization';
+import '../../../styles/landingpage.css';
 
 class Home extends React.Component {
 
-  constructor(props, context) {
-
+  constructor(props) {
     super(props);
 
     //Bind the functions
@@ -42,7 +41,6 @@ class Home extends React.Component {
 
   //When we get results, we need to collect them and set our searchDone to true
   handleResults(results) {
-
     console.log("handleResults: Setting restaurants, searchDone to true, searchInProgress to false and error to null");
     this.setState({
       restaurants : results,
@@ -83,7 +81,6 @@ class Home extends React.Component {
     Redirects user back to correct place with default language,
     when language parameter is missing or deleted.
     */
-
     if(this.props.match.params.language === "admin"){
       return(
         <Redirect to={"/fi/admin"}/>
@@ -125,7 +122,6 @@ class Home extends React.Component {
       )
     }
     
-    /* Localization */
     let strings = new LocalizedStrings({
       en:{
         search:"Searching restaurants",
@@ -138,18 +134,13 @@ class Home extends React.Component {
         errorText:"Jos tämä ongelma jatkuu, ole hyvä ja ota yhteyttä ylläpitoon"
       }
     });
-    if(typeof this.props.language !== 'undefined'){
-      strings.setLanguage(this.props.match.params.language);
-    }
-    else{
-      strings.setLanguage('fi');
-    }
+    const language = this.props.language == null ? 'fi' : this.props.language;
+    strings.setLanguage(language);
     
     
     if(!this.state.searchDone)
     {
-      if (this.state.error != null)
-      {
+      if (this.state.error != null) {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
@@ -172,14 +163,17 @@ class Home extends React.Component {
           </div>
         );        
       }
-      else{
+      else {
         return (
           <div className="landingDiv">
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}
             />
             <div className="eventsDiv"> 
-              <h3> {strings.search} <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" />     </h3>
+              <h3>
+                {strings.search}
+                <ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
+              </h3>
             </div>
           </div>
         );       
