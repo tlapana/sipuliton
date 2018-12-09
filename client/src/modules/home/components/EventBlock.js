@@ -29,7 +29,7 @@ class EventBlock extends React.Component {
         <a className="restaurant-name" href={'/' + language + '/restaurant/' + restaurant.restaurant_id}>
           {restaurant.restaurant_name}
         </a>
-        <div className="restaurant-info">
+        <div className="restaurant-info-section">
           <span className="restaurant-stars">
             {this.renderStars(restaurant.rating_overall)}
           </span>

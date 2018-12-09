@@ -10,6 +10,8 @@ import '../../../styles/map.css';
 /* Router imports */
 import { Link } from 'react-router-dom';
 
+import * as AppImports from  '../../app';
+
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -238,6 +240,7 @@ class ModalFilterPage extends React.Component {
 
 
   render() {
+    const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -285,16 +288,16 @@ class ModalFilterPage extends React.Component {
 
     return(
       <div className="modal-filter-button">
-        <Button className="filterBtn" id="filter_popover" onClick={this.toggleModal} type="button">{strings.filter}</Button>
-        <Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+        <button className="filterBtn btn main-btn" id="filter_popover" onClick={this.toggleModal} type="button">{strings.filter}</button>
+        <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
           <ModalBody className="filterBox">
             {this.props.geolocationEnabled &&
               <div>
                 <div>{strings.doYouWantToUseLocationInSearch}</div>
                 <div className="Location-Question-Answere-Box">
-                  <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerYes}>{strings.yes}</Button>
-                  <Button color="primary" className="Modal-Filter-Page-Btn" onClick={this.answerNo}>{strings.no}</Button>
+                  <button className="Modal-Filter-Page-Btn btn main-btn" onClick={this.answerYes}>{strings.yes}</button>
+                  <button className="Modal-Filter-Page-Btn btn main-btn" onClick={this.answerNo}>{strings.no}</button>
                 </div>
                 {this.state.useUserLocation &&
                   <form name="Select radius" onChange={this.RadiusChanged}>
@@ -318,7 +321,7 @@ class ModalFilterPage extends React.Component {
                           type="text"
                           value={this.state.city}
                           onChange={this.handleCityChange}
-                          className="city-search-input"
+                          className="city-search-input form-control"
                           placeholder={strings.enterCity}
                           autoFocus
                         />
@@ -338,7 +341,7 @@ class ModalFilterPage extends React.Component {
                   type="text"
                   value={this.state.city}
                   onChange={this.handleCityChange}
-                  className="city-search-input"
+                  className="city-search-input form-control"
                   placeholder={strings.enterCity}
                   autoFocus />
               </div>
@@ -384,20 +387,20 @@ class ModalFilterPage extends React.Component {
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button
-              color="primary"
+            <button
+              className="btn main-btn"
               onClick={this.saveFilters}
             >
               {strings.filter}
-            </Button>
-            <Button
-              color="primary"
+            </button>
+            <button
+              className="btn main-btn"
               onClick={this.toggleModal}
             >
               {strings.closeModal}
-            </Button>
+            </button>
           </ModalFooter>
-        </Modal>
+        </ThemedModalContainer>
       </div>
     )
   }

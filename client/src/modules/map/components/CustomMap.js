@@ -159,8 +159,9 @@ class CustomMap extends React.Component {
       selectedMarker = this.props.restaurants.selected;
     }
 
+    const rootClassName = this.props.loading == true ? "map-loading" : "";
     return(
-        <div>
+        <div className={rootClassName}>
           <Map
             center={center}
             zoom={this.state.zoom}

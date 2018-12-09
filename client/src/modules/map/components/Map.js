@@ -505,11 +505,12 @@ class Map extends React.Component {
             geolocationEnabled={false}
             showFilterBoxAtStart={this.state.showFilterBox}/>
           {this.state.loading &&
-            <ReactLoading
-              type={'spokes'}
-              color={'#2196F3'}
-              className="loadingSpinner-map"
-            />
+            <div className="loading-container">
+              <ReactLoading
+                type={'spinningBubbles'}
+                className="loadingSpinner loadingSpinner-map"
+              />
+            </div>
           }
           <MapComponent
 						language={this.props.match.params.language}
@@ -519,6 +520,7 @@ class Map extends React.Component {
             selectedRestaurantChanged = {this.SelectedRestaurantChanged}
             center={this.state.center}
             restaurants={this.state.restaurants}
+            loading={this.state.loading}
           />
         </div>
       </div>
@@ -532,11 +534,12 @@ class Map extends React.Component {
           showFilterBoxAtStart={this.state.showFilterBox}
         />
         {this.state.loading &&
-          <ReactLoading
-            type={'spokes'}
-            color={'#2196F3'}
-            className="loadingSpinner-map"
-          />
+          <div className="loading-container">
+            <ReactLoading
+              type={'spinningBubbles'}
+              className="loadingSpinner loadingSpinner-map"
+            />
+          </div>
         }
         {this.state.errors.errorWhileGeocoding &&
           <div className="errorBox">
@@ -561,6 +564,7 @@ class Map extends React.Component {
           center={this.state.center}
           restaurants={this.state.restaurants}
           selectedRestaurantChanged = {this.SelectedRestaurantChanged}
+          loading={this.state.loading}
 				/>
       </div>
       : <div>Getting the location data&hellip; </div>
