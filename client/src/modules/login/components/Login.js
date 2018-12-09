@@ -71,7 +71,7 @@ class Login extends React.Component {
           {strings.forgotpassword}
         </Link>
       </div>
-    )
+    );
   }
 }
 
