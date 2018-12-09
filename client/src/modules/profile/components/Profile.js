@@ -1,7 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
 
-
 class Profile extends React.Component {
       constructor(props) {
             super(props);
@@ -80,13 +79,11 @@ class Profile extends React.Component {
 
             })
                   .then(function (response) {
-                        t.handleClick();
+                        t.handleClick()
                         return response;
                   }).then(function (body) {
                         console.log(body);
                   });
-
-
 
 
       }
@@ -126,6 +123,7 @@ class Profile extends React.Component {
                         console.log(body);
                   });
       }
+
       fetchcity(t) {
             fetch('http://127.0.0.1:3000/location/cities?country_id=71').then((response) => response.json())
                   .then((responseJson) => {
@@ -168,13 +166,13 @@ class Profile extends React.Component {
                         } catch (e) {
                         }
                         this.setState({ url: responseJson.image_url });
-
                         this.setState({ username: responseJson.display_name });
                         this.setState({ email: responseJson.email });
                         this.setState({ city: responseJson.city_name });
                         this.setState({ desc: responseJson.description });
                         this.setState({ reviews: responseJson.reviews });
                         this.setState({ disp: responseJson.display_name });
+
 
                         this.setState({ countries_visited: responseJson.countries_visited });
 
