@@ -170,11 +170,13 @@ class CustomMap extends React.Component {
               url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
               attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
             />
-            <Marker key={`current-location`} position={[this.props.latitude,this.props.longitude]} icon={curLocMark}>
-              <Popup>
-                {strings.youAreHere}
-              </Popup>
-            </Marker>
+            {this.props.showCurrentLocationMarker &&
+              <Marker key={`current-location`} position={[this.props.latitude,this.props.longitude]} icon={curLocMark}>
+                <Popup>
+                  {strings.youAreHere}
+                </Popup>
+              </Marker>
+            }
             {selectedMarker.map((data, idx) =>
               <Marker key={`marker-${idx}`} position={data.position} icon={yellowIcon}>
                 <Popup

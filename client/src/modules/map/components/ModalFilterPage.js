@@ -299,12 +299,12 @@ class ModalFilterPage extends React.Component {
                 {this.state.useUserLocation &&
                   <form name="Select radius" onChange={this.RadiusChanged}>
                     <div><Label>{strings.selectRadius}</Label></div>
-                    <input type="radio" name="group1" value="2000"  checked={this.state.checkboxes.first} /> 2 km <br/>
-                    <input type="radio" name="group1" value="5000"  checked={this.state.checkboxes.second} /> 5 km <br/>
-                    <input type="radio" name="group1" value="10000" checked={this.state.checkboxes.third} /> 10 km <br/>
-                    <input type="radio" name="group1" value="15000" checked={this.state.checkboxes.fourth} /> 15 km <br/>
-                    <input type="radio" name="group1" value="25000" checked={this.state.checkboxes.fifth} /> 25 km <br/>
-                    <input type="radio" name="group1" value="50000" checked={this.state.checkboxes.sixth} /> 50 km <br/>
+                    <input type="radio" name="group1" value="2000" onChange={() => {}}  checked={this.state.checkboxes.first} /> 2 km <br/>
+                    <input type="radio" name="group1" value="5000" onChange={() => {}}  checked={this.state.checkboxes.second} /> 5 km <br/>
+                    <input type="radio" name="group1" value="10000" onChange={() => {}}  checked={this.state.checkboxes.third} /> 10 km <br/>
+                    <input type="radio" name="group1" value="15000" onChange={() => {}}  checked={this.state.checkboxes.fourth} /> 15 km <br/>
+                    <input type="radio" name="group1" value="25000" onChange={() => {}}  checked={this.state.checkboxes.fifth} /> 25 km <br/>
+                    <input type="radio" name="group1" value="50000" onChange={() => {}}  checked={this.state.checkboxes.sixth} /> 50 km <br/>
                   </form>
                 }
                 {!this.state.useUserLocation &&

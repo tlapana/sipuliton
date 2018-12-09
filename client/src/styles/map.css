@@ -237,3 +237,9 @@
   border-width: 5px;
   border-style: solid;
 }
+.loadingSpinner-map{
+  position: fixed;
+  z-index: 900;
+  top:50vh;
+  left:50vw;
+}

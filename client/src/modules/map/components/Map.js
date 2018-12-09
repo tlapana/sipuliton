@@ -90,8 +90,13 @@ class Map extends React.Component {
         fifth:false,
         sixth:false,
       },
-      greenMarkers: [],
-      greyMarkers: [],
+      searchLoc:[60.168182,24.940886],
+      errors:{
+        errorWhileGeocoding:false,
+        errorWhileSearching:false,
+        errorRestaurantsNotFound:false,
+      },
+      showCurrentLocationMarker:true,
     };
     console.log(this.state);
     Geocoder.init(Config.google.API_KEY);
@@ -101,33 +106,7 @@ class Map extends React.Component {
 		this.AddGreenMarker = this.AddGreenMarker.bind(this);
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
-
-    var restaurantData = this.GetRestaurantsMarkers();
-
-    this.state = {
-      filters:{
-        radius:searchRadius,
-        minOverall : overallRating,
-        minReliability : minRel,
-        minVariety : minVariety,
-        minService : minService,
-        pricing: minPricing,
-        city:city,
-      },
-      showFilterBox: showFilterBox,
-      center:[60.168182,24.940886],
-      checkboxes:{
-        first:false,
-        second:false,
-        third:true,
-        fourth:false,
-        fifth:false,
-        sixth:false,
-      },
-      restaurants: restaurantData.restaurants,
-      searchLoc:[60.168182,24.940886],
-      errors:{errorWhileGeocoding:false},
-    };
+    this.GetMockData = this.GetMockData.bind(this);
   }
 
   compare(a,b){
@@ -211,11 +190,8 @@ class Map extends React.Component {
     })
   }
 
-  // method handles fetching restaurants marker data from database
-	GetRestaurantsMarkers(){
-    //TODO: Implement restaurant fetch based on filters.
-/*
-		//Mock restaurants.
+  GetMockData(){
+    //Mock restaurants.
     let greenRestaurantData = [
       {
         id:0,
@@ -329,24 +305,35 @@ class Map extends React.Component {
     greenRestaurantData = greenRestaurantData.sort(this.compare);
     greyRestaurantData = greyRestaurantData.sort(this.compare);
 
-    let newMarkers = {
-      restaurants:{
-        green:greenRestaurantData,
-        grey:greyRestaurantData,
-        selected:[],
-        selectedColour:"",
+    this.setState(
+      {
+        loading:false,
+        restaurants:{
+          green:greenRestaurantData,
+          grey:greyRestaurantData,
+          selected:[],
+          selectedColour:"",
+        }
       }
-    }
-    return newMarkers*/
+    )
+
+  }
+
+  // method handles fetching restaurants marker data from database
+	GetRestaurantsMarkers(){
+    //TODO: Implement restaurant fetch based on filters.
 
     //Basic search portion
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
                 + '&minReliabilityRating=' + this.state.filters.minReliability
                 + '&minVarietyRating=' + this.state.filters.minService
-                + '&minServiceAndQualityRating=' + this.state.filters.minVariety;
+                + '&minServiceAndQualityRating=' + this.state.filters.minVariety
+                + '&maxDistance=' + this.state.filters.radius
+                + '&currentLatitude=' + this.state.center[0]
+                + '&currentLongitude=' + this.state.center[1];
     this.setState({loading:true})
-    return fetch(url)
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
@@ -357,57 +344,55 @@ class Map extends React.Component {
           var newMarkers = {};
           let markers = [];
           let greyMarks = [];
-          for(var i = 0; i<result.restaurants.length; ++i){
-            var res = result.restaurants[i];
-            var resObj = {
-              id:res.restaurant_id,
-              name:res.restaurant_name,
-              city:res.city_name,
-              postcode:"33990",
-              address:res.street_address,
-              overallRating:res.rating_overall,
-              serviceRating:res.rating_service_and_quality,
-              varietyRating:res.rating_variety,
-              reliabilityRating: res.rating_reliability,
-              pricingRating: res.pricing,
-              website: res.website,
-              email: res.email,
-              openMon:"9:00-15:00",
-              openTue:"9:00-15:00",
-              openWed:"9:00-15:00",
-              openThu:"9:00-13:00",
-              openFri:"9:00-16:00",
-              openSat:"8:00-17:00",
-              openSun:"10:00-18:00",
-              position: [61.487239,23.808175],
-            }
-            markers.push(resObj);
+          if(result.restaurants.length === 0)
+          {
+            this.setState({loading:false,errors:{errorRestaurantsNotFound:true}})
+            this.GetMockData();
+            return;
           }
-          if(markers.count <= 10){
-            //Mock restaurant grey markers.
-
-          }
-          this.setState(
-            {
-              loading:false,
-              restaurants:{
-                green:markers,
-                grey:greyMarks,
-                selected:[],
-                selectedColour:"",
+          else{
+            for(var i = 0; i<result.restaurants.length; ++i){
+              var res = result.restaurants[i];
+              var resObj = {
+                id:res.restaurant_id,
+                name:res.restaurant_name,
+                city:res.city_name,
+                postcode:"33990",
+                address:res.street_address,
+                overallRating:res.rating_overall,
+                serviceRating:res.rating_service_and_quality,
+                varietyRating:res.rating_variety,
+                reliabilityRating: res.rating_reliability,
+                pricingRating: res.pricing,
+                website: res.website,
+                email: res.email,
+                openMon:"9:00-15:00",
+                openTue:"9:00-15:00",
+                openWed:"9:00-15:00",
+                openThu:"9:00-13:00",
+                openFri:"9:00-16:00",
+                openSat:"8:00-17:00",
+                openSun:"10:00-18:00",
+                position: [res.longitude,res.latitude],
               }
+              markers.push(resObj);
             }
-          )
+            if(markers.count <= 10){
+              //Mock restaurant grey markers.
 
-          newMarkers = {
-            restaurants:{
-              green:markers,
-              grey:greyMarks,
-              selected:[],
-              selectedColour:"",
             }
+            this.setState(
+              {
+                loading:false,
+                restaurants:{
+                  green:markers,
+                  grey:greyMarks,
+                  selected:[],
+                  selectedColour:"",
+                }
+              }
+            )
           }
-          return newMarkers
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -415,6 +400,8 @@ class Map extends React.Component {
         (error) => {
           console.log("DEBUG: ComponentsDidMount error");
           console.log(error);
+          this.setState({loading:false,errors:{errorWhileSearching:true},});
+          this.GetMockData();
         }
       )
 	}
@@ -445,6 +432,7 @@ class Map extends React.Component {
     if(useUserLocation){
       this.setState({
         searchLoc:[this.props.coords.latitude,this.props.coords.longitude],
+        showCurrentLocationMarker:true,
         errors:{errorWhileGeocoding:false}
       });
       this.GetRestaurantsMarkers();
@@ -454,11 +442,11 @@ class Map extends React.Component {
       .then(json => {
         var location = json.results[0].geometry.location;
         console.log(location);
-        this.setState({searchLoc:location,errors:{errorWhileGeocoding:false}});
+        this.setState({showCurrentLocationMarker:false,searchLoc:location,errors:{errorWhileGeocoding:false}});
         this.GetRestaurantsMarkers();
       })
       .catch(error => {
-        this.setState({errors:{errorWhileGeocoding:true}})
+        this.setState({showCurrentLocationMarker:false,errors:{errorWhileGeocoding:true}})
         console.warn(error)
       });
     }
@@ -484,86 +472,126 @@ class Map extends React.Component {
       en:{
         errorWhileGeocoding:"Error, your search location couldn't find!",
         Ok:"OK",
+        errorWhileSearching:"Error while searching restaurant, try again!",
+        errorRestaurantsNotFound:"Restaurants not found, change filters."
       },
       fi: {
         errorWhileGeocoding:"Virhe, syöttämääsi paikkaa ei löytynyt!",
         Ok:"OK",
+        errorWhileSearching:"Virhe etsittäessä ravintoloita, yritä uudelleen!",
+        errorRestaurantsNotFound:"Ravintoloita ei löytynyt, muuta rajaus ehtoja.",
       }
     });
     strings.setLanguage(this.props.match.params.language);
 
     return(
-      !this.props.isGeolocationAvailable? <div>Your browser does not support Geolocation</div>
-      : !this.props.isGeolocationEnabled
-      ?
-      <div className="mapPage">
-        <div id="map" >
-					<ModalFilterPage
-            filters={this.state.filters}
-						FiltersChanged={this.FiltersChanged}
-						language={this.props.match.params.language}
-            geolocationEnabled={false}
-            showFilterBoxAtStart={this.state.showFilterBox}/>
-          {this.state.loading &&
-            <ReactLoading
-              type={'spokes'}
-              color={'#2196F3'}
-              className="loadingSpinner-map"
+      <div>
+      {this.state.loading &&
+        <ReactLoading
+          type={'spokes'}
+          color={'#2196F3'}
+          className="loadingSpinner-map"
+        />
+      }
+      {this.state.errors.errorWhileGeocoding &&
+        <div className="errorBox">
+          <div className="errorText">
+            {strings.errorWhileGeocoding}
+          </div>
+          <div className="error-button-box">
+            <Button
+              className="ErrorBoxBtn"
+              onClick={() => this.setState({errors:{errorWhileGeocoding:false}})}
+              >
+              {strings.Ok}
+            </Button>
+          </div>
+        </div>
+      }
+      {this.state.errors.errorWhileSearching &&
+        <div className="errorBox">
+          <div className="errorText">
+            {strings.errorWhileSearching}
+          </div>
+          <div className="error-button-box">
+            <Button
+              className="ErrorBoxBtn"
+              onClick={() => this.setState({errors:{errorWhileSearching:false}})}
+              >
+              {strings.Ok}
+            </Button>
+          </div>
+        </div>
+      }
+      {this.state.errors.errorRestaurantsNotFound &&
+        <div className="errorBox">
+          <div className="errorText">
+            {strings.errorRestaurantsNotFound}
+          </div>
+          <div className="error-button-box">
+            <Button
+              className="ErrorBoxBtn"
+              onClick={() => this.setState({errors:{errorRestaurantsNotFound:false}})}
+              >
+              {strings.Ok}
+            </Button>
+          </div>
+        </div>
+      }
+      {
+        !this.props.isGeolocationAvailable? <div>Your browser does not support Geolocation</div>
+        : !this.props.isGeolocationEnabled
+        ?
+        <div className="mapPage">
+          <div id="map" >
+  					<ModalFilterPage
+              filters={this.state.filters}
+  						FiltersChanged={this.FiltersChanged}
+  						language={this.props.match.params.language}
+              geolocationEnabled={false}
+              showFilterBoxAtStart={this.state.showFilterBox}/>
+            {this.state.loading &&
+              <ReactLoading
+                type={'spokes'}
+                color={'#2196F3'}
+                className="loadingSpinner-map"
+              />
+            }
+            <MapComponent
+  						language={this.props.match.params.language}
+            	latitude={this.state.center[0]}
+  						longitude={this.state.center[1]}
+            	searchRadiusInKm={this.state.filters.radius}
+              selectedRestaurantChanged = {this.SelectedRestaurantChanged}
+              center={this.state.center}
+              restaurants={this.state.restaurants}
+              showCurrentLocationMarker={this.state.showCurrentLocationMarker}
             />
-          }
+          </div>
+        </div>
+        :this.props.coords
+        ?<div id="map" >
+  			  <ModalFilterPage
+            filters={this.state.filters}
+  					FiltersChanged={this.FiltersChanged}
+  					language={this.props.match.params.language}
+            geolocationEnabled={true}
+            showFilterBoxAtStart={this.state.showFilterBox}
+          />
           <MapComponent
-						language={this.props.match.params.language}
-          	latitude={this.state.center[0]}
-						longitude={this.state.center[1]}
-          	searchRadiusInKm={this.state.filters.radius}
-            selectedRestaurantChanged = {this.SelectedRestaurantChanged}
+  					language={this.props.match.params.language}
+  	        latitude={this.state.searchLoc[0]}
+  					longitude={this.state.searchLoc[1]}
+  	        searchRadiusInKm={this.state.filters.radius}
             center={this.state.center}
             restaurants={this.state.restaurants}
-          />
+            selectedRestaurantChanged = {this.SelectedRestaurantChanged}
+            showCurrentLocationMarker={this.state.showCurrentLocationMarker}
+  				/>
         </div>
+        : <div>Getting the location data&hellip; </div>
+      }
       </div>
-      :this.props.coords
-      ?<div id="map" >
-			  <ModalFilterPage
-          filters={this.state.filters}
-					FiltersChanged={this.FiltersChanged}
-					language={this.props.match.params.language}
-          geolocationEnabled={true}
-          showFilterBoxAtStart={this.state.showFilterBox}
-        />
-        {this.state.loading &&
-          <ReactLoading
-            type={'spokes'}
-            color={'#2196F3'}
-            className="loadingSpinner-map"
-          />
-        }
-        {this.state.errors.errorWhileGeocoding &&
-          <div className="errorBox">
-            <div className="errorText">
-              {strings.errorWhileGeocoding}
-            </div>
-            <div className="error-button-box">
-              <Button
-                className="ErrorBoxBtn"
-                onClick={() => this.setState({errors:{errorWhileGeocoding:false}})}
-                >
-                {strings.Ok}
-              </Button>
-            </div>
-          </div>
-        }
-        <MapComponent
-					language={this.props.match.params.language}
-	        latitude={this.state.searchLoc[0]}
-					longitude={this.state.searchLoc[1]}
-	        searchRadiusInKm={this.state.filters.radius}
-          center={this.state.center}
-          restaurants={this.state.restaurants}
-          selectedRestaurantChanged = {this.SelectedRestaurantChanged}
-				/>
-      </div>
-      : <div>Getting the location data&hellip; </div>
     )
   }
 }
