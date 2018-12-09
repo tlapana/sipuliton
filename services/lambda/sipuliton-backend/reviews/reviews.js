@@ -362,6 +362,22 @@ exports.postReviewLambda = async (event, context) => {
                     'error': "Variety rating not set"
                 }
             }
+            temp = parseFloatParam("rating_reliability", event);
+            if (temp !== null) {
+                if (temp < 0 | temp > 5) {
+                    throw {
+                        'statusCode': 400,
+                        'error': "Invalid rating variety"
+                    }
+                }
+                review['rating_reliability'] = temp;
+            }
+            else {
+                throw {
+                    'statusCode': 400,
+                    'error': "Reliability rating not set"
+                }
+            }
             temp = parseFloatParam("rating_service_and_quality", event);
             if (temp !== null) {
                 if (temp < 0 | temp > 5) {
