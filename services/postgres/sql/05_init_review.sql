@@ -70,5 +70,5 @@ CREATE TABLE suspicious_ip(
 
 CREATE TABLE suspicious_review(
     review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
-    reason text
+    reason int
 );

@@ -250,6 +250,13 @@ async function postReview(client, userId, restaurantId, review, images, diets) {
     await client.query(`BEGIN`);
     try {
         // TODO: define where image url is
+        if (images !== null) {
+            //TODO: add images to s3
+            throw {
+                'statusCode': 501,
+                'error': "Not implemented"
+            }
+        }
         const res = await client.query(
             `INSERT INTO review (restaurant_id, user_id, posted, status, title, image_url, free_text, rating_overall,
                     rating_reliability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down)
@@ -265,18 +272,24 @@ async function postReview(client, userId, restaurantId, review, images, diets) {
                 VALUES ($1, $2)`,
                 [reviewId, diets[i]]);
         }
-        if (images !== null) {
-            //TODO: add images to s3
-            throw {
-                'statusCode': 501,
-                'error': "Not implemented"
-            }
-        }
         await client.query('COMMIT');
     }
     catch (err) {
         await client.query('ROLLBACK');
         throw err;
+    }
+    
+    const res2 = await client.query(
+        `SELECT review_id FROM review WHERE user_id = $1 AND restaurant_id = $2 AND
+            posted >= timezone('utc', now()) - INTERVAL '1 hours'`,
+        [userId, restaurantId]);
+    if (res2.rowCount > 1) {
+        await client.query(
+            `INSERT INTO suspicious_review (review_id, reason)
+            SELECT review.review_id, 0 FROM review LEFT JOIN suspicious_review ON review.review_id = suspicious_review.review_id
+            WHERE user_id = $1 AND restaurant_id = $2 AND posted >= timezone('utc', now()) - INTERVAL '1 hours'
+                AND reason IS NULL`,
+            [userId, restaurantId]);
     }
     return
 }
