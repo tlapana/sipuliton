@@ -75,7 +75,9 @@ class MapSmallRestaurantInfo extends React.Component {
     return(
       <div className={fullClass}>
         <div>
-          <h1 className="restaurant-info-item" id="restaurantName">{this.props.restaurantInfo.name}</h1>
+          <h3 className="restaurant-info-item restaurant-heading" id="restaurantName">
+            {this.props.restaurantInfo.name}
+          </h3>
           <div className="restaurant-info-item" id="address">
             {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode},<br/> {this.props.restaurantInfo.address}
           </div>
@@ -104,7 +106,7 @@ class MapSmallRestaurantInfo extends React.Component {
       </div>
       <div className="small-restaurant-info-btn-box">
         <NavLink
-          className="restaurant-info-item RestaurantPageBtn"
+          className="restaurant-info-item RestaurantPageBtn btn main-btn"
           id="enterToRestaurantPageBtn"
           onMouseLeave={this.hover}
           tag={Link}
