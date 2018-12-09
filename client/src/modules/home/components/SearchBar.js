@@ -5,8 +5,8 @@
 */
 
 import React from 'react';
-import { 
-  Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
+import {
+  Input, InputGroup, InputGroupAddon, UncontrolledTooltip,
   ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap';
 import { Route, Redirect } from 'react-router'
@@ -34,7 +34,7 @@ class SearchBar extends React.Component {
     this.getOptions = this.getOptions.bind(this);
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
-    
+
     this.changeOverall = this.changeOverall.bind(this);
     this.changeReliability = this.changeReliability.bind(this);
     this.changeVariety = this.changeVariety.bind(this);
@@ -51,7 +51,7 @@ class SearchBar extends React.Component {
       keywords : '',
       options : [],
       defaultValues : [],
-      minOverall : 0, 
+      minOverall : 0,
       minReliability : 0,
       minVariety : 0,
       minService : 0,
@@ -66,15 +66,15 @@ class SearchBar extends React.Component {
       defaultValue : this.getDefaultValues()
     });
   }
-  
+
   //Toggles modal
   toggleModal() {
     this.setState({
       modalState: !this.state.modalState
     });
     console.log("showModal: Toggling modal to " + this.state.modalState);
-  }  
-  
+  }
+
 
   //Toggles popover
   togglePopover() {
@@ -82,9 +82,9 @@ class SearchBar extends React.Component {
       popoverOpen: !this.state.popoverOpen
     });
   }
-  
+
   searchUrl() {
-    var url = '/map?'
+    var url = '/'+this.props.language+'/map?'
                 + 'minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
@@ -93,7 +93,7 @@ class SearchBar extends React.Component {
     return url;
   }
 
-  //Actual search event. It also sends signal to the parent by using props.SearchDone, 
+  //Actual search event. It also sends signal to the parent by using props.SearchDone,
   //which signals it has done a search and this.props.searchResults which has the results
   doSearch  = event => {
     event.preventDefault();
@@ -112,29 +112,29 @@ class SearchBar extends React.Component {
     console.log(searchTerms);
     console.log("Filters: ");
     console.log(this.state.filters);
-    
+
     //Basic search portion
-    
-    
+
+
     var url = '/map?'
                 + 'minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
                 + '&minPricing=' + this.state.pricing;
-                
-    //TODO: Check for city in the keywords    
-    
-    
+
+    //TODO: Check for city in the keywords
+
+
     console.log("URL:");
     console.log(url);
-    
+
     this.setState({
       redirectUser: true
     });
-    
+
     //Direct user to the map screen
-    
+
     //Original version
     /*
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
@@ -142,10 +142,10 @@ class SearchBar extends React.Component {
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety;
-    
+
     this.props.searching();
     */
-    
+
     //Old way this was done
     /*
     fetch(url)
@@ -186,7 +186,7 @@ class SearchBar extends React.Component {
     ];
     console.log("Getting the options: ");
     console.log(options);
-    
+
     this.setState({
       loadedOptions : true
     });
@@ -220,17 +220,17 @@ class SearchBar extends React.Component {
       filters : selectedOptions
     });
   }
-  
+
   //Used to change star rating values
   changeOverall(newRating, name) {
     this.setState({ minOverall : newRating });
-  }  
+  }
   changeReliability(newRating, name) {
     this.setState({ minReliability : newRating });
-  }  
+  }
   changeService(newRating, name) {
     this.setState({ minService : newRating });
-  }  
+  }
   changeVariety(newRating, name) {
     this.setState({ minVariety : newRating });
   }
@@ -276,11 +276,11 @@ class SearchBar extends React.Component {
 
     const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
     if(this.state.redirectUser) {
-      
+
       return (<Redirect to={this.searchUrl()} />);
     }
     else {
-      
+
       return (
         <div className="searchDiv">
           <form id="search-form" className="search" onSubmit={this.login}>
@@ -353,7 +353,7 @@ class SearchBar extends React.Component {
                   half = {false}
                   onChange = {this.changePricing}
                 />
-                  
+
               </ModalBody>
               <ModalFooter>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
