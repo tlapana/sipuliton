@@ -1,5 +1,5 @@
-import React from 'react'
-import { Input, } from 'reactstrap';
+import React from "react";
+import { Input, } from "reactstrap";
 
 /* 
  An input that simplifies validation. 
@@ -15,12 +15,12 @@ export default class VInput extends React.Component {
   }
 
   isString(value) {
-    return (typeof value === 'string' || value instanceof String)
+    return (typeof value === "string" || value instanceof String)
   }
 
   checkIfValid(isValid, value) {
     if (isValid != null) {
-      if (typeof isValid === 'function') {
+      if (typeof isValid === "function") {
         if (isValid.length === 0 && !isValid()) {
           return false;
         }
@@ -28,7 +28,7 @@ export default class VInput extends React.Component {
           return false;
         }
       }
-      else if (this.isString(isValid) && isValid.toLowerCase() === 'false') {
+      else if (this.isString(isValid) && isValid.toLowerCase() === "false") {
           return false;
       }
       else if (!isValid) {
@@ -45,7 +45,7 @@ export default class VInput extends React.Component {
     const errorClassName = valid || errormsg == null || errormsg == "" ? "input-errormsg" : "input-errormsg visible";
 
     if (!valid) {
-      if (type === "submit") {
+      if (type === "submit" || type === "button") {
         return (
           <div className="input-wrapper">
             <Input
@@ -53,7 +53,7 @@ export default class VInput extends React.Component {
               value={value}
               type={type}
               className={className}
-              disabled="true"
+              disabled={true}
             />
             <span className={errorClassName}>{errormsg != null ? errormsg : ""}</span>
           </div>
@@ -62,10 +62,10 @@ export default class VInput extends React.Component {
       }
       else {
         if (className != null) {
-          className += ' invalid';
+          className += " invalid";
         }
         else {
-          className = 'invalid';
+          className = "invalid";
         }
       }
     }

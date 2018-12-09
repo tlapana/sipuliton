@@ -20,7 +20,7 @@ class RouteCollection extends React.Component {
     const { Login, Logout } = login;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
-    const { Profile } = profile;
+    const { EditProfile, Profile } = profile;
 
     return (
       <Switch>
@@ -31,6 +31,8 @@ class RouteCollection extends React.Component {
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
         <Route path="/:language/profile/" component={Profile} />
+        <Route path="/:language/profile/:id/" component={Profile} />
+        <Route path="/:language/edit-profile/" component={EditProfile} />
         <Route component={NotFound} />
       </Switch>
     );

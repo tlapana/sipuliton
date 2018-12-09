@@ -149,8 +149,7 @@ class Login_Form extends React.Component{
         </Form>
         {this.state.loggingSucceeded && <Redirect to={"/" + this.props.language + "/profile"} />}
       </div>
-
-    )
+    );
   }
 }
 

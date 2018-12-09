@@ -1,5 +1,4 @@
 import React from 'react';
-import LocalizedStrings from 'react-localization';
 
 export default class LanguageButton extends React.Component {
   constructor(props) {

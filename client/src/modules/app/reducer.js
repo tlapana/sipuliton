@@ -11,7 +11,7 @@ const app = (state = initialState, action) => {
   switch (action.type) {
     case t.CHANGE_LOADING:
       return Object.assign({}, state, {
-        isLoading: action.isRounding
+        isLoading: action.isLoading
       });
     case t.CHANGE_ROUNDING:
       return Object.assign({}, state, {
