@@ -7,8 +7,8 @@ CREATE TABLE review_status(
 INSERT INTO review_status VALUES (0, 'pending')
 , (1, 'accepted')
 , (-1, 'rejected');
+--possible status: pending, accepted, rejected
 
---possible status: posted, accepted, rejected
 CREATE TABLE review(
     restaurant_id bigint REFERENCES restaurant,
     user_id bigint REFERENCES user_profile,
@@ -27,6 +27,27 @@ CREATE TABLE review(
     PRIMARY KEY (restaurant_id, user_id, posted)
 );
 
+--log review acception/rejection
+CREATE TABLE review_reject_log(
+    restaurant_id bigint,
+    poster_id bigint,
+    review_posted timestamp,
+    rejecter_id bigint NOT NULL REFERENCES user_profile,
+    rejected timestamp NOT NULL,
+    reason text NOT NULL,
+    PRIMARY KEY (restaurant_id, poster_id, review_posted)
+);
+
+CREATE TABLE review_accept_log(
+    restaurant_id bigint,
+    poster_id bigint,
+    review_posted timestamp,
+    accepter_id bigint NOT NULL REFERENCES user_profile,
+    accepted timestamp NOT NULL,
+    PRIMARY KEY (restaurant_id, poster_id, review_posted),
+    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review(restaurant_id, user_id, posted)
+    
+);
 
 CREATE TABLE review_diet(
     restaurant_id bigint REFERENCES restaurant,
@@ -47,28 +68,6 @@ CREATE TABLE thumbs(
     FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
 );
 
---log review acception/rejection
-
-CREATE TABLE review_accept_log(
-    restaurant_id bigint,
-    poster_id bigint,
-    review_posted timestamp,
-    accepter_id bigint NOT NULL REFERENCES user_profile,
-    accepted timestamp NOT NULL,
-    PRIMARY KEY (restaurant_id, poster_id, review_posted),
-    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
-);
-
-CREATE TABLE review_reject_log(
-    restaurant_id bigint,
-    poster_id bigint,
-    review_posted timestamp,
-    rejecter_id bigint NOT NULL REFERENCES user_profile,
-    rejected timestamp NOT NULL,
-    reason text NOT NULL,
-    PRIMARY KEY (restaurant_id, poster_id, review_posted),
-    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
-);
 
 --everything below is to mark reviews as exceptional/suspicious when needed
 

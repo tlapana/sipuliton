@@ -56,10 +56,10 @@ INSERT INTO restaurant_suggestion(suggestion_id, name, email, website, image_url
     (DEFAULT, 'Ravintolaehdotus', 'ravintolaehdotus@ravintola.fi', 'ravintola.fi', NULL, '0', '71', 'Tampere', '33200', 'Katuosoite', '(100,100)', '0', '2018-11-26T18:06:32.740Z');
 
 INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
-    ('0', '0', '0', '4', '3', '4', '3', '3', '40'),
-    ('1', '0', '0', '5', '5', '5', '5', '5', '50'),
-    ('2', '0', '0', '1', '1', '1', '1', '1', '-10'),
-    ('3', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
+    ('1', '0', '0', '4', '3', '4', '3', '3', '40'),
+    ('2', '0', '0', '5', '5', '5', '5', '5', '50'),
+    ('3', '0', '0', '1', '1', '1', '1', '1', '-10'),
+    ('4', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
 
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');

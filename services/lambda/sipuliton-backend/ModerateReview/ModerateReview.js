@@ -1,6 +1,23 @@
 
 let response;
-
+function errorHandler(err) {
+    console.log(err);
+    response = {
+        'statusCode': 500,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+    };
+    if ("statusCode" in err) {
+        response['statusCode'] = err['statusCode'];
+    }
+    if ("error" in err) {
+        response['body'] = JSON.stringify({ 'error': err['error'] });
+    }
+    return response;
+}
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -67,22 +84,20 @@ exports.lambdaHandler = async (event, context) => {
                 VALUES ($1, $2, $3, $4, $5)`
                 const resAccept = await client.query(
                     acceptLogQuery, [body.restaurantId, body.posterId, body.reviewPosted, body.moderatorId, currentTime ]);
-                //await client.end();
 
             } else if (body.action == "reject"){
                 console.log("Review was rejected")
                 newStatus = -1
                 var rejectLogQuery = `
                 INSERT INTO review_reject_log (restaurant_id, poster_id, review_posted, rejecter_id, rejected, reason)
-                VALUES ($1, $2, $3, $4, $5)`
+                VALUES ($1, $2, $3, $4, $5, $6)`
                 const resReject = await client.query(
                     rejectLogQuery, [body.restaurantId, body.posterId, body.reviewPosted, body.moderatorId, currentTime, body.reason ]);
-                //await client.end(); 
+
             } else {
                 throw("Action " + body.action + " not supported.")
             }
         
-            
             // Update review itself
             var updateQuery = "UPDATE review SET status=$4 WHERE restaurant_id=$1 AND user_id=$2 AND posted =$3";
             var resUpdate =  await client.query(
@@ -106,7 +121,7 @@ exports.lambdaHandler = async (event, context) => {
 
     } catch (err) {
         console.error(err);
-        return err;
+        return errorHandler({err});
     }
 
     console.log(response)

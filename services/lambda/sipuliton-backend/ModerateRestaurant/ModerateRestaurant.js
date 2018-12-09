@@ -18,6 +18,25 @@ async function getSuggestionData(suggestionId, client, languageId=0){
     return JSON.parse(jsonString);
 }
 
+function errorHandler(err) {
+    console.log(err);
+    response = {
+        'statusCode': 500,
+        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+        'headers': {
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+    };
+    if ("statusCode" in err) {
+        response['statusCode'] = err['statusCode'];
+    }
+    if ("error" in err) {
+        response['body'] = JSON.stringify({ 'error': err['error'] });
+    }
+    return response;
+}
+
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -154,7 +173,7 @@ exports.lambdaHandler = async (event, context) => {
 
     } catch (err) {
         console.error(err);
-        return err;
+        return errorHandler({err});
     }
 
     console.log(response)
