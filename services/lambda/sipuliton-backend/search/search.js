@@ -141,11 +141,13 @@ exports.lambdaHandler = async (event, context) => {
         var collectRestaurants = `
         SELECT restaurant.restaurant_id AS restaurant_id, restaurant.name as restaurant_name, email,
                city_name.name as city_name, website, street_address, rating_overall, rating_reliability,
-               rating_variety, rating_service_and_quality, pricing, trending, latitude, longitude
+               rating_variety, rating_service_and_quality, pricing, trending, latitude, longitude, 
+               opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
         FROM restaurant 
             INNER JOIN restaurant_diet_stats
                 ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
             INNER JOIN city_name ON restaurant.city_id=city_name.city_id
+            INNER JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE
             city_name.language_id=0 AND
         `;

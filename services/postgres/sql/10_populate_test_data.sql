@@ -47,17 +47,20 @@ INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
     ('0', '1', '1', 'no fish');
 
 INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
-    ('0', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', 1, 1),
-    ('1', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', 1, 2),
-    ('2', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3',  1, 3),
-    ('3', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', 1, 4);
-UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);
+    ('1', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
+    ('2', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
+    ('3', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
+    ('4', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
+
+INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun) VALUES
+    ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
+    ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL);
 
 INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
-    ('0', '0', '0', '4', '3', '4', '3', '3', '40'),
-    ('1', '0', '0', '5', '5', '5', '5', '5', '50'),
-    ('2', '0', '0', '1', '1', '1', '1', '1', '-10'),
-    ('3', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
+    ('1', '0', '0', '4', '3', '4', '3', '3', '40'),
+    ('2', '0', '0', '5', '5', '5', '5', '5', '50'),
+    ('3', '0', '0', '1', '1', '1', '1', '1', '-10'),
+    ('4', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
 
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
@@ -71,3 +74,4 @@ INSERT INTO review_diet(restaurant_id, user_id, review_posted, global_diet_id) V
     ('1', '0', '2018-09-22 6:30:25-07', '0'),
     ('1', '0', '2018-09-22 6:30:25-07', '1');
 
+UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);
