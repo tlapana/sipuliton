@@ -1,3 +1,4 @@
+/*
 import React from 'react';
 import {
   Button,
@@ -5,18 +6,18 @@ import {
   NavLink,} from 'reactstrap';
 
 /* Map imports */
-import GoogleMapReact from 'google-map-react';
-import Config from '../../../config.js'
+//import GoogleMapReact from 'google-map-react';
+//import Config from '../../../config.js'
 
 /* Location imports */
-import {geolocated} from 'react-geolocated';
+//import {geolocated} from 'react-geolocated';
 
 /* Router imports */
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 
 /* Localization */
-import LocalizedStrings from 'react-localization';
-
+//import LocalizedStrings from 'react-localization';
+/*
 class SimpleMap extends React.Component {
   static defaultProps = {
     center: {
@@ -44,3 +45,4 @@ class SimpleMap extends React.Component {
 }
 
 export default SimpleMap;
+*/
