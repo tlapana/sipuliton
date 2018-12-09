@@ -13,6 +13,20 @@ function getWhereStatement(paramName, operator, paramIndex){
         return `${paramName} ${operator} $${paramIndex}`
 
 };
+
+
+// Convert degrees to radians
+if (typeof(Number.prototype.toRadians) === "undefined") {
+    Number.prototype.toRadians = function() {
+      return this * Math.PI / 180;
+    }
+  }
+
+// Returns statement for restricting restaurants by distance
+function getDistanceStatement(latitude, longitude, paramIndex){
+    return `ST_DISTANCE(geo_location, ST_POINT(${latitude}, ${longitude})) <= $${paramIndex}`
+}
+
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -52,7 +66,7 @@ exports.lambdaHandler = async (event, context) => {
         // Define default parameters
         const defaultPageSize = 20
         const defaultPageNumber = 0
-        const defaultMaxDistance = 10 // in kilometers
+        const defaultMaxDistance = 10000 // in metres
         const defaultMinOverallRating = 0
         const defaultMinReliabilityRating = 0
         const defaultMinVarietyRating = 0
@@ -113,6 +127,12 @@ exports.lambdaHandler = async (event, context) => {
                     sql_name: 'global_diet_id',
                     value: checkQueryParameter(event.queryStringParameters, 'globalDietId', defaultDiet),
                     operator: '='
+                },
+                currentLatitude: {
+                    value: checkQueryParameter(event.queryStringParameters, "currentLatitude", undefined)
+                },
+                currentLongitude: {
+                    value: checkQueryParameter(event.queryStringParameters, "currentLongitude", undefined)
                 }
             }
         };
@@ -121,7 +141,7 @@ exports.lambdaHandler = async (event, context) => {
         var collectRestaurants = `
         SELECT restaurant.restaurant_id AS restaurant_id, restaurant.name as restaurant_name, email,
                city_name.name as city_name, website, street_address, rating_overall, rating_reliability,
-               rating_variety, rating_service_and_quality, pricing, trending
+               rating_variety, rating_service_and_quality, pricing, trending, latitude, longitude
         FROM restaurant 
             INNER JOIN restaurant_diet_stats
                 ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
@@ -135,10 +155,23 @@ exports.lambdaHandler = async (event, context) => {
         var paramObject = searchParameters.restaurantParameters;
         for (var key in searchParameters.restaurantParameters){
 
-            // TODO: Implement checking distance
             if (key == 'maxDistance'){
-                continue;
-            } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null){
+                var currentLatitude = searchParameters.restaurantParameters.currentLatitude.value;
+                var currentLongitude = searchParameters.restaurantParameters.currentLongitude.value
+                if (currentLatitude === undefined || currentLongitude === undefined){
+                    throw("Max distance parameter given but no current location")
+                }
+                var maxDistance = searchParameters.restaurantParameters.maxDistance.value
+
+
+                if (paramIndex > 1){
+                    collectRestaurants = collectRestaurants + ' AND '
+                }
+
+                collectRestaurants = collectRestaurants + '\n' + getDistanceStatement(currentLatitude, currentLongitude, paramIndex)
+                paramIndex += 1
+                paramValues.push(maxDistance)
+            } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null || key == "currentLatitude" || key == "currentLongitude"){
                 continue;
             } else {
                 if (paramIndex > 1){

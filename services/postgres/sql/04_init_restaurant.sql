@@ -10,7 +10,9 @@ CREATE TABLE restaurant(
     city_id bigint NOT NULL REFERENCES city,
     postal_code varchar(20) NOT NULL,
     street_address varchar(70) NOT NULL,
-    geo_location point NOT NULL
+    latitude float,
+    longitude float,
+    geo_location geography
 );
 
 CREATE TABLE open_hours(
@@ -60,7 +62,7 @@ CREATE TABLE restaurant_suggestion(
     city varchar(60) NOT NULL,
     postal_code varchar(20),
     street_address varchar(70) NOT NULL,
-    geo_location point,
+    geo_location geography,
     suggester_id bigint NOT NULL REFERENCES user_profile,
     suggested timestamp NOT NULL
 );
