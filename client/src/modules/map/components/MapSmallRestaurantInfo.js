@@ -3,7 +3,7 @@ import {
   Button,
   NavItem,
   NavLink,} from 'reactstrap';
-import StarRating from 'react-stars';
+import ReactStars from 'react-stars';
 import '../../../styles/map.css';
 
 
@@ -81,10 +81,18 @@ class MapSmallRestaurantInfo extends React.Component {
           </div>
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">
-              <StarRating
+              <ReactStars
                 value = {this.props.restaurantInfo.overallRating}
                 count = {5}
                 size = {24}
+                edit={false}
+              />
+              <ReactStars
+                value = {this.props.restaurantInfo.pricingRating}
+                count = {3}
+                size = {24}
+                char = '€'
+                half = {false}
                 edit={false}
               />
             </div>
