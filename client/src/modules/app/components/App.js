@@ -6,6 +6,7 @@ import { Container } from 'reactstrap';
 
 import RouteCollection from './RouteCollection';
 import NavigationBar from './NavigationBar';
+import write_review from '../../writereview';
 
 import '../../../styles/app.css';
 import '../../../styles/themes.css';
