@@ -46,11 +46,12 @@ INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
     ('0', '0', '6', 'veg.'),
     ('0', '1', '1', 'no fish');
 
-INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, geo_location) VALUES
-    ('0', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '(1,1)'),
-    ('1', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '(1,2)'),
-    ('2', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '(1,3)'),
-    ('3', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '(1,4)');
+INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
+    ('0', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', 1, 1),
+    ('1', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', 1, 2),
+    ('2', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3',  1, 3),
+    ('3', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', 1, 4);
+UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);
 
 INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
     ('0', '0', '0', '4', '3', '4', '3', '3', '40'),
