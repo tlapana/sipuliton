@@ -253,6 +253,22 @@ Resources:
                       Path: /diet/groups
                       Method: get
 
+    VoteDietFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.voteDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /voteDiet
+                      Method: get
+                      
     SearchFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
