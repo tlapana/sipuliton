@@ -359,8 +359,8 @@ class Map extends React.Component {
                 + '&minVarietyRating=' + this.state.filters.minService
                 + '&minServiceAndQualityRating=' + this.state.filters.minVariety
                 + '&maxDistance=' + this.state.filters.radius
-                + '&currentLatitude=' + this.state.center[1]
-                + '&currentLongitude=' + this.state.center[0];
+                + '&currentLatitude=' + this.state.searchLoc[0]
+                + '&currentLongitude=' + this.state.searchLoc[1];
 
     if(markColor === "grey"){
       url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
@@ -369,8 +369,8 @@ class Map extends React.Component {
                   + '&minVarietyRating=0'
                   + '&minServiceAndQualityRating=0'
                   + '&maxDistance=' + this.state.filters.radius
-                  + '&currentLatitude=' + this.state.center[1]
-                  + '&currentLongitude=' + this.state.center[0];
+                  + '&currentLatitude=' + this.state.searchLoc[0]
+                  + '&currentLongitude=' + this.state.searchLoc[1];
     }
 
     this.setState({loading:true})
