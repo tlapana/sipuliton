@@ -1,4 +1,5 @@
-/*import React from 'react';
+/*
+import React from 'react';
 import {
   Button,
   NavItem,
@@ -42,4 +43,6 @@ class SimpleMap extends React.Component {
     );
   }
 }
+
+export default SimpleMap;
 */

@@ -98,7 +98,7 @@
   box-shadow: 0 0 3px 2px #9c9c9c7e;
 }
 
-.rounded .restaurants-list, 
+.rounded .restaurants-list,
 .rounded .restaurant-info {
   border-radius: 1em;
 }
@@ -210,7 +210,7 @@
   }
   .restaurant-info {
     display: inline-block;
-    height: 200px;
+    height: 250px;
     width: 300px;
     -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
     -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
@@ -242,6 +242,9 @@
   text-align: center;
   vertical-align: middle;
   margin: auto auto auto auto;
+}
+.rounded .errorBox {
+  border-radius: 1.5em;
 }
 
 .ErrorBoxBtn{
@@ -281,4 +284,10 @@
   border-color: yellow;
   border-width: 5px;
   border-style: solid;
+}
+.loadingSpinner-map{
+  position: fixed;
+  z-index: 900;
+  top:50vh;
+  left:50vw;
 }

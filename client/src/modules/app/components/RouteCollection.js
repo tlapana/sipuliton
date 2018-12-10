@@ -6,6 +6,7 @@ import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
+
 import map from '../../map'
 import restaurant from '../../restaurant';
 import NotFound from './NotFound';
@@ -35,6 +36,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/userProfile/" component={Profile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
+        <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route component={NotFound} />
       </Switch>
     );

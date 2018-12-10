@@ -136,7 +136,7 @@ class SearchBar extends React.Component {
     //Basic search portion
 
 
-    var url = '/map?'
+    var url = '/'+this.props.language+'/map?'
                 + 'minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
@@ -296,7 +296,7 @@ class SearchBar extends React.Component {
 
     const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
     if(this.state.redirectUser) {
-
+      console.log(this.searchUrl());
       return (<Redirect to={this.searchUrl()} />);
     }
     else {
