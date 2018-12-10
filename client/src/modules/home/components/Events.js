@@ -14,13 +14,30 @@ class Events extends React.Component {
     this.state = {
       error: null,
       isLoaded: false,
-      restaurants: []
+      restaurants: [],
+      latitude : 0,
+      longitude : 0
     };
   }
   
   /** Once the object has been added to the tree, load up the data from the server **/
   componentDidMount() {
     console.log("DEBUG: ComponentsDidMount entered");
+    
+    //Get user location
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
+    
+    var url = "http://localhost:3000/landing?latitude=" + this.state.latitude +"?longitude=" + this.state.longitude;
     
     fetch("http://localhost:3000/landing")
       .then(res => res.json())
