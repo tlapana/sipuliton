@@ -11,6 +11,10 @@ class Events extends React.Component {
   
   constructor(props) {
     super(props);
+    
+    this.getSuggestions = this.getSuggestions.bind(this);
+    
+    
     this.state = {
       error: null,
       isLoaded: false,
@@ -32,14 +36,27 @@ class Events extends React.Component {
           longitude: position.coords.longitude,
           error: null,
         });
+        
+        console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
+        this.getSuggestions();
       },
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
     
-    var url = "http://localhost:3000/landing?latitude=" + this.state.latitude +"?longitude=" + this.state.longitude;
     
-    fetch("http://localhost:3000/landing")
+  }
+  
+  getSuggestions()
+  {
+    var url = "http://localhost:3000/search?maxDistance=10000&pageSize=5&orderBy=rating_overall"
+                  + "&currentLatitude=" + this.state.latitude 
+                  + "&currentLongitude=" + this.state.longitude;
+                  
+    //var url = "http://localhost:3000/landing";
+    console.log("Searching");
+    console.log(url);
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
