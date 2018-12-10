@@ -109,7 +109,9 @@ class SearchBar extends React.Component {
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
-                + '&minPricing=' + this.state.pricing;
+                + '&minPricing=' + this.state.pricing
+                + '&searchLongitude=' + this.state.longitude
+                + '&searchLatitude=' + this.state.latitude;
     return url;
   }
 
