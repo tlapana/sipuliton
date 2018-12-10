@@ -84,13 +84,13 @@ class MapSmallRestaurantInfo extends React.Component {
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">
               <ReactStars
-                value = {this.props.restaurantInfo.overallRating}
+                value = {parseInt(this.props.restaurantInfo.overallRating)}
                 count = {5}
                 size = {24}
                 edit={false}
               />
               <ReactStars
-                value = {this.props.restaurantInfo.pricingRating}
+                value = {parseInt(this.props.restaurantInfo.pricingRating)}
                 count = {3}
                 size = {24}
                 char = '€'

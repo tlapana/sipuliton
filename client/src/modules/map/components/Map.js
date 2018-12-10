@@ -33,6 +33,10 @@ class Map extends React.Component {
     var city = "";
     var searchRadius = 10000;
     var showFilterBox = true;
+    var longitude = 24.940886;
+    var latitude = 60.168182;
+    var loading = false;
+    var showCurrentLocationMarker = true;
     if(this.props.location.search !== undefined
       && this.props.location.search !== ""
       && this.props.location.search.includes("?")
@@ -66,8 +70,16 @@ class Map extends React.Component {
         if(varValPair[0] === "city"){
           city = varValPair[1];
         }
+        if(varValPair[0] === "searchLongitude"){
+          longitude = parseInt(varValPair[1]);
+        }
+        if(varValPair[0] === "searchLatitude"){
+          latitude = parseInt(varValPair[1]);
+        }
       }
       showFilterBox = false;
+      loading = true;
+      showCurrentLocationMarker = false;
     }
 
     this.state = {
@@ -81,7 +93,7 @@ class Map extends React.Component {
         city:city,
       },
       showFilterBox: showFilterBox,
-      center:[60.168182,24.940886],
+      center:[latitude,longitude],
       checkboxes:{
         first:false,
         second:false,
@@ -90,13 +102,20 @@ class Map extends React.Component {
         fifth:false,
         sixth:false,
       },
-      searchLoc:[60.168182,24.940886],
+      searchLoc:[latitude,longitude],
       errors:{
         errorWhileGeocoding:false,
         errorWhileSearching:false,
         errorRestaurantsNotFound:false,
       },
-      showCurrentLocationMarker:true,
+      showCurrentLocationMarker:showCurrentLocationMarker,
+      loading:loading,
+      restaurants:{
+        green:[],
+        green:[],
+        selected:[],
+        selectedColour:"",
+      }
     };
     console.log(this.state);
     Geocoder.init(Config.google.API_KEY);
@@ -107,6 +126,12 @@ class Map extends React.Component {
 		this.AddGreyMarker = this.AddGreyMarker.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
     this.GetMockData = this.GetMockData.bind(this);
+    if(this.props.location.search !== undefined
+      && this.props.location.search !== ""
+      && this.props.location.search.includes("?")
+    ){
+      this.GetRestaurantsMarkers("green");
+    }
   }
 
   compare(a,b){
@@ -325,9 +350,8 @@ class Map extends React.Component {
   }
 
   // method handles fetching restaurants marker data from database
-	GetRestaurantsMarkers(){
-    //TODO: Implement restaurant fetch based on filters.
-
+	GetRestaurantsMarkers(markColor){
+    console.log("Getting: "+markColor)
     //Basic search portion
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
@@ -335,8 +359,20 @@ class Map extends React.Component {
                 + '&minVarietyRating=' + this.state.filters.minService
                 + '&minServiceAndQualityRating=' + this.state.filters.minVariety
                 + '&maxDistance=' + this.state.filters.radius
-                + '&currentLatitude=' + this.state.center[0]
-                + '&currentLongitude=' + this.state.center[1];
+                + '&currentLatitude=' + this.state.center[1]
+                + '&currentLongitude=' + this.state.center[0];
+
+    if(markColor === "grey"){
+      url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                  + '&minOverallRating=0'
+                  + '&minReliabilityRating=0'
+                  + '&minVarietyRating=0'
+                  + '&minServiceAndQualityRating=0'
+                  + '&maxDistance=' + this.state.filters.radius
+                  + '&currentLatitude=' + this.state.center[1]
+                  + '&currentLongitude=' + this.state.center[0];
+    }
+
     this.setState({loading:true})
     fetch(url)
       .then(res => res.json())
@@ -346,52 +382,69 @@ class Map extends React.Component {
           console.log(result);
           //Send data via props
           //Mock restaurant green markers.
-          var newMarkers = {};
           let markers = [];
-          let greyMarks = [];
-          if(result.restaurants.length === 0)
+          for(var i = 0; i<result.restaurants.length; ++i){
+            var res = result.restaurants[i];
+            var resObj = {
+              id:res.restaurant_id,
+              name:res.restaurant_name,
+              city:res.city_name,
+              postcode:"33990",
+              address:res.street_address,
+              overallRating:res.rating_overall,
+              serviceRating:res.rating_service_and_quality,
+              varietyRating:res.rating_variety,
+              reliabilityRating: res.rating_reliability,
+              pricingRating: res.pricing,
+              website: res.website,
+              email: res.email,
+              openMon:"9:00-15:00",
+              openTue:"9:00-15:00",
+              openWed:"9:00-15:00",
+              openThu:"9:00-13:00",
+              openFri:"9:00-16:00",
+              openSat:"8:00-17:00",
+              openSun:"10:00-18:00",
+              position: [res.longitude,res.latitude],
+            }
+            markers.push(resObj);
+          }
+          if(markColor === "grey"){
+            if(markers.length >= 10){
+              var number = 10-this.state.restaurants.green.length;
+              markers = markers.slice(0,number);
+            }
+          }
+
+          if((markers.length === 0 || markers.length === undefined) && markColor === "grey")
           {
-            this.setState({loading:false,errors:{errorRestaurantsNotFound:true}})
-            this.GetMockData();
+            this.setState({
+              loading:false,
+              errors:{
+                errorRestaurantsNotFound:true
+              }
+            })
             return;
           }
-          else{
-            for(var i = 0; i<result.restaurants.length; ++i){
-              var res = result.restaurants[i];
-              var resObj = {
-                id:res.restaurant_id,
-                name:res.restaurant_name,
-                city:res.city_name,
-                postcode:"33990",
-                address:res.street_address,
-                overallRating:res.rating_overall,
-                serviceRating:res.rating_service_and_quality,
-                varietyRating:res.rating_variety,
-                reliabilityRating: res.rating_reliability,
-                pricingRating: res.pricing,
-                website: res.website,
-                email: res.email,
-                openMon:"9:00-15:00",
-                openTue:"9:00-15:00",
-                openWed:"9:00-15:00",
-                openThu:"9:00-13:00",
-                openFri:"9:00-16:00",
-                openSat:"8:00-17:00",
-                openSun:"10:00-18:00",
-                position: [res.longitude,res.latitude],
-              }
-              markers.push(resObj);
-            }
-            if(markers.count <= 10){
-              //Mock restaurant grey markers.
 
-            }
+          if(markColor === "grey"){
+            this.setState(
+              {
+                loading:false,
+                restaurants:{
+                  grey:markers,
+                  selected:[],
+                  selectedColour:"",
+                }
+              }
+            )
+          }
+          else{
             this.setState(
               {
                 loading:false,
                 restaurants:{
                   green:markers,
-                  grey:greyMarks,
                   selected:[],
                   selectedColour:"",
                 }
@@ -406,9 +459,22 @@ class Map extends React.Component {
           console.log("DEBUG: ComponentsDidMount error");
           console.log(error);
           this.setState({loading:false,errors:{errorWhileSearching:true},});
-          this.GetMockData();
         }
       )
+      .then(
+        () => {
+          if(markColor === "green"){
+            if(this.state.restaurants.green.length < 10){
+              this.GetRestaurantsMarkers("grey");
+            }
+          }
+          else{
+            if(this.state.restaurants.green.length < 10){
+              this.GetMockData();
+            }
+          }
+        }
+      );
 	}
 
   // Method handles filter change
@@ -440,7 +506,7 @@ class Map extends React.Component {
         showCurrentLocationMarker:true,
         errors:{errorWhileGeocoding:false}
       });
-      this.GetRestaurantsMarkers();
+      this.GetRestaurantsMarkers("green");
     }
     else{
       Geocoder.from(newCity)
@@ -448,7 +514,7 @@ class Map extends React.Component {
         var location = json.results[0].geometry.location;
         console.log(location);
         this.setState({showCurrentLocationMarker:false,searchLoc:location,errors:{errorWhileGeocoding:false}});
-        this.GetRestaurantsMarkers();
+        this.GetRestaurantsMarkers("green");
       })
       .catch(error => {
         this.setState({showCurrentLocationMarker:false,errors:{errorWhileGeocoding:true}})
