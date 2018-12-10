@@ -6,7 +6,8 @@ export default {
     IDENTITY_POOL_ID: "eu-central-1:422edfe5-0641-46f1-b3b7-8b8e12814cd4",
   },
   google: {
-    CLIENT_ID: "1007417390749-o1tbmd4dfnn4ak51uh1trqimtgp15k0v.apps.googleusercontent.com"
+    CLIENT_ID: "1007417390749-o1tbmd4dfnn4ak51uh1trqimtgp15k0v.apps.googleusercontent.com",
+    API_KEY: "AIzaSyDlm-ECBXdhQ99097TQ2jlYwigkpx5Ti8Y"
   },
   facebook: {
     APP_ID: "1523866137714690"

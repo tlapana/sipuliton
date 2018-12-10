@@ -53,7 +53,7 @@ class Home extends React.Component {
     console.log(this.state.restaurants);
     console.log(this.state.searchDone);
   }
-  
+
   //Toggles flag that search is being done
   searching() {
     console.log("searching: Setting searchInProgress to true, searchDone to false and error to null");
@@ -63,15 +63,15 @@ class Home extends React.Component {
       error : null,
     });
   }
-  
-  
+
+
   errorHappened(errorMsg) {
     console.log("errorHappened: Setting error and searchInProgress to false");
     this.setState({
       error : errorMsg,
       searchInProgress : false
     });
-    
+
     console.log(errorMsg);
   }
 
@@ -121,7 +121,7 @@ class Home extends React.Component {
         <Redirect to={"/fi/moderating"}/>
       )
     }
-    
+
     let strings = new LocalizedStrings({
       en:{
         search:"Searching restaurants",
@@ -136,8 +136,8 @@ class Home extends React.Component {
     });
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
-    
-    
+
+
     if(!this.state.searchDone)
     {
       if (this.state.error != null) {
@@ -146,9 +146,9 @@ class Home extends React.Component {
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}
             />
-            <div className="eventsDiv"> 
+            <div className="eventsDiv">
               <h3> {strings.errorTitle} </h3>
-              {strings.errorText}             
+              {strings.errorText}
             </div>
           </div>
         );
@@ -161,7 +161,7 @@ class Home extends React.Component {
             />
             <Events language={this.props.match.params.language} />
           </div>
-        );        
+        );
       }
       else {
         return (
@@ -169,14 +169,14 @@ class Home extends React.Component {
             <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
               language={this.props.match.params.language}
             />
-            <div className="eventsDiv"> 
+            <div className="eventsDiv">
               <h3>
                 {strings.search}
                 <ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
               </h3>
             </div>
           </div>
-        );       
+        );
       }
 
     }
