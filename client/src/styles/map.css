@@ -243,6 +243,9 @@
   vertical-align: middle;
   margin: auto auto auto auto;
 }
+.rounded .errorBox {
+  border-radius: 1.5em;
+}
 
 .ErrorBoxBtn{
   padding: 20px;
