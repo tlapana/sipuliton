@@ -151,7 +151,7 @@ export default class Register2 extends React.Component {
 			if (this.state.googleReg) {
 				const newUser = await Auth.signUp({
 				username: this.state.socialCredentials.name,
-				password: this.state.socialCredentials.googleId,
+				password: this.state.password,
 				attributes: {
 					email: this.state.socialCredentials.email,
 				},
@@ -162,10 +162,10 @@ export default class Register2 extends React.Component {
 			}
 			else if (this.state.faceReg) {
 				const newUser = await Auth.signUp({
-				username: this.state.username,
+				username: this.state.socialCredentials.name,
 				password: this.state.password,
 				attributes: {
-					email: this.state.mail,
+					email: this.state.socialCredentials.email,
 				},
 			});
 			this.setState({
@@ -217,7 +217,33 @@ export default class Register2 extends React.Component {
 		}
 		console.log(this.state.socialCredentials);
 	}
-
+	
+	renderSocialReg() {
+		let strings = new LocalizedStrings({
+			en: {
+				confirmPassText: 'Please retype to confirm your password.',
+				confirmPassBtn: 'Confirm',
+			},
+			fi: {
+				confirmPassText: 'Kirjoita salasana uudelleen varmistaaksesi sen.',
+				confirmPassBtn: 'Hyväksy',
+			}
+		});
+		strings.setLanguage(this.props.match.params.language);
+		
+		return (
+			<div id="register" className="max-w-40">
+				<Form onSubmit={this.handleRegistration}>
+					<FormGroup>
+						<Label>{strings.confirmPassText}</Label>
+						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
+					</FormGroup>
+					<VInput type="submit" value={strings.confirmPassBtn} className="main-btn big-btn max-w-10" />
+				</Form>
+			</div>
+		)
+	}
+	
 	renderConfirmation() {
 		let strings = new LocalizedStrings({
       en:{
@@ -321,11 +347,17 @@ export default class Register2 extends React.Component {
 	}
 
 	render() {
-		/*decide which form to show, based on whether there is a 'newUser'*/
+		/*decide which form to show, based on whether social media registration is happening or whether there is a 'newUser'*/
 		return (
-			this.state.newUser === null
-			? this.renderForm()
-			: this.renderConfirmation()
+			if (this.state.faceReg || this.state.googleReg){
+				this.renderSocialReg()
+			}
+			else if (this.state.newUser === null) {
+				this.renderForm()
+			}
+			else {
+				this.renderConfirmation()
+			}
 		);
 	}
 }
