@@ -1,7 +1,7 @@
 --init restaurant related stuff
 
 CREATE TABLE restaurant(
-    restaurant_id bigint PRIMARY KEY,
+    restaurant_id bigserial PRIMARY KEY,
     name varchar(30) NOT NULL,
     email varchar(50),
     website varchar(50),
@@ -17,10 +17,21 @@ CREATE TABLE restaurant(
 
 CREATE TABLE open_hours(
     restaurant_id bigint REFERENCES restaurant,
-    weekday int,
-    opens time NOT NULL,
-    closes time NOT NULL,
-    PRIMARY KEY (restaurant_id, weekday)
+    opens_mon time, 
+    closes_mon time,
+    opens_tue time, 
+    closes_tue time,
+    opens_wed time, 
+    closes_wed time,
+    opens_thu time, 
+    closes_thu time,
+    opens_fri time, 
+    closes_fri time,
+    opens_sat time, 
+    closes_sat time,
+    opens_sun time, 
+    closes_sun time,
+    PRIMARY KEY (restaurant_id)
 );
 
 CREATE TABLE open_hours_exceptions(
