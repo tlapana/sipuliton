@@ -444,9 +444,15 @@ exports.createDietAdminLambda = async (event, context) => {
 
             temp = JSON.parse(parseParam("preset", event));
             const preset = temp === true ? true : temp === false ? false : null;
+            if (preset === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid value for preset"
+                }
+            }
 
             temp = JSON.parse(parseParam("groups", event));
-            if (temp !== null && temp.length < 1) {
+            if (temp !== null && temp.length < 1 || temp === null) {
                 throw {
                     'statusCode': 400,
                     'error': "cannot create empty diet"
@@ -486,7 +492,7 @@ exports.createDietLambda = async (event, context) => {
             const preset = false;
 
             temp = JSON.parse(parseParam("groups", event));
-            if (temp !== null && temp.length < 1) {
+            if (temp !== null && temp.length < 1 || temp === null) {
                 throw {
                     'statusCode': 400,
                     'error': "cannot create empty diet"
