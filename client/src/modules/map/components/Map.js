@@ -122,8 +122,6 @@ class Map extends React.Component {
     this.compare = this.compare.bind(this);
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
-		this.AddGreenMarker = this.AddGreenMarker.bind(this);
-		this.AddGreyMarker = this.AddGreyMarker.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
     this.GetMockData = this.GetMockData.bind(this);
     if(this.props.location.search !== undefined
@@ -202,8 +200,12 @@ class Map extends React.Component {
         tempGrey.push(this.state.restaurants.selected[0]);
       }
     }
-    tempGreen = tempGreen.sort(this.compare);
-    tempGrey = tempGrey.sort(this.compare);
+    if(tempGreen !== undefined && tempGreen.length !== 0){
+      tempGreen = tempGreen.sort(this.compare);
+    }
+    if(tempGrey !== undefined && tempGrey.length !== 0){
+      tempGrey = tempGrey.sort(this.compare);
+    }
     this.setState({
       center:selected.position,
       restaurants:{
@@ -352,6 +354,7 @@ class Map extends React.Component {
   // method handles fetching restaurants marker data from database
 	GetRestaurantsMarkers(markColor){
     console.log("Getting: "+markColor)
+    console.log(this.state.searchLoc)
     //Basic search portion
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
@@ -385,6 +388,7 @@ class Map extends React.Component {
           let markers = [];
           for(var i = 0; i<result.restaurants.length; ++i){
             var res = result.restaurants[i];
+            /*Check that opening hours are not null */
             var resObj = {
               id:res.restaurant_id,
               name:res.restaurant_name,
@@ -398,25 +402,38 @@ class Map extends React.Component {
               pricingRating: res.pricing,
               website: res.website,
               email: res.email,
-              openMon:"9:00-15:00",
-              openTue:"9:00-15:00",
-              openWed:"9:00-15:00",
-              openThu:"9:00-13:00",
-              openFri:"9:00-16:00",
-              openSat:"8:00-17:00",
-              openSun:"10:00-18:00",
-              position: [res.longitude,res.latitude],
+              openMon:res.opens_mon+"-"+res.closes_mon,
+              openTue:res.opens_tue+"-"+res.closes_tue,
+              openWed:res.opens_wed+"-"+res.closes_wed,
+              openThu:res.opens_thu+"-"+res.closes_thu,
+              openFri:res.opens_fri+"-"+res.closes_fri,
+              openSat:res.opens_sat+"-"+res.closes_sat,
+              openSun:res.opens_sun+"-"+res.closes_sun,
+              position: [res.latitude,res.longitude],
             }
             markers.push(resObj);
           }
           if(markColor === "grey"){
+            var greenMarks = this.state.restaurants.green;
+            var alreadyFoundRestaurants = [];
+            for(var i = 0; i<greenMarks.length; ++i){
+              alreadyFoundRestaurants.push(greenMarks[i].id);
+            }
+            markers = markers
+                 .filter(x => !alreadyFoundRestaurants.includes(x.id));
+            if(markers === undefined){
+              markers = [];
+            }
             if(markers.length >= 10){
               var number = 10-this.state.restaurants.green.length;
               markers = markers.slice(0,number);
             }
           }
 
-          if((markers.length === 0 || markers.length === undefined) && markColor === "grey")
+          if((markers.length === 0 || markers.length === undefined) &&
+            markColor === "grey" &&
+            this.state.restaurants.green.length === 0
+          )
           {
             this.setState({
               loading:false,
@@ -433,6 +450,7 @@ class Map extends React.Component {
                 loading:false,
                 restaurants:{
                   grey:markers,
+                  green:this.state.restaurants.green,
                   selected:[],
                   selectedColour:"",
                 }
@@ -445,6 +463,7 @@ class Map extends React.Component {
                 loading:false,
                 restaurants:{
                   green:markers,
+                  grey:[],
                   selected:[],
                   selectedColour:"",
                 }
@@ -466,11 +485,6 @@ class Map extends React.Component {
           if(markColor === "green"){
             if(this.state.restaurants.green.length < 10){
               this.GetRestaurantsMarkers("grey");
-            }
-          }
-          else{
-            if(this.state.restaurants.green.length < 10){
-              this.GetMockData();
             }
           }
         }
@@ -505,16 +519,21 @@ class Map extends React.Component {
         searchLoc:[this.props.coords.latitude,this.props.coords.longitude],
         showCurrentLocationMarker:true,
         errors:{errorWhileGeocoding:false}
-      });
-      this.GetRestaurantsMarkers("green");
+      },() => this.GetRestaurantsMarkers("green"));
+
     }
     else{
       Geocoder.from(newCity)
       .then(json => {
         var location = json.results[0].geometry.location;
         console.log(location);
-        this.setState({showCurrentLocationMarker:false,searchLoc:location,errors:{errorWhileGeocoding:false}});
-        this.GetRestaurantsMarkers("green");
+        this.setState(
+          {
+            showCurrentLocationMarker:false,
+            searchLoc:[location.lat,location.lng],
+            errors:{errorWhileGeocoding:false}
+          },() => this.GetRestaurantsMarkers("green")
+        );
       })
       .catch(error => {
         this.setState({showCurrentLocationMarker:false,errors:{errorWhileGeocoding:true}})
@@ -522,20 +541,6 @@ class Map extends React.Component {
       });
     }
 	}
-
-	//Method adds new green marker to map.
-  AddGreenMarker(position){
-    var markers = this.state.greenMarkers
-    markers.push(position)
-    this.setState({greenMarkers:markers})
-  }
-
-	//Method adds new grey marker to map.
-  AddGreyMarker(position){
-    var markers = this.state.greyMarkers
-    markers.push(position)
-    this.setState({greyMarkers:markers})
-  }
 
   render() {
     /* Localization */
