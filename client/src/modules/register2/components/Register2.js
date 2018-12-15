@@ -54,6 +54,7 @@ export default class Register2 extends React.Component {
 		this.handleRegistration = this.handleRegistration.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
+		this.renderSocialReg = this.renderSocialReg.bind(this);
 	}
 
 	validateForm() {
@@ -219,6 +220,7 @@ export default class Register2 extends React.Component {
 	}
 	
 	renderSocialReg() {
+		const { VInput, } = commonComponents;
 		let strings = new LocalizedStrings({
 			en: {
 				confirmPassText: 'Please retype to confirm your password.',
@@ -345,19 +347,17 @@ export default class Register2 extends React.Component {
 			</div>
 		);
 	}
-
+	
 	render() {
 		/*decide which form to show, based on whether social media registration is happening or whether there is a 'newUser'*/
-		return (
-			if (this.state.faceReg || this.state.googleReg){
-				this.renderSocialReg()
-			}
-			else if (this.state.newUser === null) {
-				this.renderForm()
-			}
-			else {
-				this.renderConfirmation()
-			}
-		);
+		if (this.state.faceReg || this.state.googleReg) {
+			return ( this.renderSocialReg() );
+		}
+		else if (this.state.newUser === null) {
+			return ( this.renderForm() );
+		}
+		else {
+			return ( this.renderConfirmation() );
+		}
 	}
 }
