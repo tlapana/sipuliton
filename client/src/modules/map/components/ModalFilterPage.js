@@ -5,6 +5,8 @@ import {
   NavLink,Modal, ModalHeader, ModalBody, ModalFooter,	Form,
   Label} from 'reactstrap';
 import ReactStars from 'react-stars';
+import Select from 'react-select';
+
 import styles from '../../../styles/landingpage.css';
 import '../../../styles/map.css';
 /* Router imports */
@@ -28,8 +30,6 @@ class ModalFilterPage extends React.Component {
     super(props);
     this.state = {
       modalState: this.props.showFilterBoxAtStart,
-      useUserLocation:false,
-      userHasAnswered:false,
       radius : this.props.filters.radius,
       minOverall : this.props.filters.minOverall,
       minReliability : this.props.filters.minReliability,
@@ -37,6 +37,9 @@ class ModalFilterPage extends React.Component {
       minService : this.props.filters.minService,
       pricing: this.props.filters.pricing,
       city: this.props.filters.city,
+      diets: this.props.filters.diets,
+      defaultValues: this.props.filters.diets,
+      options: [],
       originalStage: {
         city: this.props.filters.city,
         radius : this.props.filters.radius,
@@ -45,6 +48,8 @@ class ModalFilterPage extends React.Component {
         minVariety : this.props.filters.minVariety,
         minService : this.props.filters.minService,
         pricing: this.props.filters.pricing,
+        diets: this.props.filters.diets,
+        defaultValues: this.props.filters.diets,
       }
     }
     this.toggleModal = this.toggleModal.bind(this);
@@ -54,8 +59,14 @@ class ModalFilterPage extends React.Component {
     this.changeService = this.changeService.bind(this);
     this.changePricing = this.changePricing.bind(this);
     this.saveFilters = this.saveFilters.bind(this);
-    this.answerNo = this.answerNo.bind(this);
-    this.answerYes = this.answerYes.bind(this);
+    this.getOptions = this.getOptions.bind(this);
+    this.clearFilters = this.clearFilters.bind(this);
+  }
+
+  componentDidMount() {
+    this.setState({
+      options : this.getOptions(),
+    });
   }
 
   handleCityChange = event => {
@@ -70,18 +81,24 @@ class ModalFilterPage extends React.Component {
     });
   }
 
-  answerNo(){
+  onDietsChanged = (selectedOptions) => {
+    console.log(selectedOptions)
     this.setState({
-      useUserLocation:false,
-      userHasAnswered:true,
-    })
+      diets : selectedOptions,
+    });
   }
 
-  answerYes(){
-      this.setState({
-        useUserLocation:true,
-        userHasAnswered:true,
-      })
+  clearFilters(){
+    this.setState({
+      radius : 1000,
+      minOverall : 0,
+      minReliability : 0,
+      minVariety : 0,
+      minService : 0,
+      pricing: 0,
+      city: "",
+      diets: [],
+    });
   }
 
   saveFilters(){
@@ -95,6 +112,7 @@ class ModalFilterPage extends React.Component {
         minService : this.state.minService,
         pricing: this.state.pricing,
         city: this.state.city,
+        diets: this.state.diets,
       }
     })
     this.props.FiltersChanged(
@@ -106,6 +124,7 @@ class ModalFilterPage extends React.Component {
       this.state.pricing,
       this.state.city,
       this.state.useUserLocation,
+      this.state.diets,
     );
   }
 
@@ -119,7 +138,9 @@ class ModalFilterPage extends React.Component {
         minVariety : this.state.originalStage.minVariety,
         minService : this.state.originalStage.minService,
         pricing: this.state.originalStage.pricing,
-        city: this.state.originalStage.city
+        city: this.state.originalStage.city,
+        diets: this.state.originalStage.diets,
+        defaultValues: this.state.originalStage.defaultValues,
       })
     }
     this.setState({
@@ -161,6 +182,25 @@ class ModalFilterPage extends React.Component {
     });
   }
 
+  //This gets the options for the selection.
+  getOptions() {
+    //TODO: Get options from backend.
+    const options = [
+      { value: '1', label: 'Allergia/Sipuli' },
+      { value: '2', label: 'Allergia/Tomaatti' },
+      { value: '3', label: 'Allergia/Pähkinä' },
+      { value: '4', label: 'Laktoositon ruokavalio' },
+      { value: '5 ', label: 'Keliakia' }
+    ];
+    console.log("Getting the options: ");
+    console.log(options);
+
+    this.setState({
+      loadedOptions : true
+    });
+
+    return options;
+  }
 
   render() {
     const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
@@ -181,7 +221,11 @@ class ModalFilterPage extends React.Component {
         yes:"Yes",
         no:"No",
         enterCity:"Enter city...",
-        cityWhereToFindRestaurants:"City where we search restaurants"
+        cityWhereToFindRestaurants:"City where we search restaurants",
+        diets:"Diets/Allergies",
+        selectPlaceholder:"Select diets...",
+        noOptionsMessage:"No diets",
+        clear:"Clear filters"
       },
       fi: {
         filter:"Rajaa",
@@ -198,7 +242,11 @@ class ModalFilterPage extends React.Component {
         yes:"Kyllä",
         no:"En",
         enterCity:"Syötä kaupunki...",
-        cityWhereToFindRestaurants:"Kaupunki, josta ravintoloita etsitään"
+        cityWhereToFindRestaurants:"Kaupunki, josta ravintoloita etsitään",
+        diets:"Dietit/Allergiat",
+        selectPlaceholder:"Valitse ruokavalioita...",
+        noOptionsMessage:"Ei ruokavalioita",
+        clear:"Poista rajaukset",
       }
     });
 
@@ -240,6 +288,20 @@ class ModalFilterPage extends React.Component {
                 max={20000}
                 onChange={this.onSliderChange}
                 value={this.state.radius}
+              />
+            </div>
+            <div className="diets-filters-box">
+              {strings.diets}
+              <Select
+                defaultValue={ this.state.defaultValues }
+                isMulti
+                name="filtersDrop"
+                options={ this.state.options }
+                className="basic-multi-select"
+                classNamePrefix="select"
+                onChange={this.onDietsChanged}
+                placeholder={strings.selectPlaceholder}
+                noOptionsMessage={() => {return strings.noOptionsMessage}}
               />
             </div>
             <div className="rating-filters-box">
@@ -284,6 +346,12 @@ class ModalFilterPage extends React.Component {
             </div>
           </ModalBody>
           <ModalFooter>
+            <button
+              className="btn main-btn"
+              onClick={this.clearFilters}
+            >
+              {strings.clear}
+            </button>
             <button
               className="btn main-btn"
               onClick={this.saveFilters}

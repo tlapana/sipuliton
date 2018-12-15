@@ -79,7 +79,7 @@ class MapSmallRestaurantInfo extends React.Component {
             {this.props.restaurantInfo.name}
           </h3>
           <div className="restaurant-info-item" id="address">
-            {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode},<br/> {this.props.restaurantInfo.address}
+            {this.props.restaurantInfo.address},{this.props.restaurantInfo.city}
           </div>
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">

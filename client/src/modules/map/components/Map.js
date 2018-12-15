@@ -30,6 +30,7 @@ class Map extends React.Component {
     var minVariety = 0;
     var minService = 0;
     var minPricing = 0;
+    var diets = [];
     var city = "";
     var searchRadius = 10000;
     var showFilterBox = true;
@@ -76,6 +77,9 @@ class Map extends React.Component {
         if(varValPair[0] === "searchLatitude"){
           latitude = parseInt(varValPair[1]);
         }
+        if(varValPair[0] === "searchDiets"){
+          diets = varValPair[1];
+        }
       }
       showFilterBox = false;
       loading = true;
@@ -91,6 +95,7 @@ class Map extends React.Component {
         minService : minService,
         pricing: minPricing,
         city:city,
+        diets:diets,
       },
       showFilterBox: showFilterBox,
       center:[latitude,longitude],
@@ -501,6 +506,7 @@ class Map extends React.Component {
     newMinPricing,
     newCity,
     useUserLocation,
+    newDiets,
   )
   {
 		this.setState({
@@ -512,6 +518,7 @@ class Map extends React.Component {
         minService : newMinService,
         pricing: newMinPricing,
         city: newCity,
+        diets:newDiets,
       }
     });
     if(useUserLocation){
