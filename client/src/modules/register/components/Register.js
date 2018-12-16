@@ -14,7 +14,7 @@ import commonComponents from '../../common';
 import config from "../../../config.js"
 /* Localization */
 import LocalizedStrings from 'react-localization';
-{/*import SocialRegister from './SocialRegister.js';*/}
+import SocialRegister from './SocialRegister.js';
 
 
 
@@ -39,7 +39,8 @@ export default class Register extends React.Component {
 			retypeMailValid: true,
 			passwordValid: true,
 			retypePassValid: true,
-			socialReg: false
+			googleReg: false,
+			faceReg: false
 		};
 
 		this.onUsernameChanged = this.onUsernameChanged.bind(this);
@@ -53,6 +54,7 @@ export default class Register extends React.Component {
 		this.handleRegistration = this.handleRegistration.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
+		this.renderSocialReg = this.renderSocialReg.bind(this);
 	}
 
 	validateForm() {
@@ -147,7 +149,32 @@ export default class Register extends React.Component {
 		event.preventDefault();
 		this.setState({ isLoading: true });
 		try {
-			const newUser = await Auth.signUp({
+			if (this.state.googleReg) {
+				const newUser = await Auth.signUp({
+				username: this.state.username,
+				password: this.state.password,
+				attributes: {
+					email: this.state.socialCredentials.email,
+				},
+			});
+			this.setState({
+				newUser
+			});
+			}
+			else if (this.state.faceReg) {
+				const newUser = await Auth.signUp({
+				username: this.state.username,
+				password: this.state.password,
+				attributes: {
+					email: this.state.socialCredentials.email,
+				},
+			});
+			this.setState({
+				newUser
+			});
+			}
+			else {
+				const newUser = await Auth.signUp({
 				username: this.state.username,
 				password: this.state.password,
 				attributes: {
@@ -157,6 +184,7 @@ export default class Register extends React.Component {
 			this.setState({
 				newUser
 			});
+			}
 		} catch (e) {
 			if (e.code === 'UsernameExistsException') {
 				let strings = new LocalizedStrings({
@@ -172,15 +200,58 @@ export default class Register extends React.Component {
 		}
 		this.setState({ isLoading: false });
 	}
-	
-	/*getSocialCredentials = (dataFromChild) => {
-		this.setState({
-			socialCredentials: dataFromChild,
-			socialReg: true
+	/*function that receives the user data from SocialRegister class*/
+	getSocialCredentials = (dataFromChild) => {
+		if (dataFromChild[1] === "google") {
+			this.setState({
+				socialCredentials: dataFromChild[0],
+				username: dataFromChild[0].name,
+				googleReg: true,
+				faceReg: false
 			});
-		//console.log(dataFromChild + ", " + socialCredentials);
-	}*/
-
+		}
+		else if (dataFromChild[1] === "facebook") {
+			this.setState({
+				socialCredentials: dataFromChild[0],
+				username: dataFromChild[0].name,
+				googleReg: false,
+				faceReg: true
+			});
+		}
+		console.log(this.state.socialCredentials);
+	}
+	
+	renderSocialReg() {
+		const { VInput, } = commonComponents;
+		let strings = new LocalizedStrings({
+			en: {
+				confirmNameText: 'Create an account with this name:',
+				confirmPassText: 'Please retype to confirm your password:',
+				confirmPassBtn: 'Confirm',
+			},
+			fi: {
+				confirmNameText: 'Luo tunnus tällä nimellä:',
+				confirmPassText: 'Kirjoita salasanasi uudelleen varmistaaksesi sen:',
+				confirmPassBtn: 'Hyväksy',
+			}
+		});
+		strings.setLanguage(this.props.match.params.language);
+		/*renders the form for re-entering password for social media registration*/
+		return (
+			<div id="register" className="max-w-40">
+				<Form onSubmit={this.handleRegistration}>
+					<FormGroup>
+						<Label>{strings.confirmNameText}</Label>
+						<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged}/>
+						<Label>{strings.confirmPassText}</Label>
+						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
+					</FormGroup>
+					<VInput type="submit" value={strings.confirmPassBtn} className="main-btn big-btn max-w-10" />
+				</Form>
+			</div>
+		)
+	}
+	
 	renderConfirmation() {
 		let strings = new LocalizedStrings({
       en:{
@@ -278,17 +349,21 @@ export default class Register extends React.Component {
           	{strings.loginHere}
         	</Link>
 				</div>
-				{/*<SocialRegister onSuccess={this.getSocialCredentials}/>*/}
+				<SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
 			</div>
 		);
 	}
-
+	
 	render() {
-		/*decide which form to show, based on whether there is a 'newUser'*/
-		return (
-			this.state.newUser === null
-			? this.renderForm()
-			: this.renderConfirmation()
-		);
+		/*decide which form to show, based on whether social media registration is happening or whether there is a 'newUser'*/
+		if (this.state.faceReg || this.state.googleReg) {
+			return ( this.renderSocialReg() );
+		}
+		else if (this.state.newUser === null) {
+			return ( this.renderForm() );
+		}
+		else {
+			return ( this.renderConfirmation() );
+		}
 	}
 }

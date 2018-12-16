@@ -1,4 +1,4 @@
-/* This file has mostly the same functions as SocialLogin, but there is an additional function to send the information
+/* This file has mostly the same functions as SocialLogin, but there is additional functionality to send user information
 back to Register class, which then finishes the registration with social media accounts*/
 
 import React from 'react';
@@ -22,7 +22,7 @@ export default class SocialRegister extends React.Component {
     this.state = {
       username:"",
       password:"",
-	  regCredentials: "",
+	  regCredentials: "abcd",
       loggingFailed: false,
       loggingSucceeded:false,
 	  allowSending: false,
@@ -53,9 +53,10 @@ export default class SocialRegister extends React.Component {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
         this.setState({
-			regCredentials: credentials,
+			regCredentials: [response.profileObj, "google"],
 			loggingSucceeded:true
 			});
+		this.sendToRegister();
         
       }).catch(e => {
           
@@ -86,9 +87,10 @@ export default class SocialRegister extends React.Component {
         console.log("Auth.federatedSignIn SUCCESS")
         console.log('get aws credentials', credentials);
         this.setState({
-			regCredentials: credentials,
+			regCredentials: [response, "facebook"],
 			loggingSucceeded:true
 			});
+		this.sendToRegister();
         
       }).catch(e => {
           
@@ -97,7 +99,7 @@ export default class SocialRegister extends React.Component {
         console.log(e);
         this.setState({loggingFailed:true});
       });
-    
+
     
   }
   
@@ -108,26 +110,21 @@ export default class SocialRegister extends React.Component {
   }
   
   sendToRegister = () => {
-	if (typeof regCredentials === 'undefined') {
-		  
-		}
-	else {
-		this.props.onSuccess(regCredentials);
-		}
+		this.props.callback(this.state.regCredentials);
 	}
   
   render() {
     let strings = new LocalizedStrings({
       en:{
-        fbLogin:'Login with Facebook',
-        googleLogin: 'Login with Google',
+        fbLogin:'Register with Facebook',
+        googleLogin: 'Register with Google',
       },
       fi: {
-        fbLogin: 'Facebook kirjautuminen',
-        googleLogin: 'Google kirjautuminen',
+        fbLogin: 'Facebook-rekisteröityminen',
+        googleLogin: 'Google-rekisteröityminen',
       }
     });
-    strings.setLanguage(this.props.language);
+    strings.setLanguage(this.props.parentLanguage);
     return (
       <div>
         <GoogleLogin
