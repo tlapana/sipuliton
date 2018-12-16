@@ -33,14 +33,6 @@ CREATE TABLE restaurant_description(
     PRIMARY KEY (restaurant_id, language_id)
 );
 
-CREATE TABLE restaurant_diet_filter(
-    restaurant_id bigint REFERENCES restaurant,
-    global_diet_id bigint REFERENCES global_diet,
-	downvotes int NOT NULL,
-	upvotes int NOT NULL,
-    PRIMARY KEY (restaurant_id, global_diet_id)
-);
-
 --restaurant suggestion and log
 --status: posted, accepted rejected
 CREATE TABLE restaurant_suggestion(
