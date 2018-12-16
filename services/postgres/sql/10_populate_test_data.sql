@@ -52,12 +52,6 @@ INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_i
     ('2', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '(1,3)'),
     ('3', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '(1,4)');
 
-INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
-    ('0', '0', '0', '4', '3', '4', '3', '3', '40'),
-    ('1', '0', '0', '5', '5', '5', '5', '5', '50'),
-    ('2', '0', '0', '1', '1', '1', '1', '1', '-10'),
-    ('3', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
-
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 

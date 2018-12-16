@@ -33,20 +33,6 @@ CREATE TABLE restaurant_description(
     PRIMARY KEY (restaurant_id, language_id)
 );
 
---restaurant statistics for diet (derived from reviews)
-CREATE TABLE restaurant_diet_stats(
-    restaurant_id bigint REFERENCES restaurant,
-    global_diet_id bigint REFERENCES global_diet,
-    reviews int NOT NULL,
-    rating_overall real NOT NULL,
-    rating_reliability real NOT NULL,
-    rating_variety real NOT NULL,
-    rating_service_and_quality real NOT NULL,
-    pricing real NOT NULL,
-    trending real NOT NULL,
-    PRIMARY KEY (restaurant_id, global_diet_id)
-);
-
 CREATE TABLE restaurant_diet_filter(
     restaurant_id bigint REFERENCES restaurant,
     global_diet_id bigint REFERENCES global_diet,
