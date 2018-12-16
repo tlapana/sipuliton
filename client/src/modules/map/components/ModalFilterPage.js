@@ -17,12 +17,7 @@ import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 /* Localization */
 import LocalizedStrings from 'react-localization';
-
-function distanceFormatter(v) {
-  v = v/1000;
-  v = v.toFixed(2);
-  return `${v} km`;
-}
+const MapApi = require('./MapGlobalFunctions');
 
 class ModalFilterPage extends React.Component {
   /* Constructor of the navication bar class. */
@@ -282,7 +277,7 @@ class ModalFilterPage extends React.Component {
                 checked={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
               </div>
             <div>
-              <div><Label>{strings.selectRadius} {distanceFormatter(this.state.radius)}</Label></div>
+              <div><Label>{strings.selectRadius} {MapApi.distanceFormatter(this.state.radius)}</Label></div>
               <Slider
                 min={1000}
                 max={20000}

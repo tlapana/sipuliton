@@ -10,6 +10,8 @@ import SocialLogin from './Social_Login.js'
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
+const LoginApi = require('./LoginGlobalFunctions');
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -20,11 +22,11 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    Auth.currentAuthenticatedUser()
-        .then(user => {
-          this.setState({loggedInAlready: true});
-        })
-        .catch(err => {});
+    var user = LoginApi.getCurrentAuthUser();
+    console.log(user);
+    if(user !== undefined && user !== null && LoginApi.getUserLoggedInStatus()){
+      this.setState({loggedInAlready: true});
+    }
   }
 
   render() {

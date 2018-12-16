@@ -16,71 +16,37 @@ import {geolocated} from 'react-geolocated';
 import LocalizedStrings from 'react-localization';
 
 /* Filter Page */
-import ModalFilterPage from './ModalFilterPage'
+import ModalFilterPage from './ModalFilterPage';
 
-import Config from '../../../config.js'
+import Config from '../../../config.js';
+
+const MapApi = require('./MapGlobalFunctions');
 
 class Map extends React.Component {
   /* Constructor of the map class. */
   constructor(props) {
     super(props);
+    var filters = {
+      overallRating:0,
+      minRel:0,
+      minVariety:0,
+      searchRadius:10000,
+      minService:0,
+      minPricing:0,
+      city:"",
+      longitude:24.940886,
+      latitude:60.168182,
+      diets:[],
+    }
 
-    var overallRating = 0;
-    var minRel = 0;
-    var minVariety = 0;
-    var minService = 0;
-    var minPricing = 0;
-    var diets = [];
-    var city = "";
-    var searchRadius = 10000;
     var showFilterBox = true;
-    var longitude = 24.940886;
-    var latitude = 60.168182;
     var loading = false;
     var showCurrentLocationMarker = true;
     if(this.props.location.search !== undefined
       && this.props.location.search !== ""
       && this.props.location.search.includes("?")
     ){
-      var variables = this.props.location.search.replace("?","");
-      var varArray = variables.split("&");
-      for(var i = 0; i<varArray.length; i++){
-        var el = varArray[i];
-        var varValPair = el.split("=");
-        if(varValPair[0] === "minOverallRating"){
-          overallRating = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "minReliabilityRating"){
-          minRel = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "minVarietyRating"){
-          minVariety = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "minServiceAndQualityRating"){
-          minService = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "searchRadius"){
-          searchRadius = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "minServiceAndQualityRating"){
-          minService = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "minPricing"){
-          minPricing = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "city"){
-          city = varValPair[1];
-        }
-        if(varValPair[0] === "searchLongitude"){
-          longitude = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "searchLatitude"){
-          latitude = parseInt(varValPair[1]);
-        }
-        if(varValPair[0] === "searchDiets"){
-          diets = varValPair[1];
-        }
-      }
+      filters = MapApi.parseMapUrlParametersToFilters(this.props.location.search);
       showFilterBox = false;
       loading = true;
       showCurrentLocationMarker = false;
@@ -88,17 +54,17 @@ class Map extends React.Component {
 
     this.state = {
       filters:{
-        radius:searchRadius,
-        minOverall : overallRating,
-        minReliability : minRel,
-        minVariety : minVariety,
-        minService : minService,
-        pricing: minPricing,
-        city:city,
-        diets:diets,
+        radius:filters.searchRadius,
+        minOverall : filters.overallRating,
+        minReliability : filters.minRel,
+        minVariety : filters.minVariety,
+        minService : filters.minService,
+        pricing: filters.minPricing,
+        city:filters.city,
+        diets:filters.diets,
       },
       showFilterBox: showFilterBox,
-      center:[latitude,longitude],
+      center:[filters.latitude,filters.longitude],
       checkboxes:{
         first:false,
         second:false,
@@ -107,7 +73,7 @@ class Map extends React.Component {
         fifth:false,
         sixth:false,
       },
-      searchLoc:[latitude,longitude],
+      searchLoc:[filters.latitude,filters.longitude],
       errors:{
         errorWhileGeocoding:false,
         errorWhileSearching:false,
@@ -122,9 +88,9 @@ class Map extends React.Component {
         selectedColour:"",
       }
     };
-    console.log(this.state);
+
     Geocoder.init(Config.google.API_KEY);
-    this.compare = this.compare.bind(this);
+
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
@@ -136,19 +102,6 @@ class Map extends React.Component {
       this.GetRestaurantsMarkers("green");
     }
   }
-
-  compare(a,b){
-    var distToA = Math.sqrt(Math.pow(a.position[0] - this.state.center[0])+Math.pow(a.position[1]-this.state.center[1]))
-    var distToB = Math.sqrt(Math.pow(b.position[0] - this.state.center[0])+Math.pow(b.position[1]-this.state.center[1]))
-    if( distToA < distToB){
-      return -1;
-    }
-    if(distToA > distToB){
-      return 1;
-    }
-    return 0;
-  }
-
   SelectedRestaurantChanged(idx,color){
     var selected = {};
     var tempGreen = this.state.restaurants.green;
@@ -206,10 +159,12 @@ class Map extends React.Component {
       }
     }
     if(tempGreen !== undefined && tempGreen.length !== 0){
-      tempGreen = tempGreen.sort(this.compare);
+      MapApi.setNewCenter(this.state.center);
+      tempGreen = tempGreen.sort(MapApi.sortByDistanceToCenter);
     }
     if(tempGrey !== undefined && tempGrey.length !== 0){
-      tempGrey = tempGrey.sort(this.compare);
+      MapApi.setNewCenter(this.state.center);
+      tempGrey = tempGrey.sort(MapApi.sortByDistanceToCenter);
     }
     this.setState({
       center:selected.position,
@@ -338,9 +293,9 @@ class Map extends React.Component {
         openSun:"10:00-18:00",
         position:[61.457239,23.848175],
       }]
-
-    greenRestaurantData = greenRestaurantData.sort(this.compare);
-    greyRestaurantData = greyRestaurantData.sort(this.compare);
+    MapApi.setNewCenter(this.state.center);
+    greenRestaurantData = greenRestaurantData.sort(MapApi.sortByDistanceToCenter);
+    greyRestaurantData = greyRestaurantData.sort(MapApi.sortByDistanceToCenter);
 
     this.setState(
       {
@@ -389,50 +344,10 @@ class Map extends React.Component {
           console.log("Sending results");
           console.log(result);
           //Send data via props
-          //Mock restaurant green markers.
-          let markers = [];
-          for(var i = 0; i<result.restaurants.length; ++i){
-            var res = result.restaurants[i];
-            /*Check that opening hours are not null */
-            var resObj = {
-              id:res.restaurant_id,
-              name:res.restaurant_name,
-              city:res.city_name,
-              postcode:"33990",
-              address:res.street_address,
-              overallRating:res.rating_overall,
-              serviceRating:res.rating_service_and_quality,
-              varietyRating:res.rating_variety,
-              reliabilityRating: res.rating_reliability,
-              pricingRating: res.pricing,
-              website: res.website,
-              email: res.email,
-              openMon:res.opens_mon+"-"+res.closes_mon,
-              openTue:res.opens_tue+"-"+res.closes_tue,
-              openWed:res.opens_wed+"-"+res.closes_wed,
-              openThu:res.opens_thu+"-"+res.closes_thu,
-              openFri:res.opens_fri+"-"+res.closes_fri,
-              openSat:res.opens_sat+"-"+res.closes_sat,
-              openSun:res.opens_sun+"-"+res.closes_sun,
-              position: [res.latitude,res.longitude],
-            }
-            markers.push(resObj);
-          }
+
+          let markers = MapApi.parseRestaurantsData(result.restaurants);
           if(markColor === "grey"){
-            var greenMarks = this.state.restaurants.green;
-            var alreadyFoundRestaurants = [];
-            for(var i = 0; i<greenMarks.length; ++i){
-              alreadyFoundRestaurants.push(greenMarks[i].id);
-            }
-            markers = markers
-                 .filter(x => !alreadyFoundRestaurants.includes(x.id));
-            if(markers === undefined){
-              markers = [];
-            }
-            if(markers.length >= 10){
-              var number = 10-this.state.restaurants.green.length;
-              markers = markers.slice(0,number);
-            }
+            markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
           }
 
           if((markers.length === 0 || markers.length === undefined) &&
