@@ -7,7 +7,6 @@ import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
 import restaurant from '../../restaurant';
-import register2 from '../../register2';
 
 import NotFound from './NotFound';
 
