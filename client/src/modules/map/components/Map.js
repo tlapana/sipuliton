@@ -160,11 +160,11 @@ class Map extends React.Component {
     }
     if(tempGreen !== undefined && tempGreen.length !== 0){
       MapApi.setNewCenter(this.state.center);
-      tempGreen = tempGreen.sort(MapApi.sortByDistanceToCenter);
+      tempGreen = tempGreen.sort(MapApi.sortByDistanceToCenter());
     }
     if(tempGrey !== undefined && tempGrey.length !== 0){
       MapApi.setNewCenter(this.state.center);
-      tempGrey = tempGrey.sort(MapApi.sortByDistanceToCenter);
+      tempGrey = tempGrey.sort(MapApi.sortByDistanceToCenter());
     }
     this.setState({
       center:selected.position,
@@ -294,8 +294,8 @@ class Map extends React.Component {
         position:[61.457239,23.848175],
       }]
     MapApi.setNewCenter(this.state.center);
-    greenRestaurantData = greenRestaurantData.sort(MapApi.sortByDistanceToCenter);
-    greyRestaurantData = greyRestaurantData.sort(MapApi.sortByDistanceToCenter);
+    greenRestaurantData = greenRestaurantData.sort(MapApi.sortByDistanceToCenter());
+    greyRestaurantData = greyRestaurantData.sort(MapApi.sortByDistanceToCenter());
 
     this.setState(
       {
@@ -345,7 +345,8 @@ class Map extends React.Component {
           console.log(result);
           //Send data via props
 
-          let markers = MapApi.parseRestaurantsData(result.restaurants);
+          var markers = MapApi.parseRestaurantsData(result.restaurants);
+
           if(markColor === "grey"){
             markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
           }
@@ -365,6 +366,8 @@ class Map extends React.Component {
           }
 
           if(markColor === "grey"){
+            MapApi.setNewCenter(this.state.center);
+            markers = markers.sort(MapApi.sortByDistanceToCenter());
             this.setState(
               {
                 loading:false,
@@ -378,6 +381,8 @@ class Map extends React.Component {
             )
           }
           else{
+            MapApi.setNewCenter(this.state.center);
+            markers = markers.sort(MapApi.sortByDistanceToCenter());
             this.setState(
               {
                 loading:false,

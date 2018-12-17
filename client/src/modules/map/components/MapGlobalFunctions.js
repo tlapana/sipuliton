@@ -20,6 +20,8 @@ function sortByDistanceToCenter(){
     var powBy = Math.pow(b.position[1]-center[1],2);
     var distToA = Math.sqrt(powAx+powAy)
     var distToB = Math.sqrt(powBx+powBy)
+    console.log(distToA);
+    console.log(distToB);
     if( distToA < distToB){
       return -1;
     }
