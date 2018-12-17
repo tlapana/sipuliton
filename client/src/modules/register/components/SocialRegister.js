@@ -20,12 +20,12 @@ export default class SocialRegister extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username:"",
-      password:"",
-	  regCredentials: "abcd",
+      username: "",
+      password: "",
+	    regCredentials: "abcd",
       loggingFailed: false,
-      loggingSucceeded:false,
-	  allowSending: false,
+      loggingSucceeded: false,
+	    allowSending: false,
     };
 	
     this.responseFailure = this.responseFailure.bind(this);
@@ -99,7 +99,6 @@ export default class SocialRegister extends React.Component {
         console.log(e);
         this.setState({loggingFailed:true});
       });
-
     
   }
   

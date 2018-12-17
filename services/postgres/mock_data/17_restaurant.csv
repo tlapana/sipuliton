@@ -1,5 +1,5 @@
-restaurant_id,name,email,website,country_id,city_id,postal_code,street_address,geo_location
-0,Testiravintola1,ravintola1@mail.com,www.sivusto.fi,0,0,33200,Osoite1,"(1,1)"
-1,Testiravintola2,ravintola2@mail.com,www.sivusto.fi,1,1,33201,Osoite2,"(1,2)"
-2,Testiravintola3,ravintola3@mail.com,,2,2,33202,Osoite3,"(1,3)"
-3,Testiravintola4,,,3,3,33203,Osoite4,"(1,4)"
+restaurant_id,name,email,website,image_url,country_id,city_id,postal_code,street_address,latitude,longitude
+1,Testiravintola1,ravintola1@mail.com,www.sivusto.fi,,0,0,33200,Osoite1,61.49911,23.78712
+2,Testiravintola2,ravintola2@mail.com,www.sivusto.fi,,1,1,33201,Osoite2,61.499,23.787
+3,Testiravintola3,ravintola3@mail.com,,,2,2,33202,Osoite3,1,3
+4,Testiravintola4,,,,3,3,33203,Osoite4,1,4

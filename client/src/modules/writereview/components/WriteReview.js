@@ -28,11 +28,9 @@ export default class WriteReview extends React.Component {
     this.changeFilter = this.changeFilter.bind(this);
     this.reviewForm = this.reviewForm.bind(this);
     this.submitReview = this.submitReview.bind(this);
-  
-    const { match: { params } } = this.props;
     
     this.state = {
-      id : params.restaurantID,
+      id : this.props.restaurantId,
       error: null,
       loadingData: true,
       loadingOptions: true,
