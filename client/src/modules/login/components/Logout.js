@@ -3,7 +3,6 @@ import { Button } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
 import LocalizedStrings from 'react-localization';
-const AuthApi = require('./LoginGlobalFunctions');
 
 /*
 Component for a separate logout view.
@@ -22,15 +21,9 @@ class Logout extends React.Component {
 
   /* This method implements user log out. */
   logout(){
-    console.log(AuthApi.getUserLoggedInStatus())
-    AuthApi.logout();
-    console.log(AuthApi.getUserLoggedInStatus())
-    if(!AuthApi.getUserLoggedInStatus()){
-      this.setState({ logoutError: false });
-    }
-    else{
-      this.setState({ logoutError: true });
-    }
+    Auth.signOut()
+        .then(data => this.setState({ logoutError: false }))
+        .catch(err => { console.log(err); this.setState({ logoutError: true }); });
   }
 
   render() {

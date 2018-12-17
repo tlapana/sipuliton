@@ -17,7 +17,6 @@ import commonComponents from '../../common'
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-const AuthApi = require('./LoginGlobalFunctions');
 
 class Login_Form extends React.Component{
   constructor(props) {
@@ -41,15 +40,31 @@ class Login_Form extends React.Component{
       event.preventDefault();
       this.setState({ loggingFailed: false, isLoading: true });
       if (this.state.passwordIsValid && this.state.usernameIsValid && !this.state.isLoading) {
-				var result = AuthApi.signIn(this.state.username, this.state.password);
-				console.log(result);
-				if(result){
-					this.setState({ loggingFailed: false, isLoading: false });
-					this.props.history.push("/" + this.props.language + "/profile");
-				}
-				else{
-					this.setState({ loggingFailed: true, isLoading: false });
-				}
+        Auth.signIn(this.state.username, this.state.password)
+          .then(user => {
+
+            /* If user needs to set new password this will automatically set old
+               password as a new password and after that tries to log user in. */
+
+            if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
+              user.completeNewPasswordChallenge(this.state.password).then(s => {
+                this.setState({ loggingSucceeded: false, isLoading: false });
+                Auth.signIn(this.state.username, this.state.password).then(s => {
+                  console.log(user.username + " logged in!");
+                  this.props.history.push("/" + this.props.language + "/profile");
+                  //this.setState({ loggingSucceeded: true, isLoading: false });
+                }).catch(e => {this.setState({ loggingFailed: true, isLoading: false });});
+              }).catch(err => this.setState({ loggingSucceeded: false, isLoading: false }));
+            }
+            else {
+              console.log(user.username + " logged in!");
+              this.props.history.push("/" + this.props.language + "/profile");
+              //this.setState({ loggingSucceeded: true, isLoading: false });
+            }
+        })
+        .catch(e => {
+          this.setState({ loggingFailed: true, isLoading: false });
+        });
       }
       else{
         this.setState({ loggingFailed: true, isLoading: false });
