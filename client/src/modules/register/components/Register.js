@@ -198,7 +198,10 @@ export default class Register extends React.Component {
 				alert(e.message);
 			}
 		}
-		this.setState({ isLoading: false });
+		this.setState({ isLoading: false,
+						googleReg: false,
+						faceReg: false,
+						});
 	}
 	/*function that receives the user data from SocialRegister class*/
 	getSocialCredentials = (dataFromChild) => {
