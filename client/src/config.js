@@ -21,5 +21,8 @@ export default {
     CODE_MAX_LENGTH: 9,
     EMAIL_MIN_LENGTH: 5,
     EMAIL_MAX_LENGTH: 50,
+  },
+  backendAPIPaths: {
+    BASE: "http://localhost:3000"
   }
 }

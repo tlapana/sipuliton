@@ -316,7 +316,7 @@ class Map extends React.Component {
     console.log("Getting: "+markColor)
     console.log(this.state.searchLoc)
     //Basic search portion
-    var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+    var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
                 + '&minReliabilityRating=' + this.state.filters.minReliability
                 + '&minVarietyRating=' + this.state.filters.minService
@@ -326,7 +326,7 @@ class Map extends React.Component {
                 + '&currentLongitude=' + this.state.searchLoc[1];
 
     if(markColor === "grey"){
-      url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+      url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                   + '&minOverallRating=0'
                   + '&minReliabilityRating=0'
                   + '&minVarietyRating=0'
@@ -346,7 +346,6 @@ class Map extends React.Component {
           //Send data via props
 
           var markers = MapApi.parseRestaurantsData(result.restaurants);
-
           if(markColor === "grey"){
             markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
           }

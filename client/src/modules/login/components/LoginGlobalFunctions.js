@@ -20,6 +20,16 @@ function configure(config){
   })
 }
 
+function getCurrentAuthenticatedUserGroup(){
+  if(authenticatedUserData !=== {} && authenticatedUserData.signInUserSession !== undefined){
+    return authenticatedUserData.signInUserSession.accessToken.payload["cognito:groups"][0];
+  }
+  else{
+    return "";
+  }
+
+}
+
 function setUserData(userData){
   authenticatedUserData = userData;
 }
@@ -29,9 +39,7 @@ function getUserData(){
 }
 
 function setUserLoggedInStatus(newUserLoggedIn){
-  console.log(userLoggedIn);
   userLoggedIn = newUserLoggedIn;
-  console.log(userLoggedIn)
 }
 
 function getUserLoggedInStatus(){
@@ -101,5 +109,6 @@ module.exports = {
   getCurrentAuthUser,
   signIn,
   configure,
-  getUserLoggedInStatus
+  getUserLoggedInStatus,
+  getCurrentAuthenticatedUserGroup
 };

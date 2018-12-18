@@ -35,6 +35,7 @@ class ModalFilterPage extends React.Component {
       diets: this.props.filters.diets,
       defaultValues: this.props.filters.diets,
       options: [],
+      advancedSearchOpen: false,
       originalStage: {
         city: this.props.filters.city,
         radius : this.props.filters.radius,
@@ -48,6 +49,7 @@ class ModalFilterPage extends React.Component {
       }
     }
     this.toggleModal = this.toggleModal.bind(this);
+    this.toggleAdvancedSearch = this.toggleAdvancedSearch.bind(this);
     this.changeOverall = this.changeOverall.bind(this);
     this.changeReliability = this.changeReliability.bind(this);
     this.changeVariety = this.changeVariety.bind(this);
@@ -145,6 +147,10 @@ class ModalFilterPage extends React.Component {
     console.log("showModal: Toggling modal to " + this.state.modalState)
   }
 
+  toggleAdvancedSearch(){
+    this.setState({advancedSearchOpen:!this.state.advancedSearchOpen});
+  }
+
   //Used to change star rating values
   changeOverall(newRating, name)
   {
@@ -220,7 +226,9 @@ class ModalFilterPage extends React.Component {
         diets:"Diets/Allergies",
         selectPlaceholder:"Select diets...",
         noOptionsMessage:"No diets",
-        clear:"Clear filters"
+        clear:"Clear filters",
+        advancedSearchOpenBtn:"Open advanced search",
+        advancedSearchCloseBtn:"Close advanced search",
       },
       fi: {
         filter:"Rajaa",
@@ -242,6 +250,8 @@ class ModalFilterPage extends React.Component {
         selectPlaceholder:"Valitse ruokavalioita...",
         noOptionsMessage:"Ei ruokavalioita",
         clear:"Poista rajaukset",
+        advancedSearchOpenBtn:"Avaa laajennettu haku",
+        advancedSearchCloseBtn:"Sulje laajennettu haku",
       }
     });
 
@@ -250,6 +260,11 @@ class ModalFilterPage extends React.Component {
     }
     else{
       strings.setLanguage('fi');
+    }
+
+    var advancedSearchBtnText = strings.advancedSearchOpenBtn
+    if(this.state.advancedSearchOpen){
+      advancedSearchBtnText = strings.advancedSearchCloseBtn
     }
 
     return(
@@ -299,45 +314,53 @@ class ModalFilterPage extends React.Component {
                 noOptionsMessage={() => {return strings.noOptionsMessage}}
               />
             </div>
-            <div className="rating-filters-box">
-              {strings.overall}
-              <ReactStars
-                value = {this.state.minOverall}
-                count = {5}
-                size = {24}
-                onChange = {this.changeOverall}
-              />
-              {strings.reliability}
-              <ReactStars
-                value = {this.state.minReliability}
-                count = {5}
-                size = {24}
-                onChange = {this.changeReliability}
-              />
-              {strings.service}
-              <ReactStars
-                value = {this.state.minService}
-                count = {5}
-                size = {24}
-                onChange = {this.changeService}
-              />
-              {strings.variety}
-              <ReactStars
-                value = {this.state.minVariety}
-                count = {5}
-                size = {24}
-                onChange = {this.changeVariety}
-              />
-              {strings.pricing}
-              <ReactStars
-                value = {this.state.pricing}
-                count = {3}
-                size = {24}
-                char = '€'
-                half = {false}
-                onChange = {this.changePricing}
-              />
-            </div>
+            <button
+              className="btn main-btn"
+              onClick={this.toggleAdvancedSearch}
+            >
+              {advancedSearchBtnText}
+            </button>
+            {this.state.advancedSearchOpen &&
+              <div className="rating-filters-box">
+                {strings.overall}
+                <ReactStars
+                  value = {this.state.minOverall}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeOverall}
+                />
+                {strings.reliability}
+                <ReactStars
+                  value = {this.state.minReliability}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeReliability}
+                />
+                {strings.service}
+                <ReactStars
+                  value = {this.state.minService}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeService}
+                />
+                {strings.variety}
+                <ReactStars
+                  value = {this.state.minVariety}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeVariety}
+                />
+                {strings.pricing}
+                <ReactStars
+                  value = {this.state.pricing}
+                  count = {3}
+                  size = {24}
+                  char = '€'
+                  half = {false}
+                  onChange = {this.changePricing}
+                />
+              </div>
+            }
             </div>
           </ModalBody>
           <ModalFooter>

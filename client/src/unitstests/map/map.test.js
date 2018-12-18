@@ -233,14 +233,14 @@ test('Map url filters parsing', () => {
     latitude:60.168182,
   };
   expect(MapApi.parseMapUrlParametersToFilters(query)).toEqual(expectedResult);
-  query = "?minOverallRating=3&minReliabilityRating=2&minVarietyRating=1&searchRadius=1000&minServiceAndQualityRating=1&minPricing=1&city=Tampere&searchLongitude=1&searchLatitude=1&searchDiets=test1,test2,test3";
+  query = "?minOverallRating=3&minReliabilityRating=2&minVarietyRating=1&searchRadius=1000&minServiceAndQualityRating=1&minPricing=1&city=Tampere&searchLongitude=1&searchLatitude=1&searchDiets=test test,test2,test3";
   expectedResult = {
     overallRating: 3,
     minRel: 2,
     minVariety: 1,
     minService: 1,
     minPricing: 1,
-    diets: ["test1","test2","test3"],
+    diets: ["test test","test2","test3"],
     city: "Tampere",
     searchRadius: 1000,
     longitude:1,
