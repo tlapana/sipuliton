@@ -21,7 +21,8 @@ function configure(config){
 }
 
 function getCurrentAuthenticatedUserGroup(){
-  if(authenticatedUserData !=== {} && authenticatedUserData.signInUserSession !== undefined){
+  getCurrentAuthUser();
+  if(authenticatedUserData !== {} && authenticatedUserData.signInUserSession !== undefined){
     return authenticatedUserData.signInUserSession.accessToken.payload["cognito:groups"][0];
   }
   else{
@@ -35,6 +36,7 @@ function setUserData(userData){
 }
 
 function getUserData(){
+  getCurrentAuthUser();
   return authenticatedUserData;
 }
 
@@ -43,6 +45,7 @@ function setUserLoggedInStatus(newUserLoggedIn){
 }
 
 function getUserLoggedInStatus(){
+  getCurrentAuthUser();
   return userLoggedIn;
 }
 
