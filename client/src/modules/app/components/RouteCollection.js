@@ -7,6 +7,8 @@ import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
 
+import map from '../../map'
+import restaurant from '../../restaurant';
 import NotFound from './NotFound';
 
 /* This is where all routes should be */
@@ -17,20 +19,24 @@ class RouteCollection extends React.Component {
 
   render() {
     const { Home } = home;
-    const { Login, Logout } = login;
+    const { Login } = login;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
     const { Profile } = profile;
+    const { Map } = map;
+	  const { Restaurant } = restaurant;
 
     return (
       <Switch>
         <Redirect exact from="/" to="/fi" />
         <Route exact path="/:language" component={Home} />
         <Route path="/:language/login/" component={Login} />
-        <Route path="/:language/logout/" component={Logout} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
-        <Route path="/:language/profile/" component={Profile} />
+        <Route path="/:language/userProfile/" component={Profile} />
+        <Route path="/:language/map/:searchParameters" component={Map} />
+        <Route path="/:language/map" component={Map} />
+        <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route component={NotFound} />
       </Switch>
     );

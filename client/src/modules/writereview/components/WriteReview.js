@@ -34,12 +34,13 @@ export default class WriteReview extends React.Component {
     this.submitReview = this.submitReview.bind(this);
     
     this.state = {
-      id : this.props.restaurantID,
+      id : this.props.restaurantId,
       error: null,
       loadingData: true,
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
+      restaurant : null,
       showForm: false,
       title : '',
       reviewText : '',

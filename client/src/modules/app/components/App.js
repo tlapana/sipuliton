@@ -39,7 +39,6 @@ class App extends React.Component {
 
     let classes = this.getAppClasses();
 
-    const { WriteReview} = write_review;
     return(
       <Provider store={this.props.store}>
         <Router>

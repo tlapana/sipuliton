@@ -3,6 +3,7 @@ import { Link, Redirect } from 'react-router-dom';
 import '../../../styles/login.css';
 import { Auth } from 'aws-amplify';
 
+
 import LoginForm from './Login_Form.js'
 import SocialLogin from './Social_Login.js'
 
@@ -56,12 +57,12 @@ class Login extends React.Component {
     return(
       <div id="login" className="max-w-40">
         <h2>{strings.login}</h2>
-        <LoginForm language={this.props.match.params.language}/> 
+        <LoginForm language={this.props.match.params.language}/>
         <div className="social-login-container">
           <h5>{strings.or}</h5>
-          <SocialLogin language={this.props.match.params.language}/> 
+          <SocialLogin language={this.props.match.params.language}/>
         </div>
-        
+
         <span>{strings.notRegisteredYet} </span>
         <Link to={pathToRegister}>
           {strings.registerNow}

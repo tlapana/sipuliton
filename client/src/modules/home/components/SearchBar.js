@@ -5,10 +5,11 @@
 */
 
 import React from 'react';
-import { 
-  Input, InputGroup, InputGroupAddon, UncontrolledTooltip, 
+import {
+  Input, InputGroup, InputGroupAddon, UncontrolledTooltip,
   ModalHeader, ModalBody, ModalFooter
 } from 'reactstrap';
+import { Route, Redirect } from 'react-router'
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -30,12 +31,13 @@ class SearchBar extends React.Component {
     //Bind the methods
     this.toggleModal = this.toggleModal.bind(this);
     this.togglePopover = this.togglePopover.bind(this);
+    this.searchUrl = this.searchUrl.bind(this);
     this.doSearch = this.doSearch.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
     this.getOptions = this.getOptions.bind(this);
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
-    
+
     this.changeOverall = this.changeOverall.bind(this);
     this.changeReliability = this.changeReliability.bind(this);
     this.changeVariety = this.changeVariety.bind(this);
@@ -52,11 +54,12 @@ class SearchBar extends React.Component {
       keywords : '',
       options : [],
       defaultValues : [],
-      minOverall : 0, 
+      minOverall : 0,
       minReliability : 0,
       minVariety : 0,
       minService : 0,
       pricing: 0,
+      redirectUser : false,
     };
   }
 
@@ -66,15 +69,15 @@ class SearchBar extends React.Component {
       defaultValue : this.getDefaultValues()
     });
   }
-  
+
   //Toggles modal
   toggleModal() {
     this.setState({
       modalState: !this.state.modalState
     });
     console.log("showModal: Toggling modal to " + this.state.modalState);
-  }  
-  
+  }
+
 
   //Toggles popover
   togglePopover() {
@@ -83,7 +86,17 @@ class SearchBar extends React.Component {
     });
   }
 
-  //Actual search event. It also sends signal to the parent by using props.SearchDone, 
+  searchUrl() {
+    var url = '/'+this.props.language+'/map?'
+                + 'minOverallRating=' + this.state.minOverall
+                + '&minReliabilityRating=' + this.state.minReliability
+                + '&minVarietyRating=' + this.state.minService
+                + '&minServiceAndQualityRating=' + this.state.minVariety
+                + '&minPricing=' + this.state.pricing;
+    return url;
+  }
+
+  //Actual search event. It also sends signal to the parent by using props.SearchDone,
   //which signals it has done a search and this.props.searchResults which has the results
   doSearch  = event => {
     event.preventDefault();
@@ -102,15 +115,42 @@ class SearchBar extends React.Component {
     console.log(searchTerms);
     console.log("Filters: ");
     console.log(this.state.filters);
-    
+
     //Basic search portion
+
+
+    var url = '/'+this.props.language+'/map?'
+                + 'minOverallRating=' + this.state.minOverall
+                + '&minReliabilityRating=' + this.state.minReliability
+                + '&minVarietyRating=' + this.state.minService
+                + '&minServiceAndQualityRating=' + this.state.minVariety
+                + '&minPricing=' + this.state.pricing;
+
+    //TODO: Check for city in the keywords
+
+
+    console.log("URL:");
+    console.log(url);
+
+    this.setState({
+      redirectUser: true
+    });
+
+    //Direct user to the map screen
+
+    //Original version
+    /*
     var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety;
-    
+
     this.props.searching();
+    */
+
+    //Old way this was done
+    /*
     fetch(url)
     .then(res => res.json())
     .then(
@@ -125,6 +165,7 @@ class SearchBar extends React.Component {
         this.props.onError( error );
       }
     );
+    */
   }
 
 
@@ -148,7 +189,7 @@ class SearchBar extends React.Component {
     ];
     console.log("Getting the options: ");
     console.log(options);
-    
+
     this.setState({
       loadedOptions : true
     });
@@ -182,17 +223,17 @@ class SearchBar extends React.Component {
       filters : selectedOptions
     });
   }
-  
+
   //Used to change star rating values
   changeOverall(newRating, name) {
     this.setState({ minOverall : newRating });
-  }  
+  }
   changeReliability(newRating, name) {
     this.setState({ minReliability : newRating });
-  }  
+  }
   changeService(newRating, name) {
     this.setState({ minService : newRating });
-  }  
+  }
   changeVariety(newRating, name) {
     this.setState({ minVariety : newRating });
   }
@@ -237,91 +278,95 @@ class SearchBar extends React.Component {
     strings.setLanguage(language);
 
     const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
-    return (
-      <div className="searchDiv">
-        <form id="search-form" className="search" onSubmit={this.login}>
+    if(this.state.redirectUser) {
+      console.log(this.searchUrl());
+      return (<Redirect to={this.searchUrl()} />);
+    }
+    else {
 
-          <InputGroup>
-            <Input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} aria-label={strings.search} autoFocus />
-            <InputGroupAddon addonType="append">
-            <button type="submit" className="searchBtn main-btn btn" onClick={this.doSearch}>
-                <FontAwesomeIcon icon="search" />
-            </button>
-            </InputGroupAddon>
-          </InputGroup>
+      return (
+        <div className="searchDiv">
+          <form id="search-form" className="search" onSubmit={this.login}>
 
-          <span className="instructions" id="instructions-symbol"> ??? </span>
-           <UncontrolledTooltip placement="right" target="instructions-symbol">
-            {strings.usecommaasaseparator}
-          </UncontrolledTooltip>
+            <InputGroup>
+              <Input type="text" value={this.state.keywords} onChange={this.handleKeywordChange} className="round" placeholder={strings.search} aria-label={strings.search} autoFocus />
+              <InputGroupAddon addonType="append">
+              <button type="submit" className="searchBtn main-btn btn" onClick={this.doSearch}>
+                  <FontAwesomeIcon icon="search" />
+              </button>
+              </InputGroupAddon>
+            </InputGroup>
 
-          <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
+            <span className="instructions" id="instructions-symbol"> ??? </span>
+             <UncontrolledTooltip placement="right" target="instructions-symbol">
+              {strings.usecommaasaseparator}
+            </UncontrolledTooltip>
 
-          <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
-            <ModalHeader>{strings.includeinsearch}</ModalHeader>
-            <ModalBody className="filterBox">
-              {strings.diets}
-              <Select
-                defaultValue={ this.state.defaultValues }
-                isMulti
-                name="filtersDrop"
-                options={ this.state.options }
-                className="basic-multi-select"
-                classNamePrefix="select"
-                onChange={this.handleFilterChange}
-                placeholder={strings.selectPlaceholder}
-                noOptionsMessage={() => {return strings.noOptionsMessage}}
-              />
-              {strings.overall}
-              <ReactStars
-                value = {this.state.minOverall}
-                count = {5}
-                size = {24}
-                onChange = {this.changeOverall}
-              />
-              {strings.reliability}
-              <ReactStars
-                value = {this.state.minReliability}
-                count = {5}
-                size = {24}
-                onChange = {this.changeReliability}
-              />
-              {strings.service}
-              <ReactStars
-                value = {this.state.minService}
-                count = {5}
-                size = {24}
-                onChange = {this.changeService}
-              />
-              {strings.variety}
-              <ReactStars
-                value = {this.state.minVariety}
-                count = {5}
-                size = {24}
-                onChange = {this.changeVariety}
-              />
-              {strings.pricing}
-              <ReactStars
-                value = {this.state.pricing}
-                count = {3}
-                size = {24}
-                char = '€'
-                half = {false}
-                onChange = {this.changePricing}
-              />
-                
-            </ModalBody>
-            <ModalFooter>
-              <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
-            </ModalFooter>
-          </ThemedModalContainer>
+            <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
-        </form>
-        
-        /* ONLY FOR TESTING! REMOVE ONCE NO LONGER NEEDED */
-        <WriteReview language={this.props.language} id={1} />
-      </div>
-    );
+            <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+              <ModalHeader>{strings.includeinsearch}</ModalHeader>
+              <ModalBody className="filterBox">
+                {strings.diets}
+                <Select
+                  defaultValue={ this.state.defaultValues }
+                  isMulti
+                  name="filtersDrop"
+                  options={ this.state.options }
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={this.handleFilterChange}
+                  placeholder={strings.selectPlaceholder}
+                  noOptionsMessage={() => {return strings.noOptionsMessage}}
+                />
+                {strings.overall}
+                <ReactStars
+                  value = {this.state.minOverall}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeOverall}
+                />
+                {strings.reliability}
+                <ReactStars
+                  value = {this.state.minReliability}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeReliability}
+                />
+                {strings.service}
+                <ReactStars
+                  value = {this.state.minService}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeService}
+                />
+                {strings.variety}
+                <ReactStars
+                  value = {this.state.minVariety}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeVariety}
+                />
+                {strings.pricing}
+                <ReactStars
+                  value = {this.state.pricing}
+                  count = {3}
+                  size = {24}
+                  char = '€'
+                  half = {false}
+                  onChange = {this.changePricing}
+                />
+
+              </ModalBody>
+              <ModalFooter>
+                <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
+              </ModalFooter>
+            </ThemedModalContainer>
+
+          </form>
+        </div>
+      );
+    }
   }
 }
 
