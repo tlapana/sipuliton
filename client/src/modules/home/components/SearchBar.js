@@ -45,6 +45,7 @@ class SearchBar extends React.Component {
     this.changePricing = this.changePricing.bind(this);
 
     this.state = {
+      error : null,
       isLoading: true,
       loadedDefaults: false,
       loadedOptions: false,
@@ -60,14 +61,33 @@ class SearchBar extends React.Component {
       minService : 0,
       pricing: 0,
       redirectUser : false,
+      latitude : 0,
+      longitude : 0
+      
     };
   }
 
   componentDidMount() {
+    
+    
+    //Get user location
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null,
+        });
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
+    
     this.setState({
       options : this.getOptions(),
       defaultValue : this.getDefaultValues()
     });
+    
   }
 
   //Toggles modal
@@ -92,7 +112,9 @@ class SearchBar extends React.Component {
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
-                + '&minPricing=' + this.state.pricing;
+                + '&minPricing=' + this.state.pricing
+                + '&searchLongitude=' + this.state.longitude
+                + '&searchLatitude=' + this.state.latitude;
     return url;
   }
 
