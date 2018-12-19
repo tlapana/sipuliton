@@ -9,6 +9,7 @@ import NavigationBar from './NavigationBar';
 import write_review from '../../writereview';
 
 import '../../../styles/app.css';
+import '../../../styles/themes.css';
 
 
 class App extends React.Component {
@@ -16,23 +17,27 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-			theme: 'theme-1',
-    };
-
-    this.changeTheme = this.changeTheme.bind(this);
+    this.getAppClasses = this.getAppClasses.bind(this);
   }
 
-  changeTheme(theme) {
-    // TODO: this can be used later to add theme support
-    this.setState({theme: theme});
-  }
 
-  render() {
-    let classes = 'app ' + this.state.theme;
+  getAppClasses() {
+    let classes = 'app';
+    if (this.props.theme) {
+      classes += ' ' + this.props.theme;
+    }
+    if (this.props.isRounding) {
+      classes += ' rounded';
+    }
     if (this.props.isLoading) {
       classes += ' loading';
     }
+    return classes;
+  }
+
+  render() {
+
+    let classes = this.getAppClasses();
 
     const { WriteReview} = write_review;
     return(
@@ -52,11 +57,13 @@ class App extends React.Component {
       </Provider>
     );
   }
-
 }
 
 App.propTypes = {
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  isLoading: PropTypes.bool,
+  isRounding: PropTypes.bool,
+  theme: PropTypes.string,
 };
 
 export default App;

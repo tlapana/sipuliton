@@ -1,8 +1,7 @@
 import { combineReducers } from 'redux';
-// import reducers here, e.g.
-// import todos from './todos'
+import * as app from './modules/app';
 
 
 export default combineReducers({
-  //e.g. [todos.constants.NAME]: todos.reducer
+  [app.constants.NAME]: app.reducer
 });

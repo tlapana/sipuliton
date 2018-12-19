@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
 
-import App from './modules/app/components/App';
+import { containers as AppContainers } from './modules/app';
 import rootReducer from './rootReducer';
 import * as serviceWorker from './serviceWorker';
 import Amplify from 'aws-amplify';
@@ -27,15 +27,14 @@ Amplify.configure({
     facebook_app_id: '',
     amazon_client_id: ''
   }
-})
-  
+});
+
+const { AppContainer } = AppContainers;
 const store = createStore(rootReducer);
-
-
-withAuthenticator(App);
+withAuthenticator(AppContainer);
 
 render(
-  <App store={store} />,
+  <AppContainer store={store} />,
   document.getElementById('root')
 );
 
