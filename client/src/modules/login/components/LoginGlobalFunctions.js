@@ -61,7 +61,7 @@ function getCurrentAuthUser(){
         setUserData({});
         setUserLoggedInStatus(false);
       });
-  return getUserData();
+  return userLoggedIn;
 }
 
 function logout(){

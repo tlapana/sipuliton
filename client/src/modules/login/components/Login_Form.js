@@ -38,7 +38,7 @@ class Login_Form extends React.Component{
    /* Logs user in, if password or username
       is not valid login will automatically fail. */
 
-      event.preventDefault();
+      //event.preventDefault();
       this.setState({ loggingFailed: false, isLoading: true });
       if (this.state.passwordIsValid && this.state.usernameIsValid && !this.state.isLoading) {
 				LoginApi.signIn(this.state.username, this.state.password);
