@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
-
+const MapApi = require('./MapGlobalFunctions');
 
 class MapSmallRestaurantInfo extends React.Component {
 
@@ -44,32 +44,8 @@ class MapSmallRestaurantInfo extends React.Component {
       }
     });
     strings.setLanguage(this.props.language);
-
-    var d = new Date();
-    var n = d.getDay()
-    var todayOpenHours = "";
-    if(n === 0){
-      todayOpenHours = this.props.restaurantInfo.openSun
-    }
-    if(n === 1){
-      todayOpenHours = this.props.restaurantInfo.openMon
-    }
-    if(n === 2){
-      todayOpenHours = this.props.restaurantInfo.openTue
-    }
-    if(n === 3){
-      todayOpenHours = this.props.restaurantInfo.openWed
-    }
-    if(n === 4){
-      todayOpenHours = this.props.restaurantInfo.openThu
-    }
-    if(n === 5){
-      todayOpenHours = this.props.restaurantInfo.openFri
-    }
-    if(n === 6){
-      todayOpenHours = this.props.restaurantInfo.openSat
-    }
-
+    var todayOpenHours = MapApi.getTodayOpeningHours(this.props.restaurantInfo);
+    
     var additionalClassName = this.props.pinColor+"-restaurant"
     var fullClass = "restaurant-info "+additionalClassName
     return(
@@ -79,7 +55,7 @@ class MapSmallRestaurantInfo extends React.Component {
             {this.props.restaurantInfo.name}
           </h3>
           <div className="restaurant-info-item" id="address">
-            {this.props.restaurantInfo.city}, {this.props.restaurantInfo.postcode},<br/> {this.props.restaurantInfo.address}
+            {this.props.restaurantInfo.address},{this.props.restaurantInfo.city}
           </div>
           <div className="ratings">
             <div className="restaurant-info-item rating" id="overallReview">
