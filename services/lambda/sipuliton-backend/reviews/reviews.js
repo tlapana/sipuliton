@@ -447,3 +447,84 @@ exports.postReviewLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+exports.ThumbsDownFunction= async (event, context) => {
+        console.log('jes');
+
+         var id =  parseIntParam("id", event);
+       
+         var pageSize = event.queryStringParameters.pageSize
+        const restaurantId = event.queryStringParameters.restaurantId
+        var pageNumber = event.queryStringParameters.pageNumber
+        const offset = pageNumber * pageSize
+        var pg = require("pg");
+
+        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+        const client = new pg.Client(conn);
+        await client.connect((err) => {
+                console.log("Connecting")
+                if (err){
+                    console.error("Failed to connect client")
+                    console.error(err)
+                    throw err
+                }
+        });
+          
+         var res=await client.query(`SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down
+            FROM review WHERE review_id = $1`, [id]);
+       
+       var up=res.rows[0]['thumbs_down'] + 1;
+        await client.query('UPDATE review SET  thumbs_down=$2  WHERE  review_id = $1', [id,up]);
+        await client.end()
+    
+      response = {
+            'statusCode': 200,
+            //TODO: Handle CORS in AWS api gateway settings prior to deployment
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': JSON.stringify({"message"  : "ok"})
+        };
+return response;
+}
+
+exports.ThumbsUpFunction= async (event, context) => {
+        var id =  parseIntParam("id", event);
+        var pageSize = event.queryStringParameters.pageSize
+        const restaurantId = event.queryStringParameters.restaurantId
+        var pageNumber = event.queryStringParameters.pageNumber
+        const offset = pageNumber * pageSize
+        var pg = require("pg");
+        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+        const client = new pg.Client(conn);
+        await client.connect((err) => {
+                console.log("Connecting")
+                if (err){
+                    console.error("Failed to connect client")
+                    console.error(err)
+                    throw err
+                }
+        });
+         var res=await client.query(`SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down
+        FROM review WHERE review_id = $1`, [id]);
+        var up=res.rows[0]['thumbs_up'] + 1;
+        await client.query('UPDATE review SET  thumbs_up=$2  WHERE  review_id = $1', [id,up]);
+        await client.end()
+        response = {
+            'statusCode': 200,
+            //TODO: Handle CORS in AWS api gateway settings prior to deployment
+            'headers': {
+                'Access-Control-Allow-Origin': '*'
+            },
+            'body': JSON.stringify({"message"  : "ok"})
+        };
+return response;
+}
+
+
