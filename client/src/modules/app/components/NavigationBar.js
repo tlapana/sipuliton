@@ -22,6 +22,7 @@ import { LanguageSelection, MainMenuListItem, MainMenuLogoutButton } from '../..
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
+import AppFunctionsGlobalAPI from './AppGlobalFunctions'
 
 class NavigationBar extends React.Component {
 
@@ -128,13 +129,7 @@ class NavigationBar extends React.Component {
   }
 
   changeLanguage(language) {
-    var url = window.location.href;
-    url = url.replace(this.state.language, language);
-    var index = url.search('://');
-    url = url.slice(index + 3);
-    index = url.search('/');
-    url = url.slice(index);
-    console.log(url);
+    var url = AppFunctionsGlobalAPI.parseUrlToLanguageChanging(window.location.href,this.state.language, language);
     this.setState({language: language, redirectUrl: url, languageChanged: true});
   }
 

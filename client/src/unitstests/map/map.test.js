@@ -1,6 +1,5 @@
 const MapApi = require('../../modules/map/components/MapGlobalFunctions');
 
-
 test('Format meters to km', () => {
   expect(MapApi.distanceFormatter(1000)).toBe("1.00 km");
   expect(MapApi.distanceFormatter(0)).toBe("0.00 km");
@@ -9,6 +8,7 @@ test('Format meters to km', () => {
   expect(MapApi.distanceFormatter(1234,66)).toBe("1.23 km");
   expect(MapApi.distanceFormatter("testi")).toBe("0 km");
 });
+
 
 test('test different sort functions', () => {
 
