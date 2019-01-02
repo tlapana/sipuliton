@@ -1,16 +1,11 @@
 import React from 'react';
 import {
-  Button,
-  NavItem,
-  NavLink,Modal, ModalHeader, ModalBody, ModalFooter,	Form,
+  ModalHeader, ModalBody, ModalFooter,
   Label} from 'reactstrap';
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 
-import styles from '../../../styles/landingpage.css';
 import '../../../styles/map.css';
-/* Router imports */
-import { Link } from 'react-router-dom';
 
 import * as AppImports from  '../../app';
 import Slider from 'rc-slider';
@@ -217,7 +212,6 @@ class ModalFilterPage extends React.Component {
         service:"Service & Food",
         variety:"Menu variety",
         pricing:"Pricing",
-        filter:"Filter",
         doYouWantToUseLocationInSearch:"Use my location when finding restaurants.",
         yes:"Yes",
         no:"No",
@@ -240,7 +234,6 @@ class ModalFilterPage extends React.Component {
         service:"Ruoka ja palvelu",
         variety:"Ruokalajien laajuus",
         pricing:"Hintaluokka",
-        filter:"Rajaa",
         doYouWantToUseLocationInSearch:"Käytä sijaintiani ravintoloiden etsimisessä.",
         yes:"Kyllä",
         no:"En",

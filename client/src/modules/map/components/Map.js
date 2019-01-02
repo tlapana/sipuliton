@@ -6,7 +6,6 @@ import {
 /* Map component import */
 import MapComponent from "./CustomMap"
 import '../../../styles/map.css';
-import GoogleMap from "./GoogleMapsMap"
 import Geocoder from 'react-native-geocoding';
 
 /* Location imports */
@@ -83,7 +82,7 @@ class Map extends React.Component {
       loading:loading,
       restaurants:{
         green:[],
-        green:[],
+        grey:[],
         selected:[],
         selectedColour:"",
       }
@@ -132,13 +131,13 @@ class Map extends React.Component {
       }
       else{
         selected = this.state.restaurants.grey[idx];
-        var temp = [];
-        for(var j = 0; j<tempGrey.length; ++j){
-          if(j !== idx){
-            temp.push(tempGrey[j]);
+        var tempList = [];
+        for(var u = 0; u<tempGrey.length; ++u){
+          if(u !== idx){
+            tempList.push(tempGrey[u]);
           }
         }
-        tempGrey = temp;
+        tempGrey = tempList;
       }
       newColor = "grey";
     }

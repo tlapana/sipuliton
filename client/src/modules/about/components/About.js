@@ -6,10 +6,6 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 
 class About extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
 
     let strings = new LocalizedStrings({

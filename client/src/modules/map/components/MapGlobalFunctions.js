@@ -103,7 +103,6 @@ function parseMapUrlParametersToFilters(searchString){
   var diets = [];
   var city = "";
   var searchRadius = 10000;
-  var showFilterBox = true;
   var longitude = 24.940886;
   var latitude = 60.168182;
   var filters = {};
