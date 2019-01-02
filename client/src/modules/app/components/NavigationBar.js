@@ -22,7 +22,6 @@ import { LanguageSelection, MainMenuListItem, MainMenuLogoutButton } from '../..
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-import LoginApi from '../../login/components/LoginGlobalFunctions';
 
 class NavigationBar extends React.Component {
 
@@ -67,59 +66,15 @@ class NavigationBar extends React.Component {
   /* This function checks logged in users rights. */
   checkAccessRights() {
     /* Get user information. */
-    var userGroup = LoginApi.getCurrentAuthenticatedUserGroup();
-    if(userGroup !== ""){
-      /* Check if user is logged in, after that set access to either register or login */
-      this.setState({userLogged: true})
-
-      /* Check if user is basic user, then restrict all accesses */
-      if(userGroup === "SipulitonModUserGroup"){
-        this.setState({
-          admin: false,
-          restaurantOwner: false,
-          moderator: false
-        })
-      }
-
-      /* Check if user has admin access, after that set access to admin pages */
-      if(userGroup === "SipulitonAdminUserGroup"){
-        this.setState({admin: true})
-      }
-      else{
-        this.setState({admin: false})
-      }
-      /* Check if user is restaurant owner, after that set access to restaurant pages */
-
-      if(userGroup === 'SipulitonROUserGroup'){
-        this.setState({restaurantOwner: true})
-      }
-      else{
-        this.setState({restaurantOwner: false})
-      }
-
-      /* Check if user has moderator access, after that set access to moderator pages */
-      if(userGroup === "SipulitonModUserGroup"){
-        this.setState({moderator: true})
-      }
-      else{
-        this.setState({moderator: false})
-      }
-    }
-    else{
-        this.setState({userLogged: false})
-    }
-    /*
     Auth.currentAuthenticatedUser()
         .then(user => {
           /* Get current user group. */
-          /*
           var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
           if(user != null){
             /* Check if user is logged in, after that set access to either register or login */
-            //this.setState({userLogged: true})
+            this.setState({userLogged: true})
 
             /* Check if user is basic user, then restrict all accesses */
-/*
             if(userGroup === "SipulitonModUserGroup"){
               this.setState({
                 admin: false,
@@ -129,7 +84,6 @@ class NavigationBar extends React.Component {
             }
 
             /* Check if user has admin access, after that set access to admin pages */
-/*
             if(userGroup === "SipulitonAdminUserGroup"){
               this.setState({admin: true})
             }
@@ -137,7 +91,7 @@ class NavigationBar extends React.Component {
               this.setState({admin: false})
             }
             /* Check if user is restaurant owner, after that set access to restaurant pages */
-/*
+
             if(userGroup === 'SipulitonROUserGroup'){
               this.setState({restaurantOwner: true})
             }
@@ -146,7 +100,6 @@ class NavigationBar extends React.Component {
             }
 
             /* Check if user has moderator access, after that set access to moderator pages */
-/*
             if(userGroup === "SipulitonModUserGroup"){
               this.setState({moderator: true})
             }
@@ -162,7 +115,6 @@ class NavigationBar extends React.Component {
         })
         .catch(err => {
           /* If user is not logged in restrict accesses. */
-/*
           this.setState(
             {
               userLogged: false,
@@ -172,7 +124,7 @@ class NavigationBar extends React.Component {
             }
           )
         });
-        */
+
   }
 
   changeLanguage(language) {
@@ -208,8 +160,7 @@ class NavigationBar extends React.Component {
           profile:"Profile",
           login:"Login",
           register:"Register",
-          logout: "Logout",
-          about:"About",
+          logout: "Logout"
         },
         fi: {
           mainmenu:"Pääsivu",
@@ -221,8 +172,7 @@ class NavigationBar extends React.Component {
           profile:"Profiili",
           login:"Kirjaudu",
           register:"Rekisteröidy",
-          logout:"Kirjaudu ulos",
-          about: "Tietoja",
+          logout:"Kirjaudu ulos"
         }
       });
 
@@ -244,7 +194,7 @@ class NavigationBar extends React.Component {
       const pathToLogin = "/" + this.state.language + "/login";
       const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
-      const pathToAbout = "/"+this.state.language+"/about";
+
 
       /* Changed correct language to page after clicking change language. */
       if(this.state.languageChanged){
@@ -277,7 +227,6 @@ class NavigationBar extends React.Component {
                     {!this.state.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
                     {!this.state.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
                     {this.state.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
-                    <MainMenuListItem path={pathToAbout} text={strings.about} />
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
                     </li>

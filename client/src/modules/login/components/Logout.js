@@ -3,7 +3,7 @@ import { Button } from 'reactstrap';
 import { Auth } from 'aws-amplify';
 
 import LocalizedStrings from 'react-localization';
-import LoginApi from './LoginGlobalFunctions';
+
 /*
 Component for a separate logout view.
 When a user navigates to this view, they will be logged out.
@@ -21,18 +21,9 @@ class Logout extends React.Component {
 
   /* This method implements user log out. */
   logout(){
-    LoginApi.logout();
-    if(LoginApi.getUserLoggedInStatus()){
-      this.setState({ logoutError: false });
-    }
-    else{
-      this.setState({ logoutError: true });
-    }
-    /*
     Auth.signOut()
         .then(data => this.setState({ logoutError: false }))
         .catch(err => { console.log(err); this.setState({ logoutError: true }); });
-    */
   }
 
   render() {
