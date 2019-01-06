@@ -23,7 +23,7 @@ class About extends React.Component {
     return(
       <div id="about" className="max-w-40">
         <h2>{strings.about}</h2>
-        <img src={require("../../../resources/SipulitonLogoV1.ico")} alt="Sipuliton logo"/>
+        <img src={require("../../../resources/SipulitonLogoV2.png")} alt="Sipuliton logo"/>
         <div>{strings.description}</div>
       </div>
     );

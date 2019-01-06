@@ -160,7 +160,8 @@ class NavigationBar extends React.Component {
           profile:"Profile",
           login:"Login",
           register:"Register",
-          logout: "Logout"
+          logout: "Logout",
+          about: "About",
         },
         fi: {
           mainmenu:"Pääsivu",
@@ -172,7 +173,8 @@ class NavigationBar extends React.Component {
           profile:"Profiili",
           login:"Kirjaudu",
           register:"Rekisteröidy",
-          logout:"Kirjaudu ulos"
+          logout:"Kirjaudu ulos",
+          about: "Tietoja",
         }
       });
 
@@ -194,7 +196,7 @@ class NavigationBar extends React.Component {
       const pathToLogin = "/" + this.state.language + "/login";
       const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
-
+      const pathToAbout = "/" + this.state.language + "/about";
 
       /* Changed correct language to page after clicking change language. */
       if(this.state.languageChanged){
@@ -227,6 +229,7 @@ class NavigationBar extends React.Component {
                     {!this.state.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
                     {!this.state.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
                     {this.state.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    <MainMenuListItem path={pathToAbout} text={strings.about}/>
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
                     </li>
