@@ -6,6 +6,8 @@ import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
+import MyReview  from '../../MyReview';
+import myReviewEdit1  from '../../MyReview/components/myReviewsEdit';
 import about from '../../about';
 import map from '../../map'
 import restaurant from '../../restaurant';
@@ -36,6 +38,9 @@ class RouteCollection extends React.Component {
         <Route path="/:language/userProfile/" component={Profile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
+        <Route path="/:language/myReview" component={MyReview} />
+        <Route path="/:language/myReviewEdit" component={myReviewEdit1 } />
+
         <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route path="/:language/about" component={About} />
         <Route component={NotFound} />

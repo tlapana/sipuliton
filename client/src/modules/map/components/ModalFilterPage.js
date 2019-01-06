@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactLoading from 'react-loading';
 import {
   ModalHeader, ModalBody, ModalFooter,
   Label} from 'reactstrap';
@@ -10,6 +11,7 @@ import '../../../styles/map.css';
 import * as AppImports from  '../../app';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
+import Config from '../../../config.js';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 const MapApi = require('./MapGlobalFunctions');
@@ -32,6 +34,7 @@ class ModalFilterPage extends React.Component {
       defaultValues: this.props.filters.diets,
       options: [],
       advancedSearchOpen: false,
+      loading: false,
       originalStage: {
         city: this.props.filters.city,
         radius : this.props.filters.radius,
@@ -53,13 +56,14 @@ class ModalFilterPage extends React.Component {
     this.changePricing = this.changePricing.bind(this);
     this.saveFilters = this.saveFilters.bind(this);
     this.getOptions = this.getOptions.bind(this);
+    this.getDefaultValues = this.getDefaultValues.bind(this);
     this.clearFilters = this.clearFilters.bind(this);
   }
 
   componentDidMount() {
-    this.setState({
-      options : this.getOptions(),
-    });
+    this.setState({loading:true});
+    this.getOptions();
+    this.getDefaultValues();
   }
 
   handleCityChange = event => {
@@ -76,6 +80,7 @@ class ModalFilterPage extends React.Component {
 
   onDietsChanged = (selectedOptions) => {
     console.log(selectedOptions)
+    console.log(this.state.defaultValues);
     this.setState({
       diets : selectedOptions,
     });
@@ -209,22 +214,64 @@ class ModalFilterPage extends React.Component {
 
   //This gets the options for the selection.
   getOptions() {
-    //TODO: Get options from backend.
-    const options = [
-      { value: '1', label: 'Allergia/Sipuli' },
-      { value: '2', label: 'Allergia/Tomaatti' },
-      { value: '3', label: 'Allergia/Pähkinä' },
-      { value: '4', label: 'Laktoositon ruokavalio' },
-      { value: '5 ', label: 'Keliakia' }
-    ];
     console.log("Getting the options: ");
-    console.log(options);
+    var url = Config.backendAPIPaths.BASE+'/diet/all';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log("Sending results");
+          console.log(result);
+          var options = [];
+          //Send data via props
+          result.forEach(function(element) {
+            options.push({value:element.global_diet_id, label:element.name});
+          });
+          this.setState({
+            options : options,
+            loadedOptions : true
+          });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    );
 
-    this.setState({
-      loadedOptions : true
-    });
+  }
 
-    return options;
+  getDefaultValues()
+  {
+    console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          console.log("Sending results");
+          console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+          this.setState({
+            diets: defValues,
+            defaultValues : defValues,
+            loadedOptions : true
+          });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
   }
 
   render() {
@@ -295,6 +342,14 @@ class ModalFilterPage extends React.Component {
         <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
           <ModalBody className="filterBox">
+            {this.state.loading &&
+              <div className="loading-container">
+                <ReactLoading
+                  type={'spinningBubbles'}
+                  className="loadingSpinner loadingSpinner-map"
+                />
+              </div>
+            }
             <div>
               <div>
                 {strings.cityWhereToFindRestaurants}

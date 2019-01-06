@@ -49,7 +49,7 @@ export default class Register extends React.Component {
     this.onRetypePassChanged = this.onRetypePassChanged.bind(this);
     this.onUlaChanged = this.onUlaChanged.bind(this);
     this.validateForm = this.validateForm.bind(this);
-    
+
 		this.handleRegistration = this.handleRegistration.bind(this);
 		this.sendToOtherLambda = this.sendToOtherLambda.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
@@ -64,15 +64,15 @@ export default class Register extends React.Component {
         })
         .catch(err => {});
   }
-  
+
   validateForm() {
     /*Make sure all fields are okay*/
     const isValid = (
-      this.state.usernameValid && this.state.username.length > 0 && 
-      this.state.mailValid && this.state.mail.length > 0 && 
-      this.state.retypeMailValid && this.state.retypeMail.length > 0 && 
-      this.state.passwordValid && this.state.password.length > 0 && 
-      this.state.retypePassValid && this.state.retypePass.length > 0 && 
+      this.state.usernameValid && this.state.username.length > 0 &&
+      this.state.mailValid && this.state.mail.length > 0 &&
+      this.state.retypeMailValid && this.state.retypeMail.length > 0 &&
+      this.state.passwordValid && this.state.password.length > 0 &&
+      this.state.retypePassValid && this.state.retypePass.length > 0 &&
       this.state.ula
     );
     return isValid;
@@ -86,11 +86,11 @@ export default class Register extends React.Component {
       usernameValid: isValid,
     });
   }
-  
+
   onMailChanged(e) {
     const mail = e.target.value;
     const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-   
+
     const isValid = validationUtil.validateEmail(mail);
     const retypeMailValid = (mail === this.state.retypeMail);
     this.setState({
@@ -113,7 +113,7 @@ export default class Register extends React.Component {
     const password = e.target.value;
     const reLowerCase = /[a-z]/;
     const reNumber = /[0-9]/;
-    
+
     const isValid = validationUtil.validatePassword(password);
     const retypePassValid = (password === this.state.retypePass);
     this.setState({
@@ -230,7 +230,7 @@ export default class Register extends React.Component {
 		}
 		console.log(this.state.socialCredentials);
 	}
-	
+
 	renderSocialReg() {
 		const { VInput, } = commonComponents;
 		let strings = new LocalizedStrings({
@@ -261,19 +261,19 @@ export default class Register extends React.Component {
 			</div>
 		)
 	}
-	
+
 	renderConfirmation() {
 		let strings = new LocalizedStrings({
       en:{
         successHeader: 'Registration successfull!',
-        successText: ' A confirmation email has been sent to ' + this.state.mail + 
+        successText: ' A confirmation email has been sent to ' + this.state.mail +
         '. You must click the confirmation link in the email, before you can sign in.',
         loginBtnText: 'Login',
       },
       fi: {
         successHeader: 'Rekisteröinti onnistui!',
-        successText: 'Sähköpostiisi ' + this.state.mail + 
-          ' on lähetetty vahvistusviesti, jonka vahvistuslinkkiä sinun tulee' + 
+        successText: 'Sähköpostiisi ' + this.state.mail +
+          ' on lähetetty vahvistusviesti, jonka vahvistuslinkkiä sinun tulee' +
           ' klikata ennen kuin voit kirjautua sisään.',
         loginBtnText: 'Kirjaudu',
       }
@@ -304,12 +304,12 @@ export default class Register extends React.Component {
         alreadyRegistered:"Already registered? ",
         loginHere:"Login here!",
         usernameError:"Length must be 4-30 characters",
-        passwordError:"Password must be at least 8 characters long and " + 
+        passwordError:"Password must be at least 8 characters long and " +
           "contain numbers lower case characters and numbers",
         passwordAgainError:"Passwords must match",
         emailError:"Email is invalid",
         emailAgainError:"Emails must match",
-        
+
       },
       fi: {
         username:"Käyttäjätunnus:",
@@ -323,7 +323,7 @@ export default class Register extends React.Component {
         alreadyRegistered:"Oletko jo rekisteröitynyt? ",
         loginHere:"Kirjaudu sisään tästä!",
         usernameError:"Pituuden tulee olla 4-30 merkkiä",
-        passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
+        passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " +
           "siinä tulee olla pieniä kirjaimia ja numeroita",
         passwordAgainError:"Salasanojen tulee olla samat",
         emailError:"Sähköpostiosoite on virheellinen",
@@ -378,51 +378,7 @@ export default class Register extends React.Component {
     );
   }
 
-		/*The first form where the user enters info needed for an account*/
-		return (
-			<div id="register" className="max-w-40">
-				<h2>{strings.register}</h2>
-				<Form onSubmit={this.handleRegistration}>
-					<FormGroup>
-						<Label>{strings.username}</Label>
-						<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.password}</Label>
-						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.passwordAgain}</Label>
-						<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.email}</Label>
-						<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.emailAgain}</Label>
-						<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
-					</FormGroup>
-					<FormGroup check>
-						<Label check>{' '}
-							<VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
-							{strings.acceptUla}
-						</Label>
-					</FormGroup>
 
-					<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
-				</Form>
-				<div>
-					{strings.alreadyRegistered}
-					<Link to={'/' + this.props.match.params.language + '/login/'}>
-          	{strings.loginHere}
-        	</Link>
-				</div>
-				<SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
-			</div>
-		);
-	}
-	
 	render() {
     if (this.state.loggedInAlready) {
       return (<Redirect to={"/" + this.props.match.params.language + "/profile"} />);
