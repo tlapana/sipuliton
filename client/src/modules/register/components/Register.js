@@ -14,7 +14,7 @@ import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 import SocialRegister from './SocialRegister.js';
 
-
+const otherLambda = "";
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -51,6 +51,7 @@ export default class Register extends React.Component {
     this.validateForm = this.validateForm.bind(this);
     
 		this.handleRegistration = this.handleRegistration.bind(this);
+		this.sendToOtherLambda = this.sendToOtherLambda.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
 		this.renderSocialReg = this.renderSocialReg.bind(this);
@@ -196,6 +197,18 @@ export default class Register extends React.Component {
 						googleReg: false,
 						faceReg: false,
 						});
+	}
+	sendToOtherLambda() {
+		fetch(otherLambda, {
+			method: 'POST',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				/*what do we want here?*/
+			})
+		})
 	}
 	/*function that receives the user data from SocialRegister class*/
 	getSocialCredentials = (dataFromChild) => {
