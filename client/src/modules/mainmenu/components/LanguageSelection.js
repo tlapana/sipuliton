@@ -1,5 +1,4 @@
 import React from 'react';
-import LocalizedStrings from 'react-localization';
 
 import LanguageButton from './LanguageButton';
 

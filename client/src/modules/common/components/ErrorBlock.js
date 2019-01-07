@@ -1,17 +1,17 @@
 import React from 'react'
-
-/* 
-A block that shows an error message. 
-Takes "hidden" (true/false) and "errormsg" props. 
+import CommonFunctionsApi from './CommonGlobalFunctions'
+/*
+A block that shows an error message.
+Takes "hidden" (true/false) and "errormsg" props.
 Shows the error message if "hidden" is false and errormsg is not null/empty.
 */
 export default class ErrorBlock extends React.Component {
   constructor(props) {
     super(props);
-    this.isString = this.isString.bind(this);
-    this.checkIfTrue = this.checkIfTrue.bind(this);
+    //this.isString = this.isString.bind(this);
+    //this.checkIfTrue = this.checkIfTrue.bind(this);
   }
-
+/*
   isString(value) {
     return (typeof value === 'string' || value instanceof String)
   }
@@ -32,11 +32,11 @@ export default class ErrorBlock extends React.Component {
     }
 
     return true;
-  }
+  }*/
 
   render() {
     var { hidden, className, errormsg, ...other } = this.props;
-    const isHidden = this.checkIfTrue(hidden) || errormsg == null || errormsg == "";
+    const isHidden = CommonFunctionsApi.checkIfTrue(hidden) || errormsg == null || errormsg == "";
 
     let classes = isHidden ? "errormsg" : "errormsg visible";
     if (className != null) {

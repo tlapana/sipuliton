@@ -145,7 +145,7 @@ class Login_Form extends React.Component{
             <VInput isValid={this.state.passwordIsValid} value={this.state.password} onChange={this.changePassword} type="password" name="password" required />
           </FormGroup>
 
-          <VInput type="submit" value={loginBtnStr} isValid={!this.state.isLoading} className="main-btn big-btn max-w-10" /> 
+          <VInput type="submit" value={loginBtnStr} isValid={!this.state.isLoading} className="main-btn big-btn max-w-10" />
         </Form>
         {this.state.loggingSucceeded && <Redirect to={"/" + this.props.language + "/profile"} />}
       </div>
