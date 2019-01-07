@@ -6,7 +6,7 @@ import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
-
+import about from '../../about';
 import map from '../../map'
 import restaurant from '../../restaurant';
 import NotFound from './NotFound';
@@ -25,7 +25,7 @@ class RouteCollection extends React.Component {
     const { Profile } = profile;
     const { Map } = map;
 	  const { Restaurant } = restaurant;
-
+    const { About } = about;
     return (
       <Switch>
         <Redirect exact from="/" to="/fi" />
@@ -37,6 +37,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
         <Route path="/:language/restaurant/:id" component={Restaurant} />
+        <Route path="/:language/about" component={About} />
         <Route component={NotFound} />
       </Switch>
     );
