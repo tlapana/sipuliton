@@ -70,8 +70,8 @@ INSERT INTO review(restaurant_id, user_id, posted, status, title, image_url, fre
     ('1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', NULL, 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
     ('1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
 
-INSERT INTO review_diet(restaurant_id, user_id, review_posted, global_diet_id) VALUES
-    ('1', '0', '2018-09-22 6:30:25-07', '0'),
-    ('1', '0', '2018-09-22 6:30:25-07', '1');
+INSERT INTO review_diet(review_id, global_diet_id) VALUES
+    ('1', '0'),
+    ('1', '1');
 
 UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);
