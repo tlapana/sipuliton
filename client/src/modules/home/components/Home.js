@@ -143,60 +143,14 @@ class Home extends React.Component {
     strings.setLanguage(language);
 
 
-    if(!this.state.searchDone)
-    {
-      if (this.state.error != null) {
-        return (
-          <div className="landingDiv">
-            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}
-            />
-            <div className="eventsDiv">
-              <h3> {strings.errorTitle} </h3>
-              {strings.errorText}
-            </div>
-          </div>
-        );
-      }
-      else if(!this.state.searchInProgress) {
-        return (
-          <div className="landingDiv">
-            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}
-            />
-            <Events language={this.props.match.params.language} />
-          </div>
-        );
-      }
-      else {
-        return (
-          <div className="landingDiv">
-            <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
-              language={this.props.match.params.language}
-            />
-            <div className="eventsDiv">
-              <h3>
-                {strings.search}
-                <ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
-              </h3>
-            </div>
-          </div>
-        );
-      }
-
-    }
-    else {
-      return (
+    return (
       <div className="landingDiv">
         <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
           language={this.props.match.params.language}
         />
-        <SearchResults restaurants={this.state.restaurants}
-          language={this.props.match.params.language}/>
+        <Events language={this.props.match.params.language} />
       </div>
-      );
-    }
-
+    );
 
   }
 
