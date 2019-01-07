@@ -333,94 +333,49 @@ export default class Register extends React.Component {
     strings.setLanguage(this.props.match.params.language);
     let registerBtnStr = this.state.isLoading ? strings.registering : strings.register;
 
-    /*The first form where the user enters info needed for an account*/
-    return (
-      <div id="register" className="max-w-40">
-        <h2>{strings.register}</h2>
-        <Form onSubmit={this.handleRegistration}>
-          <FormGroup>
-            <Label>{strings.username}</Label>
-            <VInput type="text" name="username" errormsg={strings.usernameError} isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
-          </FormGroup>
-          <FormGroup>
-            <Label>{strings.password}</Label>
-            <VInput type="password" name="password" errormsg={strings.passwordError} isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
-          </FormGroup>
-          <FormGroup>
-            <Label>{strings.passwordAgain}</Label>
-            <VInput type="password" name="retypePass" errormsg={strings.passwordAgainError} isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
-          </FormGroup>
-          <FormGroup>
-            <Label>{strings.email}</Label>
-            <VInput type="email" name="mail" errormsg={strings.emailError} isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
-          </FormGroup>
-          <FormGroup>
-            <Label>{strings.emailAgain}</Label>
-            <VInput type="email" name="retypeMail" errormsg={strings.emailAgainError} isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
-          </FormGroup>
-          <FormGroup check>
-            <Label check>{' '}
-              <VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
-              {strings.acceptUla}
-            </Label>
-          </FormGroup>
+	/*The first form where the user enters info needed for an account*/
+	return (
+		<div id="register" className="max-w-40">
+			<h2>{strings.register}</h2>
+			<Form onSubmit={this.handleRegistration}>
+				<FormGroup>
+					<Label>{strings.username}</Label>
+					<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
+				</FormGroup>
+				<FormGroup>
+					<Label>{strings.password}</Label>
+					<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
+				</FormGroup>
+				<FormGroup>
+					<Label>{strings.passwordAgain}</Label>
+					<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
+				</FormGroup>
+				<FormGroup>
+					<Label>{strings.email}</Label>
+					<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
+				</FormGroup>
+				<FormGroup>
+					<Label>{strings.emailAgain}</Label>
+					<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
+				</FormGroup>
+				<FormGroup check>
+					<Label check>{' '}
+						<VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
+						{strings.acceptUla}
+					</Label>
+				</FormGroup>
 
-          <VInput type="submit" value={registerBtnStr} isValid={this.validateForm() && !this.state.isLoading} className="main-btn big-btn max-w-10" />
-        </Form>
-        <div>
-          {strings.alreadyRegistered}
-          <Link to={'/' + this.props.match.params.language + '/login/'}>
-            {strings.loginHere}
-          </Link>
-        </div>
-        {/*<Social_Login/>*/}
-      </div>
-    );
-  }
-
-		/*The first form where the user enters info needed for an account*/
-		return (
-			<div id="register" className="max-w-40">
-				<h2>{strings.register}</h2>
-				<Form onSubmit={this.handleRegistration}>
-					<FormGroup>
-						<Label>{strings.username}</Label>
-						<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.password}</Label>
-						<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.passwordAgain}</Label>
-						<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.email}</Label>
-						<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
-					</FormGroup>
-					<FormGroup>
-						<Label>{strings.emailAgain}</Label>
-						<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
-					</FormGroup>
-					<FormGroup check>
-						<Label check>{' '}
-							<VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
-							{strings.acceptUla}
-						</Label>
-					</FormGroup>
-
-					<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
-				</Form>
-				<div>
-					{strings.alreadyRegistered}
-					<Link to={'/' + this.props.match.params.language + '/login/'}>
-          	{strings.loginHere}
-        	</Link>
-				</div>
-				<SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
+				<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
+			</Form>
+			<div>
+				{strings.alreadyRegistered}
+				<Link to={'/' + this.props.match.params.language + '/login/'}>
+      	{strings.loginHere}
+       	</Link>
 			</div>
-		);
+			<SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
+		</div>
+	);
 	}
 	
 	render() {
