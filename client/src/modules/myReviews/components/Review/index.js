@@ -246,8 +246,8 @@ class Review extends React.Component {
                         <h1>MyReviews </h1>
 
 
-                        <input type="button" value="Vasen" onClick={() => { this.left() }} />
-                        <input type="button" value="oikea" onClick={() => { this.rigth() }} />
+                        <input type="button" value="<<" onClick={() => { this.left() }} />
+                        <input type="button" value=">>" onClick={() => { this.rigth() }} />
 
                         <select id="status"  onChange={()=>{this.changedvalue()}}>
                         <option value="0">Status 0</option>
