@@ -29,7 +29,7 @@ class Login extends React.Component {
 
   render() {
     if (this.state.loggedInAlready) {
-      return <Redirect to={"/" + this.props.match.params.language + "/profile"} />
+      return <Redirect to={"/" + this.props.match.params.language + "/userProfile"} />
     }
 
     let strings = new LocalizedStrings({

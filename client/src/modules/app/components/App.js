@@ -11,33 +11,17 @@ import write_review from '../../writereview';
 import '../../../styles/app.css';
 import '../../../styles/themes.css';
 
+import AppFunctionsGlobalAPI from './AppGlobalFunctions'
 
 class App extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
-
-    this.getAppClasses = this.getAppClasses.bind(this);
-  }
-
-
-  getAppClasses() {
-    let classes = 'app';
-    if (this.props.theme) {
-      classes += ' ' + this.props.theme;
-    }
-    if (this.props.isRounding) {
-      classes += ' rounded';
-    }
-    if (this.props.isLoading) {
-      classes += ' loading';
-    }
-    return classes;
   }
 
   render() {
 
-    let classes = this.getAppClasses();
+    let classes = AppFunctionsGlobalAPI.getAppClasses(this.props);
 
     return(
       <Provider store={this.props.store}>
