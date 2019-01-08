@@ -250,9 +250,9 @@ class Review extends React.Component {
                         <input type="button" value=">>" onClick={() => { this.rigth() }} />
 
                         <select id="status"  onChange={()=>{this.changedvalue()}}>
-                        <option value="0">Status 0</option>
-                        <option value="1">Status 1</option>
-                        <option value="2">Status 2</option>
+                        <option value="0">Odottaa</option>
+                        <option value="1">Hyväksytty</option>
+                        <option value="2">Hylätty</option>
                          </select>
                         <label>Arvosteluja sivulla</label>
                         <select id="limit" onChange={()=>{this.changeLimit()}}>
