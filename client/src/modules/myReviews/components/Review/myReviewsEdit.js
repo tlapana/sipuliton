@@ -44,7 +44,7 @@ export default class myReviewEdit1 extends React.Component {
             url += "&pricing=" + pricing;
             url += "&rating_service_and_quality=" + rating_service_and_quality;
             fetch(url).then(response => alert('jes'));
-            window.location="http://localhost:3001/fi/myReviews"
+            window.location="/fi/myReviews"
 
       }
 

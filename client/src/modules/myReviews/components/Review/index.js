@@ -27,11 +27,11 @@ class ReviewData extends React.Component {
       }
      send()   {
       localStorage.setItem('info', "" + JSON.stringify(this.props.data));
-       window.location="http://localhost:3001/fi/myReviewEdit"
+       window.location="/fi/myReviewEdit"
 
      }
      deleterow(term)  {
-         fetch('http://127.0.0.1:3000/ownReviews/delete?review_id=' + term)
+         fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
 
          .then(ans => {
     if(ans.ok) {
