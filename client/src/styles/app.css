@@ -190,3 +190,7 @@ input.invalid:focus + .input-errormsg.visible {
 .select__menu .select__menu-list {
   padding: 0;
 }
+
+.basic-multi-select .select__menu {
+  z-index: 10;
+}
