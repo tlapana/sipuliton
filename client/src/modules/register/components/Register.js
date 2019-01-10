@@ -14,7 +14,7 @@ import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 import SocialRegister from './SocialRegister.js';
 
-const otherLambda = "";
+const userGroupLambda = "";
 
 export default class Register extends React.Component {
   constructor(props) {
@@ -51,7 +51,7 @@ export default class Register extends React.Component {
     this.validateForm = this.validateForm.bind(this);
     
 		this.handleRegistration = this.handleRegistration.bind(this);
-		this.sendToOtherLambda = this.sendToOtherLambda.bind(this);
+		this.sendToUserGroup = this.sendToUserGroup.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
 		this.renderSocialReg = this.renderSocialReg.bind(this);
@@ -152,6 +152,7 @@ export default class Register extends React.Component {
 					email: this.state.socialCredentials.email,
 				},
 			});
+			sendToUserGroup();
 			this.setState({
 				newUser
 			});
@@ -164,6 +165,7 @@ export default class Register extends React.Component {
 					email: this.state.socialCredentials.email,
 				},
 			});
+			sendToUserGroup();
 			this.setState({
 				newUser
 			});
@@ -176,6 +178,7 @@ export default class Register extends React.Component {
 					email: this.state.mail,
 				},
 			});
+			sendToUserGroup();
 			this.setState({
 				newUser
 			});
@@ -198,15 +201,21 @@ export default class Register extends React.Component {
 						faceReg: false,
 						});
 	}
-	sendToOtherLambda() {
-		fetch(otherLambda, {
+	/*function that sends user data to another lambda, which adds the user to a user group*/
+	sendToUserGroup() {
+		fetch(userGroupLambda, {
 			method: 'POST',
 			headers: {
 				'Accept': 'application/json',
 				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
-				/*what do we want here?*/
+				/*same data as with the login?*/
+				username: this.state.username,
+				password: this.state.password,
+				attributes: {
+					email: this.state.mail,
+				},
 			})
 		})
 	}
@@ -216,6 +225,7 @@ export default class Register extends React.Component {
 			this.setState({
 				socialCredentials: dataFromChild[0],
 				username: dataFromChild[0].name,
+				mail: dataFromChild[0].email,
 				googleReg: true,
 				faceReg: false
 			});
@@ -224,6 +234,7 @@ export default class Register extends React.Component {
 			this.setState({
 				socialCredentials: dataFromChild[0],
 				username: dataFromChild[0].name,
+				mail: dataFromChild[0].email,
 				googleReg: false,
 				faceReg: true
 			});
