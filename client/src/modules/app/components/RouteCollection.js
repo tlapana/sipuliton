@@ -2,14 +2,14 @@ import React from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 
 import home from '../../home';
-import login from '../../login';
+import { components as loginComponents } from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
 import about from '../../about';
 import map from '../../map'
-import Review from '../../myReviews'
-import myReviewEdit1 from '../../myReviews/components/Review/myReviewsEdit'
+import { Review, myReviewEdit1, }  from '../../myReviews'
+//import myReviewEdit1 from '../../myReviews/components/Review/myReviewsEdit'
 import restaurant from '../../restaurant';
 import NotFound from './NotFound';
 
@@ -21,7 +21,7 @@ class RouteCollection extends React.Component {
 
   render() {
     const { Home } = home;
-    const { Login } = login;
+    const { Login } = loginComponents;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
     const { EditProfile, Profile } = profile;

@@ -80,8 +80,6 @@ export default class Register extends React.Component {
   
   onMailChanged(e) {
     const mail = e.target.value;
-    const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-   
     const isValid = validationUtil.validateEmail(mail);
     const retypeMailValid = (mail === this.state.retypeMail);
     this.setState({
