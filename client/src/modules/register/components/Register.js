@@ -9,6 +9,7 @@ import {
 import { Auth } from "aws-amplify";
 import commonComponents from '../../common';
 
+import config from '../../../config.js';
 import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 
@@ -100,9 +101,6 @@ export default class Register extends React.Component {
 
   onPasswordChanged(e) {
     const password = e.target.value;
-    const reLowerCase = /[a-z]/;
-    const reNumber = /[0-9]/;
-    
     const isValid = validationUtil.validatePassword(password);
     const retypePassValid = (password === this.state.retypePass);
     this.setState({
@@ -128,7 +126,7 @@ export default class Register extends React.Component {
   }
 
 
-  handleRegistration = async event => {
+  handleRegistration(event) {
     /*use signUp function to register*/
     event.preventDefault();
     if (this.state.isLoading) {
@@ -136,31 +134,59 @@ export default class Register extends React.Component {
     }
     
     this.setState({ isLoading: true });
-    try {
-      const newUser = await Auth.signUp({
-        username: this.state.username,
-        password: this.state.password,
-        attributes: {
-          email: this.state.mail,
-        },
-      });
-      this.setState({
-        newUser
-      });
-    } catch (e) {
-      if (e.code === 'UsernameExistsException') {
-        let strings = new LocalizedStrings({
-          en: { msg: 'Error: username already exists', },
-          fi: { msg: 'Virhe: käyttäjätunnus on jo käytössä', },
+
+    // AWS Cognito signup first
+    Auth.signUp({
+      username: this.state.username,
+      password: this.state.password,
+      attributes: {
+        email: this.state.mail,
+      },
+    })
+    .then(newUser => {
+      // Our own signup
+      const { backendAPIPaths, } = config;
+      var regUrl = backendAPIPaths.BASE + '/user/create?username=' + encodeURIComponent(this.state.username) +
+        '&cognito_sub=' + encodeURIComponent(newUser.userSub) + 
+        '&email=' + encodeURIComponent(this.state.mail);
+      const asd = 'sad';
+      fetch(regUrl)
+        .then(res => {
+          console.log(res);
+          if (res.status == 400) {
+            alert('Bad request');
+          }
+          else if (res.error) {
+            alert(res.error);
+          }
+          else if (res.status == 200) {
+            // success
+            this.setState({ isLoading: false, newUser });
+          }
+          else {
+            alert('An unknown error occurred');
+          }
+          this.setState({ isLoading: false });
+        })
+        .catch(err => {
+          console.log(err);
+          throw err;
         });
-        strings.setLanguage(this.props.match.params.language);
-        alert(strings.msg);
-      }
-      else {
-        alert(e.message);
-      }
-    }
-    this.setState({ isLoading: false });
+      })
+      .catch(e => {
+        if (e.code === 'UsernameExistsException') {
+          let strings = new LocalizedStrings({
+            en: { msg: 'Error: username already exists', },
+            fi: { msg: 'Virhe: käyttäjätunnus on jo käytössä', },
+          });
+          strings.setLanguage(this.props.match.params.language);
+          alert(strings.msg);
+        }
+        else {
+          alert(e.message);
+        }
+        this.setState({ isLoading: false });
+      });
   }
 
   renderConfirmation() {

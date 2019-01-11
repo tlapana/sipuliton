@@ -279,6 +279,68 @@ exports.createUserLambda = async (event, context) => {
 };
 
 
+async function getCognitoUser(client, cognitoSub) {
+	try {
+		const res = await client.query(
+			`SELECT user_id FROM user_login
+			WHERE cognito_sub = $1`,
+			[cognitoSub]);
+		if (res.rowCount == 0) {
+			throw {
+				'statusCode': 400,
+				'error': "No user found"
+			}
+		}
+		if (res.rowCount >= 2) {
+			throw {
+				'statusCode': 500,
+				'error': "Something is broken, returning 2 or more users"
+			}
+		}
+		var jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
+		return jsonObj;
+	} catch (err) {
+		throw err;
+	}
+}
+
+exports.getUserByCognitoLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+        try {
+			var cogSub;
+			var fieldValue;
+            fieldValue = parseParam('cognito_sub', event);
+            if (fieldValue !== null && fieldValue !== '') {
+                cogSub = fieldValue;
+            }
+			else {
+                throw {
+                    'statusCode': 400,
+                    'error': "cognito_sub can't be empty"
+                }
+            }
+			
+			var jsonObj = {};
+			jsonObj = await getCognitoUser(client, cogSub);
+            response = packResponse(jsonObj);
+		} finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+
+
+
+
+
 async function deleteUser(client, userId, keepReviews, permanent) {
     await client.query('BEGIN');
     try {
