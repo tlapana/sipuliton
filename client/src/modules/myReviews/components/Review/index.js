@@ -4,6 +4,9 @@ import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
+import {PopupboxManager,PopupboxContainer} from 'react-popupbox';
+import Popup from "reactjs-popup";
+import { TiArrowDown } from "react-icons/ti";
 
 
 class ReviewData extends React.Component {
@@ -48,7 +51,7 @@ class ReviewData extends React.Component {
                     <div >
                        <fieldset>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         name
                                     </Col>
                                     <Col xs="4">
@@ -57,7 +60,7 @@ class ReviewData extends React.Component {
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         title
                                     </Col>
                                     <Col xs="4">
@@ -65,7 +68,7 @@ class ReviewData extends React.Component {
                                     </Col>
                               </Row>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         freetext
                                     </Col>
                                     <Col xs="4">
@@ -73,7 +76,7 @@ class ReviewData extends React.Component {
                                     </Col>
                               </Row>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Posted
                                     </Col>
                                     <Col xs="4">
@@ -82,38 +85,38 @@ class ReviewData extends React.Component {
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Overall Rating
                                     </Col>
-                                    <Col xs="4">
+                                    <Col xs="8">
                                              <ReactStars value = {this.state.overall}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Pricing
                                     </Col>
-                                    <Col xs="4">
+                                    <Col xs="8">
                                              <ReactStars value = {this.state.pricing}  count = {3} size = {24} />   
                                     </Col>
                               </Row>
 
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Rating service and quality
                                     </Col>
-                                    <Col xs="4">
+                                    <Col xs="8">
                                              <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Rating variety
                                     </Col>
-                                    <Col xs="4">
+                                    <Col xs="8">
                                              <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
@@ -143,6 +146,32 @@ class Review extends React.Component {
    
      }
      t1=this;
+
+     openPopupbox(itemData) {
+      const content = (
+            <div>
+                   <span>
+              <ReviewData data={itemData} />
+              </span>
+            </div>
+        
+      )
+
+      PopupboxManager.open({
+           
+            config: {
+              titleBar: {
+                enable: true,
+                text: <ReviewData data={itemData} />
+            
+              },
+              content: <p> test</p>,
+              fadeIn: true,
+              fadeInSpeed: 500
+            }
+          })
+
+}
       constructor(props) {
        
         super(props);
@@ -184,8 +213,14 @@ class Review extends React.Component {
                   .then((responseJson) => {
                              var array1=[];
                              for(var item in responseJson.reviews)  {
-                               array1.push(<ReviewData data={responseJson.reviews[item]} key="1"/>);
-                             }
+                          //     array1.push(<ReviewData data={responseJson.reviews[item]} key="1"/>);
+
+                          
+                          array1.push(<Row key="1"> <Col  xs="2">  <Popup key="1" trigger={<button key="2"> <TiArrowDown /></button>} position="bottom left"><div ><ReviewData data={responseJson.reviews[item]} key="1"/></div></Popup> </Col><Col  xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col></Row>);
+                          array1.push(<Row key="1"> <Col  xs="2" key="1"></Col><Col  xs="8"  key="1"><em>{responseJson.reviews[item].posted}</em></Col></Row>);
+                                
+                        
+                        }
                              t.setState({array : array1});
                         t.setState({ edit: false });
 
@@ -240,11 +275,12 @@ class Review extends React.Component {
 
             }
 
-            if (this.state.edit === false) {
+         
 
                   return (<div>
                         <h1>MyReviews </h1>
 
+                     
 
                         <input type="button" value="<<" onClick={() => { this.left() }} />
                         <input type="button" value=">>" onClick={() => { this.rigth() }} />
@@ -261,7 +297,7 @@ class Review extends React.Component {
 
                         </select>
                           
-                        <div style={{"width":"400px","overflow": "scroll","height": "300px"}}>
+                        <div style={{"width":"500px","overflow": "scroll","height": "300px"}}>
 
                         {this.state.array}
                        </div>
@@ -270,11 +306,9 @@ class Review extends React.Component {
 
 
                   </div>);
-            }
+            
 
-            return (
-                  <h1>MyReviews</h1>
-            )
+ 
       }
 
 }
