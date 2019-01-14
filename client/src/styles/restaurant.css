@@ -1,0 +1,17 @@
+.mainContainer {
+    height: 100%;
+	position: absolute;
+}
+.restaurant {
+	height: 50%;
+}
+.reviewList {
+	height: 50%;
+	overflow-y: scroll;
+	margin-bottom: 10%;
+}
+.reviewListItem {
+	margin-top: .5em;
+	margin-bottom: .5em;
+	background-color: #e5e5e5;
+}

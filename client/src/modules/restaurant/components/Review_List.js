@@ -8,7 +8,6 @@ import {
 	Label
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import ReactStars from 'react-stars';
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -29,7 +28,7 @@ class ReviewList extends React.Component {
 			serviceQuality : [3, 5],
 			pageNumber : 0,
 			pageSize : 20,
-			numberOfRevs: 1,
+			numberOfRevs: 2,
 			isLoaded : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
@@ -114,34 +113,26 @@ class ReviewList extends React.Component {
 		strings.setLanguage(this.props.language);
 		let list = [];
 		for (let reviewIndex = 0; reviewIndex < this.state.numberOfRevs; reviewIndex++) {
-			list.push(<h3>{this.state.titles[reviewIndex]}</h3>);
-			list.push(<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div>);
-			list.push(<div id="reviewText">{this.state.reviews[reviewIndex]}</div>);
-			list.push(<div id="reviewUser">{strings.reviewer}{this.state.users[reviewIndex]}</div>);
-			list.push(<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[reviewIndex])}</div>);
-			list.push(<div id="reviewRelevance">{strings.relevance}
-			<ReactStars value={this.state.relevance[reviewIndex]} edit={false}/></div>);
-			list.push(<div id="reviewAwareness">{strings.allergyAwareness}
-			<ReactStars value={this.state.allergyAwareness[reviewIndex]} edit={false}/></div>);
-			list.push(<div id="reviewQuality">{strings.quality}
-			<ReactStars value={this.state.serviceQuality[reviewIndex]} edit={false}/></div>);
+			list.push(<div class="reviewListItem">
+			<h3>{this.state.titles[reviewIndex]}</h3>
+			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div>
+			<div id="reviewText">{this.state.reviews[reviewIndex]}</div>
+			<div id="reviewUser">{strings.reviewer}{this.state.users[reviewIndex]}</div>
+			<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[reviewIndex])}</div>
+			<div id="reviewRelevance">{strings.relevance}
+			<ReactStars value={this.state.relevance[reviewIndex]} edit={false}/></div>
+			<div id="reviewAwareness">{strings.allergyAwareness}
+			<ReactStars value={this.state.allergyAwareness[reviewIndex]} edit={false}/></div>
+			<div id="reviewQuality">{strings.quality}
+			<ReactStars value={this.state.serviceQuality[reviewIndex]} edit={false}/></div>
+			</div>);
 		}
 		return list;
 	}
 /*Render the items shown in review inside a div that can be clicked to show another review*/
 	render() {
-		let strings = new LocalizedStrings({
-			en:{
-				preTitle: "Restaurant's reviews: "
-			},
-			fi: {
-				preTitle: "Ravintolan arvostelut: "
-			}
-		});
-		strings.setLanguage(this.props.language);
 		return (
-			<div id="reviewList">
-				<div id="preTitle">{strings.preTitle}</div>
+			<div class="reviewContainer">
 				{this.renderReviews()}
 			</div>
 		);

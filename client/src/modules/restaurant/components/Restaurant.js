@@ -2,9 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { render } from 'react-dom';
+import '../../../styles/restaurant.css';
 import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import ReactStars from 'react-stars';
 import ReviewList from './Review_List.js';
 import WriteReviewComponents from '../../writereview';
@@ -99,6 +99,7 @@ class Restaurant extends React.Component {
 	render () {
 		let strings = new LocalizedStrings({
 		en:{
+			preTitle: "Restaurant's reviews: ",
 			priceLevel: "Price level: ",
 			userRating: "User rating: ",
 			allergyTags: "Allergy information: ",
@@ -106,6 +107,7 @@ class Restaurant extends React.Component {
 			addReview: "Add a review"
 		},
 		fi: {
+			preTitle: "Ravintolan arvostelut: ",
 			priceLevel: "Hintataso: ",
 			userRating: "Käyttäjien arvio: ",
 			allergyTags: "Allergiatunnisteet: ",
@@ -115,7 +117,8 @@ class Restaurant extends React.Component {
 		});
 		strings.setLanguage(this.props.match.params.language);
 		return (
-			<div id="restaurant">
+			<div class="mainContainer">
+			<div class="restaurant">
 			<h2>{this.state.name}</h2>
 			<div id="restaurantPictures">
 			<img src={this.state.pictures[0]} alt="Restaurant picture1"></img>
@@ -137,7 +140,9 @@ class Restaurant extends React.Component {
             <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>
 			</ModalFooter>
 			</Modal>
-			<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
+			<div id="preTitle">{strings.preTitle}</div>
+			</div>
+			<div class="reviewList"><ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/></div>
 			</div>
 		);
 	}
