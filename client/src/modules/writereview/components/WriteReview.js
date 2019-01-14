@@ -164,16 +164,20 @@ export default class WriteReview extends React.Component {
     console.log(jsonString);
     
     //Generating url
-    var url = "locahost:3000/writereview?restaurant_id=" + obj.id
+    var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
       + "&title=" + obj.title
       + "&text=" + obj.reviewText
       + "&rating_overall=" + obj.overall
       + "&rating_variety=" + obj.choice
       + "&rating_reliability=" + obj.reliability
       + "&rating_service_and_quality=" + obj.quality
-      + "&pricing=" + obj.pricing;
+      + "&pricing=" + obj.pricing
+      + "&diets=" + obj.selectedFilters;
       
     //TODO: Diets
+    
+    console.log("url:");
+    console.log(url);
     
     fetch(url)
       .then(res => res.json())
@@ -183,6 +187,7 @@ export default class WriteReview extends React.Component {
             submitingReview: false,
             reviewSubmitted: true,
           });
+          console.log("Success submitting review")
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -193,6 +198,7 @@ export default class WriteReview extends React.Component {
             reviewSubmitted: false,
             error: error
           });
+          console.log("Error submitting review")
           console.log(error);
         }
       )
@@ -315,7 +321,7 @@ export default class WriteReview extends React.Component {
                 <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
                 <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
                     
-                {strings.pricing}:
+                {strings.diets}:
                 <Select
                   defaultValue={ this.state.defaultValues }
                   isMulti
