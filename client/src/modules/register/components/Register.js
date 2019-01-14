@@ -145,23 +145,22 @@ export default class Register extends React.Component {
     })
     .then(newUser => {
       // Our own signup
-      const { backendAPIPaths, } = config;
-      var regUrl = backendAPIPaths.BASE + '/user/create?username=' + encodeURIComponent(this.state.username) +
+      var regUrl = config.backendAPIPaths.BASE + '/user/create' + 
+        '?username=' + encodeURIComponent(this.state.username) + 
         '&cognito_sub=' + encodeURIComponent(newUser.userSub) + 
         '&email=' + encodeURIComponent(this.state.mail);
-      const asd = 'sad';
       fetch(regUrl)
         .then(res => {
           console.log(res);
-          if (res.status == 400) {
-            alert('Bad request');
+          if (res.status == 200) {
+            // success
+            this.setState({ isLoading: false, newUser });
           }
           else if (res.error) {
             alert(res.error);
           }
-          else if (res.status == 200) {
-            // success
-            this.setState({ isLoading: false, newUser });
+          else if (res.status == 400 || res.status == 500) {
+            alert('An error occurred');
           }
           else {
             alert('An unknown error occurred');

@@ -35,8 +35,8 @@ class RouteCollection extends React.Component {
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
-        <Route path="/:language/profile/" component={Profile} />
         <Route path="/:language/profile/:id/" component={Profile} />
+        <Route path="/:language/profile" component={Profile} />
         <Route path="/:language/edit-profile/" component={EditProfile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />

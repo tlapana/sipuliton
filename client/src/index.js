@@ -26,6 +26,15 @@ Amplify.configure({
     google_client_id: config.google.CLIENT_ID,
     facebook_app_id: '',
     amazon_client_id: ''
+  },
+  API: {
+    endpoints: [
+      {
+          name: 'api',
+          endpoint: config.backendAPIPaths.BASE,
+          service: "lambda",
+      },
+    ]
   }
 });
 

@@ -3,6 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { Col, Row, } from 'reactstrap';
 import ReactLoading from 'react-loading';
 import LocalizedStrings from 'react-localization';
+import { API } from 'aws-amplify';
 
 
 class Profile extends React.Component {
@@ -45,8 +46,12 @@ class Profile extends React.Component {
 
   fetchProfile() {
     this.setState({isLoading: true});
-    fetch('http://127.0.0.1:3000/profile')
-      .then((response) => response.json())
+    const init = {
+      queryStringParameters: {
+        user_id: this.state.id
+    }
+    }
+    API.get('api', '/profile', init)
       .then((responseJson) => {
         this.setState({
           city: responseJson.city_name,
