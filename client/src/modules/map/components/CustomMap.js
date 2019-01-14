@@ -1,27 +1,14 @@
 import React from 'react';
-import {
-  Button,
-  NavItem,
-  NavLink} from 'reactstrap';
-import ReactLoading from 'react-loading';
-import ScrollArea from 'react-scrollbar';
 /* Map imports */
 import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
 import L from 'leaflet';
 import '../../../styles/map.css';
-
-/* Location imports */
-import {geolocated} from 'react-geolocated';
-
-/* Router imports */
-import { Link } from 'react-router-dom';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
 /* Restaurant info */
 import MapSmallRestaurantInfo from './MapSmallRestaurantInfo'
-const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class CustomMap extends React.Component {
   /* Constructor of the navication bar class. */
@@ -142,7 +129,6 @@ class CustomMap extends React.Component {
     var greyMarkers = [];
     var greenMarkers = [];
     var selectedMarker = [];
-    var restaurants = [];
     if(this.props.restaurants !== undefined &&
       this.props.restaurants.grey !== undefined &&
       this.props.restaurants.grey[0] !== undefined){
@@ -159,7 +145,7 @@ class CustomMap extends React.Component {
       selectedMarker = this.props.restaurants.selected;
     }
 
-    const rootClassName = this.props.loading == true ? "map-loading" : "";
+    const rootClassName = this.props.loading === true ? "map-loading" : "";
     return(
         <div className={rootClassName}>
           <Map

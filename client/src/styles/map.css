@@ -171,7 +171,7 @@
   margin:auto;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 767px) {
   .restaurants-list{
     position: fixed;
     top: 10px;
@@ -290,4 +290,19 @@
   z-index: 900;
   top:50vh;
   left:50vw;
+}
+
+.advanced-filters-btn{
+  margin: 10px 0px;
+}
+.Location-Question-Answere-Box{
+  margin: 0px 0px 10px 0px;
+}
+.diets-filters-box{
+  margin: 10px 0px 10px 0px;
+}
+.basic-multi-select{
+  font-size: 17px;
+  width: 80%;
+  margin: 1em;
 }

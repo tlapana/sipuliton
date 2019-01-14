@@ -121,6 +121,11 @@ class Home extends React.Component {
         <Redirect to={"/fi/moderating"}/>
       )
     }
+    if(this.props.match.params.language === "about"){
+      return(
+        <Redirect to={"/fi/about"}/>
+      )
+    }
 
     let strings = new LocalizedStrings({
       en:{

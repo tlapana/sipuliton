@@ -27,11 +27,11 @@ class ReviewData extends React.Component {
       }
      send()   {
       localStorage.setItem('info', "" + JSON.stringify(this.props.data));
-       window.location="http://localhost:3001/fi/myReviewEdit"
+       window.location="/fi/myReviewEdit"
 
      }
      deleterow(term)  {
-         fetch('http://127.0.0.1:3000/ownReviews/delete?review_id=' + term)
+         fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
 
          .then(ans => {
     if(ans.ok) {
@@ -246,13 +246,13 @@ class Review extends React.Component {
                         <h1>MyReviews </h1>
 
 
-                        <input type="button" value="Vasen" onClick={() => { this.left() }} />
-                        <input type="button" value="oikea" onClick={() => { this.rigth() }} />
+                        <input type="button" value="<<" onClick={() => { this.left() }} />
+                        <input type="button" value=">>" onClick={() => { this.rigth() }} />
 
                         <select id="status"  onChange={()=>{this.changedvalue()}}>
-                        <option value="0">Status 0</option>
-                        <option value="1">Status 1</option>
-                        <option value="2">Status 2</option>
+                        <option value="0">Odottaa</option>
+                        <option value="1">Hyväksytty</option>
+                        <option value="2">Hylätty</option>
                          </select>
                         <label>Arvosteluja sivulla</label>
                         <select id="limit" onChange={()=>{this.changeLimit()}}>
