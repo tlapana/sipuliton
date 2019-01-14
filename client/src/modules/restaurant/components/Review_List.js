@@ -129,7 +129,7 @@ class ReviewList extends React.Component {
 		}
 		return list;
 	}
-/*Render the items shown in review inside a div that can be clicked to show another review*/
+/*Render the items shown in a scrollable list*/
 	render() {
 		return (
 			<div class="reviewContainer">
