@@ -1,4 +1,12 @@
 --init restaurant related stuff
+CREATE TABLE restaurant_status(
+    status_id int,
+    status_desc varchar(20),
+    PRIMARY KEY(status_id)
+);
+INSERT INTO restaurant_status VALUES (0, 'pending')
+, (1, 'accepted')
+, (-1, 'rejected');
 
 CREATE TABLE restaurant(
     restaurant_id bigserial PRIMARY KEY,
@@ -12,7 +20,8 @@ CREATE TABLE restaurant(
     street_address varchar(70) NOT NULL,
     latitude float,
     longitude float,
-    geo_location geography
+    geo_location geography,
+    restaurant_accepted boolean NOT NULL DEFAULT FALSE
 );
 
 CREATE TABLE open_hours(
@@ -68,11 +77,13 @@ CREATE TABLE restaurant_suggestion(
     email varchar(50),
     website varchar(50),
 	image_url text,
-    status int NOT NULL,
+    status int NOT NULL REFERENCES restaurant_status(status_id) DEFAULT 0,
     country_id int NOT NULL REFERENCES country,
     city varchar(60) NOT NULL,
     postal_code varchar(20),
     street_address varchar(70) NOT NULL,
+    latitude float,
+    longitude float,
     geo_location geography,
     suggester_id bigint NOT NULL REFERENCES user_profile,
     suggested timestamp NOT NULL

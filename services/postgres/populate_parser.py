@@ -11,6 +11,8 @@ def commajoin(array, elements_to_quote, indent=0):
     for i in elements_to_quote:
         if array[i] == '':
             array[i] = "NULL"
+        elif array[i] == "DEFAULT":
+            continue
         else:
             array[i] = "'" + str(array[i]) + "'"
     j = 0
@@ -275,5 +277,6 @@ def main():
         write_test_data(sql)
         # This command sets postgis coordinates based on latitude and longitude
         sql.write("UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);\n")
+        sql.write("UPDATE restaurant_suggestion SET geo_location = ST_POINT(latitude, longitude);\n")
     sql.close()
 main()
