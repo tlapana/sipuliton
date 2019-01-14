@@ -17,7 +17,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as AppImports from  '../../app';
 
 /* THIS IS A TEST SECTION! REMOVE ONCE NO LONGER NEEDED! */
-import WriteReview from '../../writereview/components/WriteReview.js';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -325,7 +324,7 @@ class SearchBar extends React.Component {
             </UncontrolledTooltip>
 
             <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
-
+            
             <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
               <ModalHeader>{strings.includeinsearch}</ModalHeader>
               <ModalBody className="filterBox">
@@ -384,7 +383,7 @@ class SearchBar extends React.Component {
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
             </ThemedModalContainer>
-
+    
           </form>
         </div>
       );

@@ -11,7 +11,8 @@ import WriteReviewComponents from '../../writereview';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-const { WriteReview } = WriteReviewComponents;
+import WriteReview from '../../writereview/components/WriteReview.js';
+
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class Restaurant extends React.Component {
@@ -127,16 +128,10 @@ class Restaurant extends React.Component {
 			{this.looper(this.state.allergyTags)}</div>
 			<div id="restaurantDesc">{this.state.description} 
 			{strings.openingHours[0]}{this.state.openingHours.monFri}{strings.openingHours[1]}{this.state.openingHours.sat}{strings.openingHours[2]}{this.state.openingHours.sun}</div>
-			<Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button>
-			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
-			<ModalHeader></ModalHeader>
-			<ModalBody className="writeReview">
-			<WriteReview restaurantId={this.state.id} />
-			</ModalBody>
-			<ModalFooter>
-            <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>
-			</ModalFooter>
-			</Modal>
+
+      
+      <WriteReview restaurantId={this.state.id} language="fi" />
+      
 			<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
 			</div>
 		);

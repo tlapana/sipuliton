@@ -234,6 +234,7 @@ export default class WriteReview extends React.Component {
     else{
       strings.setLanguage('fi');
     }
+    
     return (
       <div>
         <button className="filterBtn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  

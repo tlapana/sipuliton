@@ -13,6 +13,8 @@ import SearchBar from './SearchBar.js'
 import Events from './Events.js'
 import SearchResults from './SearchResults.js'
 
+
+//Styles
 import '../../../styles/landingpage.css';
 
 class Home extends React.Component {
