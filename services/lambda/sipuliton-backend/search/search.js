@@ -151,19 +151,47 @@ exports.lambdaHandler = async (event, context) => {
                AVG(weighted_restaurant_diet_stats.pricing) as weighted_pricing, AVG(weighted_restaurant_diet_stats.trending) as weighted_trending, latitude, longitude, 
                opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
         FROM restaurant
-        
-            LEFT JOIN restaurant_diet_stats ON restaurant.restaurant_id = restaurant_diet_stats.restaurant_id
-            LEFT JOIN weighted_restaurant_diet_stats ON restaurant.restaurant_id = restaurant_diet_stats.restaurant_id
-            INNER JOIN city_name ON restaurant.city_id=city_name.city_id
-            LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
-        WHERE
-            city_name.language_id=0 AND 
-           
-        `;
+            LEFT JOIN (SELECT restaurant_id, global_diet_id, COUNT(*) AS votes
+                      FROM diet_vote
+                      WHERE up = TRUE) AS upvotes
+                ON restaurant.restaurant_id = upvotes.restaurant_id`
 
         var paramIndex = 1;
         var paramValues = [];
         var paramObject = searchParameters.restaurantParameters;
+
+        paramObject = searchParameters.restaurantParameters['global_diet_id']
+        values = JSON.parse(paramObject.value)
+        diet_statement = 'AND ('
+        for (var i = 0; i < values.length; i++) {
+            diet_statement = diet_statement + getWhereStatement(paramObject.sql_name, paramObject.operator, paramIndex)
+            paramIndex += 1
+            paramValues.push(values[i])
+            if (i+1 != values.length) {
+                diet_statement = diet_statement + ' OR '
+            }
+        }
+        diet_statement = diet_statement + ')';
+        collectRestaurants = collectRestaurants + diet_statement;
+
+        collectRestaurants = collectRestaurants + `
+            LEFT JOIN (SELECT restaurant_id, global_diet_id, COUNT(*) AS votes
+                      FROM diet_vote
+                      WHERE up = FALSE) AS downvotes
+                ON restaurant.restaurant_id = downvotes.restaurant_id` + diet_statement;
+        collectRestaurants = collectRestaurants + `
+            LEFT JOIN restaurant_diet_stats ON restaurant.restaurant_id = restaurant_diet_stats.restaurant_id` + diet_statement;
+        collectRestaurants = collectRestaurants + `
+            LEFT JOIN weighted_restaurant_diet_stats ON restaurant.restaurant_id = restaurant_diet_stats.restaurant_id` + diet_statement;
+        collectRestaurants = collectRestaurants + `
+            INNER JOIN city_name ON restaurant.city_id=city_name.city_id
+            LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
+        WHERE
+            city_name.language_id=0 AND  AND restaurant.restaurant_id = downvotes.restaurant_id AND
+
+           
+        `;
+
         for (var key in searchParameters.restaurantParameters){
 
             if (key == 'maxDistance'){
@@ -185,21 +213,7 @@ exports.lambdaHandler = async (event, context) => {
             } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null || key == "currentLatitude" || key == "currentLongitude"){
                 continue;
             } else if (key == 'global_diet_id') {
-                if (paramIndex > 1){
-                    collectRestaurants = collectRestaurants + ' AND '
-                }
-                paramObject = searchParameters.restaurantParameters[key]
-                values = JSON.parse(paramObject.value)
-                for (var i = 0; i < values.length; i++) {
-                    collectRestaurants = collectRestaurants + '\n' + getWhereStatement('restaurant_diet_stats.' + paramObject.sql_name, paramObject.operator, paramIndex)
-                    collectRestaurants = collectRestaurants + ' AND '
-                    collectRestaurants = collectRestaurants + '\n' + getWhereStatement('weighted_restaurant_diet_stats.' + paramObject.sql_name, paramObject.operator, paramIndex)
-                    paramIndex += 1
-                    paramValues.push(values[i])
-                    if (values.length > 1 && i != values.length) {
-                        collectRestaurants = collectRestaurants + ' OR '
-                    }
-                }
+                continue;
             } else {
                 if (paramIndex > 1){
                     collectRestaurants = collectRestaurants + ' AND '
