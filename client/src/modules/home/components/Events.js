@@ -6,15 +6,15 @@ import React from 'react';
 import LocalizedStrings from 'react-localization';
 import ReactLoading from 'react-loading';
 import EventBlock from './EventBlock';
+import Config from '../../../config.js';
+class Events extends React.Component {
 
-class Events extends React.Component {  
-  
   constructor(props) {
     super(props);
-    
+
     this.getSuggestions = this.getSuggestions.bind(this);
-    
-    
+
+
     this.state = {
       error: null,
       isLoaded: false,
@@ -23,11 +23,11 @@ class Events extends React.Component {
       longitude : 0
     };
   }
-  
+
   /** Once the object has been added to the tree, load up the data from the server **/
   componentDidMount() {
     console.log("DEBUG: ComponentsDidMount entered");
-    
+
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -36,24 +36,24 @@ class Events extends React.Component {
           longitude: position.coords.longitude,
           error: null,
         });
-        
+
         console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
         this.getSuggestions();
       },
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    
-    
+
+
   }
-  
+
   getSuggestions()
   {
-    var url = "http://localhost:3000/search?maxDistance=10000&pageSize=5&orderBy=rating_overall"
-                  + "&currentLatitude=" + this.state.latitude 
+    var url = Config.backendAPIPaths.BASE+"/search?maxDistance=10000&pageSize=5&orderBy=rating_overall"
+                  + "&currentLatitude=" + this.state.latitude
                   + "&currentLongitude=" + this.state.longitude;
-                  
-    //var url = "http://localhost:3000/landing";
+
+    //var url = Config.backendAPIPaths.BASE+"/landing";
     console.log("Searching");
     console.log(url);
     fetch(url)
@@ -77,7 +77,7 @@ class Events extends React.Component {
         }
       )
   }
-  
+
   render() {
     const { error, isLoaded, restaurants } = this.state;
     let strings = new LocalizedStrings({
@@ -90,13 +90,13 @@ class Events extends React.Component {
         suggestions:" Ravintoloita joista voisit olla kiinnostunut:"
       }
     });
-    
+
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
-    
+
     if (error) {
       return (
-        <div className="eventsDiv"> 
+        <div className="eventsDiv">
           <div className="event">
             Error: {error.message}
           </div>
@@ -104,7 +104,7 @@ class Events extends React.Component {
       );
     } else if (!isLoaded) {
       return (
-        <div className="eventsDiv"> 
+        <div className="eventsDiv">
           <h3>
             {strings.loading}
             <ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
@@ -113,7 +113,7 @@ class Events extends React.Component {
       );
     } else {
       return (
-         <div className="eventsDiv"> 
+         <div className="eventsDiv">
           <h3> {strings.suggestions} </h3>
           {restaurants.map((restaurant) =>
             <EventBlock
@@ -121,10 +121,10 @@ class Events extends React.Component {
               restaurant={restaurant}
               language={language}
             />
-          )}      
+          )}
         </div>
       );
-      
+
     }
   }
 }

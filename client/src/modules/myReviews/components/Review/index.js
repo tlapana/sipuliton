@@ -4,10 +4,10 @@ import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
-
+import Config from '../../../../config.js';
 
 class ReviewData extends React.Component {
-   
+
       constructor(props) {
             super(props);
 
@@ -31,18 +31,18 @@ class ReviewData extends React.Component {
 
      }
      deleterow(term)  {
-         fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
+         fetch(Config.backendAPIPaths.BASE+'/ownReviews/delete?review_id=' + term)
 
          .then(ans => {
     if(ans.ok) {
       alert('ok')
-      window.location.reload(); 
+      window.location.reload();
     } else {
           alert('fail')
 
     }
   })
-     } 
+     }
       render() {
             return (
                     <div >
@@ -52,7 +52,7 @@ class ReviewData extends React.Component {
                                         name
                                     </Col>
                                     <Col xs="4">
-                                   {this.state.name}  
+                                   {this.state.name}
                                     </Col>
                               </Row>
 
@@ -61,7 +61,7 @@ class ReviewData extends React.Component {
                                         title
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.title}  
+                                             {this.state.title}
                                     </Col>
                               </Row>
                               <Row>
@@ -69,7 +69,7 @@ class ReviewData extends React.Component {
                                         freetext
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.freetext}  
+                                             {this.state.freetext}
                                     </Col>
                               </Row>
                               <Row>
@@ -77,7 +77,7 @@ class ReviewData extends React.Component {
                                         Posted
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.posted}  
+                                             {this.state.posted}
                                     </Col>
                               </Row>
 
@@ -86,7 +86,7 @@ class ReviewData extends React.Component {
                                         Overall Rating
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />   
+                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />
                                     </Col>
                               </Row>
 
@@ -95,7 +95,7 @@ class ReviewData extends React.Component {
                                         Pricing
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />   
+                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />
                                     </Col>
                               </Row>
 
@@ -105,7 +105,7 @@ class ReviewData extends React.Component {
                                         Rating service and quality
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
+                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />
                                     </Col>
                               </Row>
 
@@ -114,7 +114,7 @@ class ReviewData extends React.Component {
                                         Rating variety
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />   
+                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />
                                     </Col>
                               </Row>
 
@@ -123,7 +123,7 @@ class ReviewData extends React.Component {
                               <Button   onClick={()=>{this.send()}} >Edit</Button><Button onClick={()=>{this.deleterow( this.state.id)}}>Delete</Button>
 
 
- 
+
 
                      </fieldset>
                     <br/>
@@ -139,14 +139,14 @@ class Review extends React.Component {
             console.log(2)
       }
      send()  {
-   
-   
+
+
      }
      t1=this;
       constructor(props) {
-       
+
         super(props);
-      
+
           this.state = {
                 array:[],
                   mode: true,
@@ -162,20 +162,20 @@ class Review extends React.Component {
             }
 
       }
-      left() { 
-       if(this.page>0) 
-         { 
+      left() {
+       if(this.page>0)
+         {
              this.page--;
           }
 
-            this.init(0);     
+            this.init(0);
          }
-      rigth() 
-         { 
-            this.page++; 
+      rigth()
+         {
+            this.page++;
 
            this.init(0);
-            
+
         }
       deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
       init(statusvalue)  {
@@ -225,7 +225,7 @@ class Review extends React.Component {
       }
 
       changedvalue()  {
-      
+
           this.init(document.getElementById("status").value);
       }
       changeLimit()  {
@@ -260,7 +260,7 @@ class Review extends React.Component {
                          <option value="4">4</option>
 
                         </select>
-                          
+
                         <div style={{"width":"400px","overflow": "scroll","height": "300px"}}>
 
                         {this.state.array}

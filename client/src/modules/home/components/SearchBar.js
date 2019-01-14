@@ -15,7 +15,7 @@ import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import * as AppImports from  '../../app';
-
+import Config from '../../../config.js';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 import { string } from 'prop-types';
@@ -60,13 +60,13 @@ class SearchBar extends React.Component {
       redirectUser : false,
       latitude : 0,
       longitude : 0
-      
+
     };
   }
 
   componentDidMount() {
-    
-    
+
+
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -79,12 +79,12 @@ class SearchBar extends React.Component {
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    
+
     this.setState({
       options : this.getOptions(),
       defaultValue : this.getDefaultValues()
     });
-    
+
   }
 
   //Toggles modal
@@ -159,7 +159,7 @@ class SearchBar extends React.Component {
 
     //Original version
     /*
-    var url = 'http://localhost:3000/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+    var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
