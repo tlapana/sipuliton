@@ -8,6 +8,9 @@ import { Button, Container, Row, Col } from 'reactstrap';
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
 
+import ReactPaginate from 'react-paginate';
+
+
 
 class ReviewData extends React.Component {
    
@@ -89,7 +92,7 @@ class ReviewData extends React.Component {
                                         Overall Rating
                                     </Col>
                                     <Col xs="8">
-                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />   
+                                             <ReactStars edit={false} value = {this.state.overall}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -98,7 +101,7 @@ class ReviewData extends React.Component {
                                         Pricing
                                     </Col>
                                     <Col xs="8">
-                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />   
+                                             <ReactStars edit={false} value = {this.state.pricing}  count = {3} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -108,7 +111,7 @@ class ReviewData extends React.Component {
                                         Rating service and quality
                                     </Col>
                                     <Col xs="8">
-                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
+                                             <ReactStars edit={false} value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -117,7 +120,7 @@ class ReviewData extends React.Component {
                                         Rating variety
                                     </Col>
                                     <Col xs="8">
-                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />   
+                                             <ReactStars edit={false} value = {this.state.rating_variety}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -137,7 +140,8 @@ class ReviewData extends React.Component {
 
 class Review extends React.Component {
      page=0;
-     limit=2;
+     limit=10;
+     pageCount=0;
       changed() {
             console.log(2)
       }
@@ -200,13 +204,14 @@ class Review extends React.Component {
             fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit +'&offset='+this.page*this.limit).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
+                             this.pageCount=responseJson.review_count;
                              for(var item in responseJson.reviews)  {
                    
                         //draw the array and formats time
                         var datetime1=new Date(responseJson.reviews[item].posted);
 
               
-                          array1.push(<Row key="1"> <Col  xs="2">  <Popup key="1" trigger={<button key="2"> <TiArrowDown /></button>} position="bottom left"><div ><ReviewData data={responseJson.reviews[item]} key="1"/></div></Popup> </Col><Col  xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col></Row>);
+                          array1.push(<Row key="1"> <Col  xs="2">  <Popup key="1" trigger={<button key="2"> <TiArrowDown /></button>} position="bottom left"><div ><ReviewData data={responseJson.reviews[item]} key="1"/></div></Popup> </Col><Col  xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col><Col> <ReactStars edit={false} value = {responseJson.reviews[item].rating_overall}  count = {5} size = {24} /> </Col></Row>);
                           array1.push(<Row key="1"> <Col  xs="2" key="1"></Col><Col  xs="8"  key="1"><em>{datetime1.getDate()}/{datetime1.getMonth()}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
                           array1.push(<Row key="1"> <Col   key="1"><hr/></Col></Row>);       
                         
@@ -253,11 +258,24 @@ class Review extends React.Component {
       
           this.init(document.getElementById("status").value);
       }
-      changeLimit()  {
-          this.limit=document.getElementById("limit").value;
-          this.init(document.getElementById("status").value);
-      }
 
+      handlePageClick = data => {
+
+            let selected = data.selected;
+            this.page=selected;
+            this.init(0);     
+        
+        /*
+        
+            this.setState({ offset: offset }, () => {
+        
+              this.loadCommentsFromServer();
+        
+            });
+            */
+
+
+      };
       render() {
 
             const ratingChanged = (newRating) => {
@@ -268,25 +286,15 @@ class Review extends React.Component {
          
 
                   return (<div>
-                        <h1>MyReviews </h1>
-
+                        <h1>MyReviews  </h1>
                      
-
-                        <input type="button" value="<<" onClick={() => { this.left() }} />
-                        <input type="button" value=">>" onClick={() => { this.rigth() }} />
-
-                        <select id="status"  onChange={()=>{this.changedvalue()}}>
+                        <em>Status</em><select id="status"  onChange={()=>{this.changedvalue()}}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
                          </select>
-                        <label>Arvosteluja sivulla</label>
-                        <select id="limit" onChange={()=>{this.changeLimit()}}>
-                         <option value="2">2</option>
-                         <option value="4">4</option>
-
-                        </select>
-                          
+                        <ReactPaginate  initialPage={0}  onPageChange={this.handlePageClick}  previousLabel={'<<'} nextLabel={'>>'}  breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}  containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}/>
+                        
                         <div style={{"width":"500px","overflow": "scroll","height": "300px"}}>
 
                         {this.state.array}
