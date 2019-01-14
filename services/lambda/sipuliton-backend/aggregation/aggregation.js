@@ -132,6 +132,20 @@ exports.aggregationLambda = async (event, context) => {
                                     WHERE up = FALSE AND review.review_id = thumbs.review_id
                                     GROUP BY user_id) as other
                                 WHERE user_stats.user_id = other.user_id`);
+            await client.query(`UPDATE user_stats
+                                SET cities = other.cities
+                                FROM (SELECT user_id, COUNT(city_id) as cities
+                                    FROM reviews, restaurant
+                                    WHERE review.restaurant_id = restaurant.restaurant_id
+                                    GROUP BY user_id) as other
+                                WHERE user_stats.user_id = other.user_id`);
+            await client.query(`UPDATE user_stats
+                                SET cities = other.countries
+                                FROM (SELECT user_id, COUNT(country_id) as countries
+                                    FROM reviews, restaurant
+                                    WHERE review.restaurant_id = restaurant.restaurant_id
+                                    GROUP BY user_id) as other
+                                WHERE user_stats.user_id = other.user_id`);
 
             response = packResponse('message' : 'Operation completed succesfully');
         } finally {
