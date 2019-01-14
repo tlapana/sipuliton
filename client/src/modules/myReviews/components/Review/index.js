@@ -140,6 +140,7 @@ class ReviewData extends React.Component {
 
 class Review extends React.Component {
      page=0;
+     status=0;
      limit=10;
      pageCount=0;
       changed() {
@@ -183,28 +184,16 @@ class Review extends React.Component {
             }
 
       }
-      left() { 
-       if(this.page>0) 
-         { 
-             this.page--;
-          }
 
-            this.init(0);     
-         }
-      rigth() 
-         { 
-            this.page++; 
-
-           this.init(0);
-            
-        }
       deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
       init(statusvalue)  {
             var t = this;
             fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit +'&offset='+this.page*this.limit).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
-                             this.pageCount=responseJson.review_count;
+
+                             //calculates page count
+                             this.pageCount=responseJson.review_count/10;
                              for(var item in responseJson.reviews)  {
                    
                         //draw the array and formats time
@@ -247,66 +236,40 @@ class Review extends React.Component {
             url += "&pricing=" + pricing;
             url += "&rating_service_and_quality=" + rating_service_and_quality;
 
-
-
-
             fetch(url)
                   .then(response => alert('jes'));
       }
 
       changedvalue()  {
-      
-          this.init(document.getElementById("status").value);
+          this.status=document.getElementById("status").value;
+          this.init(this.status);
       }
 
       handlePageClick = data => {
-
             let selected = data.selected;
             this.page=selected;
-            this.init(0);     
-        
-        /*
-        
-            this.setState({ offset: offset }, () => {
-        
-              this.loadCommentsFromServer();
-        
-            });
-            */
-
+            this.init(this.status);     
 
       };
-      render() {
 
+      render() {
             const ratingChanged = (newRating) => {
                   console.log(newRating)
 
             }
 
-         
-
                   return (<div>
                         <h1>MyReviews  </h1>
-                     
                         <em>Status</em><select id="status"  onChange={()=>{this.changedvalue()}}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
                          </select>
                         <ReactPaginate  initialPage={0}  onPageChange={this.handlePageClick}  previousLabel={'<<'} nextLabel={'>>'}  breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}  containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}/>
-                        
                         <div style={{"width":"500px","overflow": "scroll","height": "300px"}}>
-
-                        {this.state.array}
+                               {this.state.array}
                        </div>
-
-
-
-
                   </div>);
-            
-
- 
       }
 
 }
