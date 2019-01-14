@@ -15,15 +15,17 @@ WITH NO DATA;
 
 CREATE MATERIALIZED VIEW restaurant_diet_filter
 AS
-	SELECT up_sub.restaurant_id, up_sub.global_diet_id, downvotes, upvotes
-    FROM (SELECT restaurant_id, global_diet_id, count(*) AS upvotes
+	SELECT restaurant.restaurant_id, global_diet.global_diet_id, coalesce(downvotes, 0) AS downvotes, coalesce(upvotes, 0) AS upvotes
+    FROM global_diet
+	CROSS JOIN restaurant
+	LEFT JOIN (SELECT restaurant_id, global_diet_id, count(*) AS upvotes
 		FROM diet_vote WHERE up = TRUE
-		GROUP BY restaurant_id, global_diet_id) AS up_sub,
-		(SELECT restaurant_id, global_diet_id, count(*) AS downvotes
+		GROUP BY restaurant_id, global_diet_id) AS up_sub
+		ON up_sub.restaurant_id = restaurant.restaurant_id AND global_diet.global_diet_id = up_sub.global_diet_id
+	LEFT JOIN (SELECT restaurant_id, global_diet_id, count(*) AS downvotes
 		FROM diet_vote WHERE up = FALSE
 		GROUP BY restaurant_id, global_diet_id) AS down_sub
-	WHERE up_sub.restaurant_id = down_sub.restaurant_id AND 
-		up_sub.global_diet_id = down_sub.global_diet_id
+		ON down_sub.restaurant_id = restaurant.restaurant_id AND global_diet.global_diet_id = down_sub.global_diet_id
 WITH NO DATA;
 
 --full contains relation
