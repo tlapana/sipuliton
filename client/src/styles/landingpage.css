@@ -1,4 +1,13 @@
-/*Landing page CSS file*/
+
+//Landing page CSS file
+.landingDiv
+{
+  width: 100vh;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
 
 .searchDiv {
   padding-top: 50px;
@@ -76,7 +85,7 @@ button.filterBtn {
   position: absolute;
   width: 80%;
   min-height: 100%;
-  
+
 }
 
 .loadingSpinner {

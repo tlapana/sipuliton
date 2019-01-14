@@ -176,6 +176,50 @@ async function getLanguage(client, language) {
 
 // start of module functions
 
+async function deleteDiet(client, userId, dietId) {
+    await client.query(
+        `DELETE FROM diet_name
+        WHERE user_id = $1 AND diet_id = $2`,
+        [userId, dietId]);
+    return;
+}
+
+exports.deleteDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            const dietId = parseIntParam("diet_id", event);
+
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid diet id"
+                }
+            }
+
+            await deleteDiet(client, ownUserId, dietId);
+
+            response = packResponse({ 'message': "Diet removed succesfully" });
+        } finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
 
 async function getOwnDiets(client, userId) {
     const res = await client.query(
@@ -239,4 +283,195 @@ exports.getOwnDietsLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+
+async function saveDiet(client, groups) {
+    var jsonObj = {};
+    await client.query('BEGIN');
+    try {
+        const res = await client.query(
+            `SELECT global_diet_id
+            FROM (SELECT global_diet_id, array_agg(food_group_id) as groups
+                FROM diet_groups
+                GROUP BY global_diet_id) AS groups_agg
+            WHERE groups = $1`,
+            [groups]);
+        if (res.rowCount == 0) {
+            const res2 = await client.query(
+                `INSERT INTO global_diet
+                VALUES ((SELECT coalesce(max(global_diet_id),0)+1 FROM global_diet), FALSE)
+                RETURNING global_diet_id`);
+            jsonObj = JSON.parse(JSON.stringify(res2.rows[0]));
+            var len = groups.length;
+            for (var i = 0; i < len; i++) {
+                await client.query(
+                    `INSERT INTO diet_groups
+                    VALUES ($1, $2)`,
+                    [jsonObj['global_diet_id'], groups[i]]);
+            }
+        }
+        else if (res.rowCount == 1) {
+            jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
+        }
+        else {
+            throw {
+                'statusCode': 500,
+                'error': "DB is broken"
+            }
+        }
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    }
+    return jsonObj;
+}
+
+async function saveOwnDiet(client, userId, dietId, name) {
+    await client.query(
+        `INSERT INTO diet_name
+            VALUES ($1, (SELECT coalesce(max(diet_id),0)+1 FROM diet_name WHERE user_id = $1),
+                $2, $3)`,
+        [userId, dietId, name]);
+}
+
+async function editOwnDiet(client, userId, ownDietId, dietId, name) {
+    await client.query(
+        `UPDATE diet_name
+            SET global_diet_id = $3, name = $4
+            WHERE user_id = $1 AND diet_id = $2`,
+        [userId, ownDietId, dietId, name]);
+}
+
+
+exports.editOwnDietLambda = async (event, context) => {
+    try {
+        var jsonObj = {};
+        const client = await getPsqlClient();
+
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            var temp = parseIntParam("diet_id", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "user diet id not set"
+                }
+            }
+            const userDietId = temp;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "must have name"
+                }
+            }
+            const name = temp;
+            
+            temp = parseIntParam("global_diet_id", event);
+            var dietId = temp;
+            if (groups !== null) {
+                jsonObj = await saveDiet(client, groups);
+                dietId = jsonObj['global_diet_id'];
+            }
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "global diet id not set"
+                }
+            }
+            await editOwnDiet(client, ownUserId, userDietId, dietId, name);
+
+        } finally {
+            await client.end();
+        }
+
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+exports.createOwnDietLambda = async (event, context) => {
+    try {
+        var jsonObj = {};
+        const client = await getPsqlClient();
+
+        try {
+            //TODO: get own user id using cognito
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "must have name"
+                }
+            }
+            const name = temp;
+
+            temp = parseIntParam("global_diet_id", event);
+            var dietId = temp;
+            if (groups !== null) {
+                jsonObj = await saveDiet(client, groups);
+                dietId = jsonObj['global_diet_id'];
+            }
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "global diet id not set"
+                }
+            }
+            await saveOwnDiet(client, ownUserId, dietId, name);
+
+        } finally {
+            await client.end();
+        }
+
+        response = packResponse(jsonObj);
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+}
 

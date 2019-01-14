@@ -9,7 +9,7 @@ import {
 
 
 
-export default class MainMenu_ListItem extends React.Component{
+export default class MainMenuListItem extends React.Component{
   constructor(props) {
     super(props);
     this.state = {hovered: false};

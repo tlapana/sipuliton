@@ -273,5 +273,7 @@ def main():
     with open("sql/10_populate_test_data.sql", 'w', encoding='utf8') as sql:
         sql.write("--this file is generated from csv files in moc_data folder\n\n")
         write_test_data(sql)
-
+        # This command sets postgis coordinates based on latitude and longitude
+        sql.write("UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);\n")
+    sql.close()
 main()

@@ -5,7 +5,7 @@ import { Auth } from 'aws-amplify';
 import LocalizedStrings from 'react-localization';
 
 /*
-Component for a separate logout view. 
+Component for a separate logout view.
 When a user navigates to this view, they will be logged out.
 */
 class Logout extends React.Component {

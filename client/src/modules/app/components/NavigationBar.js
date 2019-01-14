@@ -17,11 +17,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import { LanguageSelection, MainMenu_ListItem } from '../../mainmenu/index';
+import { LanguageSelection, MainMenuListItem, MainMenuLogoutButton } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
+import AppFunctionsGlobalAPI from './AppGlobalFunctions'
 
 class NavigationBar extends React.Component {
 
@@ -128,13 +129,7 @@ class NavigationBar extends React.Component {
   }
 
   changeLanguage(language) {
-    var url = window.location.href;
-    url = url.replace(this.state.language, language);
-    var index = url.search('://');
-    url = url.slice(index + 3);
-    index = url.search('/');
-    url = url.slice(index);
-    console.log(url);
+    var url = AppFunctionsGlobalAPI.parseUrlToLanguageChanging(window.location.href,this.state.language, language);
     this.setState({language: language, redirectUrl: url, languageChanged: true});
   }
 
@@ -160,7 +155,8 @@ class NavigationBar extends React.Component {
           profile:"Profile",
           login:"Login",
           register:"Register",
-          logout: "Logout"
+          logout: "Logout",
+          about: "About",
         },
         fi: {
           mainmenu:"Pääsivu",
@@ -172,7 +168,8 @@ class NavigationBar extends React.Component {
           profile:"Profiili",
           login:"Kirjaudu",
           register:"Rekisteröidy",
-          logout:"Kirjaudu ulos"
+          logout:"Kirjaudu ulos",
+          about: "Tietoja",
         }
       });
 
@@ -194,6 +191,7 @@ class NavigationBar extends React.Component {
       const pathToLogin = "/" + this.state.language + "/login";
       const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
+      const pathToAbout = "/" + this.state.language + "/about";
 
       /* Changed correct language to page after clicking change language. */
       if(this.state.languageChanged){
@@ -210,22 +208,23 @@ class NavigationBar extends React.Component {
             <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
               {(state) => (
                 <div>
-                  <Nav 
+                  <Nav
                     vertical
-                    className="side-menu" 
-                    onClick={this.mainMenu} 
+                    className="side-menu"
+                    onClick={this.mainMenu}
                     style={{...transitionStyles[state]}}
                   >
-                    <MainMenu_ListItem path={pathToMenu} text={strings.mainmenu} />
-                    <MainMenu_ListItem path={pathToMap} text={strings.map} />
-                    <MainMenu_ListItem path={pathToRestaurantList} text={strings.restaurantList} />
-                    {this.state.restaurantOwner && <MainMenu_ListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
-                    {this.state.admin && <MainMenu_ListItem path={pathToAdmin} text={strings.admin} />}
-                    {this.state.moderator && <MainMenu_ListItem path={pathToModerating} text={strings.moderation} />}
-                    {this.state.userLogged && <MainMenu_ListItem path={pathToProfile} text={strings.profile} />}
-                    {!this.state.userLogged && <MainMenu_ListItem path={pathToLogin} text={strings.login} />}
-                    {!this.state.userLogged && <MainMenu_ListItem path={pathToRegister} text={strings.register} />}
-                    {this.state.userLogged && <MainMenu_ListItem path={pathToLogout} text={strings.logout}/>}
+                    <MainMenuListItem path={pathToMenu} text={strings.mainmenu} />
+                    <MainMenuListItem path={pathToMap} text={strings.map} />
+                    <MainMenuListItem path={pathToRestaurantList} text={strings.restaurantList} />
+                    {this.state.restaurantOwner && <MainMenuListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                    {this.state.admin && <MainMenuListItem path={pathToAdmin} text={strings.admin} />}
+                    {this.state.moderator && <MainMenuListItem path={pathToModerating} text={strings.moderation} />}
+                    {this.state.userLogged && <MainMenuListItem path={pathToProfile} text={strings.profile} />}
+                    {!this.state.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
+                    {!this.state.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
+                    {this.state.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    <MainMenuListItem path={pathToAbout} text={strings.about}/>
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
                     </li>
