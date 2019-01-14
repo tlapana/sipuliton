@@ -69,6 +69,7 @@ class SearchBar extends React.Component {
       searchFieldDisabled: false,
       useUserLocation: false,
       radius: 10000,
+      dietError: null,
     };
   }
 
@@ -87,8 +88,8 @@ class SearchBar extends React.Component {
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    this.getDiets();
     
+    this.getDiets();
     this.setState({
       defaultValue : this.getDefaultValues()
     });
@@ -172,7 +173,8 @@ class SearchBar extends React.Component {
         (error) => {
           console.log("Error fetching diets: " + error)
           this.setState({
-            loadedDiets: true
+            loadedDiets: true,
+            dietError : error,
           });
         }
       )
@@ -275,11 +277,13 @@ class SearchBar extends React.Component {
     let strings = new LocalizedStrings({
       en:{
         loading: "Loading diets",
+        error : "An error happened while fetching diets",
         selectPlaceholder:"Select diets...",
         noOptionsMessage:"No diets",
       },
       fi: {
         loading: "Ladataan ruokavalioita",
+        error : "Virhe tapahtui ruokavalioita hakiessa",
         selectPlaceholder:"Valitse ruokavalioita...",
         noOptionsMessage:"Ei ruokavalioita",      
       }
@@ -290,19 +294,30 @@ class SearchBar extends React.Component {
     //If diets have been loaded, present them
     if(this.state.loadedDiets)
     {      
-      return (
-        <Select
-          defaultValue={ this.state.defaultValues }
-          isMulti
-          name="filtersDrop"
-          diets={ this.state.diets }
-          className="basic-multi-select"
-          classNamePrefix="select"
-          onChange={this.handleFilterChange}
-          placeholder={strings.selectPlaceholder}
-          noOptionsMessage={() => {return strings.noOptionsMessage}}
-        />
-      );
+      if(this.state.dietError == null)
+      {        
+        return (
+          <Select
+            defaultValue={ this.state.defaultValues }
+            isMulti
+            name="filtersDrop"
+            diets={ this.state.diets }
+            className="basic-multi-select"
+            classNamePrefix="select"
+            onChange={this.handleFilterChange}
+            placeholder={strings.selectPlaceholder}
+            noOptionsMessage={() => {return strings.noOptionsMessage}}
+          />
+        );
+      }
+      else
+      {
+        return (
+          <div>
+            {strings.error}
+          </div>
+        );
+      }
     }
     
     //Else, present loading thingy
@@ -385,12 +400,17 @@ class SearchBar extends React.Component {
             <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
 
             <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+            
+              //Modal header
               <ModalHeader>{strings.includeinsearch}</ModalHeader>
+              
+              //Modal body
               <ModalBody className="filterBox">
-                {strings.diets}
-               
-               {this.renderDiets()}
-               
+              
+                {strings.diets}               
+                {this.renderDiets()}
+                 
+                <br />
                 {strings.overall}
                 <ReactStars
                   value = {this.state.minOverall}
@@ -430,9 +450,12 @@ class SearchBar extends React.Component {
                 />
 
               </ModalBody>
+              
+              //Modal footer, contains the buttons
               <ModalFooter>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
+              
             </ThemedModalContainer>
 
           </form>
