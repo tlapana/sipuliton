@@ -2,6 +2,7 @@
 
 --possible status: posted, accepted, rejected
 CREATE TABLE review(
+    review_id bigserial PRIMARY KEY,
     restaurant_id bigint REFERENCES restaurant,
     user_id bigint REFERENCES user_profile,
     posted timestamp,
@@ -15,50 +16,35 @@ CREATE TABLE review(
     rating_service_and_quality real NOT NULL,
     pricing real,
     thumbs_up int NOT NULL,
-    thumbs_down int NOT NULL,
-    PRIMARY KEY (restaurant_id, user_id, posted)
+    thumbs_down int NOT NULL
 );
 
 CREATE TABLE review_diet(
-    restaurant_id bigint REFERENCES restaurant,
-    user_id bigint REFERENCES user_profile,
-    review_posted timestamp,
+    review_id bigint REFERENCES review,
     global_diet_id bigint NOT NULL REFERENCES global_diet,
-    PRIMARY KEY (restaurant_id, user_id, review_posted, global_diet_id),
-    FOREIGN KEY (restaurant_id, user_id, review_posted) REFERENCES review
+    PRIMARY KEY (review_id, global_diet_id)
 );
 
 CREATE TABLE thumbs(
-    restaurant_id bigint,
-    poster_id bigint,
-    review_posted timestamp,
+    review_id bigint REFERENCES review,
     thumber_id bigint REFERENCES user_profile,
     up boolean NOT NULL,
-    PRIMARY KEY (restaurant_id, poster_id, review_posted, thumber_id),
-    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
+    PRIMARY KEY (review_id, thumber_id)
 );
 
 --log review acception/rejection
 
 CREATE TABLE review_accept_log(
-    restaurant_id bigint,
-    poster_id bigint,
-    review_posted timestamp,
+    review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
     accepter_id bigint NOT NULL REFERENCES user_profile,
-    accepted timestamp NOT NULL,
-    PRIMARY KEY (restaurant_id, poster_id, review_posted),
-    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
+    accepted timestamp NOT NULL
 );
 
 CREATE TABLE review_reject_log(
-    restaurant_id bigint,
-    poster_id bigint,
-    review_posted timestamp,
+    review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
     rejecter_id bigint NOT NULL REFERENCES user_profile,
     rejected timestamp NOT NULL,
-    reason text NOT NULL,
-    PRIMARY KEY (restaurant_id, poster_id, review_posted),
-    FOREIGN KEY (restaurant_id, poster_id, review_posted) REFERENCES review
+    reason text NOT NULL
 );
 
 --everything below is to mark reviews as exceptional/suspicious when needed
@@ -69,13 +55,9 @@ CREATE TABLE reject_words(
 );
 
 CREATE TABLE review_from(
-    restaurant_id bigint,
-    user_id bigint,
-    posted timestamp,
+    review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
     ip inet,
-    mac macaddr8,
-    PRIMARY KEY (restaurant_id, user_id, posted),
-    FOREIGN KEY (restaurant_id, user_id, posted) REFERENCES review
+    mac macaddr8
 );
 
 CREATE TABLE suspicious_ip(
@@ -87,10 +69,6 @@ CREATE TABLE suspicious_ip(
 );
 
 CREATE TABLE suspicious_review(
-    restaurant_id bigint,
-    user_id bigint,
-    posted timestamp,
-    reason int,
-    PRIMARY KEY (restaurant_id, user_id, posted, reason),
-    FOREIGN KEY (restaurant_id, user_id, posted) REFERENCES review
+    review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
+    reason int
 );

@@ -1,5 +1,4 @@
 import React from 'react';
-import LocalizedStrings from 'react-localization';
 
 export default class LanguageButton extends React.Component {
   constructor(props) {
@@ -14,12 +13,13 @@ export default class LanguageButton extends React.Component {
   render() {
     return (
       <a href="#" className="language-button" title={this.props.title}>
-        <img 
-          src={this.props.iconUrl} 
-          onClick={this.changeLanguage} 
+        <img
+          src={this.props.iconUrl}
+          onClick={this.changeLanguage}
+          alt="icon for the language." 
         />
       </a>
-      
+
     );
   }
 }

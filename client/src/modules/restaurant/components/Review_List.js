@@ -8,6 +8,7 @@ import {
 	Label
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+
 import ReactStars from 'react-stars';
 /* Localization */
 import LocalizedStrings from 'react-localization';

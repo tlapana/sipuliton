@@ -9,30 +9,19 @@ import NavigationBar from './NavigationBar';
 import write_review from '../../writereview';
 
 import '../../../styles/app.css';
+import '../../../styles/themes.css';
 
+import AppFunctionsGlobalAPI from './AppGlobalFunctions'
 
 class App extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
-
-    this.state = {
-			theme: 'theme-1',
-    };
-
-    this.changeTheme = this.changeTheme.bind(this);
-  }
-
-  changeTheme(theme) {
-    // TODO: this can be used later to add theme support
-    this.setState({theme: theme});
   }
 
   render() {
-    let classes = 'app ' + this.state.theme;
-    if (this.props.isLoading) {
-      classes += ' loading';
-    }
+
+    let classes = AppFunctionsGlobalAPI.getAppClasses(this.props);
 
     return(
       <Provider store={this.props.store}>
@@ -51,11 +40,13 @@ class App extends React.Component {
       </Provider>
     );
   }
-
 }
 
 App.propTypes = {
-  store: PropTypes.object.isRequired
+  store: PropTypes.object.isRequired,
+  isLoading: PropTypes.bool,
+  isRounding: PropTypes.bool,
+  theme: PropTypes.string,
 };
 
 export default App;

@@ -17,4 +17,3 @@ Useful links:
 - reactstrap (bootstrap with react): https://reactstrap.github.io/
 - font-awesome: https://fontawesome.com/
 - structuring (redux) applications: https://jaysoo.ca/2016/02/28/organizing-redux-application/
-
