@@ -1,9 +1,15 @@
-import React, { } from 'react';
+﻿import React, { } from 'react';
 import { browserHistory, Router, Route } from 'react-router';
 import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
+
+import Popup from "reactjs-popup";
+import { TiArrowDown } from "react-icons/ti";
+
+import ReactPaginate from 'react-paginate';
+
 
 
 class ReviewData extends React.Component {
@@ -48,7 +54,7 @@ class ReviewData extends React.Component {
                     <div >
                        <fieldset>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         name
                                     </Col>
                                     <Col xs="4">
@@ -57,7 +63,7 @@ class ReviewData extends React.Component {
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         title
                                     </Col>
                                     <Col xs="4">
@@ -65,7 +71,7 @@ class ReviewData extends React.Component {
                                     </Col>
                               </Row>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         freetext
                                     </Col>
                                     <Col xs="4">
@@ -73,7 +79,7 @@ class ReviewData extends React.Component {
                                     </Col>
                               </Row>
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Posted
                                     </Col>
                                     <Col xs="4">
@@ -82,39 +88,39 @@ class ReviewData extends React.Component {
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Overall Rating
                                     </Col>
-                                    <Col xs="4">
-                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />   
+                                    <Col xs="8">
+                                             <ReactStars edit={false} value = {this.state.overall}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Pricing
                                     </Col>
-                                    <Col xs="4">
-                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />   
+                                    <Col xs="8">
+                                             <ReactStars edit={false} value = {this.state.pricing}  count = {3} size = {24} />   
                                     </Col>
                               </Row>
 
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Rating service and quality
                                     </Col>
-                                    <Col xs="4">
-                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
+                                    <Col xs="8">
+                                             <ReactStars edit={false} value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
                               <Row>
-                                    <Col xs="2">
+                                    <Col xs="4">
                                         Rating variety
                                     </Col>
-                                    <Col xs="4">
-                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />   
+                                    <Col xs="8">
+                                             <ReactStars edit={false} value = {this.state.rating_variety}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -134,7 +140,9 @@ class ReviewData extends React.Component {
 
 class Review extends React.Component {
      page=0;
-     limit=2;
+     status=0;
+     limit=10;
+     pageCount=0;
       changed() {
             console.log(2)
       }
@@ -143,6 +151,20 @@ class Review extends React.Component {
    
      }
      t1=this;
+
+     openPopupbox(itemData) {
+      const content = (
+            <div>
+                   <span>
+              <ReviewData data={itemData} /> <br/>
+              </span>
+            </div>
+        
+      )
+
+
+
+}
       constructor(props) {
        
         super(props);
@@ -162,30 +184,27 @@ class Review extends React.Component {
             }
 
       }
-      left() { 
-       if(this.page>0) 
-         { 
-             this.page--;
-          }
 
-            this.init(0);     
-         }
-      rigth() 
-         { 
-            this.page++; 
-
-           this.init(0);
-            
-        }
       deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
       init(statusvalue)  {
             var t = this;
             fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit +'&offset='+this.page*this.limit).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
+
+                             //calculates page count
+                             this.pageCount=responseJson.review_count/10;
                              for(var item in responseJson.reviews)  {
-                               array1.push(<ReviewData data={responseJson.reviews[item]} key="1"/>);
-                             }
+                   
+                        //draw the array and formats time
+                        var datetime1=new Date(responseJson.reviews[item].posted);
+
+              
+                          array1.push(<Row key="1"> <Col  xs="2">  <Popup key="1" trigger={<button key="2"> <TiArrowDown /></button>} position="bottom left"><div ><ReviewData data={responseJson.reviews[item]} key="1"/></div></Popup> </Col><Col  xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col><Col> <ReactStars edit={false} value = {responseJson.reviews[item].rating_overall}  count = {5} size = {24} /> </Col></Row>);
+                          array1.push(<Row key="1"> <Col  xs="2" key="1"></Col><Col  xs="8"  key="1"><em>{datetime1.getDate()}/{datetime1.getMonth()}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
+                          array1.push(<Row key="1"> <Col   key="1"><hr/></Col></Row>);       
+                        
+                        }
                              t.setState({array : array1});
                         t.setState({ edit: false });
 
@@ -217,64 +236,40 @@ class Review extends React.Component {
             url += "&pricing=" + pricing;
             url += "&rating_service_and_quality=" + rating_service_and_quality;
 
-
-
-
             fetch(url)
                   .then(response => alert('jes'));
       }
 
       changedvalue()  {
-      
-          this.init(document.getElementById("status").value);
+          this.status=document.getElementById("status").value;
+          this.init(this.status);
       }
-      changeLimit()  {
-          this.limit=document.getElementById("limit").value;
-          this.init(document.getElementById("status").value);
-      }
+
+      handlePageClick = data => {
+            let selected = data.selected;
+            this.page=selected;
+            this.init(this.status);     
+
+      };
 
       render() {
-
             const ratingChanged = (newRating) => {
                   console.log(newRating)
 
             }
 
-            if (this.state.edit === false) {
-
                   return (<div>
-                        <h1>MyReviews </h1>
-
-
-                        <input type="button" value="<<" onClick={() => { this.left() }} />
-                        <input type="button" value=">>" onClick={() => { this.rigth() }} />
-
-                        <select id="status"  onChange={()=>{this.changedvalue()}}>
+                        <h1>MyReviews  </h1>
+                        <em>Status</em><select id="status"  onChange={()=>{this.changedvalue()}}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
                          </select>
-                        <label>Arvosteluja sivulla</label>
-                        <select id="limit" onChange={()=>{this.changeLimit()}}>
-                         <option value="2">2</option>
-                         <option value="4">4</option>
-
-                        </select>
-                          
-                        <div style={{"width":"400px","overflow": "scroll","height": "300px"}}>
-
-                        {this.state.array}
+                        <ReactPaginate  initialPage={0}  onPageChange={this.handlePageClick}  previousLabel={'<<'} nextLabel={'>>'}  breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}  containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}/>
+                        <div style={{"width":"500px","overflow": "scroll","height": "300px"}}>
+                               {this.state.array}
                        </div>
-
-
-
-
                   </div>);
-            }
-
-            return (
-                  <h1>MyReviews</h1>
-            )
       }
 
 }
