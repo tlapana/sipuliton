@@ -28,13 +28,12 @@ class ReviewList extends React.Component {
 			serviceQuality : [3, 5],
 			pageNumber : 0,
 			pageSize : 20,
-			reviewIndex: 0,
 			numberOfRevs: 1,
 			isLoaded : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
-		this.changeReview = this.changeReview.bind(this);
+		this.renderReviews = this.renderReviews.bind(this);
 	}
 /*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
@@ -64,7 +63,7 @@ class ReviewList extends React.Component {
 					relevance : rlvnce,
 					allergyAwareness: allergyAware,
 					serviceQuality : serviceQual,
-					numberOfRevs : titls.length - 1
+					numberOfRevs : titls.length
 				});
 			},
 
@@ -93,26 +92,10 @@ class ReviewList extends React.Component {
 		}
 		return tagString;
 	}
-/*Function that changes the review shown, when clicked on it*/
-	changeReview() {
-		if (this.state.reviewIndex < this.state.numberOfRevs) {
-			this.setState({
-				reviewIndex: this.state.reviewIndex + 1,
-				isLoaded: true
-			});
-		}
-		else {
-			this.setState({
-				reviewIndex: 0,
-				isLoaded: true
-			});
-		}
-	}
-/*Render the items shown in review inside a div that can be clicked to show another review*/
-	render() {
+/*Function that loops through the reviews data and renders them into the reviews list*/
+	renderReviews() {
 		let strings = new LocalizedStrings({
 			en:{
-				preTitle: "Restaurant's reviews: ",
 				reviewer: "Reviewer: ",
 				allergyTags: "Allergy information: ",
 				relevance: "Relevance for the search: ",
@@ -120,7 +103,6 @@ class ReviewList extends React.Component {
 				quality: "Service and quality: "
 			},
 			fi: {
-				preTitle: "Ravintolan arvostelut: ",
 				reviewer: "Arvostelija: ",
 				allergyTags: "Allergiatunnisteet: ",
 				relevance: "Vastasi hakua: ",
@@ -129,20 +111,37 @@ class ReviewList extends React.Component {
 			}
 		});
 		strings.setLanguage(this.props.language);
+		let list = [];
+		for (let reviewIndex = 0; reviewIndex < this.state.numberOfRevs; reviewIndex++) {
+			list.push(<h3>{this.state.titles[reviewIndex]}</h3>);
+			list.push(<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div>);
+			list.push(<div id="reviewText">{this.state.reviews[reviewIndex]}</div>);
+			list.push(<div id="reviewUser">{strings.reviewer}{this.state.users[reviewIndex]}</div>);
+			list.push(<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[reviewIndex])}</div>);
+			list.push(<div id="reviewRelevance">{strings.relevance}
+			<ReactStars value={this.state.relevance[reviewIndex]} edit={false}/></div>);
+			list.push(<div id="reviewAwareness">{strings.allergyAwareness}
+			<ReactStars value={this.state.allergyAwareness[reviewIndex]} edit={false}/></div>);
+			list.push(<div id="reviewQuality">{strings.quality}
+			<ReactStars value={this.state.serviceQuality[reviewIndex]} edit={false}/></div>);
+		}
+		return list;
+	}
+/*Render the items shown in review inside a div that can be clicked to show another review*/
+	render() {
+		let strings = new LocalizedStrings({
+			en:{
+				preTitle: "Restaurant's reviews: "
+			},
+			fi: {
+				preTitle: "Ravintolan arvostelut: "
+			}
+		});
+		strings.setLanguage(this.props.language);
 		return (
-			<div id="reviewList" onClick={this.changeReview}>
+			<div id="reviewList">
 				<div id="preTitle">{strings.preTitle}</div>
-				<h3>{this.state.titles[this.state.reviewIndex]}</h3>
-				<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
-				<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
-				<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
-				<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
-				<div id="reviewRelevance">{strings.relevance}
-				<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/></div>
-				<div id="reviewAwareness">{strings.allergyAwareness}
-				<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/></div>
-				<div id="reviewQuality">{strings.quality}
-				<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/></div>
+				{this.renderReviews()}
 			</div>
 		);
 	}
