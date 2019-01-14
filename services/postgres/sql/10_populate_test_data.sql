@@ -56,15 +56,6 @@ INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_t
     ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
     ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL);
 
-<<<<<<< HEAD
-=======
-INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
-    ('1', '0', '0', '4', '3', '4', '3', '3', '40'),
-    ('2', '0', '0', '5', '5', '5', '5', '5', '50'),
-    ('3', '0', '0', '1', '1', '1', '1', '1', '-10'),
-    ('4', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
-
->>>>>>> origin/dev
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 
