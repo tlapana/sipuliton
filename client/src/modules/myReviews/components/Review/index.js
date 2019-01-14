@@ -1,10 +1,10 @@
-import React, { } from 'react';
+﻿import React, { } from 'react';
 import { browserHistory, Router, Route } from 'react-router';
 import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
-import {PopupboxManager,PopupboxContainer} from 'react-popupbox';
+
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
 
@@ -151,25 +151,13 @@ class Review extends React.Component {
       const content = (
             <div>
                    <span>
-              <ReviewData data={itemData} />
+              <ReviewData data={itemData} /> <br/>
               </span>
             </div>
         
       )
 
-      PopupboxManager.open({
-           
-            config: {
-              titleBar: {
-                enable: true,
-                text: <ReviewData data={itemData} />
-            
-              },
-              content: <p> test</p>,
-              fadeIn: true,
-              fadeInSpeed: 500
-            }
-          })
+
 
 }
       constructor(props) {
@@ -213,12 +201,14 @@ class Review extends React.Component {
                   .then((responseJson) => {
                              var array1=[];
                              for(var item in responseJson.reviews)  {
-                          //     array1.push(<ReviewData data={responseJson.reviews[item]} key="1"/>);
+                   
+                        //draw the array and formats time
+                        var datetime1=new Date(responseJson.reviews[item].posted);
 
-                          
+              
                           array1.push(<Row key="1"> <Col  xs="2">  <Popup key="1" trigger={<button key="2"> <TiArrowDown /></button>} position="bottom left"><div ><ReviewData data={responseJson.reviews[item]} key="1"/></div></Popup> </Col><Col  xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col></Row>);
-                          array1.push(<Row key="1"> <Col  xs="2" key="1"></Col><Col  xs="8"  key="1"><em>{responseJson.reviews[item].posted}</em></Col></Row>);
-                                
+                          array1.push(<Row key="1"> <Col  xs="2" key="1"></Col><Col  xs="8"  key="1"><em>{datetime1.getDate()}/{datetime1.getMonth()}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
+                          array1.push(<Row key="1"> <Col   key="1"><hr/></Col></Row>);       
                         
                         }
                              t.setState({array : array1});
