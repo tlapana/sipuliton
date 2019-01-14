@@ -152,7 +152,7 @@ export default class Register extends React.Component {
 					email: this.state.socialCredentials.email,
 				},
 			});
-			sendToUserGroup();
+			this.sendToUserGroup();
 			this.setState({
 				newUser
 			});
@@ -165,7 +165,7 @@ export default class Register extends React.Component {
 					email: this.state.socialCredentials.email,
 				},
 			});
-			sendToUserGroup();
+			this.sendToUserGroup();
 			this.setState({
 				newUser
 			});
@@ -178,7 +178,7 @@ export default class Register extends React.Component {
 					email: this.state.mail,
 				},
 			});
-			sendToUserGroup();
+			this.sendToUserGroup();
 			this.setState({
 				newUser
 			});
