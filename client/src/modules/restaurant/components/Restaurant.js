@@ -130,7 +130,7 @@ class Restaurant extends React.Component {
 			{strings.openingHours[0]}{this.state.openingHours.monFri}{strings.openingHours[1]}{this.state.openingHours.sat}{strings.openingHours[2]}{this.state.openingHours.sun}</div>
 
       
-      <WriteReview restaurantId={this.state.id} language="fi" />
+      <WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
       
 			<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
 			</div>

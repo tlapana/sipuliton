@@ -6,7 +6,7 @@
 
 import React from 'react';
 import ReactStars from 'react-stars'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
@@ -40,6 +40,7 @@ export default class WriteReview extends React.Component {
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
+      error : null,
       restaurant : null,
       showForm: false,
       title : '',
@@ -148,10 +149,11 @@ export default class WriteReview extends React.Component {
     obj.title = this.state.title;
     obj.reviewText = this.state.reviewText;
     obj.reliability = this.state.reliability;
-    obj.choice = this.state.choice;
+    obj.variety = this.state.choice;
     obj.quality = this.state.quality;
-    obj.cost = this.state.cost;
+    obj.pricing = this.state.cost;
     obj.selectedFilters = this.state.selectedFilters;
+    obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
     
     var jsonString = JSON.stringify(obj);
     
@@ -161,9 +163,40 @@ export default class WriteReview extends React.Component {
     console.log("As string");
     console.log(jsonString);
     
-    this.setState({
-      reviewSubmitted : true
-    });
+    //Generating url
+    var url = "locahost:3000/writereview?restaurant_id=" + obj.id
+      + "&title=" + obj.title
+      + "&text=" + obj.reviewText
+      + "&rating_overall=" + obj.overall
+      + "&rating_variety=" + obj.choice
+      + "&rating_reliability=" + obj.reliability
+      + "&rating_service_and_quality=" + obj.quality
+      + "&pricing=" + obj.pricing;
+      
+    //TODO: Diets
+    
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            submitingReview: false,
+            reviewSubmitted: true,
+          });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            submitingReview: false,
+            reviewSubmitted: false,
+            error: error
+          });
+          console.log(error);
+        }
+      )
+    
   }
   
   //Review button functionality
@@ -192,7 +225,42 @@ export default class WriteReview extends React.Component {
         </button> 
       );
     }
-  }  
+  }
+  
+  //Renders error if we get one
+  renderError()
+  {
+    
+    let strings = new LocalizedStrings({
+      en:{
+        strong: "An error has happened.",
+        errortext : "Something went wrong while submiting your review. Try again later. If this error persists, please contact the admins."
+      },
+      fi: {
+        strong: "Tapahtui virhe.",
+        errortext : "Jotain meni pieleen arvostelua löhettäessä. Yritä myöhemmin uudelleen. Jos tämä virhe toistuu, ota yhteyttä ylläpitoon."
+      }
+    });
+    
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
+    
+    if(this.state.error != null)
+    {
+      return(
+        <Alert bsStyle="warning">
+          <strong>{strings.strong}</strong> {strings.errortext}
+        </Alert>
+      );
+    }
+    
+    return;
+  }
+ 
   render() {
     
     /* Localization */
