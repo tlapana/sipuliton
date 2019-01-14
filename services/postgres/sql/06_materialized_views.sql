@@ -9,8 +9,7 @@ AS
 		AVG(rating_service_and_quality) AS rating_service_and_quality, AVG(pricing) AS pricing,
 		0 AS trending
 	FROM review, review_diet
-	WHERE status = 1 AND review.restaurant_id = review_diet.restaurant_id AND 
-		review.user_id = review_diet.user_id AND posted = review_posted
+	WHERE status = 1 AND review.review_id = review_diet.review_id
 	GROUP BY global_diet_id, review.restaurant_id
 WITH NO DATA;
 
