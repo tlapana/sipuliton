@@ -291,3 +291,18 @@
   top:50vh;
   left:50vw;
 }
+
+.advanced-filters-btn{
+  margin: 10px 0px;
+}
+.Location-Question-Answere-Box{
+  margin: 0px 0px 10px 0px;
+}
+.diets-filters-box{
+  margin: 10px 0px 10px 0px;
+}
+.basic-multi-select{
+  font-size: 17px;
+  width: 80%;
+  margin: 1em;
+}

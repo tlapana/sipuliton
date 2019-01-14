@@ -1,16 +1,11 @@
 import React from 'react';
 import {
-  Button,
-  NavItem,
-  NavLink,Modal, ModalHeader, ModalBody, ModalFooter,	Form,
+  ModalHeader, ModalBody, ModalFooter,
   Label} from 'reactstrap';
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 
-import styles from '../../../styles/landingpage.css';
 import '../../../styles/map.css';
-/* Router imports */
-import { Link } from 'react-router-dom';
 
 import * as AppImports from  '../../app';
 import Slider from 'rc-slider';
@@ -24,6 +19,7 @@ class ModalFilterPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      disabled: false,
       modalState: this.props.showFilterBoxAtStart,
       radius : this.props.filters.radius,
       minOverall : this.props.filters.minOverall,
@@ -123,6 +119,7 @@ class ModalFilterPage extends React.Component {
       this.state.useUserLocation,
       this.state.diets,
     );
+
   }
 
   //Toggles modal
@@ -148,7 +145,34 @@ class ModalFilterPage extends React.Component {
   }
 
   toggleAdvancedSearch(){
-    this.setState({advancedSearchOpen:!this.state.advancedSearchOpen});
+    if(this.state.advancedSearchOpen)
+    {
+      this.setState({
+        advancedSearchOpen:!this.state.advancedSearchOpen,
+        minOverall : 0,
+        minReliability : 0,
+        minVariety : 0,
+        minService : 0,
+        pricing: 0,
+        originalStage: {
+          minOverall : this.state.minOverall,
+          minReliability : this.state.minReliability,
+          minVariety : this.state.minVariety,
+          minService : this.state.minService,
+          pricing: this.state.pricing,
+        },
+      })
+    }
+    else{
+      this.setState({
+        advancedSearchOpen:!this.state.advancedSearchOpen,
+        minOverall : this.state.originalStage.minOverall,
+        minReliability : this.state.originalStage.minReliability,
+        minVariety : this.state.originalStage.minVariety,
+        minService : this.state.originalStage.minService,
+        pricing: this.state.originalStage.pricing,
+      })
+    }
   }
 
   //Used to change star rating values
@@ -217,7 +241,6 @@ class ModalFilterPage extends React.Component {
         service:"Service & Food",
         variety:"Menu variety",
         pricing:"Pricing",
-        filter:"Filter",
         doYouWantToUseLocationInSearch:"Use my location when finding restaurants.",
         yes:"Yes",
         no:"No",
@@ -240,7 +263,6 @@ class ModalFilterPage extends React.Component {
         service:"Ruoka ja palvelu",
         variety:"Ruokalajien laajuus",
         pricing:"Hintaluokka",
-        filter:"Rajaa",
         doYouWantToUseLocationInSearch:"Käytä sijaintiani ravintoloiden etsimisessä.",
         yes:"Kyllä",
         no:"En",
@@ -283,12 +305,17 @@ class ModalFilterPage extends React.Component {
                 onChange={this.handleCityChange}
                 className="city-search-input form-control"
                 placeholder={strings.enterCity}
+                disabled = {(this.state.disabled)? "disabled" : ""}
                 autoFocus />
             </div>
             <div>
               <div className="Location-Question-Answere-Box">
                 <input type="checkbox" name="useLocation"
-                onChange={() => this.setState({useUserLocation: !this.state.useUserLocation})}
+                onChange={() => {
+                  this.setState({
+                      useUserLocation: !this.state.useUserLocation,
+                      disabled: !this.state.disabled,
+                    })}}
                 checked={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
               </div>
             <div>
@@ -315,7 +342,7 @@ class ModalFilterPage extends React.Component {
               />
             </div>
             <button
-              className="btn main-btn"
+              className="btn main-btn advanced-filters-btn"
               onClick={this.toggleAdvancedSearch}
             >
               {advancedSearchBtnText}

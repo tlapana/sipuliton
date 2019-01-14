@@ -20,8 +20,6 @@ function sortByDistanceToCenter(){
     var powBy = Math.pow(b.position[1]-center[1],2);
     var distToA = Math.sqrt(powAx+powAy)
     var distToB = Math.sqrt(powBx+powBy)
-    console.log(distToA);
-    console.log(distToB);
     if( distToA < distToB){
       return -1;
     }
@@ -103,7 +101,6 @@ function parseMapUrlParametersToFilters(searchString){
   var diets = [];
   var city = "";
   var searchRadius = 10000;
-  var showFilterBox = true;
   var longitude = 24.940886;
   var latitude = 60.168182;
   var filters = {};

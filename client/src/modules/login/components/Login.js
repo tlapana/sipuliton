@@ -10,8 +10,6 @@ import SocialLogin from './Social_Login.js'
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-import LoginApi from './LoginGlobalFunctions';
-
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -22,20 +20,16 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    /*
     Auth.currentAuthenticatedUser()
         .then(user => {
           this.setState({loggedInAlready: true});
         })
-        .catch(err => {});*/
-    if(LoginApi.getUserLoggedInStatus()){
-      this.setState({loggedInAlready: true});
-    }
+        .catch(err => {});
   }
 
   render() {
     if (this.state.loggedInAlready) {
-      return <Redirect to={"/" + this.props.match.params.language + "/userProfile"} />
+      return <Redirect to={"/" + this.props.match.params.language + "/profile"} />
     }
 
     let strings = new LocalizedStrings({

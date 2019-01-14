@@ -17,7 +17,6 @@ import commonComponents from '../../common'
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-import LoginApi from './LoginGlobalFunctions';
 
 class Login_Form extends React.Component{
   constructor(props) {
@@ -38,23 +37,15 @@ class Login_Form extends React.Component{
    /* Logs user in, if password or username
       is not valid login will automatically fail. */
 
-      //event.preventDefault();
+      event.preventDefault();
       this.setState({ loggingFailed: false, isLoading: true });
       if (this.state.passwordIsValid && this.state.usernameIsValid && !this.state.isLoading) {
-				LoginApi.signIn(this.state.username, this.state.password);
-				if(LoginApi.getUserLoggedInStatus()){
-					this.setState({ loggingSucceeded: true, isLoading: false, loggingFailed: false })
-				}
-				else{
-					this.setState({ loggingSucceeded: false, isLoading: false, loggingFailed: true })
-				}
-				/*
         Auth.signIn(this.state.username, this.state.password)
           .then(user => {
 
             /* If user needs to set new password this will automatically set old
                password as a new password and after that tries to log user in. */
-							 /*
+
             if (user.challengeName === "NEW_PASSWORD_REQUIRED") {
               user.completeNewPasswordChallenge(this.state.password).then(s => {
                 this.setState({ loggingSucceeded: false, isLoading: false });
@@ -74,7 +65,6 @@ class Login_Form extends React.Component{
         .catch(e => {
           this.setState({ loggingFailed: true, isLoading: false });
         });
-				*/
       }
       else{
         this.setState({ loggingFailed: true, isLoading: false });
@@ -157,7 +147,7 @@ class Login_Form extends React.Component{
 
           <VInput type="submit" value={loginBtnStr} isValid={!this.state.isLoading} className="main-btn big-btn max-w-10" />
         </Form>
-        {this.state.loggingSucceeded && <Redirect to={"/" + this.props.language + "/userProfile"} />}
+        {this.state.loggingSucceeded && <Redirect to={"/" + this.props.language + "/profile"} />}
       </div>
 
     )

@@ -1,3 +1,5 @@
+//Tried to get this work but didn't get this working
+
 const AuthApi = require('aws-amplify');
 
 var userLoggedIn = false;

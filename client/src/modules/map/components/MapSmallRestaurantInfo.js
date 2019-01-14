@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Button,
-  NavItem,
-  NavLink,} from 'reactstrap';
+import {NavLink,} from 'reactstrap';
 import ReactStars from 'react-stars';
 import '../../../styles/map.css';
 
@@ -45,7 +42,7 @@ class MapSmallRestaurantInfo extends React.Component {
     });
     strings.setLanguage(this.props.language);
     var todayOpenHours = MapApi.getTodayOpeningHours(this.props.restaurantInfo);
-    
+
     var additionalClassName = this.props.pinColor+"-restaurant"
     var fullClass = "restaurant-info "+additionalClassName
     return(
