@@ -7,7 +7,7 @@ import { Button, Container, Row, Col } from 'reactstrap';
 
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
-
+import '../../../../styles/ownreview.css';
 import ReactPaginate from 'react-paginate';
 
 
@@ -259,13 +259,18 @@ class Review extends React.Component {
             }
 
                   return (<div>
-                        <h1>MyReviews  </h1>
-                        <em>Status</em><select id="status"  onChange={()=>{this.changedvalue()}}>
+                        <h1   >MyReviews  </h1>
+                        <em id="test">Status</em><select id="status"  onChange={()=>{this.changedvalue()}}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
                          </select>
-                        <ReactPaginate  initialPage={0}  onPageChange={this.handlePageClick}  previousLabel={'<<'} nextLabel={'>>'}  breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}  containerClassName={'pagination'} subContainerClassName={'pages pagination'} activeClassName={'active'}/>
+                        <ReactPaginate  id={"react-paginate"}  initialPage={0}  onPageChange={this.handlePageClick}  previousLabel={'<<'} nextLabel={'>>'}  breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}
+                                containerClassName={'pagination'}
+
+                                subContainerClassName={'pages pagination'}
+                        
+                        activeClassName={'active'}/>
                         <div style={{"width":"500px","overflow": "scroll","height": "300px"}}>
                                {this.state.array}
                        </div>
