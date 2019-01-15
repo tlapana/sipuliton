@@ -484,7 +484,15 @@ class Map extends React.Component {
       }
     });
     strings.setLanguage(this.props.match.params.language);
-
+    if(this.props.isGeolocationEnabled && this.props.isGeolocationAvailable && this.props.isGeolocationEnabled && this.props.coords != null)
+    {
+      var useLocation = true;
+    }
+    else
+    {
+      var useLocation = false;
+    }
+    console.log();
     return(
       <div>
       {this.state.loading &&
@@ -541,9 +549,7 @@ class Map extends React.Component {
         </div>
       }
       {
-        !this.props.isGeolocationAvailable? <div>Your browser does not support Geolocation</div>
-        : !this.props.isGeolocationEnabled
-        ?
+        !useLocation?
         <div className="mapPage">
           <div id="map" >
   					<ModalFilterPage
@@ -573,8 +579,7 @@ class Map extends React.Component {
             />
           </div>
         </div>
-        :this.props.coords
-        ?<div id="map" >
+        :<div id="map" >
   			  <ModalFilterPage
             filters={this.state.filters}
   					FiltersChanged={this.FiltersChanged}
@@ -594,7 +599,6 @@ class Map extends React.Component {
             loading={this.state.loading}
   				/>
         </div>
-        : <div>Getting the location data&hellip; </div>
       }
       </div>
     )

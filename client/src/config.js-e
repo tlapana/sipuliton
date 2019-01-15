@@ -23,6 +23,6 @@ export default {
     EMAIL_MAX_LENGTH: 50,
   },
   backendAPIPaths: {
-    BASE: "http://localhost:3000"
+    BASE: "https://d39jaaiol1.execute-api.eu-central-1.amazonaws.com/Prod/"
   }
 }
