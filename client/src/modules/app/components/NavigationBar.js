@@ -238,8 +238,8 @@ class NavigationBar extends React.Component {
             <NavbarToggler onClick={this.mainMenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
             </NavbarToggler>
-            <header className="header" style={{'Align':'center'}}>
-              <h1>{this.props.header_text}</h1>
+            <header className="nav-bar-header">
+              <h1 className="nav-bar-title">{this.props.header_text}</h1>
             </header>
             <NavLink tag={Link} to={pathToMenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
