@@ -4,10 +4,13 @@ import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import { Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ReactLoading from 'react-loading';
 
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
 import '../../../../styles/ownreview.css';
+import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
 
@@ -56,34 +59,59 @@ class Review extends React.Component {
                   freetext: '',
                   pricing: 0,
                   rating_variety: 0,
+                  loading:false,
                   rating_service_and_quality: 0,
                   edit: false
+
             }
 
       }
 
+      onOpenModal(item)  {
+
+    
+            this.setState({ data: item });
+            this.setState({ title: item.title });
+            this.setState({ freetext: item.free_text });
+            this.setState({ name: item.name });
+            this.setState({ posted: item.posted });
+            this.setState({ overall: item.rating_overall });
+            this.setState({ pricing: item.pricing });
+            this.setState({ RatingServiceAndQuality: item.rating_service_and_quality });
+            this.setState({ rating_variety: item.rating_variety });
+            this.setState({ id: item.review_id });
+            this.setState({ open: true });
+            
+      };
+ 
       deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
       init(statusvalue) {
             var t = this;
             fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit + '&offset=' + this.page * this.limit).then((response) => response.json())
                   .then((responseJson) => {
+                 
                         var array1 = [];
-
+      
                         //calculates page count
                         this.pageCount = responseJson.review_count / 10;
                         for (var item in responseJson.reviews) {
+                        
+                    
 
                               //draw the array and formats time
-                              var datetime1 = new Date(responseJson.reviews[item].posted);
-
-
-                              array1.push(<Row key="1"> <Col xs="2">          <button onClick={() => { this.onOpenModal(responseJson.reviews[item]) }}>Open modal</button> </Col><Col xs="4" key="1"><em>{responseJson.reviews[item].name}</em></Col><Col> <ReactStars edit={false} value={responseJson.reviews[item].rating_overall} count={5} size={24} /> </Col></Row>);
-                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth()}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
+                              let data_item =  responseJson.reviews[item]
+                              var datetime1 = new Date(data_item.posted);
+                           
+                              var item11 = JSON.parse('{ "id":"'  + responseJson.reviews[item].review_id +  '"}');
+                             
+                              array1.push(<Row key="1"> <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>{data_item.review_id} Open modal</button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>);
+                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
                               array1.push(<Row key="1"> <Col key="1"><hr /></Col></Row>);
-
+                 
                         }
                         t.setState({ array: array1 });
                         t.setState({ edit: false });
+                        t.setState({ loading: true });
 
                   })
                   .catch((error) => {
@@ -134,19 +162,9 @@ class Review extends React.Component {
             open: false,
       };
 
-      onOpenModal = (item) => {
-            this.setState({ data: item });
-            this.setState({ title: item.title });
-            this.setState({ freetext: item.free_text });
-            this.setState({ name: item.name });
-            this.setState({ posted: item.posted });
-            this.setState({ overall: item.rating_overall });
-            this.setState({ pricing: item.pricing });
-            this.setState({ RatingServiceAndQuality: item.rating_service_and_quality });
-            this.setState({ rating_variety: item.rating_variety });
-            this.setState({ id: item.review_id });
-            this.setState({ open: true });
-      };
+
+
+    
 
       onCloseModal = () => {
             this.setState({ open: false });
@@ -159,16 +177,22 @@ class Review extends React.Component {
 
             }
 
+            if(this.state.loading==false)
+            return (   <div>       <p>loading</p> </div>);
+        if(this.state.loading)
             return (<div>
+                   
                   <h1   >MyReviews  </h1>
-
+             
                   <Modal open={open} onClose={this.onCloseModal} center>
+                     
                         <Row>
                               <Col xs="4">
                                     name
                                     </Col>
                               <Col xs="4">
                                     {this.state.name}
+
                               </Col>
                         </Row>
 
@@ -253,6 +277,7 @@ class Review extends React.Component {
 
                         activeClassName={'active'} />
                   <div style={{ "width": "500px", "overflow": "scroll", "height": "300px" }}>
+         
                         {this.state.array}
                   </div>
             </div>);
