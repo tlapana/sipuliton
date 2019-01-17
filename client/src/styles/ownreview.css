@@ -5,7 +5,12 @@
   color: red;
 
 }
-
+.loadingSpinner {
+  margin-left: 0;
+  margin-right: 0;
+  height: 50px;
+  width: 50px;
+}
 #test2 {
   position: absolute;
   top: 50px;

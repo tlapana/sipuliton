@@ -6,6 +6,7 @@ import { Redirect } from 'react-router-dom';
 import { Button, Container, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactLoading from 'react-loading';
+import { ClipLoader } from 'react-spinners';
 
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
@@ -14,6 +15,23 @@ import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
 
+import LocalizedStrings from 'react-localization';
+/*class WaitReview extends React.Component {
+      constructor(props) {
+
+            super(props);
+      }
+
+      async componentDidMount()   {
+     
+        }
+
+      render()  {
+            return ( <div>    <ReactLoading type={'spinningBubbles'} className="loadingSpinner" /> <p>Loading</p></div>);
+      }
+}
+
+*/
 
 class Review extends React.Component {
       page = 0;
@@ -59,13 +77,19 @@ class Review extends React.Component {
                   freetext: '',
                   pricing: 0,
                   rating_variety: 0,
-                  loading:false,
+                  loading1:false,
                   rating_service_and_quality: 0,
                   edit: false
 
             }
 
+            
+       
+
       }
+      
+
+    
 
       onOpenModal(item)  {
 
@@ -95,23 +119,18 @@ class Review extends React.Component {
                         //calculates page count
                         this.pageCount = responseJson.review_count / 10;
                         for (var item in responseJson.reviews) {
-                        
-                    
-
                               //draw the array and formats time
                               let data_item =  responseJson.reviews[item]
                               var datetime1 = new Date(data_item.posted);
-                           
-                              var item11 = JSON.parse('{ "id":"'  + responseJson.reviews[item].review_id +  '"}');
-                             
-                              array1.push(<Row key="1"> <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>{data_item.review_id} Open modal</button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>);
-                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getSeconds()}</em> </Col></Row>);
+
+                              array1.push(<Row key="1"> <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }> Open modal</button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>);
+                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row>);
                               array1.push(<Row key="1"> <Col key="1"><hr /></Col></Row>);
                  
                         }
                         t.setState({ array: array1 });
                         t.setState({ edit: false });
-                        t.setState({ loading: true });
+                        t.setState({ loading1: true });
 
                   })
                   .catch((error) => {
@@ -120,12 +139,12 @@ class Review extends React.Component {
                   });
 
       }
-      componentWillMount() {
-
-            this.init(0);
+      componentDidMount() {
+            this.init(this.status);
       }
-      save() {
 
+      save() {
+ 
             var text = document.getElementById("freetext").value;
             var title = document.getElementById("title").value;
             var pricing = document.getElementById("pricing1").value;
@@ -170,20 +189,34 @@ class Review extends React.Component {
             this.setState({ open: false });
       };
 
-      render() {
+       render() {
+  
             const { open } = this.state;
             const ratingChanged = (newRating) => {
                   console.log(newRating)
 
             }
 
-            if(this.state.loading==false)
-            return (   <div>       <p>loading</p> </div>);
-        if(this.state.loading)
+            if(this.state.loading1==false)
+            return (   
+
+                  //<ReactLoading type={'spinningBubbles'} className="loadingSpinner" />
+                  <ClipLoader
+            
+                  sizeUnit={"px"}
+                  size={150}
+                  color={'#123abc'}
+                  loading={true}
+                />
+                  
+
+         );
+      
+        if(this.state.loading1)
             return (<div>
                    
                   <h1   >MyReviews  </h1>
-             
+     
                   <Modal open={open} onClose={this.onCloseModal} center>
                      
                         <Row>
@@ -281,7 +314,9 @@ class Review extends React.Component {
                         {this.state.array}
                   </div>
             </div>);
+      
       }
+      
 
 }
 export default Review;
