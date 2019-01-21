@@ -6,6 +6,7 @@ import { containers as AppContainers } from './modules/app';
 import rootReducer from './rootReducer';
 import * as serviceWorker from './serviceWorker';
 import Amplify from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import withAuthenticator from 'aws-amplify';
 import 'bootstrap/dist/css/bootstrap.css';
 import './fontawesome';  // this is our font awesome library
@@ -33,6 +34,9 @@ Amplify.configure({
           name: 'api',
           endpoint: config.backendAPIPaths.BASE,
           service: "lambda",
+          custom_header: async () => {
+            return { Authorization: (await Auth.currentSession()).idToken.jwtToken } 
+          },
       },
     ]
   }

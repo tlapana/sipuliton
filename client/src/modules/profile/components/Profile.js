@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import { Col, Row, } from 'reactstrap';
 import ReactLoading from 'react-loading';
 import LocalizedStrings from 'react-localization';
-import { API } from 'aws-amplify';
+import { API, Auth } from 'aws-amplify';
 
 
 class Profile extends React.Component {

@@ -9,6 +9,7 @@ import {
 	Label,
 } from 'reactstrap';
 
+import PropTypes from 'prop-types';
 import { Auth } from "aws-amplify";
 import { Redirect, withRouter } from "react-router-dom";
 import config from "../../../config.js"
@@ -152,6 +153,13 @@ class Login_Form extends React.Component{
     );
   }
 }
+
+
+Login_Form.propTypes = {
+  store: PropTypes.object.isRequired,
+  cognitoUser: PropTypes.any,
+  userId: PropTypes.number,
+};
 
 const Login_FormWithRouter = withRouter(Login_Form);
 export default Login_FormWithRouter;

@@ -1,12 +1,14 @@
 import * as t from './actionTypes';
 
 
-export const login = (cognitoUser) => ({
+export const login = (cognitoUser, userId) => ({
   type: t.LOGIN,
-  cognitoUser
+  cognitoUser: cognitoUser,
+  userId: userId,
 });
 
-export const logout = (user) => ({
+export const logout = () => ({
   type: t.LOGOUT,
-  user
+  cognitoUser: null,
+  userId: null,
 });

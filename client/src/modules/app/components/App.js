@@ -30,7 +30,7 @@ class App extends React.Component {
             <div className="content">
               <Container className="main-content" >
                 <Switch>
-                  <RouteCollection/>
+                  <RouteCollection store={this.props.store}/>
                 </Switch>
               </Container>
               <NavigationBar header_text="Sipuliton.fi"/>

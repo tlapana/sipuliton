@@ -41,21 +41,31 @@ let response;
 async function getOwnUserId(client, event) {
     const AWS = require('aws-sdk');
     // Note, make sure you have proper credentials, uncomment following code to set credentials if running file locally
-    // var myConfig = new AWS.Config({
-    //     credentials: {
-    //         accessKeyId: "XXXXXXXXXXXXX",
-    //         secretAccessKey: "XXXXXXXXXXXXXXXXXXXXXXX"
-    //     }
-    // });
+     var myConfig = new AWS.Config({
+         credentials: {
+             accessKeyId: "AKIAIWOVH7OQWBOE2SEQ",
+             secretAccessKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+         }
+     });
     const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
-    const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
-    const request = {
-        UserPoolId: 'xxxxxxxxxx',
-        Filter: `sub = "${userSub}"`,
-        Limit: 1
+	var userSub = null;
+	var users = null;
+	console.log(event);
+	try {
+		userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1];
     }
-    const users = await cognitoClient.listUsers(request).promise();
-    if (users.length == 1) {
+	catch(err) { }
+	
+	if (userSub != null) {
+		const request = {
+			UserPoolId: 'eu-central-1_RcdrXwM4n',
+			Filter: `sub = "${userSub}"`,
+			Limit: 1
+		};
+		users = await cognitoClient.listUsers(request).promise();
+	}
+    
+    if (users != null && users.length == 1) {
         const res = await client.query('SELECT user_id FROM user_login WHERE cognito_sub = $1', userSub);
         if (res.rowCount == 0) {
             client.end();
@@ -343,7 +353,7 @@ exports.profileLambda = async (event, context) => {
             //TODO: get own user id using cognito
             const ownUserId = await getOwnUserId(client, event);
             const userId = tempId === null ? ownUserId : tempId
-
+			console.log('userId: ' + userId + ', ownUserId: ' + ownUserId + ', urlUserId: ' + tempId)
             var temp = parseParam("language", event);
             const languageId = temp === null ? await getLanguage(client, 'FI') :
                 await getLanguage(client, temp.toUpperCase());
