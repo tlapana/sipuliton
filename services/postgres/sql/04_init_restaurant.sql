@@ -138,3 +138,11 @@ CREATE TABLE restaurant_ownership_rejected(
     rejecter_id bigint NOT NULL REFERENCES user_profile,
     reason text NOT NULL
 );
+
+CREATE OR REPLACE FUNCTION setGeography() RETURNS TRIGGER AS $$
+BEGIN
+  NEW."geo_location" := ST_POINT(NEW."latitude", NEW."longitude");
+  RETURN NEW;
+END $$ LANGUAGE plpgsql;
+
+CREATE TRIGGER "set_restaurant_geography" AFTER INSERT OR UPDATE ON "restaurant" FOR EACH ROW EXECUTE PROCEDURE setGeography();

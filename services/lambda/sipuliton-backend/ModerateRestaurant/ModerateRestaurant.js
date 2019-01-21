@@ -7,7 +7,7 @@ async function getSuggestionData(suggestionId, client, languageId=0){
         `SELECT  restaurant_suggestion.name, restaurant_suggestion.email,
             restaurant_suggestion.website, restaurant_suggestion.image_url,
             restaurant_suggestion.country_id, city_name.city_id, restaurant_suggestion.postal_code,
-            restaurant_suggestion.street_address, restaurant_suggestion.geo_location
+            restaurant_suggestion.street_address, restaurant_suggestion.longitude, restaurant_suggestion.latitude
         FROM restaurant_suggestion 
         JOIN city_name 
             ON city_name.name = restaurant_suggestion.city
@@ -104,9 +104,6 @@ exports.lambdaHandler = async (event, context) => {
                 var suggestionData = suggestionDataArray[0]
 
                 // Fix location data
-                const geoLocation = suggestionData.geo_location
-                suggestionData.geo_location = "(" + geoLocation.x.toString() + "," + geoLocation.y.toString() + ")"
-
                 console.log(suggestionData)
 
                 // Create new restaurant
@@ -114,14 +111,14 @@ exports.lambdaHandler = async (event, context) => {
                 INSERT INTO restaurant
                 (restaurant_id, name, email, website, image_url,
                     country_id, city_id, postal_code,
-                    street_address, geo_location, restaurant_accepted)
-                VALUES(DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
+                    street_address, latitude, longitude, restaurant_accepted)
+                VALUES(DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
                 `
 
                 const resCreate = await client.query(createRestaurantQuery,
                     [suggestionData.name, suggestionData.email, suggestionData.website, suggestionData.image_url,
                         suggestionData.country_id, suggestionData.city_id, suggestionData.postal_code,
-                        suggestionData.street_address, suggestionData.geo_location, true]);
+                        suggestionData.street_address, suggestionData.latitude, suggestionData.longitude, true]);
                 const restaurantIdQuery = await client.query("SELECT currval(pg_get_serial_sequence('restaurant', 'restaurant_id'))");
                 const restaurantIdRows = JSON.parse(JSON.stringify(restaurantIdQuery.rows));
                 const restaurantId = restaurantIdRows[0].currval

@@ -8,11 +8,14 @@ INSERT INTO country_name VALUES
     ('1000', '1', 'imaginary country');
 
 INSERT INTO city(city_id, country_id) VALUES
-    ('100000', '1000');
+    ('100000', '1000'),
+    ('931', '71');
 
 INSERT INTO city_name VALUES
     ('100000', '0', 'kuvitteellinen kaupunki'),
-    ('100000', '1', 'imaginary city');
+    ('100000', '1', 'imaginary city'),
+    ('931', '0', 'Tampere'),
+    ('931', '1', 'Tampere');
 
 INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
     ('0', 'test-user-1', 'Sipuliton mod', 'test@mail.com'),
@@ -46,11 +49,11 @@ INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
     ('0', '0', '6', 'veg.'),
     ('0', '1', '1', 'no fish');
 
-INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
-    ('1', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
-    ('2', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
-    ('3', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
-    ('4', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
+INSERT INTO restaurant(name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
+    ('Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
+    ('Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
+    ('Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
+    ('Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
 
 INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun) VALUES
     ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
