@@ -1,6 +1,6 @@
 /*
   This file handles social logins. It covers both facebook and google.
-  It presents the buttons, allows user to log in, authenticates the user 
+  It presents the buttons, allows user to log in, authenticates the user
   and if the user exists, logs them in.
 */
 
@@ -20,7 +20,7 @@ import config from "../../../config.js"
 
 //Login for Google accounts
 export default class SocialLogin extends React.Component {
-  
+
   constructor(props) {
     super(props);
     this.state = {
@@ -29,7 +29,7 @@ export default class SocialLogin extends React.Component {
       loggingFailed: false,
       loggingSucceeded: false,
     };
-	
+
     this.responseFailure = this.responseFailure.bind(this);
     this.signInGoogle = this.signInGoogle.bind(this);
     this.signInFacebook = this.signInFacebook.bind(this);
@@ -38,7 +38,7 @@ export default class SocialLogin extends React.Component {
   componentDidMount() {
     //First, check that FB script is avaible
     if (!window.FB) this.createScriptFB();
-    
+
     //Check that Google script is avaible
     const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
     if (!ga) this.createScriptGoogle();
@@ -129,7 +129,7 @@ export default class SocialLogin extends React.Component {
       });
     });
   }
-  
+
   //General failure reaction
   responseFailure(response){
     console.log("DEBUG: RESPONSE ON FAILURE")
@@ -251,5 +251,5 @@ export default class SocialLogin extends React.Component {
         */
       );
     }
-  }  
+  }
 }

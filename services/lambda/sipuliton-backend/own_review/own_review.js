@@ -187,63 +187,94 @@ async function getLanguage(client, language) {
 
 async function getOwnReviews(client, ownUserId, status, offset, limit) {
     var jsonObj = {};
-    if (status == 0) {
+    jsonObj['review_count'] = 0;
+    if (status === null) {
         const res = await client.query(
-            `SELECT posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets
-            FROM review, review_diet, restaurant
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                AND review_diet.restaurant_id = review.restaurant_id AND review_posted = posted
+            `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
+                review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
+                rating_service_and_quality, pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets,
+                accepted, rejected, reason
+            FROM review_diet, restaurant, review
+                LEFT JOIN review_accept_log ON review.review_id = review_accept_log.review_id
+                LEFT JOIN review_reject_log ON review.review_id = review_reject_log.review_id
+            WHERE review.user_id = $1 AND review_diet.review_id = review.review_id
                 AND restaurant.restaurant_id = review.restaurant_id
-            GROUP BY posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
+            GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name,
+                review.image_url, free_text, rating_overall, rating_reliability, rating_variety,
+                rating_service_and_quality, pricing, thumbs_up, thumbs_down, accepted, rejected, reason
+            LIMIT $3
+            OFFSET $2`,
+            [ownUserId, offset, limit]);
         if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows)); 
+            jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows)); 
+        }
+        const res2 = await client.query(
+            `SELECT COUNT(*) AS review_count FROM review WHERE user_id = $1`,
+            [ownUserId]);
+        if (res2.rowCount > 0) {
+            jsonObj['review_count'] = res2.rows[0]['review_count'];
         }
     }
-    if (status == 1) {
-        const res = await client.query(
-            `SELECT posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted
-            FROM review, review_diet, restaurant, review_accept_log
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
-                AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
-                AND review_accept_log.restaurant_id = review.restaurant_id AND review_accept_log.review_posted = posted
-            GROUP BY posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, accepted
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
-        if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows));
+    else {
+        if (status == 0) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets
+                FROM review, review_diet, restaurant
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows)); 
+            }
         }
-    }
-    if (status == 2) {
-        const res = await client.query(
-            `SELECT posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason
-            FROM review, review_diet, restaurant, review_reject_log
-            WHERE status = $2 AND review.user_id = $1 AND review_diet.user_id = review.user_id
-                AND review_diet.restaurant_id = review.restaurant_id AND review_diet.review_posted = posted
-                AND restaurant.restaurant_id = review.restaurant_id AND poster_id = review.user_id
-                AND review_reject_log.restaurant_id = review.restaurant_id AND review_reject_log.review_posted = posted
-            GROUP BY posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
-                rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
-                pricing, thumbs_up, thumbs_down, rejected, reason
-            LIMIT $4
-            OFFSET $3`,
-            [ownUserId, status, offset, limit]);
-        if (res.rowCount > 0) {
-            jsonObj = JSON.parse(JSON.stringify(res.rows));
+        if (status == 1) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, accepted
+                FROM review, review_diet, restaurant, review_accept_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id AND review.review_id = review_accept_log.review_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, accepted
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows));
+            }
+        }
+        if (status == 2) {
+            const res = await client.query(
+                `SELECT review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, array_agg(global_diet_id) AS diets, rejected, reason
+                FROM review, review_diet, restaurant, review_reject_log
+                WHERE status = $2 AND review.user_id = $1 AND review_diet.review_id = review.review_id
+                    AND restaurant.restaurant_id = review.restaurant_id AND review_reject_log.review_id = review.review_id
+                GROUP BY review.review_id, status, posted, title, review.restaurant_id, restaurant.name, review.image_url, free_text,
+                    rating_overall, rating_reliability, rating_variety, rating_service_and_quality,
+                    pricing, thumbs_up, thumbs_down, rejected, reason
+                LIMIT $4
+                OFFSET $3`,
+                [ownUserId, status, offset, limit]);
+            if (res.rowCount > 0) {
+                jsonObj['reviews'] = JSON.parse(JSON.stringify(res.rows));
+            }
+        }
+        const res2 = await client.query(
+            `SELECT COUNT(*) AS review_count FROM review WHERE user_id = $1 AND status = $2`,
+            [ownUserId, status]);
+        if (res2.rowCount > 0) {
+            jsonObj['review_count'] = res2.rows[0]['review_count'];
         }
     }
     //TODO: get images from url
@@ -265,7 +296,7 @@ exports.getOwnReviewsLambda = async (event, context) => {
             }
 
             const status = parseIntParam('status', event);
-            if (status === null || status < 0 | status > 2) {
+            if (hasParam('status', event) && (status === null || status < 0 | status > 2)) {
                 throw {
                     'statusCode': 400,
                     'error': "invalid status code"
@@ -291,16 +322,28 @@ exports.getOwnReviewsLambda = async (event, context) => {
 };
 
 
-async function editReview(client, userId, restaurantId, posted, changes, images, diets) {
+async function isOwnReview(client, userId, reviewId) {
+    const res = await client.query(
+            `SELECT review_id
+            FROM review
+            WHERE review.user_id = $1 AND review_id = $2`,
+            [userId, reviewId]);
+    if (res.rowCount > 0) {
+        return true;
+    }
+    return false;
+}
+
+async function editReview(client, reviewId, changes, images, diets) {
     if (diets !== null) {
         await client.query(`DELETE FROM review_diet
-            WHERE restaurant_id = $1 AND user_id = $2 AND review_posted = $3`,
-            [restaurantId, userId, posted]);
+            WHERE review_id = $1`,
+            [reviewId]);
         var len = diets.length;
         for (var i = 0; i < len; i++) {
-            await client.query(`INSERT INTO review_diet (restaurant_id, user_id, review_posted, global_diet_id)
-                VALUES ($1, $2, $3, $4)`,
-                [restaurantId, userId, posted, diets[i]]);
+            await client.query(`INSERT INTO review_diet (review_id, global_diet_id)
+                VALUES ($1, $2)`,
+                [reviewId, diets[i]]);
         }
     }
     if (images !== null) {
@@ -310,13 +353,13 @@ async function editReview(client, userId, restaurantId, posted, changes, images,
             'error': "Not implemented"
         }
     }
-    var values = [restaurantId, userId, posted];
+    var values = [reviewId];
     var columns = '';
-    var arrayIndex = 4;
+    var arrayIndex = 2;
     for (var key in changes) {
         // check if the property/key is defined in the object itself, not in parent
         if (changes.hasOwnProperty(key)) {
-            if (arrayIndex > 4) {
+            if (arrayIndex > 2) {
                 columns += ', ';
             }
             columns += key + ' = $' + arrayIndex.toString();
@@ -324,23 +367,29 @@ async function editReview(client, userId, restaurantId, posted, changes, images,
             arrayIndex++;
         }
     }
-    await client.query('UPDATE review SET ' + columns + ' WHERE status = 0 AND restaurant_id = $1 AND user_id = $2 AND posted = $3', values);
+    if (columns === '') {
+        throw {
+            'statusCode': 400,
+            'error': "No changes given"
+        }
+    }
+    await client.query('UPDATE review SET ' + columns + ' WHERE status = 0 AND review_id = $1', values);
     return
 }
 
-async function deleteReview(client, userId, restaurantId, posted) {
-    await client.query(`DELETE FROM review_from WHERE restaurant_id = $1 AND user_id = $2 AND posted = $3`,
-        [restaurantId, userId, posted]);
-    await client.query(`DELETE FROM review_reject_log WHERE restaurant_id = $1 AND poster_id = $2 AND review_posted = $3`,
-        [restaurantId, userId, posted]);
-    await client.query(`DELETE FROM review_accept_log WHERE restaurant_id = $1 AND poster_id = $2 AND review_posted = $3`,
-        [restaurantId, userId, posted]);
-    await client.query(`DELETE FROM thumbs WHERE restaurant_id = $1 AND poster_id = $2 AND review_posted = $3`,
-        [restaurantId, userId, posted]);
-    await client.query(`DELETE FROM review_diet WHERE restaurant_id = $1 AND user_id = $2 AND review_posted = $3`,
-        [restaurantId, userId, posted]);
-    await client.query(`DELETE FROM review WHERE restaurant_id = $1 AND user_id = $2 AND posted = $3`,
-        [restaurantId, userId, posted]);
+async function deleteReview(client, reviewId) {
+    await client.query(`DELETE FROM review_from WHERE review_id = $1`,
+        [reviewId]);
+    await client.query(`DELETE FROM review_reject_log WHERE review_id = $1`,
+        [reviewId]);
+    await client.query(`DELETE FROM review_accept_log WHERE review_id = $1`,
+        [reviewId]);
+    await client.query(`DELETE FROM thumbs WHERE review_id = $1`,
+        [reviewId]);
+    await client.query(`DELETE FROM review_diet WHERE review_id = $1`,
+        [reviewId]);
+    await client.query(`DELETE FROM review WHERE review_id = $1`,
+        [reviewId]);
     return
 }
 
@@ -358,8 +407,13 @@ exports.editReviewLambda = async (event, context) => {
                 }
             }
 
-            const restaurantId = parseIntParam('restaurant_id', event);
-            const posted = parseParam("posted", event);
+            const reviewId = parseIntParam('review_id', event);
+            if (!(await isOwnReview(client, ownUserId, reviewId))) {
+                throw {
+                    'statusCode': 403,
+                    'error': "Not own review"
+                }
+            }
             var changes = {};
             var diets = null;
             var images = null;
@@ -381,7 +435,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating overall"
                     }
                 }
                 changes['rating_overall'] = temp;
@@ -391,7 +445,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating variety"
                     }
                 }
                 changes['rating_variety'] = temp;
@@ -401,7 +455,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 5) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid rating service and quality"
                     }
                 }
                 changes['rating_service_and_quality'] = temp;
@@ -411,7 +465,7 @@ exports.editReviewLambda = async (event, context) => {
                 if (temp < 0 | temp > 3) {
                     throw {
                         'statusCode': 400,
-                        'error': "Invalid rating"
+                        'error': "Invalid pricing"
                     }
                 }
                 changes['pricing'] = temp;
@@ -421,7 +475,7 @@ exports.editReviewLambda = async (event, context) => {
                 diets = temp;
             }
 
-            await editReview(client, ownUserId, restaurantId, posted, changes, images, diets);
+            await editReview(client, reviewId, changes, images, diets);
 
             response = packResponse({ 'message': "Operation completed successfully" });
         } finally {
@@ -449,10 +503,15 @@ exports.deleteReviewLambda = async (event, context) => {
                 }
             }
 
-            const restaurantId = parseIntParam('restaurant_id', event);
-            const posted = parseParam("posted", event);
+            const reviewId = parseIntParam('review_id', event);
+            if (!(await isOwnReview(client, ownUserId, reviewId))) {
+                throw {
+                    'statusCode': 403,
+                    'error': "Not own review"
+                }
+            }
 
-            await deleteReview(client, ownUserId, restaurantId, posted);
+            await deleteReview(client, reviewId);
 
             response = packResponse({ 'message': "Operation completed successfully" });
         } finally {
