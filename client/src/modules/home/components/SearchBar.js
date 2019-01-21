@@ -69,6 +69,7 @@ class SearchBar extends React.Component {
       latitude : 0,
       longitude : 0,
       searchFieldDisabled: false,
+      userLocationAllowed: false,
       useUserLocation: false,
       radius: 10000,
       dietError: null,
@@ -85,11 +86,13 @@ class SearchBar extends React.Component {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
+          userLocationAllowed: true
         });
       },
-      (error) => this.setState({ error: error.message }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      (error) => this.setState({ error: error.message, userLocationAllowed: false}),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
+    
     
     this.getDiets();
     this.setState({

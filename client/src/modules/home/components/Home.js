@@ -33,17 +33,32 @@ class Home extends React.Component {
       searchDone: false,
       restaurants: [],
       searchInProgress: false,
-      error: null
+      error: null,
+      userLocationAllowed: false
     };
   }
 
+  //Once all components have been mounted, run this. Asks user if the location data is allowed
   componentDidMount() {
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({
+          error: null,
+          userLocationAllowed: true
+        });
+        console.log("User location allowed")
+      },
+        (error) => this.setState({ error: error.message, userLocationAllowed: false}),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+    );
+    
     this._isMounted = true;
   }
 
   //When we get results, we need to collect them and set our searchDone to true
   handleResults(results) {
-    console.log("handleResults: Setting restaurants, searchDone to true, searchInProgress to false and error to null");
+    //console.log("handleResults: Setting restaurants, searchDone to true, searchInProgress to false and error to null");
     this.setState({
       restaurants : results,
       searchDone : true,
@@ -58,7 +73,7 @@ class Home extends React.Component {
 
   //Toggles flag that search is being done
   searching() {
-    console.log("searching: Setting searchInProgress to true, searchDone to false and error to null");
+    //console.log("searching: Setting searchInProgress to true, searchDone to false and error to null");
     this.setState({
       searchInProgress : true,
       searchDone : false,
@@ -67,15 +82,18 @@ class Home extends React.Component {
   }
 
 
+  //Thi is used in the even to fo error happening
+  //Right now it doesn't do much, because the console.logs are commented out
   errorHappened(errorMsg) {
-    console.log("errorHappened: Setting error and searchInProgress to false");
+    //console.log("errorHappened: Setting error and searchInProgress to false");
     this.setState({
       error : errorMsg,
       searchInProgress : false
     });
 
-    console.log(errorMsg);
+    //console.log(errorMsg);
   }
+  
 
   render() {
 
@@ -145,12 +163,12 @@ class Home extends React.Component {
     strings.setLanguage(language);
 
 
-    return (
+    return ( 
       <div className="landingDiv">
-        <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened}
+        <SearchBar onSearchDone={this.handleResults} searching={this.searching} onError={this.errorHappened} userLocationAllowed={this.state.userLocationAllowed}
           language={this.props.match.params.language}
         />
-        <Events language={this.props.match.params.language} />
+        <Events userLocationAllowed={this.state.userLocationAllowed} language={this.props.match.params.language} />
       </div>
     );
 
