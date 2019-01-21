@@ -119,7 +119,7 @@ exports.lambdaHandler = async (event, context) => {
                     operator: '<='
                 },
                 cityName: {
-                    sql_name: 'city_name.name',
+                    sql_name: 'city_name',
                     value: checkQueryParameter(event.queryStringParameters, 'cityName', null),
                     operator: '='
                 },
@@ -224,8 +224,12 @@ exports.lambdaHandler = async (event, context) => {
         WHERE
             city_name.language_id = 0) as sub`;
 
+        collectRestaurants = collectRestaurants + `
+            WHERE`
+        var firstloop = true;
         if (values.length > 0) {
-            collectRestaurants = collectRestaurants + ' AND votes_rate >= 0';
+            firstloop = false;
+            collectRestaurants = collectRestaurants + ' votes_rate >= 0';
         }
 
         for (var key in searchParameters.restaurantParameters){
@@ -238,8 +242,12 @@ exports.lambdaHandler = async (event, context) => {
                 }
                 var maxDistance = searchParameters.restaurantParameters.maxDistance.value
 
-                
-                collectRestaurants = collectRestaurants + ' AND '
+                if (!firstloop) {
+                    collectRestaurants = collectRestaurants + ' AND '
+                }
+                else {
+                    firstloop = false;
+                }
 
                 collectRestaurants = collectRestaurants + '\n' + getDistanceStatement(currentLatitude, currentLongitude, paramIndex)
                 paramIndex += 1
@@ -249,7 +257,12 @@ exports.lambdaHandler = async (event, context) => {
             } else if (key == 'globalDietId') {
                 continue;
             } else {
-                collectRestaurants = collectRestaurants + ' AND '
+                if (!firstloop) {
+                    collectRestaurants = collectRestaurants + ' AND '
+                }
+                else {
+                    firstloop = false;
+                }
                 paramObject = searchParameters.restaurantParameters[key]
                 
                 collectRestaurants = collectRestaurants + '\n' + getWhereStatement(paramObject.sql_name, paramObject.operator, paramIndex)
