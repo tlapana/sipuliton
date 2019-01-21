@@ -142,7 +142,9 @@ exports.lambdaHandler = async (event, context) => {
         var paramValues = [];
         var paramObject = searchParameters.restaurantParameters;
         
-        var collectRestaurants = '';
+        var collectRestaurants = `
+            SELECT *
+            FROM (`;
 
         paramObject = searchParameters.restaurantParameters['globalDietId']
 
@@ -220,7 +222,7 @@ exports.lambdaHandler = async (event, context) => {
             LEFT JOIN city_name ON restaurant.city_id=city_name.city_id
             LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE
-            city_name.language_id = 0`;
+            city_name.language_id = 0) as sub`;
 
         if (values.length > 0) {
             collectRestaurants = collectRestaurants + ' AND votes_rate >= 0';
