@@ -120,24 +120,20 @@ class Restaurant extends React.Component {
 			<div class="mainContainer">
 			<div class="restaurant">
 			<h2>{this.state.name}</h2>
-			<div id="restaurantPictures">
-			<img src={this.state.pictures[0]} alt="Restaurant picture1"></img>
-			<img src={this.state.pictures[1]} alt="Restaurant picture2"></img><img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
-			</div>
-			<div id="restaurantStats">{strings.priceLevel}<ReactStars value={this.state.priceLevel} count={3} char='€' edit={false}/>
-			{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/>
-			{strings.allergyTags}<br/>
+			<div id="restaurantPrice">{strings.priceLevel}<ReactStars value={this.state.priceLevel} count={3} char='€' edit={false}/></div>
+			<div id="restaurantRating">{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/></div>
+			<div id="allergyTags">{strings.allergyTags}<br/>
 			{this.looper(this.state.allergyTags)}</div>
 			<div id="restaurantDesc">{this.state.description} 
 			{strings.openingHours[0]}{this.state.openingHours.monFri}{strings.openingHours[1]}{this.state.openingHours.sat}{strings.openingHours[2]}{this.state.openingHours.sun}</div>
-			<Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button>
+			<div class="buttonContainer"><Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button></div>
 			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
 			<ModalHeader></ModalHeader>
 			<ModalBody className="writeReview">
 			<WriteReview restaurantId={this.state.id} />
 			</ModalBody>
 			<ModalFooter>
-            <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>
+            <div class="buttonContainer"><Button color="primary" onClick={this.toggleModal}>Peruuta</Button></div>
 			</ModalFooter>
 			</Modal>
 			<div id="preTitle">{strings.preTitle}</div>

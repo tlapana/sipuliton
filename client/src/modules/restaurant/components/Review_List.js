@@ -114,8 +114,7 @@ class ReviewList extends React.Component {
 		let list = [];
 		for (let reviewIndex = 0; reviewIndex < this.state.numberOfRevs; reviewIndex++) {
 			list.push(<div class="reviewListItem">
-			<h3>{this.state.titles[reviewIndex]}</h3>
-			<div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div>
+			<h5>{this.state.titles[reviewIndex]}</h5>
 			<div id="reviewText">{this.state.reviews[reviewIndex]}</div>
 			<div id="reviewUser">{strings.reviewer}{this.state.users[reviewIndex]}</div>
 			<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[reviewIndex])}</div>
