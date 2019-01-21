@@ -56,12 +56,6 @@ INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_t
     ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
     ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL);
 
-INSERT INTO restaurant_diet_stats(restaurant_id, global_diet_id, reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending) VALUES
-    ('1', '0', '0', '4', '3', '4', '3', '3', '40'),
-    ('2', '0', '0', '5', '5', '5', '5', '5', '50'),
-    ('3', '0', '0', '1', '1', '1', '1', '1', '-10'),
-    ('4', '0', '0', '1.5', '4.1', '1', '3.33', '2', '40');
-
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 
@@ -70,8 +64,8 @@ INSERT INTO review(restaurant_id, user_id, posted, status, title, image_url, fre
     ('1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', NULL, 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
     ('1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
 
-INSERT INTO review_diet(restaurant_id, user_id, review_posted, global_diet_id) VALUES
-    ('1', '0', '2018-09-22 6:30:25-07', '0'),
-    ('1', '0', '2018-09-22 6:30:25-07', '1');
+INSERT INTO review_diet(review_id, global_diet_id) VALUES
+    ('1', '0'),
+    ('1', '1');
 
 UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);

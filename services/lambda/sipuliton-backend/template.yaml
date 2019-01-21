@@ -173,6 +173,54 @@ Resources:
                       Path: /ownDiets
                       Method: get
 
+    OwnDietsEditFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: own_diet/
+          Handler: own_diet.editOwnDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /ownDiets/edit
+                      Method: get
+
+    OwnDietsCreateFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: own_diet/
+          Handler: own_diet.createOwnDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /ownDiets/create
+                      Method: get
+
+    OwnDietsDeleteFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: own_diet/
+          Handler: own_diet.deleteDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /ownDiets/delete
+                      Method: get
+
     LocationCitiesFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -253,6 +301,70 @@ Resources:
                       Path: /diet/groups
                       Method: get
 
+    VoteDietFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.voteDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /voteDiet
+                      Method: get
+
+    DietCreateAdminFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.createDietAdminLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /diet/createAdmin
+                      Method: get
+
+    DietCreateFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.createDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /diet/create
+                      Method: get
+
+    DietUpdateFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.updateDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /diet/update
+                      Method: get
+
     SearchFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -299,6 +411,38 @@ Resources:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
                       Path: /reviews
+                      Method: get
+
+    PostReviewFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: reviews/
+          Handler: reviews.postReviewLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /postReview
+                      Method: get
+
+    AggregationFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: aggregation/
+          Handler: aggregation.aggregationLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /dbUpdate
                       Method: get
 
 

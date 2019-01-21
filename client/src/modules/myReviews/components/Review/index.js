@@ -3,10 +3,11 @@ import { browserHistory, Router, Route } from 'react-router';
 import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
-
 import { Button, Container, Row, Col } from 'reactstrap';
 
+
 class ReviewData extends React.Component {
+   
       constructor(props) {
             super(props);
 
@@ -25,10 +26,23 @@ class ReviewData extends React.Component {
                }
       }
      send()   {
-      localStorage.setItem('myCat', "" + JSON.stringify(this.props.data));
+      localStorage.setItem('info', "" + JSON.stringify(this.props.data));
        window.location="/fi/myReviewEdit"
 
      }
+     deleterow(term)  {
+         fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
+
+         .then(ans => {
+    if(ans.ok) {
+      alert('ok')
+      window.location.reload(); 
+    } else {
+          alert('fail')
+
+    }
+  })
+     } 
       render() {
             return (
                     <div >
@@ -38,7 +52,7 @@ class ReviewData extends React.Component {
                                         name
                                     </Col>
                                     <Col xs="4">
-                                   {this.state.name}
+                                   {this.state.name}  
                                     </Col>
                               </Row>
 
@@ -47,7 +61,7 @@ class ReviewData extends React.Component {
                                         title
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.title}
+                                             {this.state.title}  
                                     </Col>
                               </Row>
                               <Row>
@@ -55,7 +69,7 @@ class ReviewData extends React.Component {
                                         freetext
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.freetext}
+                                             {this.state.freetext}  
                                     </Col>
                               </Row>
                               <Row>
@@ -63,7 +77,7 @@ class ReviewData extends React.Component {
                                         Posted
                                     </Col>
                                     <Col xs="4">
-                                             {this.state.posted}
+                                             {this.state.posted}  
                                     </Col>
                               </Row>
 
@@ -72,7 +86,7 @@ class ReviewData extends React.Component {
                                         Overall Rating
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />
+                                             <ReactStars value = {this.state.overall}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -81,7 +95,7 @@ class ReviewData extends React.Component {
                                         Pricing
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />
+                                             <ReactStars value = {this.state.pricing}  count = {3} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -91,7 +105,7 @@ class ReviewData extends React.Component {
                                         Rating service and quality
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />
+                                             <ReactStars value = {this.state.RatingServiceAndQuality}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
@@ -100,16 +114,16 @@ class ReviewData extends React.Component {
                                         Rating variety
                                     </Col>
                                     <Col xs="4">
-                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />
+                                             <ReactStars value = {this.state.rating_variety}  count = {5} size = {24} />   
                                     </Col>
                               </Row>
 
 
 
-                              <Button   onClick={()=>{this.send()}} >Edit</Button><Button onClick={()=>{this.send()}}>Delete</Button>
+                              <Button   onClick={()=>{this.send()}} >Edit</Button><Button onClick={()=>{this.deleterow( this.state.id)}}>Delete</Button>
 
 
-
+ 
 
                      </fieldset>
                     <br/>
@@ -119,16 +133,20 @@ class ReviewData extends React.Component {
   };
 
 class Review extends React.Component {
-
+     page=0;
+     limit=2;
       changed() {
             console.log(2)
       }
-
+     send()  {
+   
+   
+     }
      t1=this;
       constructor(props) {
-
+       
         super(props);
-
+      
           this.state = {
                 array:[],
                   mode: true,
@@ -144,12 +162,25 @@ class Review extends React.Component {
             }
 
       }
-      left() { alert('vasen'); }
-      rigth() { alert('rigth'); }
-      deleteItem() { fetch('http://localhost:3000/ownReviews/delete') }
+      left() { 
+       if(this.page>0) 
+         { 
+             this.page--;
+          }
+
+            this.init(0);     
+         }
+      rigth() 
+         { 
+            this.page++; 
+
+           this.init(0);
+            
+        }
+      deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
       init(statusvalue)  {
             var t = this;
-            fetch('http://localhost/ownReviews?status=' + statusvalue).then((response) => response.json())
+            fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit +'&offset='+this.page*this.limit).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
                              for(var item in responseJson.reviews)  {
@@ -179,7 +210,7 @@ class Review extends React.Component {
             var rating_overall = document.getElementById("overall").value;
 
             var rating_variety = document.getElementById("rating_variety").value;
-            var url = 'http://localhost:3000/ownReviews/edit?status=0&text=' + text;
+            var url = 'http://127.0.0.1:3000/ownReviews/edit?status=0&text=' + text;
             url += "&title=" + title;
             url += "&rating_overall=" + rating_overall;
             url += "&rating_variety=" + rating_variety;
@@ -194,7 +225,11 @@ class Review extends React.Component {
       }
 
       changedvalue()  {
-
+      
+          this.init(document.getElementById("status").value);
+      }
+      changeLimit()  {
+          this.limit=document.getElementById("limit").value;
           this.init(document.getElementById("status").value);
       }
 
@@ -211,15 +246,21 @@ class Review extends React.Component {
                         <h1>MyReviews </h1>
 
 
-                        <input type="button" value="Vasen" onClick={() => { this.rigth() }} />
-                        <input type="button" value="oikea" onClick={() => { this.rigth() }} />
+                        <input type="button" value="<<" onClick={() => { this.left() }} />
+                        <input type="button" value=">>" onClick={() => { this.rigth() }} />
 
                         <select id="status"  onChange={()=>{this.changedvalue()}}>
-                        <option value="0">Status 0</option>
-                        <option value="1">Status 1</option>
-                        <option value="2">Status 2</option>
+                        <option value="0">Odottaa</option>
+                        <option value="1">Hyväksytty</option>
+                        <option value="2">Hylätty</option>
                          </select>
+                        <label>Arvosteluja sivulla</label>
+                        <select id="limit" onChange={()=>{this.changeLimit()}}>
+                         <option value="2">2</option>
+                         <option value="4">4</option>
 
+                        </select>
+                          
                         <div style={{"width":"400px","overflow": "scroll","height": "300px"}}>
 
                         {this.state.array}
@@ -232,7 +273,7 @@ class Review extends React.Component {
             }
 
             return (
-                  <h1>MyReviews8</h1>
+                  <h1>MyReviews</h1>
             )
       }
 

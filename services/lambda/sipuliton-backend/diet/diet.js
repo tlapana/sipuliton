@@ -337,3 +337,313 @@ exports.getAllDietsLambda = async (event, context) => {
     return response;
 };
 
+async function voteDiet(client, userId, restaurantId, dietId, up) {
+    if (up === -1) {
+        await client.query(`DELETE FROM diet_vote WHERE user_id = $1 AND global_diet_id = $2 AND restaurant_id = $3 `,
+            [userId, dietId, restaurantId]);
+        return;
+    }
+    if (up === null) {
+        //swap between vote up/down
+        await client.query(`INSERT INTO diet_vote(restaurant_id, global_diet_id, user_id, up)
+                            VALUES ($3, $2, $1, TRUE)
+                            ON CONFLICT (restaurant_id, global_diet_id, user_id) DO UPDATE
+                                SET up = NOT diet_vote.up`,
+            [userId, dietId, restaurantId]);
+    }
+    else {
+        await client.query(`INSERT INTO diet_vote(restaurant_id, global_diet_id, user_id, up)
+                            VALUES ($3, $2, $1, $4)
+                            ON CONFLICT (restaurant_id, global_diet_id, user_id) DO UPDATE
+                                SET up = $4`,
+            [userId, dietId, restaurantId, up]);
+    }
+    return;
+}
+
+exports.voteDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+            var restaurantId = parseIntParam("restaurant_id", event);
+            if (restaurantId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "restaurant_id not set"
+                }
+            }
+            var dietId = parseIntParam("diet_id", event);
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "diet_id not set"
+                }
+            }
+
+            var up = parseParam("up", event);
+            var down = parseParam("down", event);
+            if (up !== null & down !== null) {
+                up = null;
+            }
+            else if (up === null & down === null) {
+                up = -1;
+            }
+            else if (up !== null) {
+                up = true;
+            }
+            else {
+                up = false;
+            }
+            await voteDiet(client, ownUserId, restaurantId, dietId, up);
+
+            response = packResponse({ 'message' : 'Operation completed successfully'});
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+async function saveDiet(client, languageId, name, preset, groups) {
+    var jsonObj = {};
+    await client.query('BEGIN');
+    try {
+        const res = await client.query(
+            `SELECT global_diet_id
+            FROM (SELECT global_diet_id, array_agg(food_group_id) as groups
+                FROM diet_groups
+                GROUP BY global_diet_id) AS groups_agg
+            WHERE groups = $1`,
+            [groups]);
+        if (res.rowCount == 0) {
+            const res2 = await client.query(
+                `INSERT INTO global_diet
+                VALUES ((SELECT coalesce(max(global_diet_id),0)+1 FROM global_diet), $1)
+                RETURNING global_diet_id`,
+                [preset]);
+            jsonObj = JSON.parse(JSON.stringify(res2.rows[0]));
+            if (name !== null) {
+                await client.query(
+                    `INSERT INTO global_diet_name
+                    VALUES ($2, $3, $1)`,
+                    [name, jsonObj['global_diet_id'], languageId]);
+            }
+            var len = groups.length;
+            for (var i = 0; i < len; i++) {
+                await client.query(
+                    `INSERT INTO diet_groups
+                    VALUES ($1, $2)`,
+                    [jsonObj['global_diet_id'], groups[i]]);
+            }
+        }
+        else if (res.rowCount == 1) {
+            throw {
+                'statusCode': 400,
+                'error': "diet exists"
+            }
+        }
+        else {
+            throw {
+                'statusCode': 500,
+                'error': "DB is broken"
+            }
+        }
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    }
+    return jsonObj;
+}
+
+async function updateDiet(client, languageId, name, preset, dietId, groups) {
+    var jsonObj = {};
+    await client.query('BEGIN');
+    try {
+        if (preset !== null) {
+            await client.query(
+                `UPDATE global_diet
+                SET preset = $1
+                WHERE global_diet_id = $2`,
+                [preset, dietId]);
+        }
+        if (name !== null) {
+            await client.query(
+                `INSERT INTO global_diet_name
+                VALUES ($2, $3, $1)
+                ON CONFLICT (id) DO UPDATE global_diet_name
+                SET name = $1
+                WHERE global_diet_id = $2 AND language_id = $3`,
+                [name, dietId, languageId]);
+        }
+        if (groups !== null) {
+            await client.query(
+                `DELETE FROM diet_groups
+                WHERE global_diet_id = $1`,
+                [dietId])
+            var len = groups.length;
+            for (var i = 0; i < len; i++) {
+                await client.query(
+                    `INSERT INTO diet_groups
+                    VALUES ($1, $2)`,
+                    [dietId, groups[i]]);
+            }
+        }
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    }
+    return jsonObj;
+}
+
+
+exports.createDietAdminLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            var temp = parseParam("language", event);
+
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+
+            temp = JSON.parse(parseParam("preset", event));
+            const preset = temp === true ? true : temp === false ? false : null;
+            if (preset === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "Invalid value for preset"
+                }
+            }
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1 || temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+            
+            const jsonObj = await saveDiet(client, languageId, name, preset, groups);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.createDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            var temp = parseParam("language", event);
+
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+            
+            const preset = false;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1 || temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+
+            const jsonObj = await saveDiet(client, languageId, name, preset, groups);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+exports.updateDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            var temp = parseParam("language", event);
+
+            const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+
+            temp = JSON.parse(parseParam("preset", event));
+            const preset = temp === true ? true : temp === false ? false : null;
+
+            temp = parseIntParam("global_diet_id", event);
+            if (temp === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "diet id not set"
+                }
+            }
+            dietId = temp;
+
+            temp = JSON.parse(parseParam("groups", event));
+            if (temp !== null && temp.length < 1) {
+                throw {
+                    'statusCode': 400,
+                    'error': "cannot create empty diet"
+                }
+            }
+            const groups = temp;
+
+            temp = parseParam("name", event);
+            const name = temp === null ? null : temp;
+
+            const jsonObj = await updateDiet(client, languageId, name, preset, dietId, groups);
+
+            response = packResponse(jsonObj);
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+

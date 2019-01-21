@@ -1,8 +1,11 @@
+//Component for the small restaurant box.
+
 import React from 'react';
 import {NavLink,} from 'reactstrap';
 import ReactStars from 'react-stars';
-import '../../../styles/map.css';
 
+//Styles imports
+import '../../../styles/map.css';
 
 /* Router imports */
 import { Link } from 'react-router-dom';
@@ -15,7 +18,7 @@ class MapSmallRestaurantInfo extends React.Component {
 
   render() {
 
-    /* Localization */
+    /* Localizations */
     let strings = new LocalizedStrings({
       en:{
         openToday:"Opening hours today",
@@ -40,9 +43,14 @@ class MapSmallRestaurantInfo extends React.Component {
         backToMap: "Takaisin karttaan"
       }
     });
+
+    //Set correct language.
     strings.setLanguage(this.props.language);
+
+    //Get todays opening hours
     var todayOpenHours = MapApi.getTodayOpeningHours(this.props.restaurantInfo);
 
+    //Additionall class names.
     var additionalClassName = this.props.pinColor+"-restaurant"
     var fullClass = "restaurant-info "+additionalClassName
     return(
@@ -71,7 +79,6 @@ class MapSmallRestaurantInfo extends React.Component {
                 edit={false}
               />
             </div>
-
         </div>
       </div>
       <div className="restaurant-info-item" id="openingHours">

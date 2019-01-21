@@ -1,3 +1,7 @@
+/* Map component, which uses open street map. This component brings together all
+needed components to the map component.
+*/
+
 import React from 'react';
 /* Map imports */
 import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
@@ -11,7 +15,7 @@ import LocalizedStrings from 'react-localization';
 import MapSmallRestaurantInfo from './MapSmallRestaurantInfo'
 
 class CustomMap extends React.Component {
-  /* Constructor of the navication bar class. */
+  /* Constructor of the custom map class. Initializes default state.*/
   constructor(props) {
     super(props);
 
@@ -22,14 +26,14 @@ class CustomMap extends React.Component {
 
   }
 
-  //Fetches restaurant info and opens restaurant info box
+  //Sets clicked restaurant as a selected one after that this method calls render function.
+  //Takes restaurant position, marker color and marker idx as a parameter.
   OpenRestaurantInfo(position,color,idx){
     this.props.selectedRestaurantChanged(idx,color);
     this.render();
   }
 
-  //Closes restaurant info box
-
+  //Render method for map component rendering.
   render() {
 
     // icon for the search result
@@ -145,7 +149,9 @@ class CustomMap extends React.Component {
       selectedMarker = this.props.restaurants.selected;
     }
 
+    //Loading class when map is loading.
     const rootClassName = this.props.loading === true ? "map-loading" : "";
+
     return(
         <div className={rootClassName}>
           <Map
@@ -185,11 +191,6 @@ class CustomMap extends React.Component {
                   className="HiddenPopUp"/>
               </Marker>
             )}
-            <Circle center={[this.props.latitude,this.props.longitude]}
-                    radius={this.props.searchRadiusInKm}
-                    color={'red'}
-                    fillOpacity={0.05}/>
-
           </Map>
             <div className="restaurants-list">
                 {selectedMarker.map((data, idx) =>
