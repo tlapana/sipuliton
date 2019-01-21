@@ -160,15 +160,18 @@ exports.lambdaHandler = async (event, context) => {
             collectRestaurants = collectRestaurants + `
                 SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
                        city_name.name as city_name, website, street_address,
-                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
-                       weighted_reviews, weighted_rating_overall, weighted_rating_reliability, weighted_rating_variety,
-                       weighted_rating_service_and_quality, weighted_pricing, weighted_trending,
-                       downvotes, upvotes, latitude, longitude, 
+                       coalesce(reviews, 0) as reviews, coalesce(rating_overall, 0) as rating_overall, coalesce(rating_reliability, 0) as rating_reliability,
+                       coalesce(rating_variety, 0) as rating_variety, coalesce(rating_service_and_quality, 0) as rating_service_and_quality, coalesce(pricing, 0) as pricing,
+                       coalesce(trending, 0) as trending,
+                       coalesce(weighted_reviews, 0) as weighted_reviews, coalesce(weighted_rating_overall, 0) as weighted_rating_overall, coalesce(weighted_rating_reliability, 0) as weighted_rating_reliability,
+                       coalesce(weighted_rating_variety, 0) as weighted_rating_variety, coalesce(weighted_rating_service_and_quality, 0) as weighted_rating_service_and_quality,
+                       coalesce(weighted_pricing, 0) as weighted_pricing, coalesce(weighted_trending, 0) as weighted_trending,
+                       coalesce(votes_rate, 0) as votes_rate, latitude, longitude, 
                        opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
                 FROM restaurant`;
             
             collectRestaurants = collectRestaurants + `
-                LEFT JOIN (SELECT restaurant_id, AVG(downvotes) as downvotes, AVG(upvotes) as upvotes
+                LEFT JOIN (SELECT restaurant_id, MIN(4 + upvotes - downvotes) as votes_rate
                    FROM restaurant_diet_filter
                    WHERE ` + diet_statement + `
                    GROUP BY restaurant_id) as votes
@@ -198,7 +201,9 @@ exports.lambdaHandler = async (event, context) => {
             collectRestaurants = collectRestaurants + `
                 SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
                        city_name.name as city_name, website, street_address,
-                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
+                       coalesce(reviews, 0) as reviews, coalesce(rating_overall, 0) as rating_overall, coalesce(rating_reliability, 0) as rating_reliability,
+                       coalesce(rating_variety, 0) as rating_variety, coalesce(rating_service_and_quality, 0) as rating_service_and_quality, coalesce(pricing, 0) as pricing,
+                       coalesce(trending, 0) as trending,
                        latitude, longitude, 
                        opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
                 FROM restaurant`;
@@ -216,6 +221,10 @@ exports.lambdaHandler = async (event, context) => {
             LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE
             city_name.language_id = 0`;
+
+        if (values.length > 0) {
+            collectRestaurants = collectRestaurants + ' AND votes_rate >= 0';
+        }
 
         for (var key in searchParameters.restaurantParameters){
 
