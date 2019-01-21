@@ -40,10 +40,39 @@ let response;
 
 async function getOwnUserId(client, event) {
     const AWS = require('aws-sdk');
+    // Note, make sure you have proper credentials, uncomment following code to set credentials if running file locally
+    // var myConfig = new AWS.Config({
+    //     credentials: {
+    //         accessKeyId: "XXXXXXXXXXXXX",
+    //         secretAccessKey: "XXXXXXXXXXXXXXXXXXXXXXX"
+    //     }
+    // });
     const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
-    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
-    //console.log("user sub:" + userSub);
-    return 0;
+    const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
+    const request = {
+        UserPoolId: 'xxxxxxxxxx',
+        Filter: `sub = "${userSub}"`,
+        Limit: 1
+    }
+    const users = await cognitoClient.listUsers(request).promise();
+    if (users.length == 1) {
+        const res = await client.query('SELECT user_id FROM user_login WHERE cognito_sub = $1', userSub);
+        if (res.rowCount == 0) {
+            client.end();
+            throw {
+                'statusCode': 400,
+                'error': "No user found"
+            }
+        }
+        if (res.rowCount >= 2) {
+            client.end();
+            throw {
+                'statusCode': 500,
+                'error': "Something is broken, returning 2 or more users"
+            }
+        }
+        return res.rows[0]['user_id'];
+    }
     return null;
 }
 
