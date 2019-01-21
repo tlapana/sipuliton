@@ -196,8 +196,8 @@ exports.lambdaHandler = async (event, context) => {
             collectRestaurants = collectRestaurants + `
                 LEFT JOIN (SELECT restaurant_id, restaurant_stats.reviews as reviews,
                    restaurant_stats.rating_overall as rating_overall, restaurant_stats.rating_reliability as rating_reliability,
-                   restaurant_stats.rating_variety as rating_variety, restaurant_diet_stats.rating_service_and_quality as rating_service_and_quality,
-                   restaurant_diet_stats.pricing as pricing, restaurant_diet_stats.trending as trending
+                   restaurant_stats.rating_variety as rating_variety, restaurant_stats.rating_service_and_quality as rating_service_and_quality,
+                   restaurant_stats.pricing as pricing, restaurant_stats.trending as trending
                    FROM restaurant_stats) as diet_stats
                 ON restaurant.restaurant_id = diet_stats.restaurant_id`;
         }
