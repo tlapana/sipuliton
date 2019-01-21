@@ -159,7 +159,7 @@ class SearchBar extends React.Component {
   //This gets the options for the selection.
   getDiets() {
     console.log("Fetching diets")
-    fetch("https://locahost:3000/diets/all")
+    fetch("https://localhost:3000/diets/all")
       .then(res => res.json())
       .then(
         (result) => {
@@ -403,10 +403,8 @@ class SearchBar extends React.Component {
             
             <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
             
-              //Modal header
               <ModalHeader>{strings.includeinsearch}</ModalHeader>
               
-              //Modal body
               <ModalBody className="filterBox">
               
                 {strings.diets}               
@@ -453,7 +451,6 @@ class SearchBar extends React.Component {
 
               </ModalBody>
               
-              //Modal footer, contains the buttons
               <ModalFooter>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
