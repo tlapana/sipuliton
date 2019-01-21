@@ -222,7 +222,22 @@ exports.lambdaHandler = async (event, context) => {
             LEFT JOIN city_name ON restaurant.city_id=city_name.city_id
             LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE
-            city_name.language_id = 0) as sub`;
+            city_name.language_id = 0`
+        
+        var currentLatitude = searchParameters.restaurantParameters.currentLatitude.value;
+        var currentLongitude = searchParameters.restaurantParameters.currentLongitude.value
+        if (currentLatitude === undefined || currentLongitude === undefined){
+            throw("Max distance parameter given but no current location")
+        }
+        var maxDistance = searchParameters.restaurantParameters.maxDistance.value
+
+        collectRestaurants = collectRestaurants + ' AND '
+                
+        collectRestaurants = collectRestaurants + '\n' + getDistanceStatement(currentLatitude, currentLongitude, paramIndex)
+        paramIndex += 1
+        paramValues.push(maxDistance)
+        
+        collectRestaurants = collectRestaurants + `) as sub`;
 
         collectRestaurants = collectRestaurants + `
             WHERE`
@@ -235,23 +250,7 @@ exports.lambdaHandler = async (event, context) => {
         for (var key in searchParameters.restaurantParameters){
 
             if (key == 'maxDistance'){
-                var currentLatitude = searchParameters.restaurantParameters.currentLatitude.value;
-                var currentLongitude = searchParameters.restaurantParameters.currentLongitude.value
-                if (currentLatitude === undefined || currentLongitude === undefined){
-                    throw("Max distance parameter given but no current location")
-                }
-                var maxDistance = searchParameters.restaurantParameters.maxDistance.value
-
-                if (!firstloop) {
-                    collectRestaurants = collectRestaurants + ' AND '
-                }
-                else {
-                    firstloop = false;
-                }
-
-                collectRestaurants = collectRestaurants + '\n' + getDistanceStatement(currentLatitude, currentLongitude, paramIndex)
-                paramIndex += 1
-                paramValues.push(maxDistance)
+                continue;
             } else if (key == 'cityName' && searchParameters.restaurantParameters.cityName.value == null || key == "currentLatitude" || key == "currentLongitude"){
                 continue;
             } else if (key == 'globalDietId') {
