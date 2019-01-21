@@ -1,5 +1,6 @@
 --materialized views (mainly for concatenating reviews
 
+REFRESH MATERIALIZED VIEW restaurant_stats;
 REFRESH MATERIALIZED VIEW restaurant_diet_stats;
 REFRESH MATERIALIZED VIEW restaurant_diet_filter;
 REFRESH MATERIALIZED VIEW recursive_diets;
