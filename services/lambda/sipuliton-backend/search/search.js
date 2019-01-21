@@ -142,15 +142,7 @@ exports.lambdaHandler = async (event, context) => {
         var paramValues = [];
         var paramObject = searchParameters.restaurantParameters;
         
-        var collectRestaurants = `
-            SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
-                   city_name.name as city_name, website, street_address,
-                   reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
-                   weighted_reviews, weighted_rating_overall, weighted_rating_reliability, weighted_rating_variety,
-                   weighted_rating_service_and_quality, weighted_pricing, weighted_trending,
-                   downvotes, upvotes, latitude, longitude, 
-                   opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
-            FROM restaurant`;
+        var collectRestaurants = '';
 
         paramObject = searchParameters.restaurantParameters['globalDietId']
 
@@ -165,6 +157,16 @@ exports.lambdaHandler = async (event, context) => {
                     diet_statement = diet_statement + ' OR '
                 }
             }
+            collectRestaurants = collectRestaurants + `
+                SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
+                       city_name.name as city_name, website, street_address,
+                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
+                       weighted_reviews, weighted_rating_overall, weighted_rating_reliability, weighted_rating_variety,
+                       weighted_rating_service_and_quality, weighted_pricing, weighted_trending,
+                       downvotes, upvotes, latitude, longitude, 
+                       opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+                FROM restaurant`;
+            
             collectRestaurants = collectRestaurants + `
                 LEFT JOIN (SELECT restaurant_id, AVG(downvotes) as downvotes, AVG(upvotes) as upvotes
                    FROM restaurant_diet_filter
@@ -193,6 +195,14 @@ exports.lambdaHandler = async (event, context) => {
                 ON restaurant.restaurant_id = weighted_stats.restaurant_id`;
         }
         else {
+            collectRestaurants = collectRestaurants + `
+                SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
+                       city_name.name as city_name, website, street_address,
+                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
+                       latitude, longitude, 
+                       opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+                FROM restaurant`;
+
             collectRestaurants = collectRestaurants + `
                 LEFT JOIN (SELECT restaurant_id, restaurant_stats.reviews as reviews,
                    restaurant_stats.rating_overall as rating_overall, restaurant_stats.rating_reliability as rating_reliability,
