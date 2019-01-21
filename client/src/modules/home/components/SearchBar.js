@@ -121,7 +121,7 @@ class SearchBar extends React.Component {
   }
   
   
-  //Does the search
+  //Does the search by generating URL we pass to map
   searchUrl() {
     var url = '/'+this.props.language+'/map?'
                 + 'minOverallRating=' + this.state.minOverall
@@ -162,7 +162,7 @@ class SearchBar extends React.Component {
   //This gets the options for the selection.
   getDiets() {
     console.log("Fetching diets")
-    fetch("https://localhost:3000/diets/all")
+    fetch("https://localhost:3000/diet/all")
       .then(res => res.json())
       .then(
         (result) => {
