@@ -5,13 +5,13 @@
 */
 
 import React from 'react';
-import ReactLoading from 'react-loading';
+//import ReactLoading from 'react-loading';
 import { Redirect } from 'react-router-dom';
 import LocalizedStrings from 'react-localization';
 
 import SearchBar from './SearchBar.js'
 import Events from './Events.js'
-import SearchResults from './SearchResults.js'
+//import SearchResults from './SearchResults.js'
 
 
 //Styles
@@ -29,7 +29,6 @@ class Home extends React.Component {
     this.errorHappened = this.errorHappened.bind(this);
 
     this.state = {
-      error: null,
       searchDone: false,
       restaurants: [],
       searchInProgress: false,
