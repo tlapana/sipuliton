@@ -15,9 +15,9 @@ INSERT INTO city_name VALUES
     ('100000', '1', 'imaginary city');
 
 INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
-    ('0', 'test-user-1', 'Sipuliton mod', 'test@mail.com'),
-    ('1', 'Test-user-2', 'Admin', 'admin@sipuliton.fi'),
-    ('2', 'Test-user-3', 'Troller', 'sum1@here.com'),
+    ('0', 'c10cb9bc-7401-47fe-ac81-e13d394a0189', 'Sipuliton mod', 'eelis.mikkola@student.tut.fi'),
+    ('1', 'f632943e-c3d3-4bf1-9f23-ebec9b0b1c83', 'Admin', 'notareademail@mail.com'),
+    ('2', 'bf04cbd6-a2bb-46cc-89a5-1911d74670ba', 'Troller', 'sadasdasd@gmail.com'),
     ('3', 'get from cognito', 'Restaurant owner', 'asd@asd.com'),
     ('4', 'cog5', 'user', 'das@asd.com');
 

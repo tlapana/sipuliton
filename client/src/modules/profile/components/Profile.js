@@ -49,7 +49,7 @@ class Profile extends React.Component {
     const init = {
       queryStringParameters: {
         user_id: this.state.id
-    }
+      }
     }
     API.get('api', '/profile', init)
       .then((responseJson) => {
