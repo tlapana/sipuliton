@@ -55,11 +55,11 @@ async function getPsqlClient() {
     await client.connect((err) => {
         if (err) {
             //TODO: Remove + err before deployment
-            console.error("Failed to connect client");
-            console.error(err);
+            //console.error("Failed to connect client");
+            //console.error(err);
             throw {
                 'statusCode': 500,
-                'error': "Failed to connect to database" + err
+                'error': "Failed to connect to database"
             }
         }
     });
@@ -67,14 +67,14 @@ async function getPsqlClient() {
 }
 
 function errorHandler(err) {
-    console.log(err);
+    //console.log(err);
     response = {
         'statusCode': 500,
         //TODO: Handle CORS in AWS api gateway settings prior to deployment
         'headers': {
             'Access-Control-Allow-Origin': '*'
         },
-        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+        'body': JSON.stringify({ 'error': "Something went wrong!" })
     };
     if ("statusCode" in err) {
         response['statusCode'] = err['statusCode'];
@@ -196,8 +196,8 @@ async function getGroups(client, languageId, alternativeLanguageId) {
         ORDER BY name`,
         [languageId, alternativeLanguageId]);
     if (res.rowCount > 0) {
-        console.log([languageId, alternativeLanguageId]);
-        console.log(res.rows);
+        //console.log([languageId, alternativeLanguageId]);
+        //console.log(res.rows);
         var jsonObj = JSON.parse(JSON.stringify(res.rows));
         return jsonObj;
     }
@@ -277,7 +277,7 @@ exports.getFoodGroupsLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 
@@ -305,7 +305,7 @@ exports.getPresetDietsLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 
@@ -333,7 +333,7 @@ exports.getAllDietsLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 
@@ -474,7 +474,7 @@ exports.createDietAdminLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 
@@ -514,7 +514,7 @@ exports.createDietLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 
@@ -564,7 +564,7 @@ exports.updateDietLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };
 

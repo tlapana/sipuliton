@@ -55,11 +55,11 @@ async function getPsqlClient() {
     await client.connect((err) => {
         if (err) {
             //TODO: Remove + err before deployment
-            console.error("Failed to connect client");
-            console.error(err);
+            //console.error("Failed to connect client");
+            //console.error(err);
             throw {
                 'statusCode': 500,
-                'error': "Failed to connect to database" + err
+                'error': "Failed to connect to database"
             }
         }
     });
@@ -67,14 +67,14 @@ async function getPsqlClient() {
 }
 
 function errorHandler(err) {
-    console.log(err);
+    //console.log(err);
     response = {
         'statusCode': 500,
         //TODO: Handle CORS in AWS api gateway settings prior to deployment
         'headers': {
             'Access-Control-Allow-Origin': '*'
         },
-        'body': JSON.stringify({ 'error': "Something went wrong! " + err })
+        'body': JSON.stringify({ 'error': "Something went wrong!" })
     };
     if ("statusCode" in err) {
         response['statusCode'] = err['statusCode'];
@@ -193,7 +193,7 @@ exports.lambdaHandler = async (event, context) => {
         var pageNumber = event.queryStringParameters.pageNumber
 
         const offset = pageNumber * pageSize
-        console.log(event)
+        //console.log(event)
         var collectReviews = `
         SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
             rating_reliability, rating_variety, rating_service_and_quality,
@@ -209,10 +209,10 @@ exports.lambdaHandler = async (event, context) => {
         var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
         const client = new pg.Client(conn);
         await client.connect((err) => {
-                console.log("Connecting")
+                //console.log("Connecting")
                 if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
+                    //console.error("Failed to connect client")
+                    //console.error(err)
                     throw err
                 }
         });
@@ -238,11 +238,11 @@ exports.lambdaHandler = async (event, context) => {
 
 
     } catch (err) {
-        console.error(err);
+        //console.error(err);
         return err;
     }
 
-    console.log(response)
+    //console.log(response)
     return response
 };
 
@@ -444,6 +444,6 @@ exports.postReviewLambda = async (event, context) => {
         response = errorHandler(err);
     }
 
-    console.log(response);
+    //console.log(response);
     return response;
 };

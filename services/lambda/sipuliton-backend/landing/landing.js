@@ -58,10 +58,10 @@ exports.lambdaHandler = async (event, context) => {
         var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
         const client = new pg.Client(conn);
         await client.connect((err) => {
-                console.log("Connecting")
+                //console.log("Connecting")
                 if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
+                    //console.error("Failed to connect client")
+                    //console.error(err)
                     throw err
                 }
         });
@@ -83,10 +83,10 @@ exports.lambdaHandler = async (event, context) => {
 
 
     } catch (err) {
-        console.error(err);
+        //console.error(err);
         return err;
     }
 
-    console.log(response)
+    //console.log(response)
     return response
 };
