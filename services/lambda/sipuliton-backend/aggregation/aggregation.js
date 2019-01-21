@@ -93,6 +93,7 @@ exports.aggregationLambda = async (event, context) => {
         const client = await getPsqlClient();
 
         try {
+            await client.query(`REFRESH MATERIALIZED VIEW restaurant_stats`);
             await client.query(`REFRESH MATERIALIZED VIEW restaurant_diet_stats`);
             await client.query(`REFRESH MATERIALIZED VIEW restaurant_diet_filter`);
             await client.query(`REFRESH MATERIALIZED VIEW recursive_diets`);

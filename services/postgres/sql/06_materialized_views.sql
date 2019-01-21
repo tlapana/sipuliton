@@ -1,5 +1,17 @@
 --materialized views (mainly for concatenating reviews)
 
+CREATE MATERIALIZED VIEW restaurant_stats
+AS
+	SELECT review.restaurant_id,
+		COUNT(*) AS reviews, AVG(rating_overall) AS rating_overall,
+		AVG(rating_reliability) AS rating_reliability, AVG(rating_variety) AS rating_variety,
+		AVG(rating_service_and_quality) AS rating_service_and_quality, AVG(pricing) AS pricing,
+		0 AS trending
+	FROM review
+	WHERE status = 1
+	GROUP BY review.restaurant_id
+WITH NO DATA;
+
 --restaurant statistics for diet (derived from reviews)
 CREATE MATERIALIZED VIEW restaurant_diet_stats
 AS
