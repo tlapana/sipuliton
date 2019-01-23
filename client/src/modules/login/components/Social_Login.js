@@ -221,11 +221,11 @@ export default class SocialLogin extends React.Component {
       //<Authenticator federated={federated} /> <-Just a remainder. Gives Amazon styled login
       return (
         <div>
-          <button onClick={this.signInGoogle}>{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
+          <button onClick={this.signInGoogle} className="google-login-btn" >{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
             <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
             <span>{strings.googleLogin}</span>e
           </button>
-          <button onClick={this.signInFacebook}>
+          <button onClick={this.signInFacebook} className="facebook-login-btn">
             <FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />
             {strings.fbLogin}
           </button>  
