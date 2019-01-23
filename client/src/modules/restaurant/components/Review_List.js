@@ -12,8 +12,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactStars from 'react-stars';
 /* Localization */
 import LocalizedStrings from 'react-localization';
-
-const reviewsDataUrl = "http://localhost:3000/reviews";
+import Config from '../../../config.js';
+const reviewsDataUrl = Config.backendAPIPaths.BASE+"/reviews";
 
 class ReviewList extends React.Component {
 	constructor(props) {
