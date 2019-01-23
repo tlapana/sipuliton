@@ -8,11 +8,11 @@ import CommonFunctionsApi from './CommonGlobalFunctions'
  1 argument (which is the value of the input).
 */
 export default class VInput extends React.Component {
-  constructor(props) {
-    super(props);
+  //constructor(props) {
+    //super(props);
     //this.isString = this.isString.bind(this);
     //this.checkIfValid = this.checkIfValid.bind(this);
-  }
+  //}
 
 /*
   isString(value) {
@@ -43,7 +43,7 @@ export default class VInput extends React.Component {
   render() {
     var { isValid, className, value, errormsg, type, ...other } = this.props;
     const valid = CommonFunctionsApi.checkIfValid(isValid, value);
-    const errorClassName = valid || errormsg == null || errormsg == "" ? "input-errormsg" : "input-errormsg visible";
+    const errorClassName = valid || errormsg == null || errormsg === "" ? "input-errormsg" : "input-errormsg visible";
 
     if (!valid) {
       if (type === "submit") {

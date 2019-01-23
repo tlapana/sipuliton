@@ -6,10 +6,10 @@
 
 import React from 'react';
 import {
-  Input, InputGroup, InputGroupAddon, UncontrolledTooltip,
+  Input, InputGroup, InputGroupAddon, 
   ModalHeader, ModalBody, ModalFooter, Label
 } from 'reactstrap';
-import { Route, Redirect } from 'react-router'
+import { Redirect } from 'react-router'
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,7 +22,6 @@ import * as AppImports from  '../../app';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
-import { string } from 'prop-types';
 
 class SearchBar extends React.Component {
 

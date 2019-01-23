@@ -1,9 +1,6 @@
 ﻿import React, { } from 'react';
-import { browserHistory, Router, Route } from 'react-router';
-import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
-import {  Redirect } from 'react-router-dom';
-import { Button, Container, Row, Col } from 'reactstrap';
+import { Button, Row, Col } from 'reactstrap';
 
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
@@ -17,7 +14,6 @@ class ReviewData extends React.Component {
       constructor(props) {
             super(props);
 
-            var item=this.props.data.title;
               this.state = {
                 title:this.props.data.title,
                 freetext:  this.props.data.free_text,
@@ -152,19 +148,6 @@ class Review extends React.Component {
      }
      t1=this;
 
-     openPopupbox(itemData) {
-      const content = (
-            <div>
-                   <span>
-              <ReviewData data={itemData} /> <br/>
-              </span>
-            </div>
-        
-      )
-
-
-
-}
       constructor(props) {
        
         super(props);
@@ -253,10 +236,6 @@ class Review extends React.Component {
       };
 
       render() {
-            const ratingChanged = (newRating) => {
-                  console.log(newRating)
-
-            }
 
                   return (<div>
                         <h1   >MyReviews  </h1>

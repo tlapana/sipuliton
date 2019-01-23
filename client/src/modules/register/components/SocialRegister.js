@@ -38,7 +38,6 @@ export default class SocialRegister extends React.Component {
   responseGoogle(response) {
     console.log("DEBUG: RESPONSE FROM GOOGLE ON SUCCESS")
     console.log(response);
-    var that = this;
     //const googleID = response.googleId; //Might not need this    
     const token = response.tokenObj.id_token;
     const expires = response.tokenObj.expires_at;
@@ -134,8 +133,7 @@ export default class SocialRegister extends React.Component {
 		  onComplete={this.sendToRegister}
           onFailure={this.responseFailure}
         >
-          {/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
-          <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
+          <img className="logo-icon" src={require("../../../resources/google_logo.svg")} alt="Google Icon"/>
           <span>{strings.googleLogin}</span>
         </GoogleLogin>
         <FacebookLogin

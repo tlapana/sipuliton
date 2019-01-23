@@ -5,15 +5,13 @@
 */
 
 import React from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import '../../../styles/login.css';
 
 import { Auth } from "aws-amplify";
 
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login'
 import LocalizedStrings from 'react-localization';
 
 import config from "../../../config.js"
@@ -59,18 +57,7 @@ export default class SocialLogin extends React.Component {
   
   //Getting credentuals with google user
   async getAWSCredentialsGoogle(googleUser) {
-    const { id_token, expires_at } = googleUser.getAuthResponse();
-    const profile = googleUser.getBasicProfile();
-    let user = {
-      email: profile.getEmail(),
-      name: profile.getName()
-    };
      
-    const credentials = await Auth.federatedSignIn(
-      'google',
-      { token: id_token, expires_at },
-        user
-      );
     this.setState({
        loggingSucceeded: true
     });
@@ -150,7 +137,6 @@ export default class SocialLogin extends React.Component {
   }
   
    initFB() {
-    const fb = window.FB;
     console.log('DEBUG Social_Login.js initFB FB SDK inited');
   }
 
@@ -215,8 +201,8 @@ export default class SocialLogin extends React.Component {
       
       return (
         <div>
-          <button onClick={this.signInGoogle}>{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
-            <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
+          <button onClick={this.signInGoogle}>
+            <img className="logo-icon" src={require("../../../resources/google_logo.svg")} alt="Google Icon"/>
             <span>{strings.googleLogin}</span>e
           </button>
           <button onClick={this.signInFacebook}>

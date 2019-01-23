@@ -40,7 +40,6 @@ export default class WriteReview extends React.Component {
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
-      error : null,
       restaurant : null,
       showForm: false,
       title : '',
@@ -287,7 +286,6 @@ export default class WriteReview extends React.Component {
       },
       fi: {
         modalTitle : "Arvostele ravintola",
-        diets: "Ruokavaliot",
         titlePlaceholder : "Otsikko",
         textPlaceholder : "Kirjoita arvostelu tähän",
         diets : "Ruokavaliot",

@@ -1,13 +1,5 @@
 /*In this file the reviews list of the viewed restaurant is rendered*/
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { render } from 'react-dom';
-import {
-	Button,
-	Input,
-	Label
-} from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactStars from 'react-stars';
 /* Localization */
 import LocalizedStrings from 'react-localization';

@@ -25,9 +25,9 @@ export default class MainMenuListItem extends React.Component{
   render(){
 
     /* Styles for the log out button. */
-
     return (
         <NavItem className="menu-item" >
+		// eslint-disable-next-line
           <a className="nav-link" href="#" onClick={this.logout}>
             {this.props.logoutText}
           </a>

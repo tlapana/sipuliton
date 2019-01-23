@@ -8,7 +8,6 @@ import {
 } from 'reactstrap';
 import { Auth } from "aws-amplify";
 import commonComponents from '../../common';
-import config from "../../../config.js"
 /* Localization */
 import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
@@ -89,7 +88,6 @@ export default class Register extends React.Component {
   
   onMailChanged(e) {
     const mail = e.target.value;
-    const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
    
     const isValid = validationUtil.validateEmail(mail);
     const retypeMailValid = (mail === this.state.retypeMail);
@@ -111,8 +109,6 @@ export default class Register extends React.Component {
 
   onPasswordChanged(e) {
     const password = e.target.value;
-    const reLowerCase = /[a-z]/;
-    const reNumber = /[0-9]/;
     
     const isValid = validationUtil.validatePassword(password);
     const retypePassValid = (password === this.state.retypePass);
@@ -342,7 +338,7 @@ export default class Register extends React.Component {
       }
     });
     strings.setLanguage(this.props.match.params.language);
-    let registerBtnStr = this.state.isLoading ? strings.registering : strings.register;
+    //let registerBtnStr = this.state.isLoading ? strings.registering : strings.register;
 
 	/*The first form where the user enters info needed for an account*/
 	return (

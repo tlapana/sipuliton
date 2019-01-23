@@ -1,13 +1,10 @@
 /*
-  This file contains the landing page. Or at least the basic shape.
+  This file contains the review page. Or at least the basic shape.
   Functionalities are spread into separate components
 
 */
 
 import React from 'react';
-import ReactStars from 'react-stars'
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import Select from 'react-select';
 import '../../../styles/writereview.css';
 import WriteReview from "./WriteReview.js"
 

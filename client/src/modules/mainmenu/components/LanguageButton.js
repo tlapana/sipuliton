@@ -12,6 +12,7 @@ export default class LanguageButton extends React.Component {
 
   render() {
     return (
+	// eslint-disable-next-line
       <a href="#" className="language-button" title={this.props.title}>
         <img
           src={this.props.iconUrl}

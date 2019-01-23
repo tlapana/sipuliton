@@ -5,6 +5,7 @@ import config from "./config";
 
 
 export function validateEmail(email) {
+// eslint-disable-next-line
   const re = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
   return email != null && 
     email.length >= config.login.EMAIL_MIN_LENGTH && 

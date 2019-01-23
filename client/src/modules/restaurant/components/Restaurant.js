@@ -1,13 +1,9 @@
 /*In this file the page of selected restaurant is shown*/
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { render } from 'react-dom';
 import '../../../styles/restaurant.css';
-import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import ReactStars from 'react-stars';
 import ReviewList from './Review_List.js';
-import WriteReviewComponents from '../../writereview';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
@@ -46,7 +42,7 @@ class Restaurant extends React.Component {
 			(result) => {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
-				if (result.restaurant.length == 0) {
+				if (result.restaurant.length === 0) {
 					console.log('result length 0');
 					this.setState({ isLoaded: true, error: 'No restaurants found', });
 					return;

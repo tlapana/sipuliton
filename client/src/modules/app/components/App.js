@@ -6,7 +6,6 @@ import { Container } from 'reactstrap';
 
 import RouteCollection from './RouteCollection';
 import NavigationBar from './NavigationBar';
-import write_review from '../../writereview';
 
 import '../../../styles/app.css';
 import '../../../styles/themes.css';
@@ -14,10 +13,6 @@ import '../../../styles/themes.css';
 import AppFunctionsGlobalAPI from './AppGlobalFunctions'
 
 class App extends React.Component {
-  /* Constructor of the navication bar class. */
-  constructor(props) {
-    super(props);
-  }
 
   render() {
 

@@ -189,7 +189,6 @@ class NavigationBar extends React.Component {
       const pathToModerating = "/" + this.state.language + "/moderating";
       const pathToProfile = "/" + this.state.language + "/profile";
       const pathToLogin = "/" + this.state.language + "/login";
-      const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
       const pathToAbout = "/" + this.state.language + "/about";
 

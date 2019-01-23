@@ -160,7 +160,6 @@ class Profile extends React.Component {
           url: responseJson.image_url,
           username: responseJson.display_name,
           email: responseJson.email,
-          city: responseJson.city_name,
           desc: responseJson.description,
           reviews: responseJson.reviews,
           countries_visited: responseJson.countries_visited,
@@ -247,7 +246,6 @@ class Profile extends React.Component {
         countriesVisited: "The numbrer of countries with reviews",
         activityPoints: "Activity points",
         edit: "Edit",
-        username: "Username:",
         city: "City:",
         email: "Email",
         country: "Country",
@@ -259,13 +257,12 @@ class Profile extends React.Component {
       },
       fi: {
         editProfile: "Muokkaa profiilia",
-        username:"Käyttäjätunnus:",
+        username:"Käyttäjänimi:",
         totalReviews: "Arvosteluja yhteensä",
         citiesVisited: "Paikkakuntia, joissa arvosteluja",
         countriesVisited: "Maita, joissa arvosteluja",
         activityPoints: "Aktiivisuuspisteet",
         edit: "Muokkaa",
-        username: "Käyttäjänimi:",
         city: "Kaupunki:",
         email: "Sähköposti:",
         country: "Maa:",
@@ -289,7 +286,7 @@ class Profile extends React.Component {
         <div className="max-w-40">
           <Row>
             <Col xs="2">
-              <img width="90" src={this.state.url} />
+              <img width="90" src={this.state.url} alt="User Icon"/>
             </Col>
             <Col xs="7">
               <p>{this.state.username}</p>

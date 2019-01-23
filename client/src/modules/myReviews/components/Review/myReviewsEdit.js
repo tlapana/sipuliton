@@ -1,7 +1,7 @@
 import React, { } from 'react';
 
 import ReactStars from 'react-stars'
-import { Button, Container, Row, Col } from 'reactstrap';
+import { Button, Row, Col } from 'reactstrap';
 
 export default class myReviewEdit1 extends React.Component {
       constructor(props) {

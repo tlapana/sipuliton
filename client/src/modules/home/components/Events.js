@@ -81,7 +81,7 @@ class Events extends React.Component {
   }
   
   render() {
-    const { error, isLoaded, restaurants } = this.state;
+    const { error, restaurants } = this.state;
     let strings = new LocalizedStrings({
       en:{
         loading:"Loading suggestions...",
