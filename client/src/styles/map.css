@@ -1,5 +1,7 @@
 .full {
-  height: 100vh;
+  height: calc(100vh - 70px);
+  top: 0;
+  position: absolute;
   width: 99.5vw;
   margin-bottom: auto;
 }
