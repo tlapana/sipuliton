@@ -33,7 +33,8 @@ class ModCog extends React.Component {
       curPass: '',
       newPass: '',
       curPassValid: false,
-      isSame:false
+      isSame: false
+
 
 
     };
@@ -47,28 +48,31 @@ class ModCog extends React.Component {
 
   getAuthCode(e) {
 
-    alert('out3')
  
 
-  const isValidPassword=true
-   Auth.currentAuthenticatedUser()
-   .then(user =>Auth.changePassword(user,this.state.typePass,this.state.retypePass) )
-    .catch(err => alert(JSON.stringify(err)));
 
-   ;
+    if(this.state.isSame && this.state.isValid)  {
+    
+        //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
+         Auth.currentAuthenticatedUser()
+      .then(user =>Auth.changePassword(user, this.state.curPass, this.state.retypePass))
+      .catch(err => alert(err.message));
+
+    ;
+  }
 
 
   }
   onCurPasswordChanged(e) {
     const curPassword = e.target.value;
-    this.setState({ typePass: curPassword })
+    this.setState({ curPass: curPassword })
   }
 
   onRePasswordChanged(e) {
     const reTypedPassword = e.target.value;
-    this.setState({ retypePass: reTypedPassword })
-
-
+    // this.setState({ retypePass: reTypedPassword })
+    this.state.retypePass = reTypedPassword;
+    this.setState({ isSame: reTypedPassword == this.state.newPass })
   }
 
   onPasswordChanged(e) {
@@ -80,7 +84,7 @@ class ModCog extends React.Component {
     const isValidRetyped = validationUtil.validatePassword(password);
 
     this.setState({ isValid: isValidP })
-    this.setState({ isSame: this.state.password==this.state.retypePasss })
+    this.setState({ isSame: this.state.password == this.state.retypePass })
     this.setState({ newPass: password })
 
 
@@ -94,10 +98,55 @@ class ModCog extends React.Component {
 
   render() {
     const { VInput, ErrorBlock } = commonComponents;
+    let strings = new LocalizedStrings({
+      en:{
+        username:"Username:",
+        sendCode:"Send code",
+        sending:"Sending...",
+        usernotfound:"User not found or username is invalid.",
+        limitexceeded:"You send a code too many times in a row, try again later.",
+        passwordchangedidntsuccee:"Password didn't succeed, password or code is invalid.",
+        codesentto:"Code was sent to following email address: ",
+        newpassword:"New password:",
+        newpasswordagain:"New password again:",
+        code:"Code:",
+        didntGetEmail:"Didn't get email? ",
+        sendcodeagain:"Send code again",
+        changePassword:"Change password",
+        loading:"Loading...",
+        passwordError:"Password must be at least 8 characters long and " + 
+					"contain numbers lower case characters and numbers",
+				passwordAgainError:"Passwords must match",
+        codeError:"Code must be 2-9 characters long",
+      },
+      fi: {
+        username:"Käyttäjänimi:",
+        sendCode:"Lähetä koodi",
+        sending:"Lähetetään...",
+        usernotfound:"Käyttäjää ei löydy tai käyttäjänimi ei ole validi.",
+        limitexceeded:"Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
+        passwordchangedidntsuccee:"Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.",
+        codesentto:"Koodi lähetetty sähköpostilla osoitteeseen: ",
+        newpassword:"Uusi salasana:",
+        newpasswordagain:"Uusi salasana uudelleen:",
+        code:"Koodi:",
+        didntGetEmail:"Etkö saanut sähköpostia? ",
+        sendcodeagain:"Lähetä koodi uudelleen",
+        changePassword:"Vaihda salasana",
+        loading:"Ladataan...",
+        passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
+          "siinä tulee olla pieniä kirjaimia ja numeroita",
+        passwordAgainError:"Salasanojen tulee olla samat",
+        codeError:"Koodin tulee olla 2-9 merkkiä pitkä",
+      }
+});
+strings.setLanguage('fi');
     return (
+      
       <div>
 
-
+    <ErrorBlock hidden={!this.state.codeSendingFailed} errormsg={strings.usernotfound} />
+        <ErrorBlock hidden={!this.state.limitExceeded} errormsg={strings.limitexceeded} />
         <form>
           <em>Nykyinen salasana </em>
           <FormGroup>
@@ -108,16 +157,16 @@ class ModCog extends React.Component {
           <em>New Password </em>
           <FormGroup>
             {this.state.error}
-            <VInput isValid={this.state.isSame} type="password" name="password" onChange={this.onPasswordChanged} errormsg={'error'} value={this.state.password} onChange={this.onPasswordChanged}  required />
+            <VInput isValid={this.state.isSame && this.state.isValid} type="password" name="password" onChange={this.onPasswordChanged} errormsg={'error'} value={this.state.password} onChange={this.onPasswordChanged} required />
           </FormGroup>
 
           <em>Retype new password </em>
           <FormGroup>
             {this.state.error}
-            <VInput isValid={false} type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'}  value={this.state.retypedpassword} />
+            <VInput isValid={this.state.isSame} type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'} value={this.state.retypedpassword} />
           </FormGroup>
-          <button className="searchBtn main-btn btn" onClick={() => { this.getAuthCode() }}>
-            ChangePassword </button><br />
+          <input type="button" className="searchBtn main-btn btn" value="test" onClick={this.getAuthCode}/>
+
 
         </form> </div>);
 
