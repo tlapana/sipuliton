@@ -72,7 +72,7 @@ exports.lambdaHandler = async (event, context) => {
         const defaultMinVarietyRating = 0
         const defaultMinServiceAndQualityRating = 0
         const defaultMaxPricing = 100
-        const defaultDiet = '[0]'
+        const defaultDiet = null;
 
         // Setting empty query string if none was provided
         if ((event.queryStringParameters == null)){
@@ -141,57 +141,76 @@ exports.lambdaHandler = async (event, context) => {
         var paramIndex = 1;
         var paramValues = [];
         var paramObject = searchParameters.restaurantParameters;
+        
+        var collectRestaurants = '';
 
         paramObject = searchParameters.restaurantParameters['globalDietId']
 
         values = JSON.parse(paramObject.value)
         diet_statement = ''
-        for (var i = 0; i < values.length; i++) {
-            diet_statement = diet_statement + getWhereStatement(paramObject.sql_name, paramObject.operator, paramIndex)
-            paramIndex += 1
-            paramValues.push(values[i])
-            if (i + 1 != values.length) {
-                diet_statement = diet_statement + ' OR '
+        if (values.length > 0) {
+            for (var i = 0; i < values.length; i++) {
+                diet_statement = diet_statement + getWhereStatement(paramObject.sql_name, paramObject.operator, paramIndex)
+                paramIndex += 1
+                paramValues.push(values[i])
+                if (i + 1 != values.length) {
+                    diet_statement = diet_statement + ' OR '
+                }
             }
+            collectRestaurants = collectRestaurants + `
+                SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
+                       city_name.name as city_name, website, street_address,
+                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
+                       weighted_reviews, weighted_rating_overall, weighted_rating_reliability, weighted_rating_variety,
+                       weighted_rating_service_and_quality, weighted_pricing, weighted_trending,
+                       downvotes, upvotes, latitude, longitude, 
+                       opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+                FROM restaurant`;
+            
+            collectRestaurants = collectRestaurants + `
+                LEFT JOIN (SELECT restaurant_id, AVG(downvotes) as downvotes, AVG(upvotes) as upvotes
+                   FROM restaurant_diet_filter
+                   WHERE ` + diet_statement + `
+                   GROUP BY restaurant_id) as votes
+                ON restaurant.restaurant_id = votes.restaurant_id`;
+
+            collectRestaurants = collectRestaurants + `
+                LEFT JOIN (SELECT restaurant_id, AVG(restaurant_diet_stats.reviews) as reviews,
+                   AVG(restaurant_diet_stats.rating_overall) as rating_overall, AVG(restaurant_diet_stats.rating_reliability) as rating_reliability,
+                   AVG(restaurant_diet_stats.rating_variety) as rating_variety, AVG(restaurant_diet_stats.rating_service_and_quality) as rating_service_and_quality,
+                   AVG(restaurant_diet_stats.pricing) as pricing, AVG(restaurant_diet_stats.trending) as trending
+                   FROM restaurant_diet_stats
+                   WHERE ` + diet_statement + `
+                   GROUP BY restaurant_id) as diet_stats
+                ON restaurant.restaurant_id = diet_stats.restaurant_id`;
+
+            collectRestaurants = collectRestaurants + `
+                LEFT JOIN (SELECT restaurant_id,  AVG(weighted_restaurant_diet_stats.reviews) as weighted_reviews,
+                   AVG(weighted_restaurant_diet_stats.rating_overall) as weighted_rating_overall, AVG(weighted_restaurant_diet_stats.rating_reliability) as weighted_rating_reliability,
+                   AVG(weighted_restaurant_diet_stats.rating_variety) as weighted_rating_variety, AVG(weighted_restaurant_diet_stats.rating_service_and_quality) as weighted_rating_service_and_quality,
+                   AVG(weighted_restaurant_diet_stats.pricing) as weighted_pricing, AVG(weighted_restaurant_diet_stats.trending) as weighted_trending
+                   FROM weighted_restaurant_diet_stats
+                   WHERE ` + diet_statement + `
+                   GROUP BY restaurant_id) as weighted_stats
+                ON restaurant.restaurant_id = weighted_stats.restaurant_id`;
         }
+        else {
+            collectRestaurants = collectRestaurants + `
+                SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
+                       city_name.name as city_name, website, street_address,
+                       reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
+                       latitude, longitude, 
+                       opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+                FROM restaurant`;
 
-        var collectRestaurants = `
-        SELECT restaurant.restaurant_id as restaurant_id, restaurant.name as restaurant_name, email,
-               city_name.name as city_name, website, street_address,
-               reviews, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, trending,
-               weighted_reviews, weighted_rating_overall, weighted_rating_reliability, weighted_rating_variety,
-               weighted_rating_service_and_quality, weighted_pricing, weighted_trending,
-               downvotes, upvotes, latitude, longitude, 
-               opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
-        FROM restaurant`;
-
-        collectRestaurants = collectRestaurants + `
-            LEFT JOIN (SELECT restaurant_id, AVG(downvotes) as downvotes, AVG(upvotes) as upvotes
-               FROM restaurant_diet_filter
-               WHERE ` + diet_statement + `
-               GROUP BY restaurant_id) as votes
-            ON restaurant.restaurant_id = votes.restaurant_id`;
-
-        collectRestaurants = collectRestaurants + `
-            LEFT JOIN (SELECT restaurant_id, AVG(restaurant_diet_stats.reviews) as reviews,
-               AVG(restaurant_diet_stats.rating_overall) as rating_overall, AVG(restaurant_diet_stats.rating_reliability) as rating_reliability,
-               AVG(restaurant_diet_stats.rating_variety) as rating_variety, AVG(restaurant_diet_stats.rating_service_and_quality) as rating_service_and_quality,
-               AVG(restaurant_diet_stats.pricing) as pricing, AVG(restaurant_diet_stats.trending) as trending
-               FROM restaurant_diet_stats
-               WHERE ` + diet_statement + `
-               GROUP BY restaurant_id) as diet_stats
-            ON restaurant.restaurant_id = diet_stats.restaurant_id`;
-
-        collectRestaurants = collectRestaurants + `
-            LEFT JOIN (SELECT restaurant_id,  AVG(weighted_restaurant_diet_stats.reviews) as weighted_reviews,
-               AVG(weighted_restaurant_diet_stats.rating_overall) as weighted_rating_overall, AVG(weighted_restaurant_diet_stats.rating_reliability) as weighted_rating_reliability,
-               AVG(weighted_restaurant_diet_stats.rating_variety) as weighted_rating_variety, AVG(weighted_restaurant_diet_stats.rating_service_and_quality) as weighted_rating_service_and_quality,
-               AVG(weighted_restaurant_diet_stats.pricing) as weighted_pricing, AVG(weighted_restaurant_diet_stats.trending) as weighted_trending
-               FROM weighted_restaurant_diet_stats
-               WHERE ` + diet_statement + `
-               GROUP BY restaurant_id) as weighted_stats
-            ON restaurant.restaurant_id = weighted_stats.restaurant_id`;
-
+            collectRestaurants = collectRestaurants + `
+                LEFT JOIN (SELECT restaurant_id, restaurant_stats.reviews as reviews,
+                   restaurant_stats.rating_overall as rating_overall, restaurant_stats.rating_reliability as rating_reliability,
+                   restaurant_stats.rating_variety as rating_variety, restaurant_stats.rating_service_and_quality as rating_service_and_quality,
+                   restaurant_stats.pricing as pricing, restaurant_stats.trending as trending
+                   FROM restaurant_stats) as diet_stats
+                ON restaurant.restaurant_id = diet_stats.restaurant_id`;
+        }
         collectRestaurants = collectRestaurants + `
             LEFT JOIN city_name ON restaurant.city_id=city_name.city_id
             LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id

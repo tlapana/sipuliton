@@ -69,12 +69,21 @@ class NavigationBar extends React.Component {
     /* Get user information. */
     Auth.currentAuthenticatedUser()
         .then(user => {
-          /* Get current user group. */
-          var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
-          if(user != null){
-            /* Check if user is logged in, after that set access to either register or login */
+          /* Check if user is logged in, after that set access to either register or login */
+          if(user != null)
+          {
             this.setState({userLogged: true})
-
+            console.log(user);
+            var userGroup = "";
+            /* Get current user group. */
+            try
+            {
+              var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
+            }
+            catch
+            {
+              console.log("user not in any user group!")
+            }
             /* Check if user is basic user, then restrict all accesses */
             if(userGroup === "SipulitonModUserGroup"){
               this.setState({
@@ -189,7 +198,6 @@ class NavigationBar extends React.Component {
       const pathToModerating = "/" + this.state.language + "/moderating";
       const pathToProfile = "/" + this.state.language + "/profile";
       const pathToLogin = "/" + this.state.language + "/login";
-      const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
       const pathToAbout = "/" + this.state.language + "/about";
 
