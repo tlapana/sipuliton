@@ -12,6 +12,9 @@ export default {
   facebook: {
     APP_ID: "1523866137714690"
   },
+  amazon: {
+    APP_OD: "6shik8f5c8k0dc7oje4qumn6fd"
+  },
   login: {
     PASSWORD_MAX_LENGTH: 50,
     PASSWORD_MIN_LENGTH: 8,

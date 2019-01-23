@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '../../../styles/login.css';
 
 import { Auth } from "aws-amplify";
+import { Authenticator } from 'aws-amplify-react/dist/Auth';
 
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login'
@@ -207,12 +208,17 @@ export default class SocialLogin extends React.Component {
     });
     strings.setLanguage(this.props.language);
     
+    const federated = {
+      google_client_id: config.google.CLIENT_ID,
+      facebook_app_id: config.facebook.APP_ID,
+      amazon_client_id: config.facebook.CLIENT_ID,
+    };
     
     if(this.state.loggingSucceeded)    {
       return <Redirect to={"/" + this.props.language + "/profile"} />
     }
     else {
-      
+      //<Authenticator federated={federated} /> <-Just a remainder. Gives Amazon styled login
       return (
         <div>
           <button onClick={this.signInGoogle}>{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
@@ -223,6 +229,8 @@ export default class SocialLogin extends React.Component {
             <FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />
             {strings.fbLogin}
           </button>  
+          <br />
+          
         </div>
         /* 
         //These are the old buttons
