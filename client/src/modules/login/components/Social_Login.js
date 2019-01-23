@@ -13,8 +13,6 @@ import '../../../styles/login.css';
 import { Auth } from "aws-amplify";
 import { Authenticator } from 'aws-amplify-react/dist/Auth';
 
-import GoogleLogin from 'react-google-login';
-import FacebookLogin from 'react-facebook-login'
 import LocalizedStrings from 'react-localization';
 
 import config from "../../../config.js"
