@@ -1,8 +1,7 @@
+
 import React from 'react';
 import ReactLoading from 'react-loading';
-import {
-  Button,
-} from 'reactstrap';
+import {Button,} from 'reactstrap';
 /* Map component import */
 import MapComponent from "./CustomMap"
 import '../../../styles/map.css';
@@ -17,6 +16,7 @@ import LocalizedStrings from 'react-localization';
 /* Filter Page */
 import ModalFilterPage from './ModalFilterPage';
 
+/* Configurations */
 import Config from '../../../config.js';
 
 const MapApi = require('./MapGlobalFunctions');
@@ -25,6 +25,8 @@ class Map extends React.Component {
   /* Constructor of the map class. */
   constructor(props) {
     super(props);
+
+    //Initializes basic state.
     var filters = {
       overallRating:0,
       minRel:0,
@@ -41,16 +43,20 @@ class Map extends React.Component {
     var showFilterBox = true;
     var loading = false;
     var showCurrentLocationMarker = true;
+
+    //Checks if parameters is set to url and if it set parse them.
     if(this.props.location.search !== undefined
       && this.props.location.search !== ""
       && this.props.location.search.includes("?")
     ){
+      //Parse parameters
       filters = MapApi.parseMapUrlParametersToFilters(this.props.location.search);
       showFilterBox = false;
       loading = true;
       showCurrentLocationMarker = false;
     }
 
+    //Initialize new state vased on new filters.
     this.state = {
       filters:{
         radius:filters.searchRadius,
@@ -88,12 +94,15 @@ class Map extends React.Component {
       }
     };
 
+    //Geocoder initialization. This is needed for converting address to location.
     Geocoder.init(Config.google.API_KEY);
 
+    //Function bindings.
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
-    this.GetMockData = this.GetMockData.bind(this);
+
+    //Fetchh restaurant markers based on new filters if search parameters where inserted.
     if(this.props.location.search !== undefined
       && this.props.location.search !== ""
       && this.props.location.search.includes("?")
@@ -101,6 +110,9 @@ class Map extends React.Component {
       this.GetRestaurantsMarkers("green");
     }
   }
+
+  //Method changes the selected restaurant. Method takes as a parameter
+  //restaurant id and color.
   SelectedRestaurantChanged(idx,color){
     var selected = {};
     var tempGreen = this.state.restaurants.green;
@@ -108,6 +120,7 @@ class Map extends React.Component {
     var curSelectedColor = this.state.restaurants.selectedColour;
     var newColor = "";
     if(color === "green"){
+      //Selects green restaurant.
       if(this.state.restaurants.green.length === 1){
         selected = this.state.restaurants.green[0];
         tempGreen = [];
@@ -125,6 +138,7 @@ class Map extends React.Component {
       newColor = "green";
     }
     if(color === "grey"){
+      //Selects grey restaurant
       if(this.state.restaurants.grey.length === 1){
         selected = this.state.restaurants.grey[0];
         tempGrey = [];
@@ -157,6 +171,8 @@ class Map extends React.Component {
         tempGrey.push(this.state.restaurants.selected[0]);
       }
     }
+
+    //Set new map center and sort restaurant lists by the distance.
     if(tempGreen !== undefined && tempGreen.length !== 0){
       MapApi.setNewCenter(this.state.center);
       tempGreen = tempGreen.sort(MapApi.sortByDistanceToCenter());
@@ -165,6 +181,8 @@ class Map extends React.Component {
       MapApi.setNewCenter(this.state.center);
       tempGrey = tempGrey.sort(MapApi.sortByDistanceToCenter());
     }
+
+    //Initialize new restaurant marker data.
     this.setState({
       center:selected.position,
       restaurants:{
@@ -176,145 +194,32 @@ class Map extends React.Component {
     })
   }
 
-  GetMockData(){
-    //Mock restaurants.
-    let greenRestaurantData = [
-      {
-        id:0,
-        name:"Eka",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Ravintolan 1 osoite",
-        overallRating:"2",
-        serviceRating:"3",
-        varietyRating:"3",
-        pricingRating:"3",
-        reliabilityRating: "4",
-        website: "www.eka.fi",
-        email: "eka@eka.fi",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-        position:[61.454239,23.849175],
-      },
-      {
-        id:1,
-        name:"Toinen",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Ravintolan 1 osoite",
-        overallRating:"2",
-        serviceRating:"3",
-        varietyRating:"3",
-        pricingRating:"1",
-        reliabilityRating: "4",
-        website: "www.eka.fi",
-        email: "eka@eka.fi",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-        position: [61.426239,23.854175]
-      },
-      {
-        id:2,
-        name:"Kolmas",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Ravintolan 1 osoite",
-        overallRating:"2",
-        serviceRating:"3",
-        varietyRating:"3",
-        pricingRating:"2",
-        reliabilityRating: "4",
-        website: "www.eka.fi",
-        email: "eka@eka.fi",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-        position: [61.445239,23.839175],
-      },
-      {
-        id:3,
-        name:"Neljäs",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Ravintolan 1 osoite",
-        overallRating:"2",
-        serviceRating:"3",
-        varietyRating:"3",
-        reliabilityRating: "4",
-        pricingRating:"2",
-        website: "www.eka.fi",
-        email: "eka@eka.fi",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-        position: [61.487239,23.808175],
-      }
-    ]
-
-    let greyRestaurantData = [
-      {
-        id:4,
-        name:"Harmaa",
-        city:"Hervanta",
-        postcode:"33990",
-        address:"Ravintolan 1 osoite",
-        overallRating:"2",
-        serviceRating:"3",
-        varietyRating:"3",
-        pricingRating:"2",
-        reliabilityRating: "4",
-        website: "www.eka.fi",
-        email: "eka@eka.fi",
-        openMon:"9:00-15:00",
-        openTue:"9:00-15:00",
-        openWed:"9:00-15:00",
-        openThu:"9:00-13:00",
-        openFri:"9:00-16:00",
-        openSat:"8:00-17:00",
-        openSun:"10:00-18:00",
-        position:[61.457239,23.848175],
-      }]
-    MapApi.setNewCenter(this.state.center);
-    greenRestaurantData = greenRestaurantData.sort(MapApi.sortByDistanceToCenter());
-    greyRestaurantData = greyRestaurantData.sort(MapApi.sortByDistanceToCenter());
-
-    this.setState(
-      {
-        loading:false,
-        restaurants:{
-          green:greenRestaurantData,
-          grey:greyRestaurantData,
-          selected:[],
-          selectedColour:"",
-        }
-      }
-    )
-
-  }
-
-  // method handles fetching restaurants marker data from database
+  // Method handles fetching restaurants marker data from database.
+  // Takes marker color as a parameter which will be fetched.
 	GetRestaurantsMarkers(markColor){
-    console.log("Getting: "+markColor)
-    console.log(this.state.searchLoc)
-    //Basic search portion
+    //Printing for the debugging.
+    //console.log("Getting: "+markColor)
+    //console.log(this.state.searchLoc)
+    var searchDiets = [];
+    for(var i = 0; i<this.state.filters.diets.length; ++i)
+    {
+      searchDiets.push(this.state.filters.diets[i].value);
+    }
+    var diet_ids = searchDiets;
+    var diet_array_string = "[";
+    var dietParam = "&globalDietId=[]";
+    if(diet_ids.length > 0 || this.state.filters.diets != undefined)
+    {
+      for(var i = 0; i<diet_ids.length-1; ++i)
+      {
+        diet_array_string = diet_array_string+diet_ids[i]+',';
+      }
+      diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
+      dietParam = '&globalDietId='+diet_array_string;
+    }
+    console.log(dietParam);
+
+    //Basic search portion for the green markers.
     var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                 + '&minOverallRating=' + this.state.filters.minOverall
                 + '&minReliabilityRating=' + this.state.filters.minReliability
@@ -322,9 +227,11 @@ class Map extends React.Component {
                 + '&minServiceAndQualityRating=' + this.state.filters.minVariety
                 + '&maxDistance=' + this.state.filters.radius
                 + '&currentLatitude=' + this.state.searchLoc[0]
-                + '&currentLongitude=' + this.state.searchLoc[1];
-
+                + '&currentLongitude=' + this.state.searchLoc[1]
+                + dietParam;
+    console.log(url);
     if(markColor === "grey"){
+      //Basic search portion for the grey markers. Here all ratings are set to 0 to find more restaurants.
       url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
                   + '&minOverallRating=0'
                   + '&minReliabilityRating=0'
@@ -332,20 +239,26 @@ class Map extends React.Component {
                   + '&minServiceAndQualityRating=0'
                   + '&maxDistance=' + this.state.filters.radius
                   + '&currentLatitude=' + this.state.searchLoc[0]
-                  + '&currentLongitude=' + this.state.searchLoc[1];
+                  + '&currentLongitude=' + this.state.searchLoc[1]
+                  + dietParam;
     }
 
+    //Set map to loading state.
     this.setState({loading:true})
+
+    //Fetch marker data.
     fetch(url)
       .then(res => res.json())
       .then(
         (result) => {
-          console.log("Sending results");
-          console.log(result);
-          //Send data via props
+          //Printings for the debugging.
+          //console.log("Sending results");
+          //console.log(result);
 
+          //Parse fetched data using map global api.
           var markers = MapApi.parseRestaurantsData(result.restaurants);
           if(markColor === "grey"){
+            //Selects most suitable grey markers.
             markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
           }
 
@@ -354,6 +267,9 @@ class Map extends React.Component {
             this.state.restaurants.green.length === 0
           )
           {
+            //Here is not found any green and grey markers, so show no
+            //restaurants found notification.
+
             this.setState({
               loading:false,
               errors:{
@@ -364,7 +280,10 @@ class Map extends React.Component {
           }
 
           if(markColor === "grey"){
+            // Set new center point to the map api.
             MapApi.setNewCenter(this.state.center);
+
+            // Sort markers by distance.
             markers = markers.sort(MapApi.sortByDistanceToCenter());
             this.setState(
               {
@@ -379,7 +298,9 @@ class Map extends React.Component {
             )
           }
           else{
+            // Set new center point to the map api.
             MapApi.setNewCenter(this.state.center);
+            // Sort markers by distance.
             markers = markers.sort(MapApi.sortByDistanceToCenter());
             this.setState(
               {
@@ -405,8 +326,11 @@ class Map extends React.Component {
       )
       .then(
         () => {
+          //Check if the fetched markers were green.
           if(markColor === "green"){
+            //Check if there was found under 10 restaurant
             if(this.state.restaurants.green.length < 10){
+              //Fetch more restaurants as a grey restaurant.
               this.GetRestaurantsMarkers("grey");
             }
           }
@@ -414,7 +338,7 @@ class Map extends React.Component {
       );
 	}
 
-  // Method handles filter change
+  // Method handles filter changes. Takes as a parameter new filters.
 	FiltersChanged(
     newRadius,
     newMinOverall,
@@ -427,6 +351,7 @@ class Map extends React.Component {
     newDiets,
   )
   {
+    //Init new filters.
 		this.setState({
       filters:{
         radius:newRadius,
@@ -439,19 +364,25 @@ class Map extends React.Component {
         diets:newDiets,
       }
     });
+    //Check if the user wants to use own location in search.
     if(useUserLocation){
+      // Set users location as a search location. And after that fetch new markers.
       this.setState({
         searchLoc:[this.props.coords.latitude,this.props.coords.longitude],
         showCurrentLocationMarker:true,
         errors:{errorWhileGeocoding:false}
       },() => this.GetRestaurantsMarkers("green"));
-
     }
     else{
+      // Change city name to location.
       Geocoder.from(newCity)
       .then(json => {
+        //New location.
         var location = json.results[0].geometry.location;
-        console.log(location);
+        //Console print for debugging.
+        //console.log(location);
+
+        //init new location and fetch markers.
         this.setState(
           {
             showCurrentLocationMarker:false,
@@ -546,24 +477,26 @@ class Map extends React.Component {
         ?
         <div className="mapPage">
           <div id="map" >
-  					<ModalFilterPage
-              filters={this.state.filters}
-  						FiltersChanged={this.FiltersChanged}
-  						language={this.props.match.params.language}
-              geolocationEnabled={false}
-              showFilterBoxAtStart={this.state.showFilterBox}/>
-            {this.state.loading &&
-              <div className="loading-container">
-                <ReactLoading
-                  type={'spinningBubbles'}
-                  className="loadingSpinner loadingSpinner-map"
-                />
-              </div>
-            }
+            <div>
+    					<ModalFilterPage
+                filters={this.state.filters}
+    						FiltersChanged={this.FiltersChanged}
+    						language={this.props.match.params.language}
+                geolocationEnabled={false}
+                showFilterBoxAtStart={this.state.showFilterBox}/>
+              {this.state.loading &&
+                <div className="loading-container loading-modal-filter-page">
+                  <ReactLoading
+                    type={'spinningBubbles'}
+                    className="loadingSpinner loadingSpinner-map"
+                  />
+                </div>
+              }
+            </div>
             <MapComponent
   						language={this.props.match.params.language}
-            	latitude={this.state.center[0]}
-  						longitude={this.state.center[1]}
+            	latitude={this.state.searchLoc[0]}
+  						longitude={this.state.searchLoc[1]}
             	searchRadiusInKm={this.state.filters.radius}
               selectedRestaurantChanged = {this.SelectedRestaurantChanged}
               center={this.state.center}
@@ -582,6 +515,14 @@ class Map extends React.Component {
             geolocationEnabled={true}
             showFilterBoxAtStart={this.state.showFilterBox}
           />
+          {this.state.loading &&
+            <div className="loading-container loading-modal-filter-page">
+              <ReactLoading
+                type={'spinningBubbles'}
+                className="loadingSpinner loadingSpinner-map"
+              />
+            </div>
+          }
           <MapComponent
   					language={this.props.match.params.language}
   	        latitude={this.state.searchLoc[0]}

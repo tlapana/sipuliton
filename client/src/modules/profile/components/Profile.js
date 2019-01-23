@@ -4,7 +4,7 @@ import ReactLoading from 'react-loading';
 import commonComponents from '../../common';
 import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
-
+import '../../../styles/profile.css';
 
 class Profile extends React.Component {
   constructor(props) {
@@ -209,7 +209,7 @@ class Profile extends React.Component {
     const desc = e.target.value;
     this.setState({desc: desc});
   }
-  
+
   handleAllergChange(e) {
     const allerg = e.target.value;
     this.setState({allerg: allerg});
@@ -237,7 +237,7 @@ class Profile extends React.Component {
 
   render() {
     const { VInput, } = commonComponents;
-    
+
     let strings = new LocalizedStrings({
       en:{
         editProfile: "Edit profile",
@@ -256,6 +256,10 @@ class Profile extends React.Component {
         save: "Save",
         addDiet: "Add diet",
         deleteDiet: "Delete diet",
+        description:"Description",
+        username:"Username",
+        email:"Email",
+        city:"City"
       },
       fi: {
         editProfile: "Muokkaa profiilia",
@@ -274,6 +278,10 @@ class Profile extends React.Component {
         save: "Tallenna",
         addDiet: "Lisää ruokavalio",
         deleteDiet: "Poista ruokavalio",
+        description:"Kuvaus",
+        username:"Käyttäjänimi",
+        email:"Sähköposti",
+        city:"Kaupunki",
       }
     });
     strings.setLanguage(this.props.match.params.language);
@@ -286,29 +294,57 @@ class Profile extends React.Component {
     }
     else if (this.state.isViewMode) {
       return (
-        <div className="max-w-40">
-          <Row>
-            <Col xs="2">
-              <img width="90" src={this.state.url} />
-            </Col>
-            <Col xs="7">
-              <p>{this.state.username}</p>
-              <p>{this.state.email}</p>
+        <div className="profile-page">
+          <div>
+            <Row className="profile-row">
+              <Col xs="2" className="profile-picture-container">
+                <div className="centered-image-div">
+                  <img height="90" width="90" className="profile_image" src={this.state.url} />
+                </div>
+              </Col>
+              <Col xs="7" className="profile-description-container">
+                <div>
+                  <p className="inline-block-desc desc-header">{strings.username}: </p>
+                  <p className="inline-block-desc">{this.state.username}</p>
+                </div>
+                <div>
+                  <p className="inline-block-desc desc-header">{strings.email}: </p>
+                  <p className="inline-block-desc">{this.state.email}</p>
+                </div>
+                <div>
+                  <p className="inline-block-desc desc-header">{strings.city}: </p>
+                  <p className="inline-block-desc">{this.state.city}</p>
+                </div>
+                <div>
+                  <p className="inline-block-desc desc-header">{strings.description}: </p>
+                  <p className="inline-block-desc">{this.state.desc}</p>
+                </div>
+              </Col>
+              <Col>
+                <div className="profile-stat-container">
+                  <div>
+                    <p className="profile-stat">{strings.totalReviews}</p><p>{this.state.reviews}</p>
+                  </div>
+                  <div>
+                    <p className="profile-stat">{strings.citiesVisited}</p><p>{this.state.cities_visited}</p>
+                  </div>
+                  <div>
+                    <p className="profile-stat">{strings.countriesVisited}</p><p>{this.state.countries_visited}</p>
+                  </div>
+                  <div>
+                    <p className="profile-stat">{strings.activityPoints}</p><p>{this.state.activitypoints}</p>
+                  </div>
+                </div>
+              </Col>
+            </Row>
 
-              <p>{this.state.city}</p>
-              <p>{this.state.desc}</p>
-            </Col>
-          </Row>
-          <p>{strings.totalReviews} .................. {this.state.reviews}</p>
-          <p>{strings.citiesVisited} ...  {this.state.cities_visited}</p>
-          <p>{strings.countriesVisited} ................{this.state.countries_visited}</p>
-          <p>{strings.activityPoints} ...........................{this.state.activitypoints}</p>
-          <button className="btn main-btn max-w-10" onClick={this.handleEditClicked}>
+          </div>
+          <button className="profile-edit-btn btn main-btn max-w-10" onClick={this.handleEditClicked}>
             {strings.edit}
           </button>
         </div>
       );
-    } 
+    }
     else {
       return (
         <div className="max-w-40">
@@ -324,17 +360,17 @@ class Profile extends React.Component {
             </FormGroup>
             <FormGroup>
               <Label>{strings.city}</Label>
-              <VInput 
-                type="select" 
-                className="custom-select" 
-                name="city" 
-                onChange={this.handleCityChange} 
+              <VInput
+                type="select"
+                className="custom-select"
+                name="city"
+                onChange={this.handleCityChange}
                 disabled={this.state.citiesLoading || this.state.countriesLoading}
                 value={current_city}
               >
                 {
-                  this.state.cities != null && 
-                  this.state.cities.map((city => 
+                  this.state.cities != null &&
+                  this.state.cities.map((city =>
                     <option key={city.city_id} value={city.city_id}>{city.name}</option>
                   ))
                 }
@@ -342,17 +378,17 @@ class Profile extends React.Component {
             </FormGroup>
             <FormGroup>
               <Label>{strings.country}</Label>
-              <VInput 
-                type="select" 
-                className="custom-select" 
-                name="country" 
+              <VInput
+                type="select"
+                className="custom-select"
+                name="country"
                 onChange={this.handleCountryChange}
                 disabled={this.state.citiesLoading || this.state.countriesLoading}
                 value={current_country}
               >
               {
-                this.state.countries != null && 
-                this.state.countries.map((country => 
+                this.state.countries != null &&
+                this.state.countries.map((country =>
                   <option key={country.country_id} value={country.country_id}>{country.name}</option>
                 ))
               }
@@ -367,16 +403,16 @@ class Profile extends React.Component {
               <Label>{strings.diets}</Label>
               <VInput type="text" id="allerg" name="allerg" />
             </FormGroup>
-            
+
             <Button className="btn secondary-btn" onClick={this.addAllerg}>{strings.addDiet}</Button>
             <Button className="secondary-btn" onClick={this.deleteAllerg}>{strings.deleteDiet}</Button>
-            
-            <VInput 
-              type="submit" 
-              className="main-btn big-btn max-w-10" 
-              name="save" 
-              onClick={this.saveData} 
-              value={strings.save} 
+
+            <VInput
+              type="submit"
+              className="main-btn big-btn max-w-10"
+              name="save"
+              onClick={this.saveData}
+              value={strings.save}
               isValid={this.state.usernameValid && this.state.emailValid}
             />
           </Form>
