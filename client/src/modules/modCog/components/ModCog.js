@@ -33,6 +33,7 @@ class ModCog extends React.Component {
       curPass: '',
       newPass: '',
       curPassValid: false,
+      isSame:false
 
 
     };
@@ -49,9 +50,10 @@ class ModCog extends React.Component {
     alert('out3')
  
 
+  const isValidPassword=true
    Auth.currentAuthenticatedUser()
    .then(user =>Auth.changePassword(user,this.state.typePass,this.state.retypePass) )
-    .catch(err => alert('2' + JSON.stringify(err)));
+    .catch(err => alert(JSON.stringify(err)));
 
    ;
 
@@ -78,6 +80,7 @@ class ModCog extends React.Component {
     const isValidRetyped = validationUtil.validatePassword(password);
 
     this.setState({ isValid: isValidP })
+    this.setState({ isSame: this.state.password==this.state.retypePasss })
     this.setState({ newPass: password })
 
 
@@ -90,7 +93,7 @@ class ModCog extends React.Component {
 
 
   render() {
-    const { VInput, } = commonComponents;
+    const { VInput, ErrorBlock } = commonComponents;
     return (
       <div>
 
@@ -105,13 +108,13 @@ class ModCog extends React.Component {
           <em>New Password </em>
           <FormGroup>
             {this.state.error}
-            <VInput type="password" name="password" onChange={this.onPasswordChanged} errormsg={'error'} isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged} />
+            <VInput isValid={this.state.isSame} type="password" name="password" onChange={this.onPasswordChanged} errormsg={'error'} value={this.state.password} onChange={this.onPasswordChanged}  required />
           </FormGroup>
 
           <em>Retype new password </em>
           <FormGroup>
             {this.state.error}
-            <VInput type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'} isValid={this.state.passwordValid} value={this.state.retypedpassword} />
+            <VInput isValid={false} type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'}  value={this.state.retypedpassword} />
           </FormGroup>
           <button className="searchBtn main-btn btn" onClick={() => { this.getAuthCode() }}>
             ChangePassword </button><br />
