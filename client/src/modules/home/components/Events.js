@@ -19,6 +19,7 @@ class Events extends React.Component {
       error: null,
       isLoaded: false,
       restaurants: [],
+      userLocationAllowed: props.userLocationAllowed,
       latitude : 0,
       longitude : 0
     };
@@ -35,12 +36,13 @@ class Events extends React.Component {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
+          userLocationAllowed: true
         });
-        
-        console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
+        console.log("DEBUG: Events.js userLocationAllowed true")
+        //console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
         this.getSuggestions();
       },
-      (error) => this.setState({ error: error.message }),
+      (error) => this.setState({ error: error.message, userLocationAllowed: false }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
     
@@ -83,18 +85,20 @@ class Events extends React.Component {
     let strings = new LocalizedStrings({
       en:{
         loading:"Loading suggestions...",
-        suggestions:"Restaurants you might be interested:"
+        suggestions:"Restaurants you might be interested:",
+        noLocation:"Can not show suggestion because location is not enabled"
       },
       fi: {
         loading:"Ladataan ehdotuksia...",
-        suggestions:" Ravintoloita joista voisit olla kiinnostunut:"
+        suggestions:" Ravintoloita joista voisit olla kiinnostunut:",
+        noLocation:"Ehdotuksia ei voida näyttää koska sijainti ei ole käytössä"
       }
     });
     
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
     
-    if (error) {
+    if (this.state.error) {
       return (
         <div className="eventsDiv"> 
           <div className="event">
@@ -102,7 +106,7 @@ class Events extends React.Component {
           </div>
         </div>
       );
-    } else if (!isLoaded) {
+    } else if (!this.state.isLoaded) {
       return (
         <div className="eventsDiv"> 
           <h3>
@@ -112,18 +116,30 @@ class Events extends React.Component {
         </div>
       );
     } else {
-      return (
-         <div className="eventsDiv"> 
-          <h3> {strings.suggestions} </h3>
-          {restaurants.map((restaurant) =>
-            <EventBlock
-              key={restaurant.restaurant_id}
-              restaurant={restaurant}
-              language={language}
-            />
-          )}      
-        </div>
-      );
+      if(this.state.userLocationAllowed)
+      {
+        return (
+           <div className="eventsDiv"> 
+            <h3> {strings.suggestions} </h3>
+            {restaurants.map((restaurant) =>
+              <EventBlock
+                key={restaurant.restaurant_id}
+                restaurant={restaurant}
+                language={language}
+              />
+            )}      
+          </div>
+        );
+      }
+      else
+      {
+         return (
+          <div className="eventsDiv"> 
+            <h3> {strings.suggestions} </h3>
+            <p> {strings.noLocation} </p>
+          </div>
+        );
+      }
       
     }
   }

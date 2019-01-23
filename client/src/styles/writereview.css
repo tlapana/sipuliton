@@ -1,5 +1,9 @@
 //Review writing page CSS file
 
+.reviewBtn {
+  
+}
+
 div.reviewDiv {
   width: 100%;
   color: red;
@@ -7,12 +11,7 @@ div.reviewDiv {
 }
 
 form.review {
-  padding-left: 50px;
-  
-}
-
-h3.restaurantName {
-  text-align: center
+  text-align: left;
 }
 
 button.submitBtn {
@@ -25,4 +24,8 @@ button.submitBtn {
 .reviewTextArea {
   width: 100%;
   height: 150px;
+}
+
+.reviewModal {
+  width: 100vh;
 }
