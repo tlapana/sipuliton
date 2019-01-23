@@ -11,7 +11,8 @@ import WriteReviewComponents from '../../writereview';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
-const { WriteReview } = WriteReviewComponents;
+import WriteReview from '../../writereview/components/WriteReview.js';
+
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class Restaurant extends React.Component {
@@ -104,7 +105,8 @@ class Restaurant extends React.Component {
 			userRating: "User rating: ",
 			allergyTags: "Allergy information: ",
 			openingHours: [" Opening hours - Mon-Fri: ", " Sat: ", " Sun: "],
-			addReview: "Add a review"
+			addReview: "Add a review",
+      cancel: "Cancel"
 		},
 		fi: {
 			preTitle: "Ravintolan arvostelut: ",
@@ -112,7 +114,8 @@ class Restaurant extends React.Component {
 			userRating: "Käyttäjien arvio: ",
 			allergyTags: "Allergiatunnisteet: ",
 			openingHours: [" Aukioloajat - Ma-Pe: ", " La: ", " Su: "],
-			addReview: "Lisää arvostelu"
+			addReview: "Lisää arvostelu",
+      cancel: "Peruuta"
 		}
 		});
 		strings.setLanguage(this.props.match.params.language);
@@ -130,10 +133,10 @@ class Restaurant extends React.Component {
 			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
 			<ModalHeader></ModalHeader>
 			<ModalBody className="writeReview">
-			<WriteReview restaurantId={this.state.id} />
+			<WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
 			</ModalBody>
 			<ModalFooter>
-            <div class="buttonContainer"><Button color="primary" onClick={this.toggleModal}>Peruuta</Button></div>
+            <div class="buttonContainer"><Button color="primary" onClick={this.toggleModal}>{strings.cancel}</Button></div>
 			</ModalFooter>
 			</Modal>
 			<div id="preTitle">{strings.preTitle}</div>
