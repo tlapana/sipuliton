@@ -1,0 +1,13 @@
+{
+  "name": "landing",
+  "version": "0.1.1",
+  "description": "GET endpoint for landing page",
+  "main": "src/landing.js",
+  "repository": "",
+  "author": "Sergei Häyrynen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

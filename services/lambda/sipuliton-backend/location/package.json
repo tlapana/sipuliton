@@ -1,0 +1,13 @@
+{
+  "name": "location",
+  "version": "0.1.0",
+  "description": "GET endpoint for cities and countries",
+  "main": "src/location.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

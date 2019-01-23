@@ -1,0 +1,13 @@
+{
+  "name": "user",
+  "version": "0.1.0",
+  "description": "endpoints for user creation and deletion",
+  "main": "src/profile.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}

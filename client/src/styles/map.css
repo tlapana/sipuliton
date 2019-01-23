@@ -1,0 +1,320 @@
+.full {
+  height: 100vh;
+  width: 99.5vw;
+  margin-bottom: auto;
+}
+
+.mini {
+  height: 30vh;
+  width: 99.5vw;
+  margin-bottom: auto;
+}
+
+.filterBoxMap {
+  position: relative;
+  width: 80%;
+  min-height: 100%;
+}
+
+#map {
+  border:0px;
+  position: fixed;
+  left: 4px;
+  top: 4px;
+  height:100%
+}
+
+.HiddenPopUp {
+  visibility: hidden;
+}
+
+#BackToMapBtn {
+  width: 50%;
+  height: 40px;
+}
+
+.RestaurantPageBtn {
+  text-align: center;
+  bottom: 0px;
+  margin:0.5em 2em 0em 2em;
+  white-space: normal !important;
+}
+
+#address{
+  margin: auto;
+  text-align: center;
+  color: rgb(80, 80, 80);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 95%;
+}
+
+#contact{
+  margin-left: 2em;
+  text-align: center;
+  color: rgb(80, 80, 80);
+}
+
+.ratings {
+  margin: auto;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 95%;
+}
+
+.rating {
+  display:inline-block;
+  margin: auto;
+}
+
+.SearchBox{
+  margin-top: 50px;
+}
+
+.ErrorBox{
+  margin-top: 50px;
+  text-align: center;
+}
+
+#openingHours {
+  text-align: center;
+  margin: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 95%;
+}
+
+#restaurantName {
+  text-align: center;
+  margin: auto;
+}
+
+.RestaurantPageBtn:hover {
+  color: #2b2b2b;
+  background-color: white;
+}
+
+.restaurants-list {
+  background-color: #9c9c9c7e;
+  -webkit-box-shadow: 0 0 3px 2px #9c9c9c7e;
+  box-shadow: 0 0 3px 2px #9c9c9c7e;
+}
+
+.rounded .restaurants-list,
+.rounded .restaurant-info {
+  border-radius: 1em;
+}
+
+.restaurant-heading {
+  width: 95%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.loading-container {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background-color: #ffffff75;
+}
+
+.loading-container .loadingSpinner {
+  position: absolute;
+  opacity: 1 !important;
+  top: 50%;
+  left: 50%;
+}
+
+.map-loading {
+  -webkit-filter: blur(2px);
+  filter: blur(2px);
+}
+
+.RadiusSelect {
+  left:15px;
+  position: fixed;
+  top:100px;
+}
+
+.modal-filter-button {
+  position: fixed;
+  left:55px;
+  top:25px;
+  z-index: 300;
+  width:300px
+}
+.modal-filter-button button.filterBtn{
+  margin-left: 0%;
+  margin-right:0%;
+  box-shadow: 0 0 4px 2px #00000060 !important;
+}
+
+.Modal-Filter-Page-Btn{
+  margin-right:1em;
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+
+.city-search-input {
+  padding: 10px;
+  font-size: 17px;
+  border: 1px solid grey;
+  width: 80%;
+  background: #f1f1f1;
+  border-radius: 25px 25px 25px 25px;
+  margin: 1em;
+}
+
+.filterBox{
+  margin:auto;
+}
+
+@media only screen and (min-width: 767px) {
+  .restaurants-list{
+    position: fixed;
+    top: 10px;
+    z-index: 100;
+    width: 25rem;
+    max-width: 33%;
+    right: 10px;
+    text-align: right;
+    overflow-y: scroll;
+    height: 90vh;
+  }
+  .restaurant-info {
+    display: block;
+    height: auto;
+    -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    box-shadow: 0px 0px 5px 1px #8b8b8b;
+    padding-bottom: 2em;
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-left: 1em;
+    background-color: white;
+  }
+  #overallReview{
+    visibility:visible;
+  }
+}
+@media only screen and (max-width: 768px) {
+  .restaurants-list{
+    position: fixed;
+    bottom: 5.5em;
+    z-index: 100;
+    left: 10px;
+    text-align: left;
+    width: 100%;
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .restaurant-info {
+    display: inline-block;
+    height: 150px;
+    width: 300px;
+    -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+    box-shadow: 0px 0px 5px 1px #8b8b8b;
+    padding-bottom: 2em;
+    margin-top: 1em;
+    margin-right: 1em;
+    margin-left: 1em;
+    background-color: white;
+  }
+  .restaurant-info-block{
+    display: inline-block;
+    width: auto;
+    height: 100%;
+  }
+  #overallReview{
+    visibility: hidden;
+    display: none;
+  }
+}
+
+.errorBox{
+  position: fixed;
+  top:38vh;
+  left:38vw;
+  margin: 20px;
+  background-color: white;
+  z-index: 100;
+}
+.errorText{
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  margin: auto auto auto auto;
+}
+.rounded .errorBox {
+  border-radius: 1.5em;
+}
+
+.ErrorBoxBtn{
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  -moz-box-shadow: 0px 1px;
+  -webkit-box-shadow: 0px 1px;
+  box-shadow: 0px 1px;
+  -moz-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  -webkit-box-shadow: 0px 0px 5px 1px #8b8b8b;
+  box-shadow: 0px 0px 5px 1px #8b8b8b;
+  margin:auto;
+  background-color: #72c567;
+  color:white;
+}
+.ErrorBoxBtn:hover{
+  color: #2b2b2b;
+  background-color: white;
+}
+.error-button-box{
+  padding: 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+.green-restaurant{
+  border-color: green;
+  border-width: 5px;
+  border-style: solid;
+}
+.grey-restaurant{
+  border-color: grey;
+  border-width: 5px;
+  border-style: solid;
+}
+.yellow-restaurant{
+  border-color: yellow;
+  border-width: 5px;
+  border-style: solid;
+}
+.loadingSpinner-map{
+  position: fixed;
+  z-index: 900;
+  top:50vh;
+  left:50vw;
+}
+
+.advanced-filters-btn{
+  margin: 10px 0px;
+}
+.Location-Question-Answere-Box{
+  margin: 0px 0px 10px 0px;
+}
+.diets-filters-box{
+  margin: 10px 0px 10px 0px;
+}
+.basic-multi-select{
+  font-size: 17px;
+  width: 80%;
+  margin: 1em;
+}

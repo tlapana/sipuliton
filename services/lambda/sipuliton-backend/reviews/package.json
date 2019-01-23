@@ -1,0 +1,13 @@
+{
+  "name": "restaurant",
+  "version": "0.1.1",
+  "description": "GET endpoint for restaurant page",
+  "main": "src/restaurant.js",
+  "repository": "",
+  "author": "Sergei Häyrynen, Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.5.0"
+  },
+  "devDependencies": {}
+}

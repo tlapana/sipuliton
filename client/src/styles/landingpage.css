@@ -1,0 +1,94 @@
+
+//Landing page CSS file
+.landingDiv
+{
+  width: 100vh;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.searchDiv {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+}
+
+form.search {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+form.search button.searchBtn {
+  border-bottom-left-radius: 0px;
+  border-top-left-radius: 0px;
+  margin: 0;
+}
+
+button.filterBtn {
+  width: 40%;
+  padding: 10px;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+.eventsDiv {
+  width: 100%;
+  height: 75%;
+  border-top-color: #e5e5e5;
+  border-top-style: solid;
+  border-top-width: 1px;
+  padding-top: 5px;
+  margin-top: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  clear: both;
+}
+
+.event {
+  margin: 1em .5em 1em .5em;
+  border-radius: .25em;
+  -webkit-box-shadow: 0px 0px 1px 1px rgba(131, 131, 131, .5);
+  box-shadow: 0px 0px 1px 1px rgba(131, 131, 131, .5);
+}
+
+.rounded .event {
+  border-radius: 1em;
+}
+
+.event .restaurant-name {
+  font-size: 1.5rem;
+}
+
+.event .restaurant-stars {
+  margin-right: .5rem;
+}
+
+
+.instructions {
+  font-size: small;
+  color: gray;
+  border-bottom-style: dotted;
+  border-bottom-width: 1px;
+  margin-left: 40%;
+  margin-right: 40%;
+  min-width: 20%;
+}
+
+.filterBox {
+  width: 80%;
+  min-height: 100%;
+}
+
+.loadingSpinner {
+  margin-left: auto;
+  margin-right: auto;
+  height: 50px;
+  width: 50px;
+}

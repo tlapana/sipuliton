@@ -1,0 +1,6 @@
+user_id,cognito_sub,username,email
+0,test-user-1,Sipuliton mod,test@mail.com
+1,Test-user-2,Admin,admin@sipuliton.fi
+2,Test-user-3,Troller,sum1@here.com
+3,get from cognito,Restaurant owner,asd@asd.com
+4,cog5,user,das@asd.com
