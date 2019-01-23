@@ -100,6 +100,7 @@ class ModCog extends React.Component {
     const { VInput, ErrorBlock } = commonComponents;
     let strings = new LocalizedStrings({
       en:{
+        title: "Change password",
         username:"Username:",
         sendCode:"Send code",
         sending:"Sending...",
@@ -107,6 +108,7 @@ class ModCog extends React.Component {
         limitexceeded:"You send a code too many times in a row, try again later.",
         passwordchangedidntsuccee:"Password didn't succeed, password or code is invalid.",
         codesentto:"Code was sent to following email address: ",
+        curpassword:"cur password:",
         newpassword:"New password:",
         newpasswordagain:"New password again:",
         code:"Code:",
@@ -118,8 +120,12 @@ class ModCog extends React.Component {
 					"contain numbers lower case characters and numbers",
 				passwordAgainError:"Passwords must match",
         codeError:"Code must be 2-9 characters long",
+        change:"Change"
       },
       fi: {
+        change:"Vaihda",
+        title: "Vaihda salasana",
+        curpassword:"Nykyinen salasana",
         username:"Käyttäjänimi:",
         sendCode:"Lähetä koodi",
         sending:"Lähetetään...",
@@ -144,28 +150,28 @@ strings.setLanguage('fi');
     return (
       
       <div>
-
+      <h3>{strings.curpassword}</h3>
     <ErrorBlock hidden={!this.state.codeSendingFailed} errormsg={strings.usernotfound} />
         <ErrorBlock hidden={!this.state.limitExceeded} errormsg={strings.limitexceeded} />
         <form>
-          <em>Nykyinen salasana </em>
+          <em>{strings.curpassword} </em>
           <FormGroup>
             {this.state.error}
             <VInput type="password" name="curpassword" errormsg={'error'} onChange={this.onCurPasswordChanged} />
           </FormGroup>
 
-          <em>New Password </em>
+          <em>{strings.newpassword} </em>
           <FormGroup>
             {this.state.error}
             <VInput isValid={this.state.isSame && this.state.isValid} type="password" name="password" onChange={this.onPasswordChanged} errormsg={'error'} value={this.state.password} onChange={this.onPasswordChanged} required />
           </FormGroup>
 
-          <em>Retype new password </em>
+          <em>{strings.newpasswordagain}</em>
           <FormGroup>
             {this.state.error}
             <VInput isValid={this.state.isSame} type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'} value={this.state.retypedpassword} />
           </FormGroup>
-          <input type="button" className="searchBtn main-btn btn" value="test" onClick={this.getAuthCode}/>
+          <input type="button" className="searchBtn main-btn btn" value={strings.change} onClick={this.getAuthCode}/>
 
 
         </form> </div>);
