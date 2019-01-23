@@ -47,16 +47,31 @@ class ReviewList extends React.Component {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
 				var i;
+        
+        /* Initialize arrays here first, so they exist outside the loop */
+				var titls = [];
+				var revws = [];
+				var usrs = [];
+				var rlvnce = [];
+				var allergyAware = [];
+				var serviceQual = [];
+        
 				/*no looping in setState, so build the arrays here first*/
 				for (i = 0; i < result.length; i++) {
 					var obj = result[i];
-					var titls = titls.push(obj.title);
-					var revws = revws.push(obj.free_text);
-					var usrs = usrs.push(obj.user_id);
-					var rlvnce = rlvnce.push(obj.rating_reliability);
-					var allergyAware = allergyAware.push(obj.rating_variety);
-					var serviceQual = serviceQual.push(obj.rating_service_and_quality);
+					titls = titls.push(obj.title);
+					revws = revws.push(obj.free_text);
+					usrs = usrs.push(obj.user_id);
+					rlvnce = rlvnce.push(obj.rating_reliability);
+					allergyAware = allergyAware.push(obj.rating_variety);
+					serviceQual = serviceQual.push(obj.rating_service_and_quality);
 				}
+        
+        console.log("titls:")
+        console.log(titls);
+        console.log("revws:")
+        console.log(revws)
+        
 				this.setState({
 					isLoaded: true,
 					titles : titls,
