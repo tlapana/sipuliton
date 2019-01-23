@@ -33,7 +33,8 @@ class ModCog extends React.Component {
       curPass: '',
       newPass: '',
       curPassValid: false,
-      isSame: false
+      isSame: false,
+      message:''
 
 
 
@@ -56,7 +57,7 @@ class ModCog extends React.Component {
         //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
          Auth.currentAuthenticatedUser()
       .then(user =>Auth.changePassword(user, this.state.curPass, this.state.retypePass))
-      .catch(err => alert(err.message));
+      .catch(err => this.setState({message:err.message}));
 
     ;
   }
@@ -151,8 +152,8 @@ strings.setLanguage('fi');
       
       <div>
       <h3>{strings.curpassword}</h3>
-    <ErrorBlock hidden={!this.state.codeSendingFailed} errormsg={strings.usernotfound} />
-        <ErrorBlock hidden={!this.state.limitExceeded} errormsg={strings.limitexceeded} />
+    <ErrorBlock hidden={false} errormsg={this.state.message} />
+ 
         <form>
           <em>{strings.curpassword} </em>
           <FormGroup>
