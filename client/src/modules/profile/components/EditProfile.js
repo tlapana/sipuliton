@@ -5,12 +5,15 @@ import ReactLoading from 'react-loading';
 import commonComponents from '../../common';
 import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
+import { API, Auth } from 'aws-amplify';
 
 
 class EditProfile extends React.Component {
   constructor(props) {
     super(props);
+    const { id } = this.props.match.params;
     this.state = {
+      id: id,
       username: '-',
       email: '-',
       city: '-',
@@ -116,8 +119,12 @@ class EditProfile extends React.Component {
 
   async fetchProfile() {
     this.setState({isLoading: true});
-    return fetch('http://127.0.0.1:3000/profile')
-      .then((response) => response.json())
+    const init = {
+      queryStringParameters: {
+        user_id: this.state.id
+      }
+    }
+    return API.get('api', '/profile', init)
       .then((responseJson) => {
         this.setState({
           city: responseJson.city_name,
@@ -150,23 +157,25 @@ class EditProfile extends React.Component {
     data1.country = this.state.current_country;
     data1.desc = this.state.desc;
     data1.username = this.state.username;
-    var url = 'http://127.0.0.1:3000/profile/edit'
+    var url = '/profile/edit'
     url += '?description=' + data1.desc;
     url += '&display_name=' + data1.username;
     url += '&country_id=' + data1.country;
     url += '&city_id=' + data1.city;
-    fetch(url, {
-      method: 'GET',
-      headers: {},
-    })
-    .then((response) => {
-      const { language } = this.props.match.params;
-      this.props.history.push('/' + language + '/profile');
-    })
-    .catch((err) => {
-      console.log(err);
-      this.setState({isSaving: false});
-    });
+    const init = {
+      queryStringParameters: {
+        user_id: this.state.id
+      }
+    }
+    API.get('api', url, init)
+      .then((response) => {
+        const { language } = this.props.match.params;
+        this.props.history.push('/' + language + '/profile/' + this.state.id);
+      })
+      .catch((err) => {
+        console.log(err);
+        this.setState({isSaving: false});
+      });
   }
 
   handleUsernameChange(e) {

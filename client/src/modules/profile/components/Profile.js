@@ -37,7 +37,7 @@ class Profile extends React.Component {
 
   handleEditClicked() {
     const { language } = this.props.match.params;
-    this.props.history.push('/' + language + '/edit-profile');
+    this.props.history.push('/' + language + '/edit-profile/' + this.state.id);
   }
 
   async componentWillMount() {
