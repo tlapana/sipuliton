@@ -4,7 +4,7 @@ needed components to the map component.
 
 import React from 'react';
 /* Map imports */
-import { Map, Marker, Popup, TileLayer, Circle } from 'react-leaflet'
+import { Map, Marker, Popup, TileLayer } from 'react-leaflet'
 import L from 'leaflet';
 import '../../../styles/map.css';
 

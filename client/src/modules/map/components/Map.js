@@ -200,6 +200,24 @@ class Map extends React.Component {
     //Printing for the debugging.
     //console.log("Getting: "+markColor)
     //console.log(this.state.searchLoc)
+    var searchDiets = [];
+    for(var i = 0; i<this.state.filters.diets.length; ++i)
+    {
+      searchDiets.push(this.state.filters.diets[i].value);
+    }
+    var diet_ids = searchDiets;
+    var diet_array_string = "[";
+    var dietParam = "&globalDietId=[]";
+    if(diet_ids.length > 0 || this.state.filters.diets != undefined)
+    {
+      for(var i = 0; i<diet_ids.length-1; ++i)
+      {
+        diet_array_string = diet_array_string+diet_ids[i]+',';
+      }
+      diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
+      dietParam = '&globalDietId='+diet_array_string;
+    }
+    console.log(dietParam);
 
     //Basic search portion for the green markers.
     var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
@@ -209,8 +227,9 @@ class Map extends React.Component {
                 + '&minServiceAndQualityRating=' + this.state.filters.minVariety
                 + '&maxDistance=' + this.state.filters.radius
                 + '&currentLatitude=' + this.state.searchLoc[0]
-                + '&currentLongitude=' + this.state.searchLoc[1];
-
+                + '&currentLongitude=' + this.state.searchLoc[1]
+                + dietParam;
+    console.log(url);
     if(markColor === "grey"){
       //Basic search portion for the grey markers. Here all ratings are set to 0 to find more restaurants.
       url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
@@ -220,7 +239,8 @@ class Map extends React.Component {
                   + '&minServiceAndQualityRating=0'
                   + '&maxDistance=' + this.state.filters.radius
                   + '&currentLatitude=' + this.state.searchLoc[0]
-                  + '&currentLongitude=' + this.state.searchLoc[1];
+                  + '&currentLongitude=' + this.state.searchLoc[1]
+                  + dietParam;
     }
 
     //Set map to loading state.
@@ -457,20 +477,22 @@ class Map extends React.Component {
         ?
         <div className="mapPage">
           <div id="map" >
-  					<ModalFilterPage
-              filters={this.state.filters}
-  						FiltersChanged={this.FiltersChanged}
-  						language={this.props.match.params.language}
-              geolocationEnabled={false}
-              showFilterBoxAtStart={this.state.showFilterBox}/>
-            {this.state.loading &&
-              <div className="loading-container">
-                <ReactLoading
-                  type={'spinningBubbles'}
-                  className="loadingSpinner loadingSpinner-map"
-                />
-              </div>
-            }
+            <div>
+    					<ModalFilterPage
+                filters={this.state.filters}
+    						FiltersChanged={this.FiltersChanged}
+    						language={this.props.match.params.language}
+                geolocationEnabled={false}
+                showFilterBoxAtStart={this.state.showFilterBox}/>
+              {this.state.loading &&
+                <div className="loading-container loading-modal-filter-page">
+                  <ReactLoading
+                    type={'spinningBubbles'}
+                    className="loadingSpinner loadingSpinner-map"
+                  />
+                </div>
+              }
+            </div>
             <MapComponent
   						language={this.props.match.params.language}
             	latitude={this.state.searchLoc[0]}
@@ -493,6 +515,14 @@ class Map extends React.Component {
             geolocationEnabled={true}
             showFilterBoxAtStart={this.state.showFilterBox}
           />
+          {this.state.loading &&
+            <div className="loading-container loading-modal-filter-page">
+              <ReactLoading
+                type={'spinningBubbles'}
+                className="loadingSpinner loadingSpinner-map"
+              />
+            </div>
+          }
           <MapComponent
   					language={this.props.match.params.language}
   	        latitude={this.state.searchLoc[0]}

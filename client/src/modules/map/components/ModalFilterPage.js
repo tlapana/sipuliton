@@ -73,6 +73,7 @@ class ModalFilterPage extends React.Component {
     this.getOptions = this.getOptions.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
     this.clearFilters = this.clearFilters.bind(this);
+    this.handleUseLocation = this.handleUseLocation.bind(this);
   }
 
   componentDidMount() {
@@ -144,6 +145,9 @@ class ModalFilterPage extends React.Component {
         diets: this.state.diets,
       }
     })
+
+    //logging for debugging
+    //console.log(searchDiets)
 
     //call filters changed method to fetch new restaurants.
     this.props.FiltersChanged(
@@ -244,6 +248,14 @@ class ModalFilterPage extends React.Component {
     this.setState({
       pricing : newRating
     });
+  }
+
+  handleUseLocation(event)
+  {
+    this.setState({
+        useUserLocation: !this.state.useUserLocation,
+        disabled: !this.state.disabled,
+      })
   }
 
   //This gets the default options for the selection.
@@ -370,6 +382,7 @@ class ModalFilterPage extends React.Component {
       strings.setLanguage('fi');
     }
 
+    //Open/Close advanced search button text selection.
     var advancedSearchBtnText = strings.advancedSearchOpenBtn
     if(this.state.advancedSearchOpen){
       advancedSearchBtnText = strings.advancedSearchCloseBtn
@@ -405,12 +418,8 @@ class ModalFilterPage extends React.Component {
             <div>
               <div className="Location-Question-Answere-Box">
                 <input type="checkbox" name="useLocation"
-                onChange={() => {
-                  this.setState({
-                      useUserLocation: !this.state.useUserLocation,
-                      disabled: !this.state.disabled,
-                    })}}
-                checked={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
+                onChange={this.handleUseLocation}
+                value={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
               </div>
             <div>
               <div><Label>{strings.selectRadius} {MapApi.distanceFormatter(this.state.radius)}</Label></div>
