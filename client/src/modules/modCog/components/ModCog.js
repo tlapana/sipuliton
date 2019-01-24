@@ -1,7 +1,7 @@
 /*
   This file contains the landing page. Or at least the basic shape.
   Functionalities are spread into separate components
-
+I used forgot password-module as reference, when I did this.
 */
 
 import React from 'react';
@@ -34,11 +34,12 @@ class ModCog extends React.Component {
       newPass: '',
       curPassValid: false,
       isSame: false,
-      message:''
+      message: ''
 
 
 
     };
+
     this.onPasswordChanged = this.onPasswordChanged.bind(this);
     this.onCurPasswordChanged = this.onCurPasswordChanged.bind(this);
     this.onRePasswordChanged = this.onRePasswordChanged.bind(this);
@@ -49,18 +50,45 @@ class ModCog extends React.Component {
 
   getAuthCode(e) {
 
- 
+    let strings = new LocalizedStrings({
+      en: {
 
+        passwordError: "Current password doesn't match",
+        limit: "You send a password too many times in a row, try again later",
 
-    if(this.state.isSame && this.state.isValid)  {
-    
-        //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
-         Auth.currentAuthenticatedUser()
-      .then(user =>Auth.changePassword(user, this.state.curPass, this.state.retypePass))
-      .catch(err => this.setState({message:err.message}));
+      },
+      fi: {
 
-    ;
-  }
+        passwordError: "Nykyinen salasana ei täsmää",
+        limit: "Lähetit salasanan liian monta kertaa, yritä myöhemmin uudelleen.",
+
+      }
+    });
+
+    strings.setLanguage(this.props.match.params.language);
+
+    if (this.state.isSame && this.state.isValid) {
+      this.setState({ message: strings.limit })
+
+      //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
+      Auth.currentAuthenticatedUser()
+        .then(user => Auth.changePassword(user, this.state.curPass, this.state.retypePass))
+        .catch(err => {
+          this.setState({ message: err.code + ':' });
+          try {
+            if (err.code + '' === "LimitExceededException")
+             { this.setState({ message: strings.limit })
+             }
+             else  {
+              this.setState({ message: strings.passwordError })
+             }
+          } catch (e) {
+            alert(e)
+          }
+        });
+
+      ;
+    }
 
 
   }
@@ -71,12 +99,15 @@ class ModCog extends React.Component {
 
   onRePasswordChanged(e) {
     const reTypedPassword = e.target.value;
-    // this.setState({ retypePass: reTypedPassword })
+  
     this.state.retypePass = reTypedPassword;
     this.setState({ isSame: reTypedPassword == this.state.newPass })
   }
 
   onPasswordChanged(e) {
+
+
+
     const password = e.target.value;
     const reLowerCase = /[a-z]/;
     const reNumber = /[0-9]/;
@@ -100,60 +131,40 @@ class ModCog extends React.Component {
   render() {
     const { VInput, ErrorBlock } = commonComponents;
     let strings = new LocalizedStrings({
-      en:{
+      en: {
         title: "Change password",
-        username:"Username:",
-        sendCode:"Send code",
-        sending:"Sending...",
-        usernotfound:"User not found or username is invalid.",
-        limitexceeded:"You send a code too many times in a row, try again later.",
-        passwordchangedidntsuccee:"Password didn't succeed, password or code is invalid.",
-        codesentto:"Code was sent to following email address: ",
-        curpassword:"cur password:",
-        newpassword:"New password:",
-        newpasswordagain:"New password again:",
-        code:"Code:",
-        didntGetEmail:"Didn't get email? ",
-        sendcodeagain:"Send code again",
-        changePassword:"Change password",
-        loading:"Loading...",
-        passwordError:"Password must be at least 8 characters long and " + 
-					"contain numbers lower case characters and numbers",
-				passwordAgainError:"Passwords must match",
-        codeError:"Code must be 2-9 characters long",
-        change:"Change"
+        usernotfound: "User not found or username is invalid.",
+        limitexceeded: "You send a code too many times in a row, try again later.",
+        curpassword: "cur password:",
+        newpassword: "New password:",
+        newpasswordagain: "New password again:",
+        sendcodeagain: "Send code again",
+        changePassword: "Change password",
+        passwordError: "cur password doesn't match",
+        passwordAgainError: "Passwords must match",
+
+        change: "Change"
       },
       fi: {
-        change:"Vaihda",
+        change: "Vaihda",
         title: "Vaihda salasana",
-        curpassword:"Nykyinen salasana",
-        username:"Käyttäjänimi:",
-        sendCode:"Lähetä koodi",
-        sending:"Lähetetään...",
-        usernotfound:"Käyttäjää ei löydy tai käyttäjänimi ei ole validi.",
-        limitexceeded:"Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
-        passwordchangedidntsuccee:"Salasanan vaihto ei onnistunut, salasana tai koodi ei ole validi.",
-        codesentto:"Koodi lähetetty sähköpostilla osoitteeseen: ",
-        newpassword:"Uusi salasana:",
-        newpasswordagain:"Uusi salasana uudelleen:",
-        code:"Koodi:",
-        didntGetEmail:"Etkö saanut sähköpostia? ",
-        sendcodeagain:"Lähetä koodi uudelleen",
-        changePassword:"Vaihda salasana",
-        loading:"Ladataan...",
-        passwordError:"Salasanan tulee olla ainakin 8 merkkiä pitkä ja " + 
-          "siinä tulee olla pieniä kirjaimia ja numeroita",
-        passwordAgainError:"Salasanojen tulee olla samat",
-        codeError:"Koodin tulee olla 2-9 merkkiä pitkä",
+        curpassword: "Nykyinen salasana",
+        limitexceeded: "Lähetit koodin liian monta kertaa, yritä myöhemmin uudelleen.",
+        newpassword: "Uusi salasana:",
+        newpasswordagain: "Uusi salasana uudelleen:",
+        changePassword: "Vaihda salasana",
+        passwordError: "Nykyinen salasana ei täsmää",
+        passwordAgainError: "Salasanojen tulee olla samat",
+
       }
-});
-strings.setLanguage('fi');
+    });
+    strings.setLanguage(this.props.match.params.language);
     return (
-      
+
       <div>
-      <h3>{strings.curpassword}</h3>
-    <ErrorBlock hidden={false} errormsg={this.state.message} />
- 
+        <h3>{strings.title}</h3>
+        <ErrorBlock hidden={false} errormsg={this.state.message} />
+
         <form>
           <em>{strings.curpassword} </em>
           <FormGroup>
@@ -172,7 +183,7 @@ strings.setLanguage('fi');
             {this.state.error}
             <VInput isValid={this.state.isSame} type="password" name="retypedpassword" onChange={this.onRePasswordChanged} errormsg={'error'} value={this.state.retypedpassword} />
           </FormGroup>
-          <input type="button" className="searchBtn main-btn btn" value={strings.change} onClick={this.getAuthCode}/>
+          <input type="button" className="searchBtn main-btn btn" value={strings.change} onClick={this.getAuthCode} />
 
 
         </form> </div>);
