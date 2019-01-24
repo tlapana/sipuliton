@@ -9,7 +9,7 @@ import profile from '../../profile';
 import Review  from '../../MyReview/components/MyReview';
 import about from '../../about';
 import map from '../../map'
-import Review from '../../myReviews'
+//import Review from '../../myReviews'
 import ModCog from '../../modCog'
 import myReviewEdit1 from '../../myReviews/components/Review/myReviewsEdit'
 import restaurant from '../../restaurant';
