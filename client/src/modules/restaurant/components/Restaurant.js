@@ -12,7 +12,7 @@ import WriteReviewComponents from '../../writereview';
 import LocalizedStrings from 'react-localization';
 
 import WriteReview from '../../writereview/components/WriteReview.js';
-
+import '../../../styles/restaurant.css'
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class Restaurant extends React.Component {

@@ -15,7 +15,6 @@ import NotFound from './NotFound';
 
 /* This is where all routes should be */
 class RouteCollection extends React.Component {
-
   render() {
     const { Home } = home;
     const { Login } = login;

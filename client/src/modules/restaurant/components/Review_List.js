@@ -8,7 +8,7 @@ import {
 	Label
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
+import '../../../styles/restaurant.css'
 import ReactStars from 'react-stars';
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -149,7 +149,7 @@ class ReviewList extends React.Component {
 			<div>
 				<div id="preTitle">{strings.preTitle}</div>
 				<div id="reviewList" onClick={this.changeReview}>
-					<h3>{this.state.titles[this.state.reviewIndex]}</h3>
+					<h3 className="review-title">{this.state.titles[this.state.reviewIndex]}</h3>
 					<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
 					<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
 					<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
