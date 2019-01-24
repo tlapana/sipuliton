@@ -123,9 +123,9 @@ class Review extends React.Component {
                               let data_item =  responseJson.reviews[item]
                               var datetime1 = new Date(data_item.posted);
 
-                              array1.push(<Row key="1"> <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>);
-                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row>);
-                              array1.push(<Row key="1"> <Col key="1"><hr /></Col></Row>);
+                              array1.push(<div><Row  style={{   'background-color': '#72c567'}} key="1" > <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>
+                              <Row  style={{   'background-color': '#72c567'}} key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row> </div>);
+       
                  
                         }
                         t.setState({ array: array1 });
@@ -298,7 +298,7 @@ class Review extends React.Component {
                   </Modal>
 
 
-                  <em id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
+                  <em class="text" id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
@@ -309,7 +309,7 @@ class Review extends React.Component {
                         subContainerClassName={'pages pagination'}
 
                         activeClassName={'active'} />
-                  <div style={{ "width": "500px", "overflow": "scroll", "height": "300px" }}>
+                  <div >
          
                         {this.state.array}
                   </div>

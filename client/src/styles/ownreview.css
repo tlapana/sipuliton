@@ -30,3 +30,7 @@
   display: inline-block;
   font-size: 30px; 
 }
+text  {
+  color:red;
+  background-color: aqua;
+}
