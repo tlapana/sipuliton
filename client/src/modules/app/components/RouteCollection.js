@@ -36,7 +36,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/map" component={Map} />
         <Route path="/:language/myReview" component={Review} />
         <Route path="/:language/myReviewEdit" component={myReviewEdit1 } />
-        <Route path="/:language/restaurant/:id" component={Restaurant} />
+        <Route path="/:language/restaurant/" component={Restaurant} />
         <Route path="/:language/about" component={About} />
         <Route component={NotFound} />
       </Switch>
