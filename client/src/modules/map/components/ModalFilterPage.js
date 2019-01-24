@@ -391,9 +391,9 @@ class ModalFilterPage extends React.Component {
     return(
       <div className="modal-filter-button">
         <button className="filterBtn btn main-btn" id="filter_popover" onClick={this.toggleModal} type="button">{strings.filter}</button>
-        <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+        <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBoxMap">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
-          <ModalBody className="filterBox">
+          <ModalBody className="filterBoxMap">
             {this.state.loading &&
               <div className="loading-container">
                 <ReactLoading

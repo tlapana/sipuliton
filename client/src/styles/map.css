@@ -10,6 +10,12 @@
   margin-bottom: auto;
 }
 
+.filterBoxMap {
+  position: relative;
+  width: 80%;
+  min-height: 100%;
+}
+
 #map {
   border:0px;
   position: fixed;
