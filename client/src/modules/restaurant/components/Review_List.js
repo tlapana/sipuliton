@@ -47,7 +47,7 @@ class ReviewList extends React.Component {
 				console.log("DEBUG: loadRestaurant success");
 				console.log(result);
 				var i;
-        
+
         /* Initialize arrays here first, so they exist outside the loop */
 				var titls = [];
 				var revws = [];
@@ -55,7 +55,7 @@ class ReviewList extends React.Component {
 				var rlvnce = [];
 				var allergyAware = [];
 				var serviceQual = [];
-        
+
 				/*no looping in setState, so build the arrays here first*/
 				for (i = 0; i < result.length; i++) {
 					var obj = result[i];
@@ -66,12 +66,12 @@ class ReviewList extends React.Component {
 					allergyAware = allergyAware.push(obj.rating_variety);
 					serviceQual = serviceQual.push(obj.rating_service_and_quality);
 				}
-        
+
         console.log("titls:")
         console.log(titls);
         console.log("revws:")
         console.log(revws)
-        
+
 				this.setState({
 					isLoaded: true,
 					titles : titls,
@@ -146,19 +146,21 @@ class ReviewList extends React.Component {
 		});
 		strings.setLanguage(this.props.language);
 		return (
-			<div id="reviewList" onClick={this.changeReview}>
+			<div>
 				<div id="preTitle">{strings.preTitle}</div>
-				<h3>{this.state.titles[this.state.reviewIndex]}</h3>
-				<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
-				<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
-				<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
-				<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
-				<div id="reviewRelevance">{strings.relevance}
-				<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/></div>
-				<div id="reviewAwareness">{strings.allergyAwareness}
-				<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/></div>
-				<div id="reviewQuality">{strings.quality}
-				<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/></div>
+				<div id="reviewList" onClick={this.changeReview}>
+					<h3>{this.state.titles[this.state.reviewIndex]}</h3>
+					<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
+					<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
+					<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
+					<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
+					<div id="reviewRelevance">{strings.relevance}
+					<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/></div>
+					<div id="reviewAwareness">{strings.allergyAwareness}
+					<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/></div>
+					<div id="reviewQuality">{strings.quality}
+					<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/></div>
+				</div>
 			</div>
 		);
 	}
