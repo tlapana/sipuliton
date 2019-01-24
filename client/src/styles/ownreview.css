@@ -5,6 +5,17 @@
   color: red;
 
 }
+.loadingSpinner {
+  margin-left: 0;
+  margin-right: 0;
+  height: 50px;
+  width: 50px;
+}
+#test2 {
+  position: absolute;
+  top: 50px;
+  z-index: 3;
+}
 .pagination li{
   display: inline-block;
   padding-left: 30px;

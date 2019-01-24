@@ -1,6 +1,9 @@
+//This is global api for the map functions.
 
+//Center parameter which are used in this api functions.
 var center = [1,1];
 
+//Distance formatter function which handles map slider value converting.
 function distanceFormatter(v) {
   if(typeof v === "number"){
     v = v/1000;
@@ -12,6 +15,7 @@ function distanceFormatter(v) {
   return `${v} km`;
 }
 
+//Sorting functions for sorting restaurants based on their location.
 function sortByDistanceToCenter(){
   return function(a,b){
     var powAx = Math.pow(a.position[0]-center[0],2);
@@ -30,6 +34,7 @@ function sortByDistanceToCenter(){
   }
 }
 
+//Sorting function for sorting based on restaurant overall rating.
 function sortByOverallRating(){
   return function(a,b){
     if( a.overallRating < b.overallRating){
@@ -42,6 +47,7 @@ function sortByOverallRating(){
   }
 }
 
+//Sorting function for sorting based on restaurant pricing.
 function sortByPricing(){
   return function(a,b){
     if( a.pricingRating < b.pricingRating){
@@ -54,16 +60,19 @@ function sortByPricing(){
   }
 }
 
+//Set new center to global api
 function setNewCenter(newCenter){
   if(typeof newCenter === "object"){
     center = newCenter;
   }
 }
 
+//Get global api center.
 function getCenter(){
   return center;
 }
 
+//Method gets todays restaurant opening hours from restaurant data.
 function getTodayOpeningHours(restaurantInfo){
   var d = new Date();
   var n = d.getDay()
@@ -92,6 +101,7 @@ function getTodayOpeningHours(restaurantInfo){
   return todayOpenHours;
 }
 
+//Function parses parameters which are given to map page in url.
 function parseMapUrlParametersToFilters(searchString){
   var overallRating = 0;
   var minRel = 0;
@@ -155,6 +165,7 @@ function parseMapUrlParametersToFilters(searchString){
   return filters;
 }
 
+// Function handles restaurant opening hour data which is fetched from backend.
 function handleOpeningHour(opens,closes){
   var open = "";
   if(opens === null || closes === null){
@@ -179,6 +190,7 @@ function handleOpeningHour(opens,closes){
   return open;
 }
 
+//Function handles rating data which is fetched from backend.
 function handleRating(rating,maxRating){
   var returnRating = 0;
   if(rating === null || maxRating === null || isNaN(rating) || rating < 0){
@@ -195,6 +207,7 @@ function handleRating(rating,maxRating){
   return returnRating;
 }
 
+//Function parses data which is fetched from backend to restaurant objects.
 function parseRestaurantsData(restaurantData){
   var markers = [];
   for(var i = 0; i<restaurantData.length; ++i){
@@ -225,6 +238,7 @@ function parseRestaurantsData(restaurantData){
   return markers;
 }
 
+//Function selects most suitable grey restaurants to showing.
 function chooseGreyMarkers(greenMarkers,greyMarkers){
   var alreadyFoundRestaurants = [];
   for(var i = 0; i<greenMarkers.length; ++i){

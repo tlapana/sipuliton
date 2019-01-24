@@ -4,7 +4,7 @@ Description: >
     sam-app
 
     Sample SAM Template for sam-app
-    
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
     Function:
@@ -476,7 +476,7 @@ Outputs:
       Description: "API Gateway endpoint URL for Prod stage for Profile page function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Profile/"
 
-    
+
 
     SearchApi:
       Description: "API Gateway endpoint URL for Prod stage for search functionality"
@@ -489,7 +489,7 @@ Outputs:
     SearchFunctionIamRole:
       Description: "Implicit IAM Role created for Search function"
       Value: !GetAtt SearchFunctionRole.Arn
-      
+
     RestaurantApi:
       Description: "API Gateway endpoint URL for Prod stage for Restaurant page function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Restaurant/"
@@ -513,6 +513,3 @@ Outputs:
     ReviewsFunctionIamRole:
       Description: "Implicit IAM Role created for Reviews page function"
       Value: !GetAtt ReviewsFunctionRole.Arn
-
-
-

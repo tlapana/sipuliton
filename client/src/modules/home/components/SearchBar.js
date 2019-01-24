@@ -18,8 +18,10 @@ import Slider from 'rc-slider';
 
 import * as AppImports from  '../../app';
 
-/* THIS IS A TEST SECTION! REMOVE ONCE NO LONGER NEEDED! */
+import Config from '../../../config.js';
 
+
+/* THIS IS A TEST SECTION! REMOVE ONCE NO LONGER NEEDED! */
 /* Localization */
 import LocalizedStrings from 'react-localization';
 import { string } from 'prop-types';
@@ -77,8 +79,8 @@ class SearchBar extends React.Component {
   }
 
   componentDidMount() {
-    
-    
+
+
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -92,13 +94,12 @@ class SearchBar extends React.Component {
       (error) => this.setState({ error: error.message, userLocationAllowed: false}),
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    
-    
+
     this.getDiets();
     this.setState({
       defaultValue : this.getDefaultValues()
     });
-    
+
   }
 
   //Toggles modal
@@ -147,6 +148,7 @@ class SearchBar extends React.Component {
     this.setState({
       redirectUser: true
     });
+
   }
 
 

@@ -1,23 +1,38 @@
+//This component is modal filter page for filtering restaurants.
+
+//Component imports.
 import React from 'react';
+import ReactLoading from 'react-loading';
 import {
-  ModalHeader, ModalBody, ModalFooter,
-  Label} from 'reactstrap';
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Label
+} from 'reactstrap';
 import ReactStars from 'react-stars';
 import Select from 'react-select';
-
-import '../../../styles/map.css';
-
 import * as AppImports from  '../../app';
 import Slider from 'rc-slider';
+
+//Style imports.
 import 'rc-slider/assets/index.css';
+import '../../../styles/map.css';
+
+// Configuration imports.
+import Config from '../../../config.js';
+
 /* Localization */
 import LocalizedStrings from 'react-localization';
+
+//Map global api.
 const MapApi = require('./MapGlobalFunctions');
 
 class ModalFilterPage extends React.Component {
   /* Constructor of the navication bar class. */
   constructor(props) {
     super(props);
+
+    //Initialize filters
     this.state = {
       disabled: false,
       modalState: this.props.showFilterBoxAtStart,
@@ -32,6 +47,7 @@ class ModalFilterPage extends React.Component {
       defaultValues: this.props.filters.diets,
       options: [],
       advancedSearchOpen: false,
+      loading: false,
       originalStage: {
         city: this.props.filters.city,
         radius : this.props.filters.radius,
@@ -44,6 +60,8 @@ class ModalFilterPage extends React.Component {
         defaultValues: this.props.filters.diets,
       }
     }
+
+    //Function bindings.
     this.toggleModal = this.toggleModal.bind(this);
     this.toggleAdvancedSearch = this.toggleAdvancedSearch.bind(this);
     this.changeOverall = this.changeOverall.bind(this);
@@ -53,34 +71,48 @@ class ModalFilterPage extends React.Component {
     this.changePricing = this.changePricing.bind(this);
     this.saveFilters = this.saveFilters.bind(this);
     this.getOptions = this.getOptions.bind(this);
+    this.getDefaultValues = this.getDefaultValues.bind(this);
     this.clearFilters = this.clearFilters.bind(this);
+    this.handleUseLocation = this.handleUseLocation.bind(this);
   }
 
   componentDidMount() {
-    this.setState({
-      options : this.getOptions(),
-    });
+    this.setState({loading:true});
+
+    //Get diet options.
+    this.getOptions();
+
+    // Get default diets.
+    this.getDefaultValues();
+
+    // render page
+    this.render();
   }
 
+  //Handle search city change.
   handleCityChange = event => {
     this.setState({
       city:event.target.value,
     })
   }
 
+  //Handle distance slider change.
   onSliderChange = (value) => {
     this.setState({
       radius : value,
     });
   }
 
+  //Handle diets changes.
   onDietsChanged = (selectedOptions) => {
     console.log(selectedOptions)
+    console.log(this.state.defaultValues);
     this.setState({
       diets : selectedOptions,
     });
   }
 
+  //Clears filters to basic values.
   clearFilters(){
     this.setState({
       radius : 1000,
@@ -92,9 +124,14 @@ class ModalFilterPage extends React.Component {
       city: "",
       diets: [],
     });
+    // Get default diets.
+    this.getDefaultValues();
+    this.render();
   }
 
+  //Saves filters when modal page is closed.
   saveFilters(){
+    //Initialize selected filters to original stage to show them next time.
     this.setState({
       modalState: !this.state.modalState,
       originalStage: {
@@ -108,6 +145,11 @@ class ModalFilterPage extends React.Component {
         diets: this.state.diets,
       }
     })
+
+    //logging for debugging
+    //console.log(searchDiets)
+
+    //call filters changed method to fetch new restaurants.
     this.props.FiltersChanged(
       this.state.radius,
       this.state.minOverall,
@@ -119,7 +161,6 @@ class ModalFilterPage extends React.Component {
       this.state.useUserLocation,
       this.state.diets,
     );
-
   }
 
   //Toggles modal
@@ -141,9 +182,11 @@ class ModalFilterPage extends React.Component {
       modalState: !this.state.modalState
     });
 
-    console.log("showModal: Toggling modal to " + this.state.modalState)
+    //console logging for debug
+    //console.log("showModal: Toggling modal to " + this.state.modalState)
   }
 
+  //Opens and closes advanced search
   toggleAdvancedSearch(){
     if(this.state.advancedSearchOpen)
     {
@@ -207,24 +250,79 @@ class ModalFilterPage extends React.Component {
     });
   }
 
-  //This gets the options for the selection.
-  getOptions() {
-    //TODO: Get options from backend.
-    const options = [
-      { value: '1', label: 'Allergia/Sipuli' },
-      { value: '2', label: 'Allergia/Tomaatti' },
-      { value: '3', label: 'Allergia/Pähkinä' },
-      { value: '4', label: 'Laktoositon ruokavalio' },
-      { value: '5 ', label: 'Keliakia' }
-    ];
-    console.log("Getting the options: ");
-    console.log(options);
-
+  handleUseLocation(event)
+  {
     this.setState({
-      loadedOptions : true
-    });
+        useUserLocation: !this.state.useUserLocation,
+        disabled: !this.state.disabled,
+      })
+  }
 
-    return options;
+  //This gets the default options for the selection.
+  getOptions() {
+    //Console log for debugging.
+    //console.log("Getting the options: ");
+    var url = Config.backendAPIPaths.BASE+'/diet/all';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging.
+          //console.log("Sending results");
+          //console.log(result);
+          var options = [];
+          //Send data via props
+          result.forEach(function(element) {
+            options.push({value:element.global_diet_id, label:element.name});
+          });
+          this.setState({
+            options : options,
+            loadedOptions : true
+          });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    );
+
+  }
+
+  //Get user default diets.
+  getDefaultValues()
+  {
+    //Console log for debugging
+    //console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging
+          //console.log("Sending results");
+          //console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+          this.setState({
+            diets: defValues,
+            defaultValues : defValues,
+            loadedOptions : true
+          });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
   }
 
   render() {
@@ -284,6 +382,7 @@ class ModalFilterPage extends React.Component {
       strings.setLanguage('fi');
     }
 
+    //Open/Close advanced search button text selection.
     var advancedSearchBtnText = strings.advancedSearchOpenBtn
     if(this.state.advancedSearchOpen){
       advancedSearchBtnText = strings.advancedSearchCloseBtn
@@ -292,9 +391,17 @@ class ModalFilterPage extends React.Component {
     return(
       <div className="modal-filter-button">
         <button className="filterBtn btn main-btn" id="filter_popover" onClick={this.toggleModal} type="button">{strings.filter}</button>
-        <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
+        <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBoxMap">
           <ModalHeader>{strings.includeinsearch}</ModalHeader>
-          <ModalBody className="filterBox">
+          <ModalBody className="filterBoxMap">
+            {this.state.loading &&
+              <div className="loading-container">
+                <ReactLoading
+                  type={'spinningBubbles'}
+                  className="loadingSpinner loadingSpinner-map"
+                />
+              </div>
+            }
             <div>
               <div>
                 {strings.cityWhereToFindRestaurants}
@@ -311,18 +418,15 @@ class ModalFilterPage extends React.Component {
             <div>
               <div className="Location-Question-Answere-Box">
                 <input type="checkbox" name="useLocation"
-                onChange={() => {
-                  this.setState({
-                      useUserLocation: !this.state.useUserLocation,
-                      disabled: !this.state.disabled,
-                    })}}
-                checked={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
+                onChange={this.handleUseLocation}
+                value={this.state.useUserLocation}/> {strings.doYouWantToUseLocationInSearch}<br/>
               </div>
             <div>
               <div><Label>{strings.selectRadius} {MapApi.distanceFormatter(this.state.radius)}</Label></div>
               <Slider
-                min={1000}
+                min={100}
                 max={20000}
+                step={0.1}
                 onChange={this.onSliderChange}
                 value={this.state.radius}
               />
