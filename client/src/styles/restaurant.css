@@ -1,14 +1,20 @@
 #restaurant{
   background-color: #72c567;
   color: white;
-  padding-left: 2em;
-  padding-top: 2em;
   border-radius: 2em;
   border-style: solid none none none;
   border-width: 4em;
   border-color: #29451c;
-  padding-bottom: 2em;
+  padding: 2em;
   box-shadow: 0px 3px 5px 1px #8b8b8b;
+  max-width: 960px;
+  margin: auto;
+}
+
+#preTitle{
+  font-size: xx-large;
+  border-style: none none solid none;
+  margin: 25px 0px 25px 0px;
 }
 
 .restaurant-title{
@@ -17,17 +23,96 @@
   left: 0px;
 }
 
-#reviewList{
-  margin: 2em;
-  background-color: #496ba5;
-  padding: 2em;
-  border-radius: 2em;
-  left: -20px;
-  position: relative;
-  box-shadow: 0px 3px 5px 1px #8b8b8b;
-}
+
 
 .review-title{
   border-color: white;
   border-style: none none solid none;
+}
+
+
+#review-ratings{
+
+}
+
+#reviewer-info{
+}
+
+#reviewText{
+  margin:0px 25px 0px 25px;
+}
+
+
+
+@media only screen and (max-width: 999px) {
+  #reviewPicture{
+    right: 40px;
+    position: absolute;
+    border-radius: 2em;
+    border-style: solid;
+    height: 162px;
+    width: 162px;
+    top: 90px;
+  }
+  .inline-block-review{
+    display:block;
+    margin:25px;
+  }
+  #reviewList{
+    margin: 2em;
+    background-color: #496ba5;
+    padding: 2em;
+    border-radius: 2em;
+    left: -20px;
+    position: relative;
+    box-shadow: 0px 3px 5px 1px #8b8b8b;
+  }
+}
+@media only screen and (min-width: 998px) {
+  #reviewPicture{
+    right: 40px;
+    position: absolute;
+    border-radius: 2em;
+    border-style: solid;
+    height: 162px;
+    width: 162px;
+    top: 90px;
+  }
+  #reviewList{
+    margin: 2em;
+    background-color: #496ba5;
+    padding: 2em;
+    border-radius: 2em;
+    left: -20px;
+    position: relative;
+    box-shadow: 0px 3px 5px 1px #8b8b8b;
+  }
+  .inline-block-review{
+    display: inline-block;
+    margin:25px;
+  }
+}
+
+@media only screen and (max-width: 762px) {
+  #reviewPicture{
+    border-radius: 2em;
+    border-style: solid;
+    height: 162px;
+    width: 162px;
+    position: initial;
+    margin: 10px 0px 10px 0px;
+  }
+  .inline-block-review{
+    display: inline-block;
+    margin:25px;
+  }
+  #reviewList{
+    margin: 2em;
+    background-color: #496ba5;
+    padding: 0.5em;
+    border-radius: 2em;
+    left: -20px;
+    position: relative;
+    box-shadow: 0px 3px 5px 1px #8b8b8b;
+  }
 }

@@ -35,7 +35,8 @@ class ReviewList extends React.Component {
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);
 		this.looper = this.looper.bind(this);
-		this.changeReview = this.changeReview.bind(this);
+		this.changeToNextReview = this.changeToNextReview.bind(this);
+		this.changeToPreviousReview = this.changeToPreviousReview.bind(this);
 	}
 /*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
@@ -110,7 +111,7 @@ class ReviewList extends React.Component {
 		return tagString;
 	}
 /*Function that changes the review shown, when clicked on it*/
-	changeReview() {
+	changeToNextReview() {
 		if (this.state.reviewIndex < this.state.numberOfRevs) {
 			this.setState({
 				reviewIndex: this.state.reviewIndex + 1,
@@ -124,42 +125,73 @@ class ReviewList extends React.Component {
 			});
 		}
 	}
+	/*Function that changes the review shown, when clicked on it to previous one*/
+		changeToPreviousReview() {
+			if (this.state.reviewIndex > 0 ) {
+				this.setState({
+					reviewIndex: this.state.reviewIndex - 1,
+					isLoaded: true
+				});
+			}
+			else {
+				this.setState({
+					reviewIndex: this.state.numberOfRevs,
+					isLoaded: true
+				});
+			}
+		}
+
 /*Render the items shown in review inside a div that can be clicked to show another review*/
 	render() {
 		let strings = new LocalizedStrings({
 			en:{
-				preTitle: "Restaurant's reviews: ",
+				preTitle: "Restaurant's reviews ",
 				reviewer: "Reviewer: ",
 				allergyTags: "Allergy information: ",
 				relevance: "Relevance for the search: ",
 				allergyAwareness: "Allergy awareness: ",
-				quality: "Service and quality: "
+				quality: "Service and quality: ",
+				nextReview:"Next review",
+				previousReview:"Previous review"
 			},
 			fi: {
-				preTitle: "Ravintolan arvostelut: ",
+				preTitle: "Ravintolan arvostelut ",
 				reviewer: "Arvostelija: ",
 				allergyTags: "Allergiatunnisteet: ",
 				relevance: "Vastasi hakua: ",
 				allergyAwareness: "Allergioiden huomioon otto: ",
-				quality: "Palvelu ja laatu: "
+				quality: "Palvelu ja laatu: ",
+				nextReview: "Seuraava arvostelu",
+				previousReview:"Edellinen arvostelu"
 			}
 		});
 		strings.setLanguage(this.props.language);
 		return (
 			<div>
 				<div id="preTitle">{strings.preTitle}</div>
-				<div id="reviewList" onClick={this.changeReview}>
+				<div id="reviewList">
 					<h3 className="review-title">{this.state.titles[this.state.reviewIndex]}</h3>
+					<div id="review-ratings">
+						<div id="reviewRelevance" className="inline-block-review">{strings.relevance}
+							<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/>
+						</div>
+						<div id="reviewAwareness" className="inline-block-review">{strings.allergyAwareness}
+							<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/>
+						</div>
+						<div id="reviewQuality" className="inline-block-review">{strings.quality}
+							<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/>
+						</div>
+					</div>
 					<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
 					<div id="reviewText">{this.state.reviews[this.state.reviewIndex]}</div>
-					<div id="reviewUser">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
-					<div id="reviewAllergies">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
-					<div id="reviewRelevance">{strings.relevance}
-					<ReactStars value={this.state.relevance[this.state.reviewIndex]} edit={false}/></div>
-					<div id="reviewAwareness">{strings.allergyAwareness}
-					<ReactStars value={this.state.allergyAwareness[this.state.reviewIndex]} edit={false}/></div>
-					<div id="reviewQuality">{strings.quality}
-					<ReactStars value={this.state.serviceQuality[this.state.reviewIndex]} edit={false}/></div>
+					<div id="reviewer-info">
+						<div id="reviewUser" className="inline-block-review">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
+						<div id="reviewAllergies" className="inline-block-review">{strings.allergyTags}{this.looper(this.state.allergyTags[this.state.reviewIndex])}</div>
+					</div>
+				</div>
+				<div>
+					<Button className="inline-block-review" onClick={this.changeToPreviousReview}>{strings.previousReview}</Button>
+					<Button className="inline-block-review" onClick={this.changeToNextReview}>{strings.nextReview}</Button>
 				</div>
 			</div>
 		);
