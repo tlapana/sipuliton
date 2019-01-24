@@ -6,10 +6,7 @@ import login from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
-<<<<<<< HEAD
 import Review  from '../../MyReview/components/MyReview';
-=======
->>>>>>> 24b1e60c61488c4da1a1b819d30f7a9b9edcf9be
 import about from '../../about';
 import map from '../../map'
 import myReviewEdit1 from '../../myReviews/components/Review/myReviewsEdit'
