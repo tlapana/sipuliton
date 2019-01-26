@@ -89,8 +89,6 @@ class Review extends React.Component {
       }
       
 
-    
-
       onOpenModal(item)  {
 
     
@@ -122,10 +120,9 @@ class Review extends React.Component {
                               //draw the array and formats time
                               let data_item =  responseJson.reviews[item]
                               var datetime1 = new Date(data_item.posted);
+                              array1.push(<div><Row  className='row1' key="1" > <Col xs="2">< button class="row1" onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <div class="starWidh" key="1" ><ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </div></Col>
+                           <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row> </div>);
 
-                              array1.push(<div><Row  style={{   'background-color': '#72c567'}} key="1" > <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>
-                              <Row  style={{   'background-color': '#72c567'}} key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row> </div>);
-       
                  
                         }
                         t.setState({ array: array1 });
@@ -213,13 +210,14 @@ class Review extends React.Component {
          );
       
         if(this.state.loading1)
-            return (<div>
+            return (<div >
                    
                   <h1   >MyReviews  </h1>
-     
-                  <Modal open={open} onClose={this.onCloseModal} center>
+         
+
+         <Modal open={open} onClose={this.onCloseModal} center>
                      
-                        <Row>
+                        <Row >  
                               <Col xs="4">
                                     name
                                     </Col>
@@ -296,9 +294,9 @@ class Review extends React.Component {
                         <Button onClick={() => { this.send() }} >Edit</Button><Button onClick={() => { this.deleterow(this.state.id) }}>Delete</Button>
 
                   </Modal>
+                  <div>
 
-
-                  <em class="text" id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
+                  <em  id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
                         <option value="0">Odottaa</option>
                         <option value="1">Hyväksytty</option>
                         <option value="2">Hylätty</option>
@@ -312,6 +310,7 @@ class Review extends React.Component {
                   <div >
          
                         {this.state.array}
+                  </div>
                   </div>
             </div>);
       
