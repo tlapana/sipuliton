@@ -33,6 +33,7 @@ import LocalizedStrings from 'react-localization';
 
 */
 
+
 class Review extends React.Component {
       page = 0;
       status = 0;
@@ -45,7 +46,6 @@ class Review extends React.Component {
       send() {
             localStorage.setItem('info', "" + JSON.stringify(this.state.data));
             window.location = "/fi/myReviewEdit"
-
       }
       deleterow(term) {
             fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
@@ -61,7 +61,6 @@ class Review extends React.Component {
                   })
       }
       t1 = this;
-
 
       constructor(props) {
 
@@ -87,7 +86,6 @@ class Review extends React.Component {
        
 
       }
-      
 
       onOpenModal(item)  {
 
