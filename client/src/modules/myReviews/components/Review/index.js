@@ -14,6 +14,7 @@ import '../../../../styles/ownreview.css';
 import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
+import { Auth } from "aws-amplify";
 
 import LocalizedStrings from 'react-localization';
 /*class WaitReview extends React.Component {
@@ -80,9 +81,14 @@ class Review extends React.Component {
                   rating_service_and_quality: 0,
                   edit: false
 
-            }
 
-            
+
+            }
+             Auth.currentAuthenticatedUser().then(user =>alert(JSON.stringify(user)))
+
+            .catch(err => 
+    
+              alert('error'));
        
 
       }
@@ -177,7 +183,7 @@ class Review extends React.Component {
       };
 
 
-
+ 
     
 
       onCloseModal = () => {

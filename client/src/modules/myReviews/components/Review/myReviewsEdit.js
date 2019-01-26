@@ -2,6 +2,7 @@ import React, { } from 'react';
 
 import ReactStars from 'react-stars'
 import { Button, Container, Row, Col } from 'reactstrap';
+import commonComponents from '../../../common';
 
 export default class myReviewEdit1 extends React.Component {
       constructor(props) {
@@ -49,6 +50,7 @@ export default class myReviewEdit1 extends React.Component {
       }
 
       render() {
+            const { VInput, ErrorBlock } = commonComponents;
             return (
                   <div >
 
@@ -59,7 +61,8 @@ export default class myReviewEdit1 extends React.Component {
                                     title
                                     </Col>
                               <Col xs="4">
-                                    <input type="Text" id="title" defaultValue={this.state.title} />
+                              <VInput  defaultValue={this.state.title}  type="text" name="title" required autoFocus={true} />
+            
                               </Col>
                         </Row>
                         <Row>
@@ -67,7 +70,8 @@ export default class myReviewEdit1 extends React.Component {
                                     Name
                                     </Col>
                               <Col xs="4">
-                                    <input type="Text" id="title" defaultValue={this.state.name} />
+                      
+                                    <VInput  defaultValue={this.state.name}  type="text" name="name" required autoFocus={true} />
                               </Col>
 
                         </Row>
@@ -77,7 +81,8 @@ export default class myReviewEdit1 extends React.Component {
                                     Image url
                                     </Col>
                               <Col xs="4">
-                                    <input type="Text" id="url" defaultValue={this.state.image_url} />
+                              <VInput  defaultValue={this.state.image_url}  type="text" name="url" required autoFocus={true} />
+                                  
                               </Col>
                         </Row>
 
@@ -86,7 +91,8 @@ export default class myReviewEdit1 extends React.Component {
                                     Free Text
                                     </Col>
                               <Col xs="4">
-                                    <input type="Text" id="free_text" defaultValue={this.state.free_text} />
+                             
+                                    <VInput  defaultValue={this.state.free_text}  type="text" id="free_text" required autoFocus={true} />
 
                               </Col>
                         </Row>
