@@ -1,3 +1,6 @@
+# Reset test data
+cd services/postgres
+python3 populate_parser.py
 
 # Docker setup/reset
 docker network create sipuliton
