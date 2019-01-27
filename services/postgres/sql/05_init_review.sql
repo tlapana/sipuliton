@@ -39,8 +39,6 @@ CREATE TABLE thumbs(
     up boolean NOT NULL,
     PRIMARY KEY (review_id, thumber_id)
 );
-<<<<<<< HEAD
-=======
 
 CREATE TABLE diet_vote(
     restaurant_id bigint REFERENCES restaurant,
@@ -50,7 +48,6 @@ CREATE TABLE diet_vote(
     PRIMARY KEY (restaurant_id, global_diet_id, user_id)
 );
 
->>>>>>> dev
 --log review acception/rejection
 CREATE TABLE review_accept_log(
     review_id bigint REFERENCES review PRIMARY KEY REFERENCES review,
