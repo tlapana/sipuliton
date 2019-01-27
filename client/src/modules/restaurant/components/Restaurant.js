@@ -8,16 +8,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactStars from 'react-stars';
 import ReviewList from './Review_List.js';
 import WriteReviewComponents from '../../writereview';
+import Config from '../../../config.js';
 /* Localization */
 import LocalizedStrings from 'react-localization';
+import WriteReview from '../../writereview/components/WriteReview.js';
 
-const { WriteReview } = WriteReviewComponents;
 const restaurantDataUrl = "http://localhost:3000/restaurant";
 
 class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
-		
+
 		const { id } = this.props.match.params;
 		this.state = {
 			name : "TestiRavintola",
@@ -50,7 +51,7 @@ class Restaurant extends React.Component {
 					this.setState({ isLoaded: true, error: 'No restaurants found', });
 					return;
 				}
-				
+
 				const restaurant = result.restaurant[0];
 				this.setState({
 					//Note: not all info seen in the mockup exist currently in the database, may require changing what to show?
@@ -94,7 +95,7 @@ class Restaurant extends React.Component {
 			modalState: !this.state.modalState
 		});
 		console.log("showModal: Toggling modal to " + this.state.modalState)
-	}  
+	}
 /*Renders the restaurant info, button to open the writing view and links the review list at the bottom*/
 	render () {
 		let strings = new LocalizedStrings({
@@ -125,18 +126,12 @@ class Restaurant extends React.Component {
 			{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/>
 			{strings.allergyTags}<br/>
 			{this.looper(this.state.allergyTags)}</div>
-			<div id="restaurantDesc">{this.state.description} 
+			<div id="restaurantDesc">{this.state.description}
 			{strings.openingHours[0]}{this.state.openingHours.monFri}{strings.openingHours[1]}{this.state.openingHours.sat}{strings.openingHours[2]}{this.state.openingHours.sun}</div>
-			<Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button>
-			<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
-			<ModalHeader></ModalHeader>
-			<ModalBody className="writeReview">
-			<WriteReview restaurantId={this.state.id} />
-			</ModalBody>
-			<ModalFooter>
-            <Button color="primary" onClick={this.toggleModal}>Peruuta</Button>
-			</ModalFooter>
-			</Modal>
+
+      
+      <WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
+      
 			<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
 			</div>
 		);

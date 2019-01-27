@@ -337,6 +337,85 @@ exports.getAllDietsLambda = async (event, context) => {
     return response;
 };
 
+async function voteDiet(client, userId, restaurantId, dietId, up) {
+    if (up === -1) {
+        await client.query(`DELETE FROM diet_vote WHERE user_id = $1 AND global_diet_id = $2 AND restaurant_id = $3 `,
+            [userId, dietId, restaurantId]);
+        return;
+    }
+    if (up === null) {
+        //swap between vote up/down
+        await client.query(`INSERT INTO diet_vote(restaurant_id, global_diet_id, user_id, up)
+                            VALUES ($3, $2, $1, TRUE)
+                            ON CONFLICT (restaurant_id, global_diet_id, user_id) DO UPDATE
+                                SET up = NOT diet_vote.up`,
+            [userId, dietId, restaurantId]);
+    }
+    else {
+        await client.query(`INSERT INTO diet_vote(restaurant_id, global_diet_id, user_id, up)
+                            VALUES ($3, $2, $1, $4)
+                            ON CONFLICT (restaurant_id, global_diet_id, user_id) DO UPDATE
+                                SET up = $4`,
+            [userId, dietId, restaurantId, up]);
+    }
+    return;
+}
+
+exports.voteDietLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+
+        try {
+            const ownUserId = await getOwnUserId(client, event);
+            if (ownUserId === null) {
+                throw {
+                    'statusCode': 401,
+                    'error': "Not logged in"
+                }
+            }
+            var restaurantId = parseIntParam("restaurant_id", event);
+            if (restaurantId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "restaurant_id not set"
+                }
+            }
+            var dietId = parseIntParam("diet_id", event);
+            if (dietId === null) {
+                throw {
+                    'statusCode': 400,
+                    'error': "diet_id not set"
+                }
+            }
+
+            var up = parseParam("up", event);
+            var down = parseParam("down", event);
+            if (up !== null & down !== null) {
+                up = null;
+            }
+            else if (up === null & down === null) {
+                up = -1;
+            }
+            else if (up !== null) {
+                up = true;
+            }
+            else {
+                up = false;
+            }
+            await voteDiet(client, ownUserId, restaurantId, dietId, up);
+
+            response = packResponse({ 'message' : 'Operation completed successfully'});
+        } finally {
+            await client.end();
+        }
+
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
 
 async function saveDiet(client, languageId, name, preset, groups) {
     var jsonObj = {};
@@ -440,7 +519,7 @@ exports.createDietAdminLambda = async (event, context) => {
             var temp = parseParam("language", event);
 
             const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
+            await getLanguage(client, temp.toUpperCase());
 
             temp = JSON.parse(parseParam("preset", event));
             const preset = temp === true ? true : temp === false ? false : null;
@@ -487,7 +566,7 @@ exports.createDietLambda = async (event, context) => {
             var temp = parseParam("language", event);
 
             const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
+            await getLanguage(client, temp.toUpperCase());
             
             const preset = false;
 
@@ -527,7 +606,7 @@ exports.updateDietLambda = async (event, context) => {
             var temp = parseParam("language", event);
 
             const languageId = temp === null ? await getLanguage(client, 'FI') :
-                await getLanguage(client, temp.toUpperCase());
+            await getLanguage(client, temp.toUpperCase());
 
             temp = JSON.parse(parseParam("preset", event));
             const preset = temp === true ? true : temp === false ? false : null;

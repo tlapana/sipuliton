@@ -266,7 +266,7 @@ def main():
     """Converts csv/tsv files from data folders to populate queries."""
     langs = []
 
-    with open("sql/06_populate.sql", 'w', encoding='utf8') as sql:
+    with open("sql/07_populate.sql", 'w', encoding='utf8') as sql:
         sql.write("--this file is generated from csv files in data folder\n\n")
 
         langs = write_lang_city(sql)

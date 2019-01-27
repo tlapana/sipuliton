@@ -30,102 +30,21 @@ class NavigationBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: false,
-      userLogged: false,
-      admin: false,
-      restaurantOwner:false,
-      moderator: false,
       language:'fi',
       redirectUrl:"",
       languageChanged:false
     };
 
-    this.mainMenu = this.mainMenu.bind(this);
     this.home = this.home.bind(this);
-    this.checkAccessRights = this.checkAccessRights.bind(this);
     this.changeLanguage = this.changeLanguage.bind(this);
-  }
-
-  /* Function which will be called when menu button is clicked. */
-  mainMenu() {
-      /* Sets menu visibility to visible or not visible. */
-      let isVisible = !this.state.visible;
-      if (isVisible) {
-        this.checkAccessRights();
-      }
-      this.setState({ visible: isVisible });
   }
 
   /* Function which will be called when home button is clicked. */
   home() {
     /* Closes menu, if menu is open */
-    if(this.state.visible === true){
-      this.mainMenu();
+    if(this.props.showMenu === true){
+      this.props.mainMenu();
     }
-  }
-
-  /* This function checks logged in users rights. */
-  checkAccessRights() {
-    /* Get user information. */
-    Auth.currentAuthenticatedUser()
-        .then(user => {
-          /* Get current user group. */
-          var userGroup = user.signInUserSession.accessToken.payload["cognito:groups"][0];
-          if(user != null){
-            /* Check if user is logged in, after that set access to either register or login */
-            this.setState({userLogged: true})
-
-            /* Check if user is basic user, then restrict all accesses */
-            if(userGroup === "SipulitonModUserGroup"){
-              this.setState({
-                admin: false,
-                restaurantOwner: false,
-                moderator: false
-              })
-            }
-
-            /* Check if user has admin access, after that set access to admin pages */
-            if(userGroup === "SipulitonAdminUserGroup"){
-              this.setState({admin: true})
-            }
-            else{
-              this.setState({admin: false})
-            }
-            /* Check if user is restaurant owner, after that set access to restaurant pages */
-
-            if(userGroup === 'SipulitonROUserGroup'){
-              this.setState({restaurantOwner: true})
-            }
-            else{
-              this.setState({restaurantOwner: false})
-            }
-
-            /* Check if user has moderator access, after that set access to moderator pages */
-            if(userGroup === "SipulitonModUserGroup"){
-              this.setState({moderator: true})
-            }
-            else{
-              this.setState({moderator: false})
-            }
-
-          }
-          else{
-              this.setState({userLogged: false})
-          }
-
-        })
-        .catch(err => {
-          /* If user is not logged in restrict accesses. */
-          this.setState(
-            {
-              userLogged: false,
-              admin: false,
-              restaurantOwner:false,
-              moderator: false
-            }
-          )
-        });
-
   }
 
   changeLanguage(language) {
@@ -183,13 +102,11 @@ class NavigationBar extends React.Component {
       /* URL Paths to pages*/
       const pathToMenu = "/" + this.state.language;
       const pathToMap = "/" + this.state.language+"/map";
-      const pathToRestaurantList = "/" + this.state.language + "/restaurant_list";
       const pathToRestaurantManagement = "/" + this.state.language + "/restaurant_management";
       const pathToAdmin = "/" + this.state.language + "/admin";
       const pathToModerating = "/" + this.state.language + "/moderating";
       const pathToProfile = "/" + this.state.language + "/profile";
       const pathToLogin = "/" + this.state.language + "/login";
-      const pathToLogout = "/" + this.state.language + "/logout";
       const pathToRegister = "/" + this.state.language + "/register";
       const pathToAbout = "/" + this.state.language + "/about";
 
@@ -202,28 +119,26 @@ class NavigationBar extends React.Component {
       }
 
       return (
-
         <div>
           <div>
-            <Transition in={this.state.visible} out={!this.state.visible} timeout={duration}>
+            <Transition in={this.props.showMenu} out={!this.props.showMenu} timeout={duration}>
               {(state) => (
                 <div>
                   <Nav
                     vertical
                     className="side-menu"
-                    onClick={this.mainMenu}
+                    onClick={this.props.mainmenu}
                     style={{...transitionStyles[state]}}
                   >
                     <MainMenuListItem path={pathToMenu} text={strings.mainmenu} />
                     <MainMenuListItem path={pathToMap} text={strings.map} />
-                    <MainMenuListItem path={pathToRestaurantList} text={strings.restaurantList} />
-                    {this.state.restaurantOwner && <MainMenuListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
-                    {this.state.admin && <MainMenuListItem path={pathToAdmin} text={strings.admin} />}
-                    {this.state.moderator && <MainMenuListItem path={pathToModerating} text={strings.moderation} />}
-                    {this.state.userLogged && <MainMenuListItem path={pathToProfile} text={strings.profile} />}
-                    {!this.state.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
-                    {!this.state.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
-                    {this.state.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    {this.props.userData.restaurantOwner && <MainMenuListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
+                    {this.props.userData.admin && <MainMenuListItem path={pathToAdmin} text={strings.admin} />}
+                    {this.props.userData.moderator && <MainMenuListItem path={pathToModerating} text={strings.moderation} />}
+                    {this.props.userData.userLogged && <MainMenuListItem path={pathToProfile} text={strings.profile} />}
+                    {!this.props.userData.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
+                    {!this.props.userData.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
+                    {this.props.userData.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
                     <MainMenuListItem path={pathToAbout} text={strings.about}/>
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
@@ -235,11 +150,11 @@ class NavigationBar extends React.Component {
           </div>
 
           <Navbar id="navBar" className="fixed-bottom bottom-bar">
-            <NavbarToggler onClick={this.mainMenu}>
+            <NavbarToggler onClick={this.props.mainmenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="bars"/>
             </NavbarToggler>
             <header className="header" style={{'Align':'center'}}>
-              <h1>{this.props.header_text}</h1>
+              <div className="header">{this.props.header_text}</div>
             </header>
             <NavLink tag={Link} to={pathToMenu}>
               <FontAwesomeIcon size="2x" className="icon" icon="home" onClick={this.home}/>
