@@ -23,7 +23,21 @@
   left: 0px;
 }
 
+.restaurant-image-container{
+  display: inline-block;
+  margin:25px;
+  margin: 0px 0px 0px 25px;
+}
 
+.restaurant-description-header{
+  border-style: none none solid none;
+  margin: 2em 0em 2em 0em;
+}
+
+#restaurantDesc{
+  border-style: none none solid none;
+  padding-bottom: 2em;
+}
 
 .review-title{
   border-color: white;
@@ -52,7 +66,7 @@
     border-style: solid;
     height: 162px;
     width: 162px;
-    top: 90px;
+    top: 60px;
   }
   .inline-block-review{
     display:block;
@@ -76,7 +90,7 @@
     border-style: solid;
     height: 162px;
     width: 162px;
-    top: 90px;
+    top: 60px;
   }
   #reviewList{
     margin: 2em;
@@ -91,6 +105,10 @@
     display: inline-block;
     margin:25px;
   }
+}
+
+#review-restaurant-btn{
+  margin:2em;
 }
 
 @media only screen and (max-width: 762px) {
