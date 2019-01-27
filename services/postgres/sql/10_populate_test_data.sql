@@ -8,11 +8,14 @@ INSERT INTO country_name VALUES
     ('1000', '1', 'imaginary country');
 
 INSERT INTO city(city_id, country_id) VALUES
-    ('100000', '1000');
+    ('100000', '1000'),
+    ('931', '71');
 
 INSERT INTO city_name VALUES
     ('100000', '0', 'kuvitteellinen kaupunki'),
-    ('100000', '1', 'imaginary city');
+    ('100000', '1', 'imaginary city'),
+    ('931', '0', 'Tampere'),
+    ('931', '1', 'Tampere');
 
 INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
     ('0', 'test-user-1', 'Sipuliton mod', 'test@mail.com'),
@@ -46,26 +49,30 @@ INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
     ('0', '0', '6', 'veg.'),
     ('0', '1', '1', 'no fish');
 
-INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
-    ('1', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
-    ('2', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
-    ('3', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
-    ('4', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
+INSERT INTO restaurant(name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
+    ('Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
+    ('Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
+    ('Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
+    ('Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
 
 INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun) VALUES
     ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
     ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL);
 
+INSERT INTO restaurant_suggestion(suggestion_id, name, email, website, image_url, status, country_id, city, postal_code, street_address, longitude, latitude, suggester_id, suggested) VALUES
+    (DEFAULT, 'Ravintolaehdotus', 'ravintolaehdotus@ravintola.fi', 'ravintola.fi', NULL, '0', '71', 'Tampere', '33200', 'Katuosoite', '100', '100', '0', '2018-11-26T18:06:32.740Z');
+
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 
-INSERT INTO review(restaurant_id, user_id, posted, status, title, image_url, free_text, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down) VALUES
-    ('1', '0', '2018-09-22 6:30:25-07', '0', 'asd', NULL, NULL, '5', '5', '5', '5', '3', '0', '0'),
-    ('1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', NULL, 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
-    ('1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
+INSERT INTO review(review_id, restaurant_id, user_id, posted, status, title, image_url, free_text, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down) VALUES
+    (DEFAULT, '1', '0', '2018-09-22 6:30:25-07', '0', 'asd', NULL, NULL, '5', '5', '5', '5', '3', '0', '0'),
+    (DEFAULT, '1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', NULL, 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
+    (DEFAULT, '1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
 
 INSERT INTO review_diet(review_id, global_diet_id) VALUES
     ('1', '0'),
     ('1', '1');
 
 UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);
+UPDATE restaurant_suggestion SET geo_location = ST_POINT(latitude, longitude);
