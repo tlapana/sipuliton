@@ -117,19 +117,40 @@ class Restaurant extends React.Component {
 		}
 		});
 		strings.setLanguage(this.props.match.params.language);
+		var showFirstImage = true;
+		if(this.state.pictures[0] == "")
+		{
+			showFirstImage = false;
+		}
+		var showSecondImage = true;
+		if(this.state.pictures[1] == "")
+		{
+			showSecondImage = false;
+		}
+		var showThirdImage = true;
+		if(this.state.pictures[2] == "")
+		{
+			showThirdImage = false;
+		}
 		return (
 			<div id="restaurant">
 			<h2 className="restaurant-title">{this.state.name}</h2>
 			<div id="restaurantPictures">
+				{showFirstImage &&
 				<div className="restaurant-image-container">
 					<img src={this.state.pictures[0]} alt="Restaurant picture1"></img>
 				</div>
-				<div className="restaurant-image-container">
-					<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
-				</div>
-				<div className="restaurant-image-container">
-					<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
-				</div>
+				}
+				{showSecondImage &&
+					<div className="restaurant-image-container">
+						<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
+					</div>
+				}
+				{showThirdImage &&
+					<div className="restaurant-image-container">
+						<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
+					</div>
+				}
 				<div id="restaurantOpeningHours" className="restaurant-image-container">
 					{strings.openingHours[0]}
 					<div>{strings.openingHours[1]}{this.state.openingHours.monFri}</div>
