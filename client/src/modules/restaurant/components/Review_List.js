@@ -19,17 +19,17 @@ class ReviewList extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			titles : ["Perus ravintola", "Loistavaa"],
-			pictures : ["", ""],
-			reviews : ["Tämä ravintola oli hyvää keskitasoa, ei mitään yllättävää.", "Uskomattoman hyvää ruokaa. Halpaa ja terveellistäkin kaiken lisäksi."],
-			users : ["Juha", "Tuomas"],
-			allergyTags : [["Sipuliton", "Munaton"], ["Sipuliton", "Munaton"]],
-			relevance : [3, 2],
-			allergyAwareness: [2, 4],
-			serviceQuality : [3, 5],
+			titles : [],
+			pictures : [],
+			reviews : [],
+			users : [],
+			allergyTags : [],
+			relevance : [],
+			allergyAwareness: [],
+			serviceQuality : [],
 			pageNumber : 0,
 			pageSize : 20,
-			numberOfRevs: 2,
+			numberOfRevs: 0,
 			isLoaded : false
 		};
 		this.componentDidMount = this.componentDidMount.bind(this);

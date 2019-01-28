@@ -14,20 +14,20 @@ import LocalizedStrings from 'react-localization';
 import WriteReview from '../../writereview/components/WriteReview.js';
 import '../../../styles/restaurant.css'
 const restaurantDataUrl = "http://localhost:3000/restaurant";
-
+const MapApi = require('../../map/components/MapGlobalFunctions');
 class Restaurant extends React.Component {
 	constructor(props) {
 		super(props);
 
 		const { id } = this.props.match.params;
 		this.state = {
-			name : "TestiRavintola",
+			name : "",
 			pictures : ["", "", ""],
-			priceLevel : 2,
-			userScore : 3,
-			allergyTags : ["Sipuliton", "Munaton", "Laktoositon"],
-			openingHours : {monFri: "08.00 - 21.00", sat: "09.00 - 21.00", sun: "09.00 - 18.00"},
-			description : "Tämä ravintola tarjoaa monipuolisia aterioita ja allergikoille sopivia vaihtoehtoja testitarkoituksessa.",
+			priceLevel : 0,
+			userScore : 0,
+			allergyTags : [],
+			openingHours : {mon: "",tue:"",wed:"",thu:"",fri:"", sat:"", sun: ""},
+			description : "",
 			id : id,
 			redirect : false,
 			isLoaded : false,
@@ -59,6 +59,15 @@ class Restaurant extends React.Component {
 					name : restaurant.name,
 					userScore : restaurant.rating_overall,
 					allergyTags : restaurant.restaurant_diet_stats,
+					openingHours : {
+						mon: MapApi.handleOpeningHour(restaurant.opens_mon,restaurant.closes_mon),
+						tue: MapApi.handleOpeningHour(restaurant.opens_tue,restaurant.closes_tue),
+						wed: MapApi.handleOpeningHour(restaurant.opens_wed,restaurant.closes_wed),
+						thu: MapApi.handleOpeningHour(restaurant.opens_thu,restaurant.closes_thu),
+						fri: MapApi.handleOpeningHour(restaurant.opens_fri,restaurant.closes_fri),
+						sat: MapApi.handleOpeningHour(restaurant.opens_sat,restaurant.closes_sat),
+						sun: MapApi.handleOpeningHour(restaurant.opens_sun,restaurant.closes_sun),
+					},
 					description : restaurant.email + ", " + restaurant.website + ", " + restaurant.street_address,
 					id : restaurant.restaurant_id
 				});
@@ -158,11 +167,11 @@ class Restaurant extends React.Component {
 					}
 					<div id="restaurantOpeningHours" className="restaurant-image-container">
 						{strings.openingHours[0]}
-						<div>{strings.openingHours[1]}{this.state.openingHours.monFri}</div>
-						<div>{strings.openingHours[2]}{this.state.openingHours.monFri}</div>
-						<div>{strings.openingHours[3]}{this.state.openingHours.monFri}</div>
-						<div>{strings.openingHours[4]}{this.state.openingHours.monFri}</div>
-						<div>{strings.openingHours[5]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[1]}{this.state.openingHours.mon}</div>
+						<div>{strings.openingHours[2]}{this.state.openingHours.tue}</div>
+						<div>{strings.openingHours[3]}{this.state.openingHours.wed}</div>
+						<div>{strings.openingHours[4]}{this.state.openingHours.thu}</div>
+						<div>{strings.openingHours[5]}{this.state.openingHours.fri}</div>
 						<div>{strings.openingHours[6]}{this.state.openingHours.sat}</div>
 						<div>{strings.openingHours[7]}{this.state.openingHours.sun}</div>
 					</div>
