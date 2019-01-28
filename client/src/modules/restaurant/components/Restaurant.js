@@ -2,9 +2,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { render } from 'react-dom';
+import '../../../styles/restaurant.css';
 import { Button, Input, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-
 import ReactStars from 'react-stars';
 import ReviewList from './Review_List.js';
 import WriteReviewComponents from '../../writereview';
@@ -100,20 +100,24 @@ class Restaurant extends React.Component {
 	render () {
 		let strings = new LocalizedStrings({
 		en:{
+			preTitle: "Restaurant's reviews: ",
 			priceLevel: "Price level: ",
 			userRating: "User rating: ",
 			allergyTags: "Allergy information: ",
 			openingHours: ["Opening hours", "Mon: ","Tue: ","Wed: ","Thu: ","Fri: ","Sat: ", "Sun: "],
 			addReview: "Add a review",
 			description: "Description",
+			cancel: "Cancel"
 		},
 		fi: {
+			preTitle: "Ravintolan arvostelut: ",
 			priceLevel: "Hintataso: ",
 			userRating: "Käyttäjien arvio: ",
 			allergyTags: "Allergiatunnisteet: ",
 			openingHours: ["Aukioloajat","Ma: ","Ti: ","Ke: ","To: ","Pe: ","La: ", "Su: "],
 			addReview: "Lisää arvostelu",
-			description: "Kuvaus"
+			description: "Kuvaus",
+			cancel: "Peruuta"
 		}
 		});
 		strings.setLanguage(this.props.match.params.language);
@@ -133,56 +137,68 @@ class Restaurant extends React.Component {
 			showThirdImage = false;
 		}
 		return (
-			<div id="restaurant">
-			<h2 className="restaurant-title">{this.state.name}</h2>
-			<div id="restaurantPictures">
-				{showFirstImage &&
-				<div className="restaurant-image-container">
-					<img src={this.state.pictures[0]} alt="Restaurant picture1"></img>
-				</div>
-				}
-				{showSecondImage &&
+			<div class="mainContainer">
+			<div id="restaurant" class="restaurant">
+				<h2 className="restaurant-title">{this.state.name}</h2>
+				<div id="restaurantPictures">
+					{showFirstImage &&
 					<div className="restaurant-image-container">
-						<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
+						<img src={this.state.pictures[0]} alt="Restaurant picture1"></img>
 					</div>
-				}
-				{showThirdImage &&
-					<div className="restaurant-image-container">
-						<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
+					}
+					{showSecondImage &&
+						<div className="restaurant-image-container">
+							<img src={this.state.pictures[1]} alt="Restaurant picture2"></img>
+						</div>
+					}
+					{showThirdImage &&
+						<div className="restaurant-image-container">
+							<img src={this.state.pictures[2]} alt="Restaurant picture3"></img>
+						</div>
+					}
+					<div id="restaurantOpeningHours" className="restaurant-image-container">
+						{strings.openingHours[0]}
+						<div>{strings.openingHours[1]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[2]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[3]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[4]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[5]}{this.state.openingHours.monFri}</div>
+						<div>{strings.openingHours[6]}{this.state.openingHours.sat}</div>
+						<div>{strings.openingHours[7]}{this.state.openingHours.sun}</div>
 					</div>
-				}
-				<div id="restaurantOpeningHours" className="restaurant-image-container">
-					{strings.openingHours[0]}
-					<div>{strings.openingHours[1]}{this.state.openingHours.monFri}</div>
-					<div>{strings.openingHours[2]}{this.state.openingHours.monFri}</div>
-					<div>{strings.openingHours[3]}{this.state.openingHours.monFri}</div>
-					<div>{strings.openingHours[4]}{this.state.openingHours.monFri}</div>
-					<div>{strings.openingHours[5]}{this.state.openingHours.monFri}</div>
-					<div>{strings.openingHours[6]}{this.state.openingHours.sat}</div>
-					<div>{strings.openingHours[7]}{this.state.openingHours.sun}</div>
 				</div>
-			</div>
-			<div className="restaurant-description-header">
-				{strings.description}:
-			</div>
-			<div id="restaurantDesc">{this.state.description}
-			</div>
-			<div id="restaurantStats">
-				<div className="inline-block-review">
-					{strings.priceLevel}<ReactStars value={this.state.priceLevel} count={3} char='€' edit={false}/>
+				<div className="restaurant-description-header">
+					{strings.description}:
 				</div>
-				<div className="inline-block-review">
-					{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/>
+				<div id="restaurantDesc">{this.state.description}
 				</div>
-				<div className="inline-block-review">
-					{strings.allergyTags}<br/>
-					{this.looper(this.state.allergyTags)}
+				<div id="restaurantStats">
+					<div className="inline-block-review" id="restaurantPrice">
+						{strings.priceLevel}<ReactStars value={this.state.priceLevel} count={3} char='€' edit={false}/>
+					</div>
+					<div className="inline-block-review" id="restaurantRating">
+						{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/>
+					</div>
+					<div className="inline-block-review" id="allergyTags">
+						{strings.allergyTags}<br/>
+						{this.looper(this.state.allergyTags)}
+					</div>
 				</div>
+				<div id="review-restaurant-btn">
+					<div class="buttonContainer"><Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button></div>
+					<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
+					<ModalHeader></ModalHeader>
+					<ModalBody className="writeReview">
+					<WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
+					</ModalBody>
+					<ModalFooter>
+								<div class="buttonContainer"><Button color="primary" onClick={this.toggleModal}>{strings.cancel}</Button></div>
+					</ModalFooter>
+					</Modal>
+				</div>
+				<div id="preTitle">{strings.preTitle}</div>
+				<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
 			</div>
-			<div id="review-restaurant-btn">
-      	<WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
-			</div>
-			<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
 			</div>
 		);
 	}
