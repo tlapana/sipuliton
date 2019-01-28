@@ -14,25 +14,10 @@ import '../../../../styles/ownreview.css';
 import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
-import { Auth } from "aws-amplify";
+
 
 import LocalizedStrings from 'react-localization';
-/*class WaitReview extends React.Component {
-      constructor(props) {
 
-            super(props);
-      }
-
-      async componentDidMount()   {
-     
-        }
-
-      render()  {
-            return ( <div>    <ReactLoading type={'spinningBubbles'} className="loadingSpinner" /> <p>Loading</p></div>);
-      }
-}
-
-*/
 
 
 class Review extends React.Component {
@@ -84,11 +69,8 @@ class Review extends React.Component {
 
 
             }
-             Auth.currentAuthenticatedUser().then(user =>alert(JSON.stringify(user)))
 
-            .catch(err => 
-    
-              alert('error'));
+  
        
 
       }
@@ -162,7 +144,7 @@ class Review extends React.Component {
             url += "&rating_service_and_quality=" + rating_service_and_quality;
 
             fetch(url)
-                  .then(response => alert('jes'));
+                  .then(response => alert('Save ok'));
       }
 
       changedvalue() {
@@ -191,6 +173,47 @@ class Review extends React.Component {
       };
 
        render() {
+             
+            var lan=this.props.match.params.language
+            let strings = new LocalizedStrings({
+
+                  en: {
+                    title: "My reviews",
+                    status: "Status",
+                    name: "Name",
+                    reviewtitle: "Title",
+                    waiting: "Waiting",
+                    approved: "Approved",
+                    rejected: "Rejected",
+                    freetext: "Freetext",
+                    posted: "Posted",
+                    overall: "Overall Rating",
+                    pricing: "price",
+                    ratingServiveAndQuality: "Rating service and quality",
+                    ratingVariety:"Rating variety",
+
+
+                  },
+            
+                  fi: {
+                    title: "Omat arvostelut",
+                    status: "Tila",
+                    name: "Nimi",
+                    reviewtitle: "Otsikko",
+                    waiting: "Odottaa",
+                    approved: "Hyväksytty",
+                    freetext: "Vapaa teksti",
+                    posted: "Jätetty",
+                    overall: "Yleisarviointi",
+                    pricing: "Hinta",
+                    ratingServiveAndQuality: "Palvelu ja laatu",
+                    ratingVariety:"Arvostelujen vaihtelu",
+
+                  }
+            
+                });
+                strings.setLanguage(lan);
+
   
             const { open } = this.state;
             const ratingChanged = (newRating) => {
@@ -216,14 +239,14 @@ class Review extends React.Component {
         if(this.state.loading1)
             return (<div >
                    
-                  <h1   >MyReviews  </h1>
+                  <h5   >{strings.title}  </h5>
          
 
          <Modal open={open} onClose={this.onCloseModal} center>
                      
                         <Row >  
                               <Col xs="4">
-                                    name
+                              {strings.name} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.name}
@@ -233,7 +256,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    title
+                              {strings.reviewtitle} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.title}
@@ -241,7 +264,7 @@ class Review extends React.Component {
                         </Row>
                         <Row>
                               <Col xs="4">
-                                    freetext
+                              {strings.freetext} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.freetext}
@@ -249,7 +272,7 @@ class Review extends React.Component {
                         </Row>
                         <Row>
                               <Col xs="4">
-                                    Posted
+                              {strings.posted} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.posted}
@@ -258,7 +281,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Overall Rating
+                                    {strings.overall}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.overall} count={5} size={24} />
@@ -267,7 +290,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Pricing
+                              {strings.pricing}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.pricing} count={3} size={24} />
@@ -277,7 +300,8 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Rating service and quality
+                              {strings.ratingServiveAndQuality}
+                                    
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.RatingServiceAndQuality} count={5} size={24} />
@@ -286,7 +310,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Rating variety
+                                    {strings.ratingVariety}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.rating_variety} count={5} size={24} />
@@ -300,10 +324,10 @@ class Review extends React.Component {
                   </Modal>
                   <div>
 
-                  <em  id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
-                        <option value="0">Odottaa</option>
-                        <option value="1">Hyväksytty</option>
-                        <option value="2">Hylätty</option>
+                  <label>{strings.status}</label><select id="status" onChange={() => { this.changedvalue() }}>
+                        <option value="0">{strings.waiting}</option>
+                        <option value="1">{strings.approved}</option>
+                        <option value="2">{strings.rejected}</option>
                   </select>
                   <ReactPaginate id={"react-paginate"} initialPage={0} onPageChange={this.handlePageClick} previousLabel={'<<'} nextLabel={'>>'} breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}
                         containerClassName={'pagination'}
