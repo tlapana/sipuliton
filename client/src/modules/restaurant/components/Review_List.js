@@ -135,6 +135,11 @@ class ReviewList extends React.Component {
 		strings.setLanguage(this.props.language);
 		let list = [];
 		for (let reviewIndex = 0; reviewIndex < this.state.numberOfRevs; reviewIndex++) {
+			var showImage=true;
+			if(this.state.pictures[this.state.reviewIndex] != "" || this.state.pictures[this.state.reviewIndex] != undefined)
+			{
+				showImage=false;
+			}
 			list.push(
 				<div class="reviewListItem" id="reviewList">
 					<h3 className="review-title">{this.state.titles[reviewIndex]}</h3>
@@ -149,7 +154,7 @@ class ReviewList extends React.Component {
 							<ReactStars value={this.state.serviceQuality[reviewIndex]} edit={false}/>
 						</div>
 					</div>
-					<div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>
+					{showImage && <div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>}
 					<div id="reviewText">{this.state.reviews[reviewIndex]}</div>
 					<div id="reviewer-info">
 						<div id="reviewUser" className="inline-block-review">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
