@@ -180,8 +180,8 @@ async function createUser(client, cognitoSub, username, email, languageId) {
         await client.query('BEGIN');
         try {
             const res = await client.query(
-                `INSERT INTO user_login (user_id, cognito_sub, username, email)
-                VALUES ((SELECT coalesce(max(user_id),0)+1 FROM user_login), $1, $2, $3)
+                `INSERT INTO user_login (cognito_sub, username, email)
+                VALUES (($1, $2, $3)
                 RETURNING user_id`,
                 [cognitoSub, username, email]);
 
