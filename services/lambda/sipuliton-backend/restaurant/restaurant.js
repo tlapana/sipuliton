@@ -48,7 +48,7 @@ exports.lambdaHandler = async (event, context) => {
                coalesce(pricing, 0) as pricing,
                opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
         FROM restaurant
-        LEFT JOIN restaurant_stats ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+        LEFT JOIN restaurant_stats ON restaurant.restaurant_id=restaurant_stats.restaurant_id
         LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE restaurant.restaurant_id = $1
         `;
