@@ -82,10 +82,8 @@ button.filterBtn {
 }
 
 .filterBox {
-  position: absolute;
   width: 80%;
   min-height: 100%;
-
 }
 
 .loadingSpinner {

@@ -18,6 +18,10 @@ import Slider from 'rc-slider';
 
 import * as AppImports from  '../../app';
 
+import Config from '../../../config.js';
+
+
+/* THIS IS A TEST SECTION! REMOVE ONCE NO LONGER NEEDED! */
 /* Localization */
 import LocalizedStrings from 'react-localization';
 import { string } from 'prop-types';
@@ -67,6 +71,7 @@ class SearchBar extends React.Component {
       latitude : 0,
       longitude : 0,
       searchFieldDisabled: false,
+      userLocationAllowed: false,
       useUserLocation: false,
       radius: 10000,
       dietError: null,
@@ -74,8 +79,8 @@ class SearchBar extends React.Component {
   }
 
   componentDidMount() {
-    
-    
+
+
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -83,17 +88,18 @@ class SearchBar extends React.Component {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
           error: null,
+          userLocationAllowed: true
         });
       },
-      (error) => this.setState({ error: error.message }),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
+      (error) => this.setState({ error: error.message, userLocationAllowed: false}),
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-    
+
     this.getDiets();
     this.setState({
       defaultValue : this.getDefaultValues()
     });
-    
+
   }
 
   //Toggles modal
@@ -101,7 +107,7 @@ class SearchBar extends React.Component {
     this.setState({
       modalState: !this.state.modalState
     });
-    console.log("showModal: Toggling modal to " + this.state.modalState);
+    //console.log("DEBUG: SearchBar.js showModal(): Toggling modal to " + this.state.modalState);
   }
 
 
@@ -111,12 +117,12 @@ class SearchBar extends React.Component {
       searchFieldDisabled: !this.state.searchFieldDisabled,
       useUserLocation: !this.state.useUserLocation,
     });
-    console.log("ToggleSearchField");
-    console.log(this.state.useUserLocation);
+    //console.log("DEBUG: SearchBar.js ToggleSearchField()");
+    //console.log(this.state.useUserLocation);
   }
   
   
-  //Does the search
+  //Does the search by generating URL we pass to map
   searchUrl() {
     var url = '/'+this.props.language+'/map?'
                 + 'minOverallRating=' + this.state.minOverall
@@ -142,6 +148,7 @@ class SearchBar extends React.Component {
     this.setState({
       redirectUser: true
     });
+
   }
 
 
@@ -156,22 +163,32 @@ class SearchBar extends React.Component {
 
   //This gets the options for the selection.
   getDiets() {
-    console.log("Fetching diets")
-    fetch("https://locahost:3000/diets/all")
+    //console.log("Fetching diets")
+    fetch("http://localhost:3000/diet/all")
       .then(res => res.json())
       .then(
-        (result) => {
+        (result) => {  
+          //Process results into ones that can be used by the select
+          
+          var diet = []
+          for(var i = 0; i < result.length; i++)
+          {
+            diet.push({ value: result[i].global_diet_id, label: result[i].name});
+          }
+          //console.log("DEBUG: SearchBar.js getDiets()")
+          //console.log(diet)
+          
           this.setState({
             loadedDiets: true,
-            diets: result.items
+            diets: diet
           });
-          console.log("Success fetching diets: " + result.items)
+          //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
         // exceptions from actual bugs in components.
         (error) => {
-          console.log("Error fetching diets: " + error)
+          //console.log("Error fetching diets: " + error)
           this.setState({
             loadedDiets: true,
             dietError : error,
@@ -228,7 +245,6 @@ class SearchBar extends React.Component {
     this.setState({
       radius : value,
     });
-    console.log("Radius: value")
   }
 
   
@@ -295,13 +311,15 @@ class SearchBar extends React.Component {
     if(this.state.loadedDiets)
     {      
       if(this.state.dietError == null)
-      {        
+      {    
+        //console.log("DEBUG: SearchBar.js renderDiets()")
+        //console.log(this.state.diets)
         return (
           <Select
             defaultValue={ this.state.defaultValues }
             isMulti
             name="filtersDrop"
-            diets={ this.state.diets }
+            options={ this.state.diets }
             className="basic-multi-select"
             classNamePrefix="select"
             onChange={this.handleFilterChange}
@@ -312,6 +330,8 @@ class SearchBar extends React.Component {
       }
       else
       {
+        //console.log("DEBUG: SearchBar.js renderDiets()")
+        //console.log(this.state.dietError)
         return (
           <div>
             {strings.error}
@@ -371,7 +391,8 @@ class SearchBar extends React.Component {
 
     const ThemedModalContainer = AppImports.containers.ThemedModalContainer;
     if(this.state.redirectUser) {
-      console.log(this.searchUrl());
+      //console.log("DEUBG: Searchbar.js render()")
+      //console.log(this.searchUrl());
       return (<Redirect to={this.searchUrl()} />);
     }
     else {
@@ -398,13 +419,11 @@ class SearchBar extends React.Component {
             <br/>
             
             <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
-
+            
             <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
             
-              //Modal header
               <ModalHeader>{strings.includeinsearch}</ModalHeader>
               
-              //Modal body
               <ModalBody className="filterBox">
               
                 {strings.diets}               
@@ -451,13 +470,12 @@ class SearchBar extends React.Component {
 
               </ModalBody>
               
-              //Modal footer, contains the buttons
               <ModalFooter>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
               
             </ThemedModalContainer>
-
+    
           </form>
         </div>
       );

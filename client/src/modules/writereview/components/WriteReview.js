@@ -1,14 +1,19 @@
 /*
-  This file contains the landing page. Or at least the basic shape.
-  Functionalities are spread into separate components
+  This file contains everthing needed to write and submit a review. Just include this in the page
+  and give it props restaurantID and language and it will handle the rest.
 
 */
 
 import React from 'react';
 import ReactStars from 'react-stars'
-import { Button } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import Select from 'react-select';
+import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
+
+
+/* Localization */
+import LocalizedStrings from 'react-localization';
 
 export default class WriteReview extends React.Component {
   
@@ -18,7 +23,7 @@ export default class WriteReview extends React.Component {
     
     //Bind the functions
     this.setState = this.setState.bind(this);
-    this.getRestaurant = this.getRestaurant.bind(this);
+    this.toggleForm = this.toggleForm.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeReview = this.changeReview.bind(this);
     this.changeQuality = this.changeQuality.bind(this);
@@ -26,7 +31,6 @@ export default class WriteReview extends React.Component {
     this.changeChoice = this.changeChoice.bind(this);
     this.changeCost = this.changeCost.bind(this);
     this.changeFilter = this.changeFilter.bind(this);
-    this.reviewForm = this.reviewForm.bind(this);
     this.submitReview = this.submitReview.bind(this);
     
     this.state = {
@@ -36,7 +40,9 @@ export default class WriteReview extends React.Component {
       loadingOptions: true,
       submitingReview: false,
       reviewSubmitted: false,
+      error : null,
       restaurant : null,
+      showForm: false,
       title : '',
       reviewText : '',
       options : [],
@@ -51,52 +57,14 @@ export default class WriteReview extends React.Component {
   //Actios to be caried upon mounting
   componentDidMount() {
     this._isMounted = true;    
-    this.getRestaurant(this.state.id); 
     this.getOptions();
   }
   
-  getRestaurant(id)
-  {
-    //For testing purposes use hard coded datas
-    const all_restaurants = [
-      { id: 1, name: 'Kallen Kala', street_address : "Kalastajankylä 1" },
-      { id: 2, name: 'Vegaani Pupula', street_address : "Puputie 2" },
-      { id: 3, name: 'Lihameisterin Grillaamo', street_address : "Grillaajankat 3" },
-      { id: 4, name: 'Gennan Geneerinen', street_address : "Geenitie 4" },
-      { id: 5, name: 'Iso 5', street_address : "Bigstreet 5" }
-    ];
-    
-    var target = null;
-    
-    for(var i = 0; i < all_restaurants.length; i++) {
-      
-      var r = all_restaurants[i];
-      
-      if( r.id == id)
-      {
-        target = r;
-      }
-      
-    }
-      
-    console.log("Checking that restaurant " + id + " exists");
-    
-    //If we found the target, set it as the selected restaurant. Otherwise, give error
-    if(target != null) {  
-      console.log("Restaurant exists")
-      this.setState({
-        restaurant : target,
-        loadingData : false
-      });
-    }
-    else {    
-      console.log("Restaurant doesn't exists")  
-      this.setState({
-        error : "Ravintolaa ei ole",
-        loadingData : false
-      });
-      
-    }    
+  toggleForm() {
+    console.log("Changing showForm from: " + this.state.showForm)
+    this.setState({
+      showForm : !this.state.showForm
+    });
   }
   
   //Gets all the filtering options
@@ -115,9 +83,7 @@ export default class WriteReview extends React.Component {
       loadingOptions : false
     });
    
-  }
-  
-  
+  }  
   
   //Following four just change the values
   changeTitle(event) {
@@ -173,17 +139,21 @@ export default class WriteReview extends React.Component {
       submitingReview : true
     });
     
+    //Close form
+    this.toggleForm();
+    
     //Generate JSON
-    var obj = new Object();
+    var obj = {};
     
     obj.id = this.state.id;
     obj.title = this.state.title;
     obj.reviewText = this.state.reviewText;
     obj.reliability = this.state.reliability;
-    obj.choice = this.state.choice;
+    obj.variety = this.state.choice;
     obj.quality = this.state.quality;
-    obj.cost = this.state.cost;
+    obj.pricing = this.state.cost;
     obj.selectedFilters = this.state.selectedFilters;
+    obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
     
     var jsonString = JSON.stringify(obj);
     
@@ -193,125 +163,150 @@ export default class WriteReview extends React.Component {
     console.log("As string");
     console.log(jsonString);
     
-    this.setState({
-      reviewSubmitted : true
-    });
+    //Generating url
+    var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
+      + "&title=" + obj.title
+      + "&text=" + obj.reviewText
+      + "&rating_overall=" + obj.overall
+      + "&rating_variety=" + obj.choice
+      + "&rating_reliability=" + obj.reliability
+      + "&rating_service_and_quality=" + obj.quality
+      + "&pricing=" + obj.pricing
+      + "&diets=" + obj.selectedFilters;
+      
+    //TODO: Diets
+    
+    console.log("url:");
+    console.log(url);
+    
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          this.setState({
+            submitingReview: false,
+            reviewSubmitted: true,
+          });
+          console.log("Success submitting review")
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          this.setState({
+            submitingReview: false,
+            reviewSubmitted: false,
+            error: error
+          });
+          console.log("Error submitting review")
+          console.log(error);
+        }
+      )
+    
   }
   
   //Review button functionality
   reviewButton() {
+    
+    let strings = new LocalizedStrings({
+      en:{
+        message : "Send",
+        submitting: "Submitting..."
+      },
+      fi: {
+        message : "Lähetä",
+        submitting: "Lähetet''n..."
+      }
+    });
+    
     if(this.state.submitingReview){
       return (
-        'Lähetetään...'
+        <span className="SendHelpIHateJSX">{strings.submitting}</span>
       );
     }
     else {
       return (
         <button type="submit" className="submitBtn" onClick={this.submitReview}>
-              Lähetä
+          {strings.message}
         </button> 
       );
     }
   }
   
-  //Function to print the review form
-  reviewForm() {
-    return (
-      <div className="reviewDiv">
-        <form className="review">
-          <h3 className="restaurantName"> {this.state.restaurant.name} </h3>
-          
-          <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={'Otsikko...'} /> <br/>
-          <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={'Kirjoita arvostely tähän...'} />
-              
-          Ruokavaliot:
-          <Select
-            defaultValue={ this.state.defaultValues }
-            isMulti
-            name="filtersDrop"
-            options={ this.state.options }
-            className="basic-multi-select"
-            classNamePrefix="select"
-            onChange={this.changeFilter}
-          />
-          <br />      
-            
-          Erikoisruokavalion luotettavuus: 
-          <ReactStars
-            value = {this.state.reliability}
-            count = {5}
-            size = {24}
-            onChange = {this.changeReliability}
-          />
-          <br />  
-            
-          Valinnanvara: 
-          <ReactStars
-            value = {this.state.choice}
-            count = {5}
-            size = {24}
-            onChange = {this.changeChoice}
-          />
-          <br />
-            
-          Palvelu ja laatu: 
-          <ReactStars
-            value = {this.state.quality}
-            count = {5}
-            size = {24}
-            onChange = {this.changeQuality}
-          />
-          <br />
-           
-          Hintataso: 
-          <ReactStars
-            value = {this.state.cost}
-            count = {3}
-            size = {24}
-            char = {'€'}
-            half = {false}
-            onChange = {this.changeCost}
-          />
-          <br />
-            
-          {this.reviewButton()}  
-             
-        </form>        
-      </div>
-    );
-  }
-  
-  render() {
+  //Renders error if we get one
+  renderError()
+  {
     
-    //Localization here
+    let strings = new LocalizedStrings({
+      en:{
+        strong: "An error has happened.",
+        errortext : "Something went wrong while submiting your review. Try again later. If this error persists, please contact the admins."
+      },
+      fi: {
+        strong: "Tapahtui virhe.",
+        errortext : "Jotain meni pieleen arvostelua löhettäessä. Yritä myöhemmin uudelleen. Jos tämä virhe toistuu, ota yhteyttä ylläpitoon."
+      }
+    });
     
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
+    }
     
-    
-    if(this.state.loadingData || this.state.loadingOptions) {
-      return (  
-      <div className="reviewDiv">  
-        Ladataan tietoja...
-      </div>
+    if(this.state.error != null)
+    {
+      return(
+        <Alert bsStyle="warning">
+          <strong>{strings.strong}</strong> {strings.errortext}
+        </Alert>
       );
     }
-    else {
-      if(this.state.error != null) {
-        return (  
-        <div className="reviewDiv">  
-          Tapahtui virhe: {this.state.error}
-        </div>
-        );      
+    
+    return;
+  }
+ 
+  render() {
+    
+    /* Localization */
+    let strings = new LocalizedStrings({
+      en:{
+        modalTitle : "Rate restaurant",
+        titlePlaceholder : "Title",
+        textPlaceholder : "Write review here",
+        diets : "Diet",
+        reliability : "Diet reliability",
+        variety : "Variety",
+        service : "Service and quality",
+        pricing : "Pricing",
+        cancel : "Cancel",        
+        search: "Search...",
+        submitTxt : "Lähetä",
+        buttonTxt : "Review"
+      },
+      fi: {
+        modalTitle : "Arvostele ravintola",
+        diets: "Ruokavaliot",
+        titlePlaceholder : "Otsikko",
+        textPlaceholder : "Kirjoita arvostelu tähän",
+        diets : "Ruokavaliot",
+        reliability : "Erikoisruokavalion luotettavuus",
+        variety : "Valinnanvara",
+        service : "Palvelu ja laatu",
+        pricing : "Hintataso",
+        cancel : "Peruuta",
+        search: "Hae...",
+        submitTxt : "Lähetä",
+        buttonTxt : "Arvostele"
       }
-      else if(this.state.reviewSubmitted) {
-        return (
-          <div className="reviewDiv">
-            <h3> Arvostelu lähetetty! </h3>
-          </div>
-        );
-      }
-      else {
-        return ( this.reviewForm() );
-      }
+    });
+    
+    if(typeof this.props.language !== 'undefined'){
+      strings.setLanguage(this.props.language);
+    }
+    else{
+      strings.setLanguage('fi');
     }
     
     return (
@@ -323,8 +318,8 @@ export default class WriteReview extends React.Component {
           <ModalBody>
               <form className="review">
                 
-                <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} required /> <br/>
-                <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} required />
+                <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
+                <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
                     
                 {strings.diets}:
                 <Select
@@ -396,5 +391,5 @@ export default class WriteReview extends React.Component {
       </div>
     );
   }
-  
+    
 }
