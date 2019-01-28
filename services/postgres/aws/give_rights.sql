@@ -1,0 +1,1 @@
+GRANT SELECT,UPDATE ON ALL TABLES IN SCHEMA public to lambda_user;
