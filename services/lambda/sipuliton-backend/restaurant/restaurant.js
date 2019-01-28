@@ -35,9 +35,49 @@ let response;
  * @returns {Object} object.body - JSON Payload to be returned
  * 
  */
+async function getLanguage(client, language) {
+    res = await client.query(
+        `SELECT language_id
+        FROM languages
+        WHERE languages.iso2 = $1`,
+        [language]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No language found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more languages"
+        }
+    }
+    return res.rows[0]['language_id'];
+}
+
 exports.lambdaHandler = async (event, context) => {
     try {
+        var pg = require("pg");
+
+        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
+        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
+        const client = new pg.Client(conn);
+        await client.connect((err) => {
+            console.log("Connecting")
+            if (err){
+                console.error("Failed to connect client")
+                console.error(err)
+                throw err
+            }
+        });
+
         const restaurantId = event.queryStringParameters.restaurantId
+        var temp = event.queryStringParameters.restaurantId;
+        const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
 
         var collectRestaurantPage = `
         SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
@@ -46,28 +86,18 @@ exports.lambdaHandler = async (event, context) => {
                coalesce(rating_variety, 0) as rating_variety,
                coalesce(rating_service_and_quality, 0) as rating_service_and_quality,
                coalesce(pricing, 0) as pricing,
-               opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+               opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun,
+               open_hours_exceptions.free_text AS open_hours_exceptions,
+               restaurant_description.free_text AS description
         FROM restaurant
         LEFT JOIN restaurant_stats ON restaurant.restaurant_id=restaurant_stats.restaurant_id
         LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
+        LEFT JOIN open_hours_exceptions ON restaurant.restaurant_id=open_hours_exceptions.restaurant_id
+        LEFT JOIN restaurant_description ON restaurant.restaurant_id=restaurant_description.restaurant_id AND language_id = $2
         WHERE restaurant.restaurant_id = $1
         `;
-
-        var pg = require("pg");
-
-        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-        const client = new pg.Client(conn);
-        await client.connect((err) => {
-                console.log("Connecting")
-                if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
-                    throw err
-                }
-        });
         
-        const resRestaurant = await client.query(collectRestaurantPage, [restaurantId]);
+        const resRestaurant = await client.query(collectRestaurantPage, [restaurantId, languageId]);
         var jsonString = JSON.stringify(resRestaurant.rows);
         var jsonObjRestaurant = JSON.parse(jsonString);
         await client.end()
