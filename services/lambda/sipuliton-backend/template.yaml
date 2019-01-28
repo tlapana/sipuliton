@@ -4,7 +4,7 @@ Description: >
     sam-app
 
     Sample SAM Template for sam-app
-    
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
     Function:
@@ -317,6 +317,22 @@ Resources:
                       Path: /diet/groups
                       Method: get
 
+    VoteDietFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: diet/
+          Handler: diet.voteDietLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /voteDiet
+                      Method: get
+
     DietCreateAdminFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -429,7 +445,25 @@ Resources:
                       Path: /postReview
                       Method: get
 
-                      
+    AggregationFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: aggregation/
+          Handler: aggregation.aggregationLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+            Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /dbUpdate
+                      Method: get
+ 
+ 
+ 
+ 
     CorsOptionsFunction:
       Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
       Properties:
@@ -438,7 +472,7 @@ Resources:
           Runtime: nodejs8.10
           Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
               Variables:
-                  PARAM1: VALUE
+                PARAM1: VALUE
           Events:
               HelloWorld:
                   Type: Api 
@@ -603,7 +637,7 @@ Outputs:
       Description: "API Gateway endpoint URL for Prod stage for Profile page function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Profile/"
 
-    
+
 
     SearchApi:
       Description: "API Gateway endpoint URL for Prod stage for search functionality"
@@ -616,7 +650,7 @@ Outputs:
     SearchFunctionIamRole:
       Description: "Implicit IAM Role created for Search function"
       Value: !GetAtt SearchFunctionRole.Arn
-      
+
     RestaurantApi:
       Description: "API Gateway endpoint URL for Prod stage for Restaurant page function"
       Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Restaurant/"
@@ -640,6 +674,3 @@ Outputs:
     ReviewsFunctionIamRole:
       Description: "Implicit IAM Role created for Reviews page function"
       Value: !GetAtt ReviewsFunctionRole.Arn
-
-
-

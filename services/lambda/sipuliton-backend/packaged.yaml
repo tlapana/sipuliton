@@ -1,0 +1,471 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'sam-app
+
+  Sample SAM Template for sam-app
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Prod stage for Hello World function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  HelloWorldFunction:
+    Description: Hello World Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunction
+      - Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunctionRole
+      - Arn
+  LandingApi:
+    Description: API Gateway endpoint URL for Prod stage for landing function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/landing/
+  LandingFunction:
+    Description: Landing pageLambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - LandingFunction
+      - Arn
+  LandingFunctionIamRole:
+    Description: Implicit IAM Role created for Landing page function
+    Value:
+      Fn::GetAtt:
+      - LandingFunctionRole
+      - Arn
+  ProfileApi:
+    Description: API Gateway endpoint URL for Prod stage for Profile page function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Profile/
+  RestaurantApi:
+    Description: API Gateway endpoint URL for Prod stage for Restaurant page function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Restaurant/
+  RestaurantFunction:
+    Description: Restaurant page Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - RestaurantFunction
+      - Arn
+  RestaurantFunctionIamRole:
+    Description: Implicit IAM Role created for Restaurant page function
+    Value:
+      Fn::GetAtt:
+      - RestaurantFunctionRole
+      - Arn
+  ReviewsApi:
+    Description: API Gateway endpoint URL for Prod stage for reviews function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Reviews/
+  ReviewsFunction:
+    Description: Reviews Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - ReviewsFunction
+      - Arn
+  ReviewsFunctionIamRole:
+    Description: Implicit IAM Role created for Reviews page function
+    Value:
+      Fn::GetAtt:
+      - ReviewsFunctionRole
+      - Arn
+  SearchApi:
+    Description: API Gateway endpoint URL for Prod stage for search functionality
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/Search/
+  SearchFunction:
+    Description: Restaurant search Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - SearchFunction
+      - Arn
+  SearchFunctionIamRole:
+    Description: Implicit IAM Role created for Search function
+    Value:
+      Fn::GetAtt:
+      - SearchFunctionRole
+      - Arn
+Resources:
+  DietAllFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/all
+          Type: Api
+      Handler: diet.getAllDietsLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  DietCreateAdminFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/createAdmin
+          Type: Api
+      Handler: diet.createDietAdminLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  DietCreateFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/create
+          Type: Api
+      Handler: diet.createDietLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  DietGroupsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/groups
+          Type: Api
+      Handler: diet.getFoodGroupsLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  DietPresetsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/presets
+          Type: Api
+      Handler: diet.getPresetDietsLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  DietUpdateFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8b78cae1d3c2af4c8b876cc44b1306e2
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /diet/update
+          Type: Api
+      Handler: diet.updateDietLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  HelloWorldFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8e8f9c4b35a76d8825451778f0377b2a
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        HelloWorld:
+          Properties:
+            Method: get
+            Path: /hello
+          Type: Api
+      Handler: app.lambdaHandler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  LandingFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/5619e62ff99f3d63d52ab508fcf1dbf5
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /landing
+          Type: Api
+      Handler: landing.lambdaHandler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  LocationCitiesFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa7c63a3f2c95e8fce44b9a68305724d
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /location/cities
+          Type: Api
+      Handler: location.getCitiesLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  LocationCountriesFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa7c63a3f2c95e8fce44b9a68305724d
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /location/countries
+          Type: Api
+      Handler: location.getCountriesLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnDietsCreateFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa86825230cae21ca20d475a8028acb5
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownDiets/create
+          Type: Api
+      Handler: own_diet.createOwnDietLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnDietsDeleteFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa86825230cae21ca20d475a8028acb5
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownDiets/delete
+          Type: Api
+      Handler: own_diet.deleteDietLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnDietsEditFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa86825230cae21ca20d475a8028acb5
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownDiets/edit
+          Type: Api
+      Handler: own_diet.editOwnDietLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnDietsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/fa86825230cae21ca20d475a8028acb5
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownDiets
+          Type: Api
+      Handler: own_diet.getOwnDietsLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnReviewsDeleteFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/cb6c35dc9fef14b0fdb1d357ef6e1a98
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownReviews/delete
+          Type: Api
+      Handler: own_review.deleteReviewLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnReviewsEditFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/cb6c35dc9fef14b0fdb1d357ef6e1a98
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownReviews/edit
+          Type: Api
+      Handler: own_review.editReviewLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  OwnReviewsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/cb6c35dc9fef14b0fdb1d357ef6e1a98
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /ownReviews
+          Type: Api
+      Handler: own_review.getOwnReviewsLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  PostReviewFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/dbb04d9de711bd18c21207ccd184b23b
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /postReview
+          Type: Api
+      Handler: reviews.postReviewLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  ProfileEditFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8d9bb16e44cceaa65966a7a59ffa0613
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /profile/edit
+          Type: Api
+      Handler: profile.editProfileLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  ProfileFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/8d9bb16e44cceaa65966a7a59ffa0613
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /profile
+          Type: Api
+      Handler: profile.profileLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  RestaurantFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/2a07eb307cb19053eda903c7849d807c
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /restaurant
+          Type: Api
+      Handler: restaurant.lambdaHandler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  ReviewsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/dbb04d9de711bd18c21207ccd184b23b
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /reviews
+          Type: Api
+      Handler: reviews.lambdaHandler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  SearchFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/a5588e7b465d63959482232235e1b7e8
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /search
+          Type: Api
+      Handler: search.lambdaHandler
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  UserCreateFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/1eb29265728e3a812eaef5e958badf11
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /user/create
+          Type: Api
+      Handler: user.createUserLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  UserDeleteFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/1eb29265728e3a812eaef5e958badf11
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /user/delete
+          Type: Api
+      Handler: user.deleteUserLambda
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+Transform: AWS::Serverless-2016-10-31

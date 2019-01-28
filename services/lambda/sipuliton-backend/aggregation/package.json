@@ -1,0 +1,13 @@
+{
+  "name": "aggregation",
+  "version": "0.1.0",
+  "description": "endpoint for database update",
+  "main": "src/aggragation.js",
+  "repository": "",
+  "author": "Jani Jalkanen",
+  "license": "",
+  "dependencies": {
+    "pg": "^7.6.0"
+  },
+  "devDependencies": {}
+}
