@@ -314,7 +314,87 @@ export default class WriteReview extends React.Component {
       }
     }
     
-    
+    return (
+      <div>
+        <button className="filterBtn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
+        
+        <Modal isOpen={this.state.showForm} toggle={this.toggleForm} dialogClassName="reviewModal">
+          <ModalHeader> {strings.modalTitle} </ModalHeader>
+          <ModalBody>
+              <form className="review">
+                
+                <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} required /> <br/>
+                <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} required />
+                    
+                {strings.diets}:
+                <Select
+                  defaultValue={ this.state.defaultValues }
+                  isMulti
+                  name="filtersDrop"
+                  options={ this.state.options }
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  onChange={this.changeFilter}
+                />
+                <br />      
+                  
+                {strings.reliability}: 
+                <ReactStars
+                  value = {this.state.reliability}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeReliability}
+                />
+                <br />  
+                 
+                {strings.variety}:
+                <ReactStars
+                  value = {this.state.choice}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeChoice}
+                />
+                <br />
+                  
+                {strings.service}:
+                <ReactStars
+                  value = {this.state.quality}
+                  count = {5}
+                  size = {24}
+                  onChange = {this.changeQuality}
+                />
+                <br />
+                 
+                {strings.pricing}: 
+                <ReactStars
+                  value = {this.state.cost}
+                  count = {3}
+                  size = {24}
+                  char = {'€'}
+                  half = {false}
+                  onChange = {this.changeCost}
+                />
+                <br />
+                
+              </form>      
+          </ModalBody>
+          { this.state.submitingReview ? (
+              
+              <ModalFooter>
+                <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" height={'20%'} width={'20%'} />
+              </ModalFooter>
+            ) : ( 
+              <ModalFooter>
+                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button> 
+                <Button color="secondary" onClick={this.toggleForm} > {strings.cancel} </Button>
+              </ModalFooter>
+            )
+          
+          }
+             
+        </Modal>
+      </div>
+    );
   }
   
 }
