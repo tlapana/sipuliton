@@ -41,12 +41,15 @@ exports.lambdaHandler = async (event, context) => {
 
         var collectRestaurantPage = `
         SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
-               rating_overall,
-               rating_reliability,
-               rating_variety,
-               rating_service_and_quality 
-        FROM restaurant INNER JOIN restaurant_diet_stats
-        ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+               coalesce(rating_overall, 0) as rating_overall,
+               coalesce(rating_reliability, 0) as rating_reliability,
+               coalesce(rating_variety, 0) as rating_variety,
+               coalesce(rating_service_and_quality, 0) as rating_service_and_quality,
+               coalesce(pricing, 0) as pricing,
+               opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun
+        FROM restaurant
+        LEFT JOIN restaurant_stats ON restaurant.restaurant_id=restaurant_diet_stats.restaurant_id
+        LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         WHERE restaurant.restaurant_id = $1
         `;
 
