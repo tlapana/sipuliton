@@ -24,7 +24,7 @@ class RouteCollection extends React.Component {
     const { Login } = loginComponents;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
-    const { EditProfile, Profile } = profile;
+    const { EditProfile, ProfileContainer } = profile;
     const { Map } = map;
 	  const { Restaurant } = restaurant;
     const { About } = about;
@@ -35,8 +35,8 @@ class RouteCollection extends React.Component {
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
-        <Route path="/:language/profile/:id/" component={Profile} />
-        <Route path="/:language/profile" component={Profile} />
+        <Route path="/:language/profile/:id/" component={ProfileContainer} />
+        <Route path="/:language/profile" component={ProfileContainer} />
         <Route path="/:language/edit-profile/:id" component={EditProfile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />

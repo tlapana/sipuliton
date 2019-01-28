@@ -5,7 +5,7 @@ import { Auth } from 'aws-amplify';
 
 
 import LoginForm from './Login_Form.js';
-import LoginFormContainer from '../containers/Login_FormContainer.js';
+import LoginFormContainer from '../containers/Login_FormContainer';
 import SocialLogin from './Social_Login.js';
 
 /* Localization */

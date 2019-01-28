@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
+import throttle from 'lodash/throttle';
 
 import { containers as AppContainers } from './modules/app';
 import rootReducer from './rootReducer';
@@ -35,15 +36,53 @@ Amplify.configure({
           endpoint: config.backendAPIPaths.BASE,
           service: "lambda",
           custom_header: async () => {
-            return { Authorization: (await Auth.currentSession()).idToken.jwtToken } 
+            try {
+              return { Authorization: (await Auth.currentSession()).idToken.jwtToken };
+            }
+            catch (err) {
+              return {};
+            }  
           },
       },
     ]
   }
 });
 
+
+// Persist redux state
+const loadState = () => {
+  try {
+    const serializedState = localStorage.getItem('state');
+    if(serializedState === null) {
+      return undefined;
+    }
+    return JSON.parse(serializedState);
+  } catch (e) {
+    return undefined;
+  }
+};
+const peristedState = loadState();
+
+const saveState = (state) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    localStorage.setItem('state', serializedState);
+  } catch (e) {
+    // Ignore write errors
+  }
+};
+
+const store = createStore(
+  rootReducer,
+  peristedState,
+);
+store.subscribe(throttle(() => {
+  saveState(store.getState());
+}, 1000));
+
+
+
 const { AppContainer } = AppContainers;
-const store = createStore(rootReducer);
 withAuthenticator(AppContainer);
 
 render(

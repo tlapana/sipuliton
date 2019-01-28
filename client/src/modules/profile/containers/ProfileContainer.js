@@ -1,25 +1,20 @@
 import { connect } from 'react-redux';
-import { login, logout } from '../actions';
-import Login_Form from '../components/Login_Form';
+import Profile from '../components/Profile';
 
 
 const mapStateToProps = state => {
   return {
-    cognitoUser: state.login.cognitoUser,
     currentUserId: state.login.userId,
   }
 }
 
 const mapDispatchToProps = dispatch => {
-  return {
-    login: (cognitoUser, userId) => dispatch(login(cognitoUser, userId)),
-    logout: () => dispatch(logout()),
-  }
+  return {}
 };
 
-const Login_FormContainer = connect(
+const ProfileContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login_Form);
+)(Profile);
 
-export default Login_FormContainer;
+export default ProfileContainer;

@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import { LanguageSelection, MainMenuListItem, MainMenuLogoutButton } from '../../mainmenu/index';
+import { LanguageSelection, MainMenuListItem, MainMenuLogoutButtonContainer } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -223,7 +223,7 @@ class NavigationBar extends React.Component {
                     {this.state.userLogged && <MainMenuListItem path={pathToProfile} text={strings.profile} />}
                     {!this.state.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
                     {!this.state.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
-                    {this.state.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
+                    {this.state.userLogged && <MainMenuLogoutButtonContainer redirectPath={pathToMenu} logoutText={strings.logout}/>}
                     <MainMenuListItem path={pathToAbout} text={strings.about}/>
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />

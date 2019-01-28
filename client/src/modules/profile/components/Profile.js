@@ -4,12 +4,14 @@ import { Col, Row, } from 'reactstrap';
 import ReactLoading from 'react-loading';
 import LocalizedStrings from 'react-localization';
 import { API, Auth } from 'aws-amplify';
+import Config from '../../../config.js';
 
 
 class Profile extends React.Component {
   constructor(props) {
     super(props);
     const { id } = this.props.match.params;
+
     this.state = {
       id: id,
       username: '-',
@@ -37,7 +39,8 @@ class Profile extends React.Component {
 
   handleEditClicked() {
     const { language } = this.props.match.params;
-    this.props.history.push('/' + language + '/edit-profile/' + this.state.id);
+    let id = this.state.id != null ? this.state.id : this.props.currentUserId;
+    this.props.history.push('/' + language + '/edit-profile/' + id);
   }
 
   async componentWillMount() {
@@ -46,11 +49,15 @@ class Profile extends React.Component {
 
   fetchProfile() {
     this.setState({isLoading: true});
-    const init = {
-      queryStringParameters: {
-        user_id: this.state.id
-      }
+    var init = {};
+    if (this.state.id != null) {
+      init = {
+        queryStringParameters: {
+          user_id: this.state.id
+        }
+      };
     }
+    
     API.get('api', '/profile', init)
       .then((responseJson) => {
         this.setState({
@@ -122,6 +129,9 @@ class Profile extends React.Component {
       return this.renderLoading();
     }
 
+    const isOwnProfile = this.state.id == null && this.props.currentUserId != null || 
+      this.props.currentUserId == this.state.id && this.props.currentUserId != null;
+
     return (
       <div className="max-w-40">
         <Row>
@@ -140,9 +150,13 @@ class Profile extends React.Component {
         <p>{strings.citiesVisited} ...  {this.state.cities_visited}</p>
         <p>{strings.countriesVisited} ................{this.state.countries_visited}</p>
         <p>{strings.activityPoints} ...........................{this.state.activitypoints}</p>
-        <button className="btn main-btn max-w-10" onClick={this.handleEditClicked}>
-          {strings.edit}
-        </button>
+        {
+          isOwnProfile && 
+          <button className="btn main-btn max-w-10" onClick={this.handleEditClicked}>
+            {strings.edit}
+          </button>
+        }
+        
       </div>
     );
   }

@@ -110,7 +110,6 @@ async function getOwnUserId(client, event) {
         console.log(err);
     }
     if (!userSub) {
-        client.end();
         throw {
             'statusCode': 400,
             'error': "Cognito user not found or authentication failed",
@@ -119,14 +118,12 @@ async function getOwnUserId(client, event) {
     
     const res = await client.query('SELECT user_id FROM user_login WHERE cognito_sub = $1', [userSub]);
     if (res.rowCount == 0) {
-        client.end();
         throw {
             'statusCode': 400,
             'error': "No user found"
         }
     }
     if (res.rowCount >= 2) {
-        client.end();
         throw {
             'statusCode': 500,
             'error': "Something is broken, returning 2 or more users"
@@ -400,7 +397,11 @@ exports.profileLambda = async (event, context) => {
             var tempId = parseIntParam("user_id", event);
 
             //TODO: get own user id using cognito
-            const ownUserId = await getOwnUserId(client, event);
+            var ownUserId = null;
+            try {
+                ownUserId = await getOwnUserId(client, event);
+            }
+            catch (err) {}
             const userId = tempId === null ? ownUserId : tempId
             var temp = parseParam("language", event);
             const languageId = temp === null ? await getLanguage(client, 'FI') :

@@ -1,6 +1,6 @@
 import { connect, } from 'react-redux';
-import { login, logout } from '../actions';
-import Login_Form from '../components/Login_Form';
+import { logout } from '../../login/actions';
+import MainMenuLogoutButton from '../components/MainMenuLogoutButton';
 
 
 const mapStateToProps = state => {
@@ -11,14 +11,13 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    loggedIn: (userId) => dispatch(login(userId)),
     loggedOut: () => dispatch(logout()),
   }
 };
 
-const Login_FormContainer = connect(
+const MainMenuLogoutButtonContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(Login_Form);
+)(MainMenuLogoutButton);
 
-export default Login_FormContainer;
+export default MainMenuLogoutButtonContainer;
