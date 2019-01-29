@@ -4,6 +4,8 @@ import ReactStars from 'react-stars'
 import { Button, Container, Row, Col } from 'reactstrap';
 import commonComponents from '../../../common';
 
+import LocalizedStrings from 'react-localization';
+
 export default class myReviewEdit1 extends React.Component {
       constructor(props) {
             super(props);
@@ -50,15 +52,48 @@ export default class myReviewEdit1 extends React.Component {
       }
 
       render() {
+
+            let strings = new LocalizedStrings({
+
+                  en: {
+                    title: "Edit information",
+                    save: "Save",
+                    rewtitle: "Review title",
+                    name: "Name",
+                    url: "Image url",
+                    freetext: "Free text",
+                    overall: "Overall rating",
+                    ratingServiveAndQuality: "Rating service and quality",
+                    pricing: "Price",
+
+
+                  },
+            
+                  fi: {
+                    title: "Muuta tietoja",
+                    save: "Tallenna",
+                    rewtitle: "Otsikko",
+                    name:"Nimi",
+                    url: "Kuvan url",
+                    freetext: "Vapaa teksti",
+                    overall: "Yleisarviointi",
+                    ratingServiveAndQuality: "Palvelu ja laatu",
+                    pricing: "Hinta",
+       
+
+                  }
+            
+                });
+                strings.setLanguage(this.props.match.params.language);
             const { VInput, ErrorBlock } = commonComponents;
             return (
                   <div >
 
-                        <p>Edit Information   <Button onClick={() => this.save()}>Tallenna</Button></p>
+                        <p>{strings.title}   <Button onClick={() => this.save()}>{strings.save}</Button></p>
 
                         <Row>
                               <Col xs="2">
-                                    title
+                              {strings.rewtitle} 
                                     </Col>
                               <Col xs="4">
                               <VInput  defaultValue={this.state.title}  type="text" name="title" required autoFocus={true} />
@@ -67,7 +102,7 @@ export default class myReviewEdit1 extends React.Component {
                         </Row>
                         <Row>
                               <Col xs="2">
-                                    Name
+                              {strings.name} 
                                     </Col>
                               <Col xs="4">
                       
@@ -78,7 +113,7 @@ export default class myReviewEdit1 extends React.Component {
 
                         <Row>
                               <Col xs="2">
-                                    Image url
+                              {strings.url} 
                                     </Col>
                               <Col xs="4">
                               <VInput  defaultValue={this.state.image_url}  type="text" name="url" required autoFocus={true} />
@@ -88,7 +123,7 @@ export default class myReviewEdit1 extends React.Component {
 
                         <Row>
                               <Col xs="2">
-                                    Free Text
+                              {strings.freetext} 
                                     </Col>
                               <Col xs="4">
                              
@@ -101,7 +136,7 @@ export default class myReviewEdit1 extends React.Component {
 
                         <Row>
                               <Col xs="2">
-                                    Overall rating
+                                    {strings.overall}
                                     </Col>
                               <Col xs="4">
 
@@ -112,7 +147,7 @@ export default class myReviewEdit1 extends React.Component {
 
                         <Row>
                               <Col xs="2">
-                                    Rating service and quality
+                                    {strings.ratingServiveAndQuality}
                                     </Col>
                               <Col xs="4">
                                     <ReactStars onChange={(value) => { this.setState({ RatingServiceAndQuality: value }) }} value={this.state.RatingServiceAndQuality} count={5} size={24} />
@@ -121,7 +156,7 @@ export default class myReviewEdit1 extends React.Component {
 
                         <Row>
                               <Col xs="2">
-                                    Pricing
+                                    {strings.pricing}
                                     </Col>
                               <Col xs="4">
                                     <ReactStars id="pricing" onChange={(value) => { this.setState({ pricing: value }) }} value={this.state.pricing} count={3} size={24} />

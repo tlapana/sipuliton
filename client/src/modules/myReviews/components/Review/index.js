@@ -31,7 +31,7 @@ class Review extends React.Component {
 
       send() {
             localStorage.setItem('info', "" + JSON.stringify(this.state.data));
-            window.location = "/fi/myReviewEdit"
+            window.location = "/" +this.props.match.params.language+ "/myReviewEdit"
       }
       deleterow(term) {
             fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
@@ -64,7 +64,8 @@ class Review extends React.Component {
                   rating_variety: 0,
                   loading1:false,
                   rating_service_and_quality: 0,
-                  edit: false
+                  edit: false,
+                  la:this.props.match.params.language,
 
 
 
@@ -173,6 +174,7 @@ class Review extends React.Component {
       };
 
        render() {
+         
              
             var lan=this.props.match.params.language
             let strings = new LocalizedStrings({
