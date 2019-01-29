@@ -6,6 +6,7 @@ import commonComponents from '../../common';
 import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 import { API, Auth } from 'aws-amplify';
+import config from '../../../config';
 
 import '../../../styles/profile.css';
 
@@ -54,7 +55,7 @@ class EditProfile extends React.Component {
 
   async fetchCountries() {
     this.setState({countriesLoading: true});
-    return fetch('http://127.0.0.1:3000/location/countries').then((response) => response.json())
+    return fetch(config.backendAPIPaths.BASE + '/location/countries').then((response) => response.json())
       .then((responseJson) => {
         this.setState({ countries: responseJson, countriesLoading: false });
       })
@@ -101,7 +102,7 @@ class EditProfile extends React.Component {
       return;
     }
     this.setState({citiesLoading: true});
-    return fetch('http://127.0.0.1:3000/location/cities?country_id=' + country_id).then((response) => response.json())
+    return fetch(config.backendAPIPaths.BASE + '/location/cities?country_id=' + country_id).then((response) => response.json())
       .then((responseJson) => {
         this.setState({ cities: responseJson, citiesLoading: false });
         return responseJson;
