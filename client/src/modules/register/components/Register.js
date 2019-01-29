@@ -49,11 +49,10 @@ export default class Register extends React.Component {
     this.onUlaChanged = this.onUlaChanged.bind(this);
     this.validateForm = this.validateForm.bind(this);
     
-		//this.handleRegistration = this.handleRegistration.bind(this);
-		this.sendToUserGroup = this.sendToUserGroup.bind(this);
 		this.renderConfirmation = this.renderConfirmation.bind(this);
 		this.renderForm = this.renderForm.bind(this);
-		this.renderSocialReg = this.renderSocialReg.bind(this);
+    this.renderSocialReg = this.renderSocialReg.bind(this);
+    this.afterCognitoRegister = this.afterCognitoRegister.bind(this);
 	}
 
   componentDidMount() {
@@ -135,7 +134,10 @@ export default class Register extends React.Component {
 
 	handleRegistration = async event => {
 		/*use signUp function to register*/
-		event.preventDefault();
+    event.preventDefault();
+    if (this.state.isLoading || !this.validateForm()) {
+      return;
+    }
 		this.setState({ isLoading: true });
 		try {
 			if (this.state.googleReg) {
@@ -146,37 +148,7 @@ export default class Register extends React.Component {
             email: this.state.socialCredentials.email,
           },
         });
-
-        // Our own signup
-        var regUrl = config.backendAPIPaths.BASE + '/user/create' + 
-          '?username=' + encodeURIComponent(this.state.username) + 
-          '&cognito_sub=' + encodeURIComponent(newUser.userSub) + 
-          '&email=' + encodeURIComponent(this.state.mail);
-        
-        try {
-          const res = await fetch(regUrl);
-          console.log(res);
-          if (res.status == 200) {
-            // success
-            this.setState({ isLoading: false, newUser });
-          }
-          else if (res.error) {
-            alert(res.error);
-          }
-          else if (res.status == 400 || res.status == 500) {
-            alert('An error occurred');
-          }
-          else {
-            alert('An unknown error occurred');
-          }
-          this.setState({ isLoading: false });
-        }
-        catch (err) {
-          console.log(err);
-          throw err;
-        }
-        this.sendToUserGroup();
-        this.setState({ newUser });
+        await this.afterCognitoRegister(newUser);
       }
 			else if (this.state.faceReg) {
 				const newUser = await Auth.signUp({
@@ -186,10 +158,7 @@ export default class Register extends React.Component {
             email: this.state.socialCredentials.email,
           },
         });
-        this.sendToUserGroup();
-        this.setState({
-          newUser
-        });
+        await this.afterCognitoRegister(newUser);
 			}
 			else {
 				const newUser = await Auth.signUp({
@@ -199,8 +168,7 @@ export default class Register extends React.Component {
             email: this.state.mail,
           },
         });
-        this.sendToUserGroup();
-        this.setState({ newUser });
+        await this.afterCognitoRegister(newUser);
 			}
 		} catch (e) {
 			if (e.code === 'UsernameExistsException') {
@@ -221,24 +189,7 @@ export default class Register extends React.Component {
       faceReg: false,
     });
   }
-	/*function that sends user data to another lambda, which adds the user to a user group*/
-	sendToUserGroup() {
-		fetch(userGroupLambda, {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				/*same data as with the login?*/
-				username: this.state.username,
-				password: this.state.password,
-				attributes: {
-					email: this.state.mail,
-				},
-			})
-		})
-	}
+  
 	/*function that receives the user data from SocialRegister class*/
 	getSocialCredentials = (dataFromChild) => {
 		if (dataFromChild[1] === "google") {
@@ -261,6 +212,38 @@ export default class Register extends React.Component {
 		}
 		console.log(this.state.socialCredentials);
 	}
+
+  async afterCognitoRegister(newUser) {
+    // Our own signup
+    var regUrl = config.backendAPIPaths.BASE + '/user/create' + 
+    '?username=' + encodeURIComponent(this.state.username) + 
+    '&cognito_sub=' + encodeURIComponent(newUser.userSub) + 
+    '&email=' + encodeURIComponent(this.state.mail);
+
+    try {
+      const res = await fetch(regUrl);
+      console.log(res);
+      if (res.status == 200) {
+        // success
+        this.setState({ isLoading: false, newUser });
+      }
+      else if (res.error) {
+        alert(res.error);
+      }
+      else if (res.status == 400 || res.status == 500) {
+        alert('An error occurred');
+      }
+      else {
+        alert('An unknown error occurred');
+      }
+      this.setState({ isLoading: false });
+    }
+    catch (err) {
+      console.log(err);
+      this.setState({ isLoading: false });
+      throw err;
+    }
+  }
 
 	renderSocialReg() {
 		const { VInput, } = commonComponents;
@@ -315,7 +298,9 @@ export default class Register extends React.Component {
       <div>
         <h2>{strings.successHeader}</h2>
         <p>{strings.successText}</p>
-        <Button className="main-btn" href={"/" + this.props.match.params.language + "/login"}>{strings.loginBtnText}</Button>
+        <Link className="btn main-btn" to={'/' + this.props.match.params.language + '/login/'}>
+            {strings.loginBtnText}
+        </Link>
       </div>
     );
   }
@@ -340,7 +325,6 @@ export default class Register extends React.Component {
         passwordAgainError:"Passwords must match",
         emailError:"Email is invalid",
         emailAgainError:"Emails must match",
-
       },
       fi: {
         username:"Käyttäjätunnus:",
@@ -364,50 +348,50 @@ export default class Register extends React.Component {
     strings.setLanguage(this.props.match.params.language);
     let registerBtnStr = this.state.isLoading ? strings.registering : strings.register;
 
-	/*The first form where the user enters info needed for an account*/
-	return (
-		<div id="register" className="max-w-40">
-			<h2>{strings.register}</h2>
-			<Form onSubmit={this.handleRegistration}>
-				<FormGroup>
-					<Label>{strings.username}</Label>
-					<VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
-				</FormGroup>
-				<FormGroup>
-					<Label>{strings.password}</Label>
-					<VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
-				</FormGroup>
-				<FormGroup>
-					<Label>{strings.passwordAgain}</Label>
-					<VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
-				</FormGroup>
-				<FormGroup>
-					<Label>{strings.email}</Label>
-					<VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
-				</FormGroup>
-				<FormGroup>
-					<Label>{strings.emailAgain}</Label>
-					<VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
-				</FormGroup>
-				<FormGroup check>
-					<Label check>{' '}
-						<VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
-						{strings.acceptUla}
-					</Label>
-				</FormGroup>
+    /*The first form where the user enters info needed for an account*/
+    return (
+      <div id="register" className="max-w-40">
+        <h2>{strings.register}</h2>
+        <Form onSubmit={this.handleRegistration}>
+          <FormGroup>
+            <Label>{strings.username}</Label>
+            <VInput type="text" name="username" isValid={this.state.usernameValid} value={this.state.username} onChange={this.onUsernameChanged} required autoFocus />
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.password}</Label>
+            <VInput type="password" name="password" isValid={this.state.passwordValid} value={this.state.password} onChange={this.onPasswordChanged}/>
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.passwordAgain}</Label>
+            <VInput type="password" name="retypePass" isValid={this.state.retypePassValid} value={this.state.retypePass} onChange={this.onRetypePassChanged}/>
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.email}</Label>
+            <VInput type="email" name="mail" isValid={this.state.mailValid} value={this.state.mail} onChange={this.onMailChanged}/>
+          </FormGroup>
+          <FormGroup>
+            <Label>{strings.emailAgain}</Label>
+            <VInput type="email" name="retypeMail" isValid={this.state.retypeMailValid} value={this.state.retypeMail} onChange={this.onRetypeMailChanged}/>
+          </FormGroup>
+          <FormGroup check>
+            <Label check>{' '}
+              <VInput type="checkbox" name="ula" value={this.state.ula} onChange={this.onUlaChanged}/>
+              {strings.acceptUla}
+            </Label>
+          </FormGroup>
 
 
-				<VInput type="submit" value={strings.register} isValid={this.validateForm} className="main-btn big-btn max-w-10" />
-			</Form>
-			<div>
-				{strings.alreadyRegistered}
-				<Link to={'/' + this.props.match.params.language + '/login/'}>
-      	{strings.loginHere}
-       	</Link>
-			</div>
-			<SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
-		</div>
-	);
+          <VInput type="submit" value={registerBtnStr} isValid={this.validateForm() && !this.state.isLoading} className="main-btn big-btn max-w-10" />
+        </Form>
+        <div>
+          {strings.alreadyRegistered}
+          <Link to={'/' + this.props.match.params.language + '/login/'}>
+            {strings.loginHere}
+          </Link>
+        </div>
+        <SocialRegister callback={this.getSocialCredentials} parentLanguage={this.props.match.params.language}/>
+      </div>
+    );
 	}
 
 	render() {

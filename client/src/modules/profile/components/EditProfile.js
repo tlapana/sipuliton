@@ -7,6 +7,8 @@ import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 import { API, Auth } from 'aws-amplify';
 
+import '../../../styles/profile.css';
+
 
 class EditProfile extends React.Component {
   constructor(props) {
@@ -38,6 +40,7 @@ class EditProfile extends React.Component {
     this.addAllerg = this.addAllerg.bind(this);
     this.deleteAllerg = this.deleteAllerg.bind(this);
     this.fetchCities = this.fetchCities.bind(this);
+    this.goBack = this.goBack.bind(this);
     this.fetchProfile = this.fetchProfile.bind(this);
     this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -114,7 +117,11 @@ class EditProfile extends React.Component {
     this.fetchCountries();
     const country = this.state.current_country == null ? 0 : this.state.current_country;
     this.fetchCities(country);
-    
+  }
+
+  goBack() {
+    const { language } = this.props.match.params;
+    this.props.history.push('/' + language + '/profile/' + this.state.id);
   }
 
   async fetchProfile() {
@@ -253,6 +260,7 @@ class EditProfile extends React.Component {
         saving: "Saving",
         addDiet: "Add diet",
         deleteDiet: "Delete diet",
+        cancel: "Cancel",
       },
       fi: {
         editProfile: "Muokkaa profiilia",
@@ -266,6 +274,7 @@ class EditProfile extends React.Component {
         saving: "Tallennetaan",
         addDiet: "Lisää ruokavalio",
         deleteDiet: "Poista ruokavalio",
+        cancel: "Peruuta",
       }
     });
     strings.setLanguage(this.props.match.params.language);
@@ -337,17 +346,22 @@ class EditProfile extends React.Component {
             <VInput type="text" id="allerg" name="allerg" />
           </FormGroup>
           
-          <Button className="btn secondary-btn" onClick={this.addAllerg}>{strings.addDiet}</Button>
-          <Button className="secondary-btn" onClick={this.deleteAllerg}>{strings.deleteDiet}</Button>
+          <Button className="btn secondary-btn btn-margin" onClick={this.addAllerg}>{strings.addDiet}</Button>
+          <Button className="btn secondary-btn btn-margin" onClick={this.deleteAllerg}>{strings.deleteDiet}</Button>
           
-          <VInput 
-            type="button" 
-            className="main-btn big-btn max-w-10" 
-            name="save" 
-            onClick={this.saveData} 
-            value={saveBtnStr} 
-            isValid={this.state.usernameValid && this.state.emailValid && !this.state.isSaving}
-          />
+          <div>
+            <Button className="btn main-btn max-w-10" onClick={this.goBack}>{strings.cancel}</Button>
+            <VInput 
+              type="button" 
+              className="main-btn big-btn btn-margin max-w-10"
+              wrapperClassName="max-w-10 no-margin inline-block w-100-percent save-btn"
+              name="save" 
+              onClick={this.saveData} 
+              value={saveBtnStr} 
+              isValid={this.state.usernameValid && this.state.emailValid && !this.state.isSaving}
+            />
+          </div>
+          
         </Form>
       </div>
     );
