@@ -18,14 +18,14 @@ class Profile extends React.Component {
       email: '-',
       city: '-',
       desc: '-',
-      reviews: '-1',
-      url: '',
+      reviews: '0',
+      url: require('../../../resources/empty_profile_pic_placeholder.png'),
       activitypoints: 0,
-      countries_visited: -1,
-      cities_visited: -1,
-      current_city: -1,
+      countries_visited: 0,
+      cities_visited: 0,
+      current_city: 0,
       citiesLoading: false,
-      current_country: -1,
+      current_country: 0,
       countriesLoading: false,
       allerg: '',
       isLoading: false,
@@ -63,14 +63,20 @@ class Profile extends React.Component {
         }
       };
     }
-    
+
     API.get('api', '/profile', init)
       .then((responseJson) => {
+        console.log(responseJson.image_url);
+        var imageurl = require("../../../resources/empty_profile_pic_placeholder.png");
+        if(responseJson.image_url != null)
+        {
+          imageurl = responseJson.image_url
+        }
         this.setState({
           city: responseJson.city_name,
           current_city: responseJson.city_id,
           current_country: responseJson.country_id,
-          url: responseJson.image_url,
+          url: imageurl,
           username: responseJson.display_name,
           email: responseJson.email,
           city: responseJson.city_name,
@@ -154,7 +160,7 @@ class Profile extends React.Component {
       return this.renderLoading();
     }
 
-    const isOwnProfile = this.state.id == null && this.props.currentUserId != null || 
+    const isOwnProfile = this.state.id == null && this.props.currentUserId != null ||
       this.props.currentUserId == this.state.id && this.props.currentUserId != null;
 
     return (
@@ -203,10 +209,10 @@ class Profile extends React.Component {
           </Row>
         </div>
         {
-          isOwnProfile && 
+          isOwnProfile &&
           <button className="profile-edit-btn btn main-btn max-w-10" onClick={this.handleEditClicked}>
             {strings.edit}
-          </button> 
+          </button>
         }
         {
           isOwnProfile &&
@@ -214,7 +220,7 @@ class Profile extends React.Component {
             {strings.changePassword}
           </button>
         }
-        
+
       </div>
     );
   }
