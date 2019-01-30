@@ -80,8 +80,6 @@ async function getToken() {
 async function getPsqlClient() {
 
     var token = await getToken();
-    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
 
     var client = new pg.Client({
         host: dbEndpoint,
