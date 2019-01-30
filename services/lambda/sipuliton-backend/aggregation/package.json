@@ -9,7 +9,6 @@
   "dependencies": {
     "pg": "^7.6.0",
     "aws-sdk": "^2.392.0"
-    
   },
   "devDependencies": {}
 }

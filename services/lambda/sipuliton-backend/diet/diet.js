@@ -2,17 +2,18 @@
 let response;
 var fetch = require('node-fetch');
 var jose = require('node-jose');
+const pg = require('pg');
+const AWS = require('aws-sdk');
 
-var region = 'eu-central-1';
+
+const region = 'eu-central-1';
 var userpool_id = 'eu-central-1_RcdrXwM4n';
 var app_client_id = '6shik8f5c8k0dc7oje4qumn6fd';
 var keys_url = 'https://cognito-idp.' + region + '.amazonaws.com/' + userpool_id + '/.well-known/jwks.json';
 
-const pg = require('pg');
-const AWS = require('aws-sdk');
 
 // Database credentials
-const region = 'eu-central-1';
+
 const dbPort = 5432;
 const dbUsername = 'lambda_user'; 
 const dbName = 'sipuliton'; 

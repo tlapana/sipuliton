@@ -3,6 +3,8 @@ let response;
 
 const pg = require('pg');
 const AWS = require('aws-sdk');
+var fetch = require('node-fetch');
+var jose = require('node-jose');
 
 // Database credentials
 const region = 'eu-central-1';
@@ -10,8 +12,6 @@ const dbPort = 5432;
 const dbUsername = 'lambda_user'; 
 const dbName = 'sipuliton'; 
 const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
-var fetch = require('node-fetch');
-var jose = require('node-jose');
 
 
 var userpool_id = 'eu-central-1_RcdrXwM4n';
