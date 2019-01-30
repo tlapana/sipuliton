@@ -200,19 +200,22 @@ class Map extends React.Component {
     //Printing for the debugging.
     //console.log("Getting: "+markColor)
     //console.log(this.state.searchLoc)
-    var searchDiets = [];
-    for(var i = 0; i<this.state.filters.diets.length; ++i)
-    {
-      searchDiets.push(this.state.filters.diets[i].value);
-    }
-    var diet_ids = searchDiets;
-    var diet_array_string = "[";
     var dietParam = "&globalDietId=[]";
-    if(diet_ids.length > 0 || this.state.filters.diets != undefined)
+    if(this.state.filters.diets != undefined && this.state.filters.diets.length>0)
     {
+      var searchDiets = [];
+      for(var i = 0; i<this.state.filters.diets.length; ++i)
+      {
+        searchDiets.push(this.state.filters.diets[i].value);
+      }
+      var diet_ids = searchDiets;
+      var diet_array_string = "[";
       for(var i = 0; i<diet_ids.length-1; ++i)
       {
-        diet_array_string = diet_array_string+diet_ids[i]+',';
+        if(diet_ids[i] !== undefined)
+        {
+          diet_array_string = diet_array_string+diet_ids[i]+',';          
+        }
       }
       diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
       dietParam = '&globalDietId='+diet_array_string;

@@ -15,7 +15,6 @@ import NotFound from './NotFound';
 
 /* This is where all routes should be */
 class RouteCollection extends React.Component {
-
   render() {
     const { Home } = home;
     const { Login } = login;
@@ -32,7 +31,7 @@ class RouteCollection extends React.Component {
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
-        <Route path="/:language/profile/:id" component={Profile} />
+        <Route path="/:language/profile/" component={Profile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
         <Route path="/:language/myReview" component={Review} />

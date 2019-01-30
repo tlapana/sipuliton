@@ -15,16 +15,16 @@ class Profile extends React.Component {
       email: '-',
       city: '-',
       desc: '-',
-      reviews: '-1',
-      url: '',
+      reviews: '0',
+      url: require('../../../resources/empty_profile_pic_placeholder.png'),
       activitypoints: 0,
-      countries_visited: -1,
-      cities_visited: -1,
+      countries_visited: 0,
+      cities_visited: 0,
       cities: [],
-      current_city: -1,
+      current_city: 0,
       citiesLoading: false,
       countries: [],
-      current_country: -1,
+      current_country: 0,
       countriesLoading: false,
       allerg: '',
       usernameValid: true,
@@ -153,11 +153,17 @@ class Profile extends React.Component {
     fetch('http://127.0.0.1:3000/profile')
       .then((response) => response.json())
       .then((responseJson) => {
+        console.log(responseJson.image_url);
+        var imageurl = require("../../../resources/empty_profile_pic_placeholder.png");
+        if(responseJson.image_url != null || responseJson.image_url!="")
+        {
+          imageurl = responseJson.image_url
+        }
         this.setState({
           city: responseJson.city_name,
           current_city: responseJson.city_id,
           current_country: responseJson.country_id,
-          url: responseJson.image_url,
+          url: imageurl,
           username: responseJson.display_name,
           email: responseJson.email,
           city: responseJson.city_name,
