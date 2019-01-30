@@ -38,6 +38,7 @@ class SearchBar extends React.Component {
     this.doSearch = this.doSearch.bind(this);
     this.getDiets = this.getDiets.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
+	
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
 
@@ -47,10 +48,13 @@ class SearchBar extends React.Component {
     this.changeService = this.changeService.bind(this);
     this.changePricing = this.changePricing.bind(this);
     this.distanceSelector = this.distanceSelector.bind(this);
-    this.onSliderChange = this.onSliderChange.bind(this);
+    this.onSliderChange = this.onSliderChange.bind(this);	
+	this.resetFilters = this.resetFilters.bind(this);
+	
     this.renderDistance = this.renderDistance.bind(this);
     this.renderDiets = this.renderDiets.bind(this);
 
+	//Starting state
     this.state = {
       error : null,
       isLoading: true,
@@ -80,8 +84,6 @@ class SearchBar extends React.Component {
   }
 
   componentDidMount() {
-
-
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -132,7 +134,7 @@ class SearchBar extends React.Component {
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
                 + '&minPricing=' + this.state.pricing
-                + '&diets=' + this.state.selectedDiets;
+                + '&diets=' + this.state.selectedDiets.join();
     
 
     if(this.state.useUserLocation) {
@@ -228,6 +230,7 @@ class SearchBar extends React.Component {
     ).then(() => this.setState({loading:false}));
   }
 
+  //Renders filtering button
   renderFilterButton() {
     if( this.state.loadedDefaults && this.state.loadedDiets) {
       return (
@@ -272,10 +275,24 @@ class SearchBar extends React.Component {
     this.setState({ pricing : newRating });
   }
   
+  //Handles changes done to the slider
   onSliderChange = (value) => {
     this.setState({
       radius : value,
     });
+  }
+  
+  //Resets the filters.
+  resetFilters()
+  {
+	this.setState({
+      minOverall : 0,
+      minReliability : 0,
+      minVariety : 0,
+      minService : 0,
+      pricing: 0,
+	  selectedDiets: this.state.userDiets
+	})
   }
 
   
@@ -398,6 +415,7 @@ class SearchBar extends React.Component {
         selectPlaceholder:"Select diets...",
         noOptionsMessage:"No diets",
         selectRadius: "Select search radius:",
+		resetFilters: "Reset filters"
       },
       fi: {
         search:"Hae kaupungista...",
@@ -415,6 +433,7 @@ class SearchBar extends React.Component {
         selectPlaceholder:"Valitse ruokavalioita...",
         noOptionsMessage:"Ei ruokavalioita",        
         selectRadius: "Valitse etsintä säde:",
+		resetFilters: "Tyhjennä hakuehdot"
       }
     });
     const language = this.props.language == null ? 'fi' : this.props.language;
@@ -502,6 +521,7 @@ class SearchBar extends React.Component {
               </ModalBody>
               
               <ModalFooter>
+				<button className="btn main-btn" onClick={this.resetFilters}> {strings.resetFilters} </button>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
               
