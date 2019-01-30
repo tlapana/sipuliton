@@ -181,7 +181,7 @@ async function createUser(client, cognitoSub, username, email, languageId) {
         try {
             const res = await client.query(
                 `INSERT INTO user_login (cognito_sub, username, email)
-                VALUES (($1, $2, $3)
+                VALUES ($1, $2, $3)
                 RETURNING user_id`,
                 [cognitoSub, username, email]);
 
