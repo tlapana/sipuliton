@@ -11,6 +11,8 @@ import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
 
+import Config from '../../../config.js';
+
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -202,45 +204,23 @@ export default class WriteReview extends React.Component {
     
     //Close form
     this.toggleForm();
-    
-    //Generate JSON
-    var obj = {};
-    
-    obj.id = this.state.id;
-    obj.title = this.state.title;
-    obj.reviewText = this.state.reviewText;
-    obj.reliability = this.state.reliability;
-    obj.variety = this.state.choice;
-    obj.quality = this.state.quality;
-    obj.pricing = this.state.cost;
-    obj.selectedFilters = this.state.selectedFilters;
-	
+    	
 	//Calculate overall
-    obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
-    
-    var jsonString = JSON.stringify(obj);
-    
-    
-    console.log("JSON Object");
-    console.log(obj);
-    console.log("As string");
-    console.log(jsonString);
-    
+    var overall = (this.state.reliability + this.state.choice + this.state.quality) / 3;    
+	
     //Generating url
     var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + obj.id
-      + "&title=" + obj.title
-      + "&text=" + obj.reviewText
-      + "&rating_overall=" + obj.overall
-      + "&rating_variety=" + obj.choice
-      + "&rating_reliability=" + obj.reliability
+      + "&title=" + this.state.title
+      + "&text=" + this.state.reviewText
+      + "&rating_overall=" + overall
+      + "&rating_variety=" + this.state.choice
+      + "&rating_reliability=" + this.state.reliability
       + "&rating_service_and_quality=" + obj.quality
-      + "&pricing=" + obj.pricing
-      + "&diets=" + obj.selectedFilters.join();
-      
-    //TODO: Diets
+      + "&pricing=" + this.state.cost
+      + "&diets=" + this.state.selectedFilters.join();
     
-    console.log("url:");
-    console.log(url);
+    //console.log("url:");
+    //console.log(url);
     
     fetch(url)
       .then(res => res.json())
