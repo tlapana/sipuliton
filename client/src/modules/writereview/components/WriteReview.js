@@ -10,7 +10,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'react
 import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
-import config from '../../../config';
+import { API } from "aws-amplify";
 
 import Config from '../../../config.js';
 
@@ -116,9 +116,8 @@ export default class WriteReview extends React.Component {
   {
     //Console log for debugging
     //console.log("Getting the default values for the diets: ");
-    var url = Config.backendAPIPaths.BASE+'/ownDiets';
-    fetch(url)
-      .then(res => res.json())
+    let init = { queryStringParameters: {} };
+    API.get('api', '/ownDiets', init)
       .then(
         (result) => {
           //Console log for debugging
@@ -227,21 +226,21 @@ export default class WriteReview extends React.Component {
       dietParam = '&diets='+diet_array_string;
     }
 
-    //Generating url
-    var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + this.state.id
-      + "&title=" + this.state.title
-      + "&text=" + this.state.reviewText
-      + "&rating_overall=" + overall
-      + "&rating_variety=" + this.state.choice
-      + "&rating_reliability=" + this.state.reliability
-      + "&rating_service_and_quality=" + this.state.quality
-      + "&pricing=" + this.state.cost
-      + dietParam;
-
-    //console.log("url:");
-    //console.log(url);
-    fetch(url)
-      .then(res => res.json())
+    let init = { 
+      queryStringParameters: {
+        restaurant_id: this.state.id,
+        title: this.state.title,
+        text: this.state.reviewText,
+        rating_overall: overall,
+        rating_variety: this.state.choice,
+        rating_reliability: this.state.reliability,
+        rating_service_and_quality: this.state.quality,
+        pricing: this.state.cost,
+        globalDietId: [],
+        diets: diet_array_string,
+    }
+  };
+    API.get('api', '/postReview', init)
       .then(
         (result) => {
           this.setState({
