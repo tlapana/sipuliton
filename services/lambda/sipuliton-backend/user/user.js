@@ -1,5 +1,12 @@
 
 let response;
+var fetch = require('node-fetch');
+var jose = require('node-jose');
+
+var region = 'eu-central-1';
+var userpool_id = 'eu-central-1_RcdrXwM4n';
+var app_client_id = '6shik8f5c8k0dc7oje4qumn6fd';
+var keys_url = 'https://cognito-idp.' + region + '.amazonaws.com/' + userpool_id + '/.well-known/jwks.json';
 
 /**
  *
@@ -38,13 +45,91 @@ let response;
 
 // shared functions
 
+// getCognitoUserInfo taken from here and modified:
+// https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decode-verify-jwt
+async function getCognitoUserInfo(token) {
+    var sections = token.split('.');
+    // get the kid from the headers prior to verification
+    var header = jose.util.base64url.decode(sections[0]);
+    header = JSON.parse(header);
+    var kid = header.kid;
+    // download the public keys
+    var response = await fetch(keys_url);
+    if (response && response.status == 200) {
+        var body = await response.json();
+        var keys = body['keys'];
+        
+        // search for the kid in the downloaded public keys
+        var key_index = -1;
+        for (var i=0; i < keys.length; i++) {
+            if (kid == keys[i].kid) {
+                key_index = i;
+                break;
+            }
+        }
+        if (key_index == -1) {
+            return 'Public key not found in jwks.json';
+        }
+        // construct the public key
+        try {
+            var result = await jose.JWK.asKey(keys[key_index]);
+            // verify the signature
+            result = await jose.JWS.createVerify(result).verify(token);
+            // now we can use the claims
+            var claims = JSON.parse(result.payload);
+            // additionally we can verify the token expiration
+            var current_ts = Math.floor(new Date() / 1000);
+            if (current_ts > claims.exp) {
+                return 'Token is expired';
+            }
+            // and the Audience (use claims.client_id if verifying an access token)
+            if (claims.aud != app_client_id) {
+                return 'Token was not issued for this audience';
+            }
+            return claims;
+        }
+        catch (err) {
+            return 'Signature verification failed';
+        }
+    }
+}
+
+
 async function getOwnUserId(client, event) {
-    const AWS = require('aws-sdk');
-    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
-    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
-    //console.log("user sub:" + userSub);
-    return 0;
-    return null;
+    var token = null;
+    var userSub = null;
+    
+    if (event && event.headers) {
+        token = event.headers['Authorization'];
+    }
+    try {
+        var cognitoUser = await getCognitoUserInfo(token);
+        userSub = cognitoUser['sub'];
+    }
+    catch (err) {
+        console.log(err);
+    }
+    if (!userSub) {
+        throw {
+            'statusCode': 400,
+            'error': "Cognito user not found or authentication failed",
+        }
+    }
+    
+    const res = await client.query('SELECT user_id FROM user_login WHERE cognito_sub = $1', [userSub]);
+    if (res.rowCount == 0) {
+        throw {
+            'statusCode': 400,
+            'error': "No user found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more users"
+        }
+    }
+    return parseInt(res.rows[0]['user_id']);
 }
 
 async function getPsqlClient() {
@@ -277,6 +362,55 @@ exports.createUserLambda = async (event, context) => {
     console.log(response);
     return response;
 };
+
+
+async function getCognitoUser(client, cognitoSub) {
+	try {
+		const res = await client.query(
+			`SELECT user_id FROM user_login
+			WHERE cognito_sub = $1`,
+			[cognitoSub]);
+		if (res.rowCount == 0) {
+			throw {
+				'statusCode': 400,
+				'error': "No user found"
+			}
+		}
+		if (res.rowCount >= 2) {
+			throw {
+				'statusCode': 500,
+				'error': "Something is broken, returning 2 or more users"
+			}
+		}
+		var jsonObj = JSON.parse(JSON.stringify(res.rows[0]));
+		return jsonObj;
+	} catch (err) {
+		throw err;
+	}
+}
+
+exports.getUserByCognitoLambda = async (event, context) => {
+    try {
+        const client = await getPsqlClient();
+        try {
+			var userId = await getOwnUserId(client, event);
+            var jsonObj = {user_id: userId};
+            response = packResponse(jsonObj);
+		} finally {
+            await client.end();
+        }
+    } catch (err) {
+        response = errorHandler(err);
+    }
+
+    console.log(response);
+    return response;
+};
+
+
+
+
+
 
 
 async function deleteUser(client, userId, keepReviews, permanent) {

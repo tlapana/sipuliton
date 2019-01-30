@@ -15,18 +15,22 @@ INSERT INTO city_name VALUES
     ('100000', '1', 'imaginary city');
 
 INSERT INTO user_login(cognito_sub, username, email) VALUES
-    ('test-user-1', 'Sipuliton mod', 'test@mail.com'),
+    ('c10cb9bc-7401-47fe-ac81-e13d394a0189', 'TestUser1', 'eelis.mikkola@student.tut.fi'),
     ('Test-user-2', 'Admin', 'admin@sipuliton.fi'),
     ('Test-user-3', 'Troller', 'sum1@here.com'),
     ('get from cognito', 'Restaurant owner', 'asd@asd.com'),
-    ('cog5', 'user', 'das@asd.com');
+    ('cog5', 'user', 'das@asd.com'),
+    ('test-user-1', 'Sipuliton mod', 'test@mail.com'),
+    ('1cbd9888-a5b9-4334-85aa-a4a761f992be', 'TestUser4', 'eelis.mikkola@tuni.fi');
 
 INSERT INTO user_profile(user_id, role, display_name, image_url, language_id, birth_year, birth_month, gender, description, country_id, city_id, diet_id) VALUES
-    ('1', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
+    ('1', '3', 'TestUser1', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
     ('2', '0', 'Admin', NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('3', '3', 'Basic user', NULL, '0', '2000', '8', 'M', NULL, '1000', '100000', '0'),
     ('4', '2', 'Restaurant owner', NULL, '0', NULL, NULL, 'F', 'A happy owner of restaurant', NULL, NULL, NULL),
-    ('5', '3', 'Basic user2', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    ('5', '3', 'Basic user2', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('6', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
+    ('7', '3', 'TestUser4', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO user_stats(user_id, countries, cities, reviews, thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given, activity_level, last_active) VALUES
     ('1', '4', '12', '15', '32', '5', '8', '0', '8', '2018-06-12 19:10:25-07 '),

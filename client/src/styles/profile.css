@@ -92,3 +92,7 @@
     border-style: none none solid none;
   }
 }
+
+.save-btn {
+  float: right;
+}

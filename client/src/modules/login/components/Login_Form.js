@@ -9,7 +9,7 @@ import {
 	Label,
 } from 'reactstrap';
 
-import { Auth } from "aws-amplify";
+import { Auth, API } from "aws-amplify";
 import { Redirect, withRouter } from "react-router-dom";
 import config from "../../../config.js"
 import commonComponents from '../../common'
@@ -30,6 +30,8 @@ class Login_Form extends React.Component{
       usernameIsValid: true,
       isLoading: false,
     };
+
+    this.fetchProfile = this.getUserId.bind(this);
   }
 
   login = event =>{
@@ -50,16 +52,14 @@ class Login_Form extends React.Component{
               user.completeNewPasswordChallenge(this.state.password).then(s => {
                 this.setState({ loggingSucceeded: false, isLoading: false });
                 Auth.signIn(this.state.username, this.state.password).then(s => {
-                  console.log(user.username + " logged in!");
-                  this.props.history.push("/" + this.props.language + "/profile");
-                  //this.setState({ loggingSucceeded: true, isLoading: false });
+                  console.log(user.username + " logged in with cognito!");
+                  this.getUserId(user);
                 }).catch(e => {this.setState({ loggingFailed: true, isLoading: false });});
               }).catch(err => this.setState({ loggingSucceeded: false, isLoading: false }));
             }
             else {
-              console.log(user.username + " logged in!");
-              this.props.history.push("/" + this.props.language + "/profile");
-              //this.setState({ loggingSucceeded: true, isLoading: false });
+              console.log(user.username + " logged in with cognito!");
+              this.getUserId(user);
             }
         })
         .catch(e => {
@@ -69,6 +69,38 @@ class Login_Form extends React.Component{
       else{
         this.setState({ loggingFailed: true, isLoading: false });
       }
+  }
+
+  getUserId(cognitoUser) {
+    if (!this.state.loading) {
+      this.setState({ isLoading: true });
+    }
+    const init = { queryStringParameters: {} }
+    API.get('api', '/user/getByCognito', init)
+      .then((responseJson) => {
+        if (responseJson.user_id == null) {
+          this.setState({ isLoading: false, loggingFailed: true, loggingSucceeded: false });
+          console.error('profile did not return user_id');
+          Auth.signOut()
+            .then(data => this.setState({ isLoading: false, loggingFailed: true, loggingSucceeded: false }))
+            .catch(err => { console.log(err); this.setState({ isLoading: false, loggingFailed: true, loggingSucceeded: false }); });
+        }
+        else {
+          this.props.loggedIn(responseJson.user_id);
+          //this.setState({ loggingSucceeded: true, loggingFailed: false, isLoading: true });
+          this.props.history.push("/" + this.props.language + "/profile/" + responseJson.user_id);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        Auth.signOut()
+          .then(data => this.setState({ isLoading: false, loggingFailed: true, loggingSucceeded: false }))
+          .catch(err => { console.log(err); this.setState({ isLoading: false, loggingFailed: true, loggingSucceeded: false }); });
+      });
+  }
+
+  cognitoLogout() {
+    
   }
 
   /*
@@ -149,10 +181,10 @@ class Login_Form extends React.Component{
         </Form>
         {this.state.loggingSucceeded && <Redirect to={"/" + this.props.language + "/profile"} />}
       </div>
-
-    )
+    );
   }
 }
+
 
 const Login_FormWithRouter = withRouter(Login_Form);
 export default Login_FormWithRouter;
