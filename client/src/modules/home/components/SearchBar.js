@@ -99,10 +99,8 @@ class SearchBar extends React.Component {
     );
 
     //Get the diets
-    this.setState({
-      diets: this.getDiets(),
-      userDiets : this.getDefaultValues()
-    });
+    this.getDiets();
+    this.getDefaultValues();
 
   }
 
@@ -176,8 +174,8 @@ class SearchBar extends React.Component {
           
           this.setState({
             loadedDiets: true,
+			diets: diets
           });
-          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -214,11 +212,9 @@ class SearchBar extends React.Component {
           
           this.setState({
             loadedDefaults : true,
-            selectedDiets : defValues
+            selectedDiets : defValues,
+			userDiets : defValues
           });
-          
-          
-          return defValues;
       },
       // Note: it's important to handle errors here
       // instead of a catch() block so that we don't swallow
