@@ -4,8 +4,9 @@ import '../../../styles/login.css';
 import { Auth } from 'aws-amplify';
 
 
-import LoginForm from './Login_Form.js'
-import SocialLogin from './Social_Login.js'
+import LoginForm from './Login_Form.js';
+import LoginFormContainer from '../containers/Login_FormContainer';
+import SocialLogin from './Social_Login.js';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -57,7 +58,7 @@ class Login extends React.Component {
     return(
       <div id="login" className="max-w-40">
         <h2>{strings.login}</h2>
-        <LoginForm language={this.props.match.params.language}/>
+        <LoginFormContainer language={this.props.match.params.language}/>
         <div className="social-login-container">
           <h5>{strings.or}</h5>
           <SocialLogin language={this.props.match.params.language}/>

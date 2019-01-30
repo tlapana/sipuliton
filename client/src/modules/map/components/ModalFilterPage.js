@@ -13,6 +13,7 @@ import ReactStars from 'react-stars';
 import Select from 'react-select';
 import * as AppImports from  '../../app';
 import Slider from 'rc-slider';
+import { API } from "aws-amplify";
 
 //Style imports.
 import 'rc-slider/assets/index.css';
@@ -105,8 +106,8 @@ class ModalFilterPage extends React.Component {
 
   //Handle diets changes.
   onDietsChanged = (selectedOptions) => {
-    console.log(selectedOptions)
-    console.log(this.state.defaultValues);
+    //Debug logging
+    //console.log(selectedOptions)
     this.setState({
       diets : selectedOptions,
     });
@@ -122,10 +123,9 @@ class ModalFilterPage extends React.Component {
       minService : 0,
       pricing: 0,
       city: "",
-      diets: [],
+      diets: this.state.defaultValues,
     });
-    // Get default diets.
-    this.getDefaultValues();
+    //console.log(this.state.defaultValues)
     this.render();
   }
 
@@ -143,6 +143,7 @@ class ModalFilterPage extends React.Component {
         pricing: this.state.pricing,
         city: this.state.city,
         diets: this.state.diets,
+        defaultValues: this.state.defaultValues
       }
     })
 
@@ -165,8 +166,9 @@ class ModalFilterPage extends React.Component {
 
   //Toggles modal
   toggleModal() {
-    if(this.state.modalState){
+    if(!this.state.modalState){
       this.setState({
+        modalState: !this.state.modalState,
         radius : this.state.originalStage.radius,
         minOverall : this.state.originalStage.minOverall,
         minReliability : this.state.originalStage.minReliability,
@@ -178,9 +180,22 @@ class ModalFilterPage extends React.Component {
         defaultValues: this.state.originalStage.defaultValues,
       })
     }
-    this.setState({
-      modalState: !this.state.modalState
-    });
+    else{
+      this.setState({
+        modalState: !this.state.modalState,
+        originalStage: {
+          radius : this.state.radius,
+          minOverall : this.state.minOverall,
+          minReliability : this.state.minReliability,
+          minVariety : this.state.minVariety,
+          minService : this.state.minService,
+          pricing: this.state.pricing,
+          city: this.state.city,
+          diets: this.state.diets,
+          defaultValues: this.state.defaultValues
+        }
+      })
+    }
 
     //console logging for debug
     //console.log("showModal: Toggling modal to " + this.state.modalState)
@@ -296,9 +311,8 @@ class ModalFilterPage extends React.Component {
   {
     //Console log for debugging
     //console.log("Getting the default values for the diets: ");
-    var url = Config.backendAPIPaths.BASE+'/ownDiets';
-    fetch(url)
-      .then(res => res.json())
+    let init = { queryStringParameters: {} };
+    API.get('api', '/ownDiets', init)
       .then(
         (result) => {
           //Console log for debugging
@@ -306,9 +320,16 @@ class ModalFilterPage extends React.Component {
           //console.log(result);
           var defValues = [];
           //Send data via props
-          result.own_diets.forEach(function(element) {
-            defValues.push({value:element.global_diet_id, label:element.name});
-          });
+          var dietOptions = this.state.options;
+          result.own_diets.forEach(function(userDiet) {
+            dietOptions.forEach(function(dietOption) {
+              if(userDiet.global_diet_id === dietOption.value)
+              {
+                defValues.push(dietOption);
+              }
+            });
+          })
+          //console.log(defValues);
           this.setState({
             diets: defValues,
             defaultValues : defValues,
@@ -434,7 +455,7 @@ class ModalFilterPage extends React.Component {
             <div className="diets-filters-box">
               {strings.diets}
               <Select
-                defaultValue={ this.state.defaultValues }
+                value={this.state.diets}
                 isMulti
                 name="filtersDrop"
                 options={ this.state.options }

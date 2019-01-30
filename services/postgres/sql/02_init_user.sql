@@ -2,7 +2,7 @@
 
 --user login info
 CREATE TABLE user_login(
-    user_id bigint PRIMARY KEY,
+    user_id bigserial PRIMARY KEY,
     cognito_sub text,
     username varchar(30),
     email varchar(50) NULL UNIQUE

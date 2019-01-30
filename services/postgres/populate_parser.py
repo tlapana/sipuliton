@@ -34,7 +34,7 @@ def getorder(columns, langs):
         print("Either missing a language or have a duplicate\n")
     return order
 
-def writenames(sql, names, indent=0):
+def writenames(sql, names, indent=0, id_offset=0, lang_offset=0):
     """Writes name inserts to given file."""
     i = 0
     for row in names:
@@ -44,7 +44,7 @@ def writenames(sql, names, indent=0):
         for name in row:
             if j > 0:
                 sql.write(",\n")
-            sql.write(commajoin([i, j, name], [2], indent))
+            sql.write(commajoin([i+id_offset, j+lang_offset, name], [2], indent))
             j += 1
         i += 1
 
@@ -190,7 +190,7 @@ def write_groups_diets(sql, langs):
     langorder = []
     
     groups = write_groups(sql, langs)
-    sql.write("INSERT INTO global_diet(global_diet_id, preset) VALUES\n")
+    sql.write("INSERT INTO global_diet(preset) VALUES\n")
     with open("data/diets.csv", 'r', encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=",", quoting=csv.QUOTE_MINIMAL)
         i = 0
@@ -202,15 +202,15 @@ def write_groups_diets(sql, langs):
             if row == '' or ''.join(row) == '':
                 continue
             nametemp.append([row[x] for x in langorder])
-            diets.append([i-1, [x for x in row[0].split(';')]])
+            diets.append([i, [x for x in row[0].split(';')]])
             if i > 1:
                 sql.write(",\n")
-            sql.write(commajoin([i-1, "TRUE"], [], 4))
+            sql.write(commajoin(["TRUE"], [], 4))
             i += 1
     sql.write(";\n\n")
 
     sql.write("INSERT INTO global_diet_name(global_diet_id, language_id, name) VALUES\n")
-    writenames(sql, nametemp, 4)
+    writenames(sql, nametemp, 4, 1)
     sql.write(";\n\n")
 
     sql.write("INSERT INTO diet_groups(global_diet_id, food_group_id) VALUES\n")

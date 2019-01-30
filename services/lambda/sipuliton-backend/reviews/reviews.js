@@ -1,5 +1,12 @@
 
 let response;
+var fetch = require('node-fetch');
+var jose = require('node-jose');
+
+var region = 'eu-central-1';
+var userpool_id = 'eu-central-1_RcdrXwM4n';
+var app_client_id = '6shik8f5c8k0dc7oje4qumn6fd';
+var keys_url = 'https://cognito-idp.' + region + '.amazonaws.com/' + userpool_id + '/.well-known/jwks.json';
 
 /**
  *
@@ -38,13 +45,92 @@ let response;
 
 // shared functions
 
+
+// getCognitoUserInfo taken from here and modified:
+// https://github.com/awslabs/aws-support-tools/tree/master/Cognito/decode-verify-jwt
+async function getCognitoUserInfo(token) {
+    var sections = token.split('.');
+    // get the kid from the headers prior to verification
+    var header = jose.util.base64url.decode(sections[0]);
+    header = JSON.parse(header);
+    var kid = header.kid;
+    // download the public keys
+    var response = await fetch(keys_url);
+    if (response && response.status == 200) {
+        var body = await response.json();
+        var keys = body['keys'];
+        
+        // search for the kid in the downloaded public keys
+        var key_index = -1;
+        for (var i=0; i < keys.length; i++) {
+            if (kid == keys[i].kid) {
+                key_index = i;
+                break;
+            }
+        }
+        if (key_index == -1) {
+            return 'Public key not found in jwks.json';
+        }
+        // construct the public key
+        try {
+            var result = await jose.JWK.asKey(keys[key_index]);
+            // verify the signature
+            result = await jose.JWS.createVerify(result).verify(token);
+            // now we can use the claims
+            var claims = JSON.parse(result.payload);
+            // additionally we can verify the token expiration
+            var current_ts = Math.floor(new Date() / 1000);
+            if (current_ts > claims.exp) {
+                return 'Token is expired';
+            }
+            // and the Audience (use claims.client_id if verifying an access token)
+            if (claims.aud != app_client_id) {
+                return 'Token was not issued for this audience';
+            }
+            return claims;
+        }
+        catch (err) {
+            return 'Signature verification failed';
+        }
+    }
+}
+
+
 async function getOwnUserId(client, event) {
-    const AWS = require('aws-sdk');
-    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
-    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
-    //console.log("user sub:" + userSub);
-    return 0;
-    return null;
+    var token = null;
+    var userSub = null;
+    
+    if (event && event.headers) {
+        token = event.headers['Authorization'];
+    }
+    try {
+        var cognitoUser = await getCognitoUserInfo(token);
+        userSub = cognitoUser['sub'];
+    }
+    catch (err) {
+        console.log(err);
+    }
+    if (!userSub) {
+        throw {
+            'statusCode': 400,
+            'error': "Cognito user not found or authentication failed",
+        }
+    }
+    
+    const res = await client.query('SELECT user_id FROM user_login WHERE cognito_sub = $1', [userSub]);
+    if (res.rowCount == 0) {
+        throw {
+            'statusCode': 400,
+            'error': "No user found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more users"
+        }
+    }
+    return parseInt(res.rows[0]['user_id']);
 }
 
 async function getPsqlClient() {
@@ -187,21 +273,6 @@ async function getLanguage(client, language) {
 
 exports.lambdaHandler = async (event, context) => {
     try {
-        // Result of this query will later go to the returned json
-        var pageSize = event.queryStringParameters.pageSize
-        const restaurantId = event.queryStringParameters.restaurantId
-        var pageNumber = event.queryStringParameters.pageNumber
-
-        const offset = pageNumber * pageSize
-        console.log(event)
-        var collectReviews = `
-        SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
-            rating_reliability, rating_variety, rating_service_and_quality,
-            pricing, thumbs_up, thumbs_down
-        FROM review WHERE restaurant_id = $1
-        ORDER BY posted DESC
-        LIMIT $2 OFFSET $3
-        `
         var pg = require("pg");
        
 
@@ -209,16 +280,42 @@ exports.lambdaHandler = async (event, context) => {
         var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
         const client = new pg.Client(conn);
         await client.connect((err) => {
-                console.log("Connecting")
-                if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
-                    throw err
-                }
+            console.log("Connecting")
+            if (err){
+                console.error("Failed to connect client")
+                console.error(err)
+                throw err
+            }
         });
+
+        // Result of this query will later go to the returned json
+        var pageSize = event.queryStringParameters.pageSize
+        const restaurantId = event.queryStringParameters.restaurantId
+        var pageNumber = event.queryStringParameters.pageNumber
+        var temp = event.queryStringParameters.language;
+        const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+
+        const offset = pageNumber * pageSize
+        console.log(event)
+
+        var collectReviews = `
+        SELECT restaurant_id, user_profile.user_id, user_profile.display_name as name, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down, array_agg(global_diet_name.name) as diets
+        FROM user_profile, review
+        LEFT JOIN review_diet ON review.review_id = review_diet.review_id
+        LEFT JOIN global_diet_name ON review_diet.global_diet_id = global_diet_name.global_diet_id AND language_id = $2
+        WHERE restaurant_id = $1 AND user_profile.user_id = review.user_id
+        GROUP BY restaurant_id, user_profile.user_id, user_profile.display_name, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down
+        ORDER BY posted DESC
+        LIMIT $3 OFFSET $4
+        `;
         
 
-        const resReviews = await client.query(collectReviews, [restaurantId, pageSize, offset]);
+        const resReviews = await client.query(collectReviews, [restaurantId, languageId, pageSize, offset]);
         var jsonString = JSON.stringify(resReviews.rows);
         var jsonObjReviews = JSON.parse(jsonString);
         await client.end()

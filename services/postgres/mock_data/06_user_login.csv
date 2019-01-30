@@ -1,6 +1,8 @@
-user_id,cognito_sub,username,email
-0,test-user-1,Sipuliton mod,test@mail.com
-1,Test-user-2,Admin,admin@sipuliton.fi
-2,Test-user-3,Troller,sum1@here.com
-3,get from cognito,Restaurant owner,asd@asd.com
-4,cog5,user,das@asd.com
+cognito_sub,username,email
+c10cb9bc-7401-47fe-ac81-e13d394a0189,TestUser1,eelis.mikkola@student.tut.fi
+Test-user-2,Admin,admin@sipuliton.fi
+Test-user-3,Troller,sum1@here.com
+get from cognito,Restaurant owner,asd@asd.com
+cog5,user,das@asd.com
+test-user-1,Sipuliton mod,test@mail.com
+1cbd9888-a5b9-4334-85aa-a4a761f992be,TestUser4,eelis.mikkola@tuni.fi
