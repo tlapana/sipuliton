@@ -116,14 +116,9 @@ class Events extends React.Component {
       );
     } else if (this.state.userLocationAllowed)
 	{
-	   return (
-         <div className="eventsDiv">
-          <h3> {strings.suggestions} </h3>
-          {restaurants.map((restaurant) =>
-            <EventBlock
-              {strings.noLocation}
-            />
-          )}
+	   return (         
+        <div className="eventsDiv">
+          <h3> {strings.noLocation} </h3>
         </div>
       );
 	} else {
