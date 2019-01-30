@@ -7,6 +7,7 @@ import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
 import about from '../../about';
+import ModCog from '../../modCog';
 import map from '../../map';
 import { Review, myReviewEdit1, }  from '../../myReviews';
 import restaurant from '../../restaurant';
@@ -22,7 +23,8 @@ class RouteCollection extends React.Component {
     const { ForgotPassword } = forgotPassword;
     const { EditProfile, ProfileContainer } = profile;
     const { Map } = map;
-	  const { Restaurant } = restaurant;
+    const { Restaurant } = restaurant;
+
     const { About } = about;
     return (
       <Switch>
@@ -37,8 +39,10 @@ class RouteCollection extends React.Component {
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
         <Route path="/:language/myReview" component={Review} />
-        <Route path="/:language/myReviewEdit" component={myReviewEdit1 } />
+        <Route path="/:language/myReviewEdit" component={myReviewEdit1} />
         <Route path="/:language/restaurant/:id" component={Restaurant} />
+        <Route path="/:language/restaurant/:id" component={Restaurant} />
+        <Route path="/:language/modCog" component={ModCog} />
         <Route path="/:language/about" component={About} />
         <Route component={NotFound} />
       </Switch>
