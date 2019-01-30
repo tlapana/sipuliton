@@ -1,9 +1,19 @@
 
 let response;
+
+
+const pg = require('pg');
+const AWS = require('aws-sdk');
 var fetch = require('node-fetch');
 var jose = require('node-jose');
 
-var region = 'eu-central-1';
+// Database credentials
+const region = 'eu-central-1';
+const dbPort = 5432;
+const dbUsername = 'lambda_user'; 
+const dbName = 'sipuliton'; 
+const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
+
 var userpool_id = 'eu-central-1_RcdrXwM4n';
 var app_client_id = '6shik8f5c8k0dc7oje4qumn6fd';
 var keys_url = 'https://cognito-idp.' + region + '.amazonaws.com/' + userpool_id + '/.well-known/jwks.json';
@@ -132,11 +142,39 @@ async function getOwnUserId(client, event) {
     return parseInt(res.rows[0]['user_id']);
 }
 
+async function getToken() {
+    var signedToken;
+    var signer = new AWS.RDS.Signer();
+    await signer.getAuthToken({ // uses the IAM role access keys to create an authentication token
+        region: region,
+        hostname: dbEndpoint,
+        port: dbPort,
+        username: dbUsername
+    }, function(err, token) {
+        if (err) {
+            console.log(`could not get auth token: ${err}`);
+            throw(err);
+        } else {
+            signedToken = token
+            return token
+        }
+    });
+    return signedToken
+}
+
 async function getPsqlClient() {
-    var pg = require("pg");
-    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-    const client = new pg.Client(conn);
+
+    var token = await getToken();
+
+    var client = new pg.Client({
+        host: dbEndpoint,
+        port: 5432,
+        user: dbUsername,
+        password: token,
+        database: dbName,
+        ssl: 'Amazon RDS'
+      });
+
     await client.connect((err) => {
         if (err) {
             //TODO: Remove + err before deployment
