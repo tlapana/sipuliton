@@ -42,7 +42,7 @@ class Events extends React.Component {
         //console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
         this.getSuggestions();
       },
-      (error) => this.setState({ error: error.message, userLocationAllowed: false }),
+      (error) => this.setState({ error: error.message, userLocationAllowed: false, isLoaded: true }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
 
@@ -53,7 +53,8 @@ class Events extends React.Component {
   {
     var url = Config.backendAPIPaths.BASE+"/search?maxDistance=10000&pageSize=5&orderBy=rating_overall"
                   + "&currentLatitude=" + this.state.latitude
-                  + "&currentLongitude=" + this.state.longitude;
+                  + "&currentLongitude=" + this.state.longitude
+                  + "&globalDietId=[]";
 
     //var url = Config.backendAPIPaths.BASE+"/landing";
     console.log("Searching");
@@ -114,7 +115,14 @@ class Events extends React.Component {
           </h3>
         </div>
       );
-    } else {
+    } else if (!this.state.userLocationAllowed)
+	{
+	   return (
+        <div className="eventsDiv">
+          <h3> {strings.noLocation} </h3>
+        </div>
+      );
+	} else {
       return (
          <div className="eventsDiv">
           <h3> {strings.suggestions} </h3>

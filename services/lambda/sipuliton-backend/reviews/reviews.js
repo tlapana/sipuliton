@@ -273,21 +273,6 @@ async function getLanguage(client, language) {
 
 exports.lambdaHandler = async (event, context) => {
     try {
-        // Result of this query will later go to the returned json
-        var pageSize = event.queryStringParameters.pageSize
-        const restaurantId = event.queryStringParameters.restaurantId
-        var pageNumber = event.queryStringParameters.pageNumber
-
-        const offset = pageNumber * pageSize
-        console.log(event)
-        var collectReviews = `
-        SELECT restaurant_id, user_id, posted, status, title, free_text, rating_overall,
-            rating_reliability, rating_variety, rating_service_and_quality,
-            pricing, thumbs_up, thumbs_down
-        FROM review WHERE restaurant_id = $1
-        ORDER BY posted DESC
-        LIMIT $2 OFFSET $3
-        `
         var pg = require("pg");
        
 
@@ -295,16 +280,42 @@ exports.lambdaHandler = async (event, context) => {
         var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
         const client = new pg.Client(conn);
         await client.connect((err) => {
-                console.log("Connecting")
-                if (err){
-                    console.error("Failed to connect client")
-                    console.error(err)
-                    throw err
-                }
+            console.log("Connecting")
+            if (err){
+                console.error("Failed to connect client")
+                console.error(err)
+                throw err
+            }
         });
+
+        // Result of this query will later go to the returned json
+        var pageSize = event.queryStringParameters.pageSize
+        const restaurantId = event.queryStringParameters.restaurantId
+        var pageNumber = event.queryStringParameters.pageNumber
+        var temp = event.queryStringParameters.language;
+        const languageId = temp === null ? await getLanguage(client, 'FI') :
+            await getLanguage(client, temp.toUpperCase());
+
+        const offset = pageNumber * pageSize
+        console.log(event)
+
+        var collectReviews = `
+        SELECT restaurant_id, user_profile.user_id, user_profile.display_name as name, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down, array_agg(global_diet_name.name) as diets
+        FROM user_profile, review
+        LEFT JOIN review_diet ON review.review_id = review_diet.review_id
+        LEFT JOIN global_diet_name ON review_diet.global_diet_id = global_diet_name.global_diet_id AND language_id = $2
+        WHERE restaurant_id = $1 AND user_profile.user_id = review.user_id
+        GROUP BY restaurant_id, user_profile.user_id, user_profile.display_name, posted, status, title, free_text, rating_overall,
+            rating_reliability, rating_variety, rating_service_and_quality,
+            pricing, thumbs_up, thumbs_down
+        ORDER BY posted DESC
+        LIMIT $3 OFFSET $4
+        `;
         
 
-        const resReviews = await client.query(collectReviews, [restaurantId, pageSize, offset]);
+        const resReviews = await client.query(collectReviews, [restaurantId, languageId, pageSize, offset]);
         var jsonString = JSON.stringify(resReviews.rows);
         var jsonObjReviews = JSON.parse(jsonString);
         await client.end()

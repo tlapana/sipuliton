@@ -1,7 +1,15 @@
 //Review writing page CSS file
 
 .reviewBtn {
-  
+  margin:2em;
+  padding: 1em;
+  width: 300px;
+}
+
+.review-restaurant-btn{
+  margin:2em;
+  padding: 1em;
+  width: 300px;
 }
 
 div.reviewDiv {

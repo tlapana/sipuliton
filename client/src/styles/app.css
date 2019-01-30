@@ -144,7 +144,7 @@ input.invalid:focus + .input-errormsg.visible {
   font-size: 12px;
   position: absolute;
   top: -.9rem;
-  left: 50%;  
+  left: 50%;
   -ms-transform: translate(-50%, 0);
   -o-transform: translate(-50%, 0);
   -moz-transform: translate(-50%, 0);
@@ -201,6 +201,9 @@ input.invalid:focus + .input-errormsg.visible {
   padding: 0;
 }
 
+.about_logo{
+  width:162px;
+}
 .basic-multi-select .select__menu {
   z-index: 10;
 }
