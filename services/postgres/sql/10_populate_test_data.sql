@@ -42,9 +42,9 @@ INSERT INTO ban_log(user_id, started, expired, reason, banner_id) VALUES
     ('1', '2017-06-12 19:10:25-07 ', '2017-6-24 23:59:59-07 ', 'cuz we need test data', '1');
 
 INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
-    ('3', '0', '1', 'ei kalaa'),
-    ('1', '0', '6', 'veg.'),
-    ('1', '1', '1', 'no fish');
+    ('3', '0', '2', 'ei kalaa'),
+    ('1', '0', '7', 'veg.'),
+    ('1', '1', '2', 'no fish');
 
 INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
     ('1', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
@@ -65,7 +65,7 @@ INSERT INTO review(restaurant_id, user_id, posted, status, title, image_url, fre
     ('1', '2', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
 
 INSERT INTO review_diet(review_id, global_diet_id) VALUES
-    ('1', '0'),
-    ('1', '1');
+    ('1', '1'),
+    ('1', '2');
 
 UPDATE restaurant SET geo_location = ST_POINT(latitude, longitude);

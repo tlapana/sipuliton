@@ -43,7 +43,7 @@ async function getOwnUserId(client, event) {
     const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
     //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
     //console.log("user sub:" + userSub);
-    return 0;
+    return 1;
     return null;
 }
 
@@ -298,8 +298,8 @@ async function saveDiet(client, groups) {
             [groups]);
         if (res.rowCount == 0) {
             const res2 = await client.query(
-                `INSERT INTO global_diet
-                VALUES ((SELECT coalesce(max(global_diet_id),0)+1 FROM global_diet), FALSE)
+                `INSERT INTO global_diet (preset)
+                VALUES (FALSE)
                 RETURNING global_diet_id`);
             jsonObj = JSON.parse(JSON.stringify(res2.rows[0]));
             var len = groups.length;
@@ -404,7 +404,7 @@ exports.editOwnDietLambda = async (event, context) => {
             await client.end();
         }
 
-        response = packResponse(jsonObj);
+        response = packResponse({ 'message': "Operation completed succesfully" });
 
     } catch (err) {
         response = errorHandler(err);
@@ -465,7 +465,7 @@ exports.createOwnDietLambda = async (event, context) => {
             await client.end();
         }
 
-        response = packResponse(jsonObj);
+        response = packResponse({ 'message': "Operation completed succesfully" });
 
     } catch (err) {
         response = errorHandler(err);
