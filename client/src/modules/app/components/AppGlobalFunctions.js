@@ -14,12 +14,11 @@ function getAppClasses(state){
 
 function parseUrlToLanguageChanging(curLoc,curLang,newLang){
   var url = curLoc;
-  url = url.replace(curLang, newLang);
-  url = url.replace(curLang, newLang);
   var index = url.search('://');
   url = url.slice(index + 3);
   index = url.search('/');
   url = url.slice(index);
+  url = url.replace('/' + curLang, '/' + newLang);
   return url;
 }
 

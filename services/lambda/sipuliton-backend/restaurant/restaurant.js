@@ -45,6 +45,30 @@ const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
  * @returns {Object} object.body - JSON Payload to be returned
  * 
  */
+
+async function getLanguage(client, language) {
+    res = await client.query(
+        `SELECT language_id
+        FROM languages
+        WHERE languages.iso2 = $1`,
+        [language]);
+    if (res.rowCount == 0) {
+        client.end();
+        throw {
+            'statusCode': 400,
+            'error': "No language found"
+        }
+    }
+    if (res.rowCount >= 2) {
+        client.end();
+        throw {
+            'statusCode': 500,
+            'error': "Something is broken, returning 2 or more languages"
+        }
+    }
+    return res.rows[0]['language_id'];
+}
+
 exports.lambdaHandler = async (event, context, cb) => {
     try {
         var signer = new AWS.RDS.Signer();
@@ -58,7 +82,20 @@ exports.lambdaHandler = async (event, context, cb) => {
                 console.log(`could not get auth token: ${err}`);
                 throw(err);
             } else {
+                var client = new pg.Client({
+                    host: dbEndpoint,
+                    port: 5432,
+                    user: dbUsername,
+                    password: token,
+                    database: dbName,
+                    ssl: 'Amazon RDS'
+                  });
+                client.connect()
+                
                 const restaurantId = event.queryStringParameters.restaurantId
+                var temp = event.queryStringParameters.language;
+                const languageId = temp === null ? await getLanguage(client, 'FI') :
+                    await getLanguage(client, temp.toUpperCase());
 
                 var collectRestaurantPage = `
                 SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
@@ -71,15 +108,7 @@ exports.lambdaHandler = async (event, context, cb) => {
                 WHERE restaurant.restaurant_id = $1
                 `;
 
-                var client = new pg.Client({
-                    host: dbEndpoint,
-                    port: 5432,
-                    user: dbUsername,
-                    password: token,
-                    database: dbName,
-                    ssl: 'Amazon RDS'
-                  });
-                client.connect()
+                
                 
                 client.query(collectRestaurantPage, [restaurantId], function(err, resRestaurant, fields) {
                     client.end()
@@ -103,6 +132,7 @@ exports.lambdaHandler = async (event, context, cb) => {
                     };
                     cb(undefined, response)
                 }
+
 
             });
         }

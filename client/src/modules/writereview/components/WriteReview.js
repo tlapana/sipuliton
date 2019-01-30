@@ -10,19 +10,24 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'react
 import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
+import config from '../../../config';
+
+import Config from '../../../config.js';
 
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
 
 export default class WriteReview extends React.Component {
-  
+
   constructor(props, context) {
-    
+
     super(props);
-    
+
     //Bind the functions
     this.setState = this.setState.bind(this);
+	this.getDiets = this.getDiets.bind(this);
+	this.getDefaultDiets = this.getDefaultDiets.bind(this);
     this.toggleForm = this.toggleForm.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeReview = this.changeReview.bind(this);
@@ -32,7 +37,7 @@ export default class WriteReview extends React.Component {
     this.changeCost = this.changeCost.bind(this);
     this.changeFilter = this.changeFilter.bind(this);
     this.submitReview = this.submitReview.bind(this);
-    
+
     this.state = {
       id : this.props.restaurantId,
       error: null,
@@ -46,139 +51,195 @@ export default class WriteReview extends React.Component {
       title : '',
       reviewText : '',
       options : [],
+	  defaultDiets : [],
       selectedFilters : [],
       reliability : 0,
       choice : 0,
       quality : 0,
-      cost : 0 
+      cost : 0
     };
-  }  
-  
+  }
+
   //Actios to be caried upon mounting
   componentDidMount() {
-    this._isMounted = true;    
-    this.getOptions();
+    this._isMounted = true;
+
+	this.getDiets();
+	this.getDefaultDiets();
   }
-  
+
   toggleForm() {
     console.log("Changing showForm from: " + this.state.showForm)
     this.setState({
       showForm : !this.state.showForm
     });
   }
-  
-  //Gets all the filtering options
-  getOptions() {
 
-    const options = [
-      { value: 'onions', label: 'Allergia/Sipuli' },
-      { value: 'tomato', label: 'Allergia/Tomaatti' },
-      { value: 'nuts', label: 'Allergia/Pähkinä' },
-      { value: 'lactose', label: 'Laktoositon ruokavalio' },
-      { value: 'coeliac ', label: 'Keliakia' }
-    ];
+  //This gets the options for the selection.
+  getDiets() {
+    //console.log("Fetching diets")
+    fetch( Config.backendAPIPaths.BASE + "/diet/all")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Process results into ones that can be used by the select
 
-    this.setState({
-      options : options,
-      loadingOptions : false
-    });
-   
-  }  
-  
+          var diets = []
+          for(var i = 0; i < result.length; i++)
+          {
+            diets.push({ value: result[i].global_diet_id, label: result[i].name});
+          }
+          //console.log("DEBUG: SearchBar.js getDiets()")
+          //console.log(diet)
+
+          this.setState({
+            loadingOptions: false,
+			options: diets
+          });
+          //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          //console.log("Error fetching diets: " + error)
+          this.setState({
+            loadedDiets: true,
+            dietError : error,
+          });
+        }
+      )
+  }
+
+   //Get user default diets.
+  getDefaultDiets()
+  {
+    //Console log for debugging
+    //console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging
+          //console.log("Sending results");
+          //console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+
+          this.setState({
+            loadedDefaults : true,
+            selectedFilters : defValues,
+			defaultDiets: defValues
+          });
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        //console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
+  }
+
   //Following four just change the values
   changeTitle(event) {
     this.setState({
       title : event.target.value
     });
   }
-  
+
   changeReview(event) {
     this.setState({
       reviewText : event.target.value
     });
   }
-  
-  
-  changeQuality(newRating, name) {    
+
+
+  changeQuality(newRating, name) {
     this.setState({
       quality : newRating
     });
   }
-  
-  changeReliability(newRating, name) {    
+
+  changeReliability(newRating, name) {
     this.setState({
       reliability : newRating
     });
   }
-  
-  changeChoice(newRating, name) {    
+
+  changeChoice(newRating, name) {
     this.setState({
       choice : newRating
     });
   }
-  
-  changeCost(newRating, name) {    
+
+  changeCost(newRating, name) {
     this.setState({
       cost : newRating
     });
   }
-  
+
   //Used to acknowledge change and store new values
   changeFilter(selectedOptions) {
     this.setState({
       selectedFilters : selectedOptions
     });
   }
-  
+
   //For submitting the review
   submitReview  = event =>{
-    
+
     event.preventDefault();
-    console.log("Submiting review");
+    //console.log("Submiting review");
     this.setState({
       submitingReview : true
     });
-    
+
     //Close form
     this.toggleForm();
-    
-    //Generate JSON
-    var obj = {};
-    
-    obj.id = this.state.id;
-    obj.title = this.state.title;
-    obj.reviewText = this.state.reviewText;
-    obj.reliability = this.state.reliability;
-    obj.variety = this.state.choice;
-    obj.quality = this.state.quality;
-    obj.pricing = this.state.cost;
-    obj.selectedFilters = this.state.selectedFilters;
-    obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
-    
-    var jsonString = JSON.stringify(obj);
-    
-    
-    console.log("JSON Object");
-    console.log(obj);
-    console.log("As string");
-    console.log(jsonString);
-    
+
+	//Calculate overall
+    var overall = (this.state.reliability + this.state.choice + this.state.quality) / 3;
+
+    var dietParam = "&globalDietId=[]";
+    if(this.state.selectedFilters != undefined && this.state.selectedFilters.length>0)
+    {
+      var searchDiets = [];
+      for(var i = 0; i<this.state.selectedFilters.length; ++i)
+      {
+        searchDiets.push(this.state.selectedFilters[i].value);
+      }
+      var diet_ids = searchDiets;
+      var diet_array_string = "[";
+      for(var i = 0; i<diet_ids.length-1; ++i)
+      {
+        if(diet_ids[i] !== undefined)
+        {
+          diet_array_string = diet_array_string+diet_ids[i]+',';
+        }
+      }
+      diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
+      dietParam = '&diets='+diet_array_string;
+    }
+
     //Generating url
-    var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
-      + "&title=" + obj.title
-      + "&text=" + obj.reviewText
-      + "&rating_overall=" + obj.overall
-      + "&rating_variety=" + obj.choice
-      + "&rating_reliability=" + obj.reliability
-      + "&rating_service_and_quality=" + obj.quality
-      + "&pricing=" + obj.pricing
-      + "&diets=" + obj.selectedFilters;
-      
-    //TODO: Diets
-    
-    console.log("url:");
-    console.log(url);
-    
+    var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + this.state.id
+      + "&title=" + this.state.title
+      + "&text=" + this.state.reviewText
+      + "&rating_overall=" + overall
+      + "&rating_variety=" + this.state.choice
+      + "&rating_reliability=" + this.state.reliability
+      + "&rating_service_and_quality=" + this.state.quality
+      + "&pricing=" + this.state.cost
+      + dietParam;
+
+    //console.log("url:");
+    //console.log(url);
     fetch(url)
       .then(res => res.json())
       .then(
@@ -187,7 +248,7 @@ export default class WriteReview extends React.Component {
             submitingReview: false,
             reviewSubmitted: true,
           });
-          console.log("Success submitting review")
+          //console.log("Success submitting review")
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -198,16 +259,16 @@ export default class WriteReview extends React.Component {
             reviewSubmitted: false,
             error: error
           });
-          console.log("Error submitting review")
+          //console.log("Error submitting review")
           console.log(error);
         }
       )
-    
+
   }
-  
+
   //Review button functionality
   reviewButton() {
-    
+
     let strings = new LocalizedStrings({
       en:{
         message : "Send",
@@ -218,7 +279,7 @@ export default class WriteReview extends React.Component {
         submitting: "Lähetet''n..."
       }
     });
-    
+
     if(this.state.submitingReview){
       return (
         <span className="SendHelpIHateJSX">{strings.submitting}</span>
@@ -228,15 +289,15 @@ export default class WriteReview extends React.Component {
       return (
         <button type="submit" className="submitBtn" onClick={this.submitReview}>
           {strings.message}
-        </button> 
+        </button>
       );
     }
   }
-  
+
   //Renders error if we get one
   renderError()
   {
-    
+
     let strings = new LocalizedStrings({
       en:{
         strong: "An error has happened.",
@@ -247,14 +308,14 @@ export default class WriteReview extends React.Component {
         errortext : "Jotain meni pieleen arvostelua löhettäessä. Yritä myöhemmin uudelleen. Jos tämä virhe toistuu, ota yhteyttä ylläpitoon."
       }
     });
-    
+
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
     else{
       strings.setLanguage('fi');
     }
-    
+
     if(this.state.error != null)
     {
       return(
@@ -263,12 +324,12 @@ export default class WriteReview extends React.Component {
         </Alert>
       );
     }
-    
+
     return;
   }
- 
+
   render() {
-    
+
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -280,7 +341,7 @@ export default class WriteReview extends React.Component {
         variety : "Variety",
         service : "Service and quality",
         pricing : "Pricing",
-        cancel : "Cancel",        
+        cancel : "Cancel",
         search: "Search...",
         submitTxt : "Lähetä",
         buttonTxt : "Review"
@@ -301,26 +362,26 @@ export default class WriteReview extends React.Component {
         buttonTxt : "Arvostele"
       }
     });
-    
+
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
     else{
       strings.setLanguage('fi');
     }
-    
+
     return (
       <div>
-        <button className="filterBtn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
-        
+        <button className="review-restaurant-btn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>
+
         <Modal isOpen={this.state.showForm} toggle={this.toggleForm} dialogClassName="reviewModal">
           <ModalHeader> {strings.modalTitle} </ModalHeader>
           <ModalBody>
               <form className="review">
-                
+
                 <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
                 <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
-                    
+
                 {strings.diets}:
                 <Select
                   defaultValue={ this.state.defaultValues }
@@ -331,17 +392,17 @@ export default class WriteReview extends React.Component {
                   classNamePrefix="select"
                   onChange={this.changeFilter}
                 />
-                <br />      
-                  
-                {strings.reliability}: 
+                <br />
+
+                {strings.reliability}:
                 <ReactStars
                   value = {this.state.reliability}
                   count = {5}
                   size = {24}
                   onChange = {this.changeReliability}
                 />
-                <br />  
-                 
+                <br />
+
                 {strings.variety}:
                 <ReactStars
                   value = {this.state.choice}
@@ -350,7 +411,7 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeChoice}
                 />
                 <br />
-                  
+
                 {strings.service}:
                 <ReactStars
                   value = {this.state.quality}
@@ -359,8 +420,8 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeQuality}
                 />
                 <br />
-                 
-                {strings.pricing}: 
+
+                {strings.pricing}:
                 <ReactStars
                   value = {this.state.cost}
                   count = {3}
@@ -370,26 +431,26 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeCost}
                 />
                 <br />
-                
-              </form>      
+
+              </form>
           </ModalBody>
           { this.state.submitingReview ? (
-              
+
               <ModalFooter>
                 <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" height={'20%'} width={'20%'} />
               </ModalFooter>
-            ) : ( 
+            ) : (
               <ModalFooter>
-                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button> 
+                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button>
                 <Button color="secondary" onClick={this.toggleForm} > {strings.cancel} </Button>
               </ModalFooter>
             )
-          
+
           }
-             
+
         </Modal>
       </div>
     );
   }
-    
+
 }

@@ -4,11 +4,13 @@
   "description": "GET endpoint for profile page",
   "main": "src/profile.js",
   "repository": "",
-  "author": "Sergei Häyrynen, Jani Jalkanen",
+  "author": "Sergei Häyrynen, Jani Jalkanen, Eelis Mikkola",
   "license": "",
   "dependencies": {
     "pg": "^7.6.0",
-    "aws-sdk": "^2.392.0"
+    "aws-sdk": "^2.392.0",
+    "node-fetch": "^2.3.0",
+    "node-jose": "^1.1.0"
   },
   "devDependencies": {}
 }

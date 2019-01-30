@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Transition } from 'react-transition-group';
 
 /* Mainmenu components*/
-import { LanguageSelection, MainMenuListItem, MainMenuLogoutButton } from '../../mainmenu/index';
+import { LanguageSelection, MainMenuListItem, MainMenuLogoutButtonContainer } from '../../mainmenu/index';
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -132,13 +132,13 @@ class NavigationBar extends React.Component {
                   >
                     <MainMenuListItem path={pathToMenu} text={strings.mainmenu} />
                     <MainMenuListItem path={pathToMap} text={strings.map} />
+                    {this.props.userData.userLogged && <MainMenuLogoutButtonContainer redirectPath={pathToMenu} logoutText={strings.logout}/>}
                     {this.props.userData.restaurantOwner && <MainMenuListItem path={pathToRestaurantManagement} text={strings.restaurantManagement} />}
                     {this.props.userData.admin && <MainMenuListItem path={pathToAdmin} text={strings.admin} />}
                     {this.props.userData.moderator && <MainMenuListItem path={pathToModerating} text={strings.moderation} />}
                     {this.props.userData.userLogged && <MainMenuListItem path={pathToProfile} text={strings.profile} />}
                     {!this.props.userData.userLogged && <MainMenuListItem path={pathToLogin} text={strings.login} />}
                     {!this.props.userData.userLogged && <MainMenuListItem path={pathToRegister} text={strings.register} />}
-                    {this.props.userData.userLogged && <MainMenuLogoutButton redirectPath={pathToMenu} logoutText={strings.logout}/>}
                     <MainMenuListItem path={pathToAbout} text={strings.about}/>
                     <li>
                       <LanguageSelection changeLanguage={this.changeLanguage} />
