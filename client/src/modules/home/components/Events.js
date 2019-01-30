@@ -42,7 +42,7 @@ class Events extends React.Component {
         //console.log("Latitude: " + this.state.latitude + " Longitude: " + this.state.longitude);
         this.getSuggestions();
       },
-      (error) => this.setState({ error: error.message, userLocationAllowed: false }),
+      (error) => this.setState({ error: error.message, userLocationAllowed: false, isLoaded: true }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
 
@@ -114,7 +114,19 @@ class Events extends React.Component {
           </h3>
         </div>
       );
-    } else {
+    } else if (this.state.userLocationAllowed)
+	{
+	   return (
+         <div className="eventsDiv">
+          <h3> {strings.suggestions} </h3>
+          {restaurants.map((restaurant) =>
+            <EventBlock
+              Ehdotuksia ei voida hakea
+            />
+          )}
+        </div>
+      );
+	} else {
       return (
          <div className="eventsDiv">
           <h3> {strings.suggestions} </h3>
