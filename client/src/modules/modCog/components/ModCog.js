@@ -58,7 +58,7 @@ class ModCog extends React.Component {
     strings.setLanguage(this.props.match.params.language);
 
     if (this.state.isSame && this.state.isValid) {
-      this.setState({ message: strings.limit })
+      this.setState({ message: '' });
 
       //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
       Auth.currentAuthenticatedUser()
