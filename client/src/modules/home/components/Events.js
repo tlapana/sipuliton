@@ -121,7 +121,7 @@ class Events extends React.Component {
           <h3> {strings.suggestions} </h3>
           {restaurants.map((restaurant) =>
             <EventBlock
-              Ehdotuksia ei voida hakea
+              {strings.noLocation}
             />
           )}
         </div>
