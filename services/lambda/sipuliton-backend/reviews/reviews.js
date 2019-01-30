@@ -206,7 +206,7 @@ exports.lambdaHandler = async (event, context) => {
         var pageSize = event.queryStringParameters.pageSize
         const restaurantId = event.queryStringParameters.restaurantId
         var pageNumber = event.queryStringParameters.pageNumber
-        var temp = event.queryStringParameters.restaurantId;
+        var temp = event.queryStringParameters.language;
         const languageId = temp === null ? await getLanguage(client, 'FI') :
             await getLanguage(client, temp.toUpperCase());
 

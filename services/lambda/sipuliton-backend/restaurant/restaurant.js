@@ -75,7 +75,7 @@ exports.lambdaHandler = async (event, context) => {
         });
 
         const restaurantId = event.queryStringParameters.restaurantId
-        var temp = event.queryStringParameters.restaurantId;
+        var temp = event.queryStringParameters.language;
         const languageId = temp === null ? await getLanguage(client, 'FI') :
             await getLanguage(client, temp.toUpperCase());
 
