@@ -45,14 +45,6 @@ const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
 
 // shared functions
 
-async function getOwnUserId(client, event) {
-    const AWS = require('aws-sdk');
-    const cognitoClient = new AWS.CognitoIdentityServiceProvider({ region: 'eu-central-1' });
-    //const userSub = event.requestContext.identity.cognitoAuthenticationProvider.split(':CognitoSignIn:')[1]
-    //console.log("user sub:" + userSub);
-    return 0;
-    return null;
-}
 
 async function getToken() {
     var signedToken;

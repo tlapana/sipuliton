@@ -3,6 +3,7 @@ import React, { } from 'react';
 import ReactStars from 'react-stars'
 import { Button, Container, Row, Col } from 'reactstrap';
 import config from '../../../config';
+import { API } from "aws-amplify";
 
 export default  class myReviewEdit1 extends React.Component {
       constructor(props) {
@@ -32,21 +33,27 @@ export default  class myReviewEdit1 extends React.Component {
 
       save()  {
 
-      var text=document.getElementById("free_text").value;
-      var title=document.getElementById("title").value;
-      var pricing=this.state.pricing;
-      var rating_service_and_quality=this.state.RatingServiceAndQuality;
-      var rating_overall=this.state.rating_overall;
+            var text=document.getElementById("free_text").value;
+            var title=document.getElementById("title").value;
+            var pricing=this.state.pricing;
+            var rating_service_and_quality=this.state.RatingServiceAndQuality;
+            var rating_overall=this.state.rating_overall;
 
-      var url= config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
-      url+="&review_id=" + this.state.review_id;
-      url+="&title=" + title;
-      url+="&rating_overall=" + rating_overall;
-      url+="&pricing=" + pricing;
-      url+="&rating_service_and_quality=" + rating_service_and_quality;
-      fetch(url).then(response => alert('jes'));
-    
-       }
+            let init = { 
+                  queryStringParameters: {
+                        status: 0,
+                        text: text,
+                        review_id: this.state.review_id,
+                        title: title,
+                        rating_overall: rating_overall,
+                        pricing: pricing,
+                        rating_service_and_quality: rating_service_and_quality,
+                  } 
+            };
+            API.get('api', '/ownReviews/edit', init)
+            fetch(url).then(response => alert('jes'));
+      
+      }
 
       render() {
             return (

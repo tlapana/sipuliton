@@ -21,7 +21,7 @@ CREATE TABLE food_group_groups(
 
 --global diet id and name to select presets easily (user generated have preset set to false)
 CREATE TABLE global_diet(
-    global_diet_id bigint PRIMARY KEY,
+    global_diet_id bigserial PRIMARY KEY,
     preset boolean NOT NULL
 );
 
