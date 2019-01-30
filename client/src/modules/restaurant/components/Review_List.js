@@ -39,7 +39,12 @@ class ReviewList extends React.Component {
 /*When the component mounts, load reviews from the db based on given specs like the id*/
 	componentDidMount() {
 		const resId = this.props.idFromParent;
-		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize)
+		var lang = "fi";
+		if(this.props.language != undefined)
+		{
+			lang = this.props.language;
+		}
+		fetch(reviewsDataUrl + "?restaurantId=" + resId + "&pageNumber=" + this.state.pageNumber + "&pageSize=" + this.state.pageSize+"&language="+lang)
 		.then(res => res.json())
 		.then(
 			(result) => {
@@ -54,22 +59,31 @@ class ReviewList extends React.Component {
 				var rlvnce = [];
 				var allergyAware = [];
 				var serviceQual = [];
+				var tags = [];
 
 				/*no looping in setState, so build the arrays here first*/
-				for (i = 0; i < result.length; i++) {
-					var obj = result[i];
-					titls = titls.push(obj.title);
-					revws = revws.push(obj.free_text);
-					usrs = usrs.push(obj.user_id);
-					rlvnce = rlvnce.push(obj.rating_reliability);
-					allergyAware = allergyAware.push(obj.rating_variety);
-					serviceQual = serviceQual.push(obj.rating_service_and_quality);
+				for (i = 0; i < result.reviews.length; i++) {
+					var obj = result.reviews[i];
+					titls.push(obj.title);
+					revws.push(obj.free_text);
+					usrs.push(obj.name);
+					rlvnce.push(obj.rating_reliability);
+					allergyAware.push(obj.rating_variety);
+					serviceQual.push(obj.rating_service_and_quality);
+					if(obj.diets.length > 0 && obj.diets[0] !== null)
+					{
+						tags.push(obj.diets);
+					}
+					else
+					{
+						tags.push(["-"]);
+					}
 				}
-
-        console.log("titls:")
-        console.log(titls);
-        console.log("revws:")
-        console.log(revws)
+				//console.log(usrs);
+        //console.log("titls:")
+        //console.log(titls);
+        //console.log("revws:")
+        //console.log(revws)
 
 				this.setState({
 					isLoaded: true,
@@ -79,7 +93,8 @@ class ReviewList extends React.Component {
 					relevance : rlvnce,
 					allergyAwareness: allergyAware,
 					serviceQuality : serviceQual,
-					numberOfRevs : titls.length
+					numberOfRevs : titls.length,
+					allergyTags: tags,
 				});
 			},
 
@@ -141,7 +156,7 @@ class ReviewList extends React.Component {
 				showImage=false;
 			}
 			list.push(
-				<div class="reviewListItem" id="reviewList">
+				<div className="reviewListItem" id="reviewList">
 					<h3 className="review-title">{this.state.titles[reviewIndex]}</h3>
 					<div id="review-ratings">
 						<div id="reviewRelevance" className="inline-block-review">{strings.relevance}
@@ -154,10 +169,10 @@ class ReviewList extends React.Component {
 							<ReactStars value={this.state.serviceQuality[reviewIndex]} edit={false}/>
 						</div>
 					</div>
-					{showImage && <div id="reviewPicture"><img src={this.state.pictures[this.state.reviewIndex]} alt="Review picture"></img></div>}
+					{showImage && <div id="reviewPicture"><img src={this.state.pictures[reviewIndex]} alt="Review picture"></img></div>}
 					<div id="reviewText">{this.state.reviews[reviewIndex]}</div>
 					<div id="reviewer-info">
-						<div id="reviewUser" className="inline-block-review">{strings.reviewer}{this.state.users[this.state.reviewIndex]}</div>
+						<div id="reviewUser" className="inline-block-review">{strings.reviewer}{this.state.users[reviewIndex]}</div>
 						<div id="reviewAllergies" className="inline-block-review">{strings.allergyTags}{this.looper(this.state.allergyTags[reviewIndex])}</div>
 					</div>
 				</div>

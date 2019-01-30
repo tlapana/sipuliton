@@ -16,11 +16,11 @@ import '../../../styles/writereview.css';
 import LocalizedStrings from 'react-localization';
 
 export default class WriteReview extends React.Component {
-  
+
   constructor(props, context) {
-    
+
     super(props);
-    
+
     //Bind the functions
     this.setState = this.setState.bind(this);
     this.toggleForm = this.toggleForm.bind(this);
@@ -32,7 +32,7 @@ export default class WriteReview extends React.Component {
     this.changeCost = this.changeCost.bind(this);
     this.changeFilter = this.changeFilter.bind(this);
     this.submitReview = this.submitReview.bind(this);
-    
+
     this.state = {
       id : this.props.restaurantId,
       error: null,
@@ -50,23 +50,23 @@ export default class WriteReview extends React.Component {
       reliability : 0,
       choice : 0,
       quality : 0,
-      cost : 0 
+      cost : 0
     };
-  }  
-  
+  }
+
   //Actios to be caried upon mounting
   componentDidMount() {
-    this._isMounted = true;    
+    this._isMounted = true;
     this.getOptions();
   }
-  
+
   toggleForm() {
     console.log("Changing showForm from: " + this.state.showForm)
     this.setState({
       showForm : !this.state.showForm
     });
   }
-  
+
   //Gets all the filtering options
   getOptions() {
 
@@ -82,69 +82,69 @@ export default class WriteReview extends React.Component {
       options : options,
       loadingOptions : false
     });
-   
-  }  
-  
+
+  }
+
   //Following four just change the values
   changeTitle(event) {
     this.setState({
       title : event.target.value
     });
   }
-  
+
   changeReview(event) {
     this.setState({
       reviewText : event.target.value
     });
   }
-  
-  
-  changeQuality(newRating, name) {    
+
+
+  changeQuality(newRating, name) {
     this.setState({
       quality : newRating
     });
   }
-  
-  changeReliability(newRating, name) {    
+
+  changeReliability(newRating, name) {
     this.setState({
       reliability : newRating
     });
   }
-  
-  changeChoice(newRating, name) {    
+
+  changeChoice(newRating, name) {
     this.setState({
       choice : newRating
     });
   }
-  
-  changeCost(newRating, name) {    
+
+  changeCost(newRating, name) {
     this.setState({
       cost : newRating
     });
   }
-  
+
   //Used to acknowledge change and store new values
   changeFilter(selectedOptions) {
     this.setState({
       selectedFilters : selectedOptions
     });
   }
-  
+
   //For submitting the review
   submitReview  = event =>{
-    
+
     event.preventDefault();
     console.log("Submiting review");
     this.setState({
       submitingReview : true
     });
-    
+
     //Close form
     this.toggleForm();
-    
+
     //Generate JSON
     var obj = {};
-    
+
     obj.id = this.state.id;
     obj.title = this.state.title;
     obj.reviewText = this.state.reviewText;
@@ -154,15 +154,15 @@ export default class WriteReview extends React.Component {
     obj.pricing = this.state.cost;
     obj.selectedFilters = this.state.selectedFilters;
     obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
-    
+
     var jsonString = JSON.stringify(obj);
-    
-    
+
+
     console.log("JSON Object");
     console.log(obj);
     console.log("As string");
     console.log(jsonString);
-    
+
     //Generating url
     var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
       + "&title=" + obj.title
@@ -173,12 +173,12 @@ export default class WriteReview extends React.Component {
       + "&rating_service_and_quality=" + obj.quality
       + "&pricing=" + obj.pricing
       + "&diets=" + obj.selectedFilters;
-      
+
     //TODO: Diets
-    
+
     console.log("url:");
     console.log(url);
-    
+
     fetch(url)
       .then(res => res.json())
       .then(
@@ -202,12 +202,12 @@ export default class WriteReview extends React.Component {
           console.log(error);
         }
       )
-    
+
   }
-  
+
   //Review button functionality
   reviewButton() {
-    
+
     let strings = new LocalizedStrings({
       en:{
         message : "Send",
@@ -218,7 +218,7 @@ export default class WriteReview extends React.Component {
         submitting: "Lähetet''n..."
       }
     });
-    
+
     if(this.state.submitingReview){
       return (
         <span className="SendHelpIHateJSX">{strings.submitting}</span>
@@ -228,15 +228,15 @@ export default class WriteReview extends React.Component {
       return (
         <button type="submit" className="submitBtn" onClick={this.submitReview}>
           {strings.message}
-        </button> 
+        </button>
       );
     }
   }
-  
+
   //Renders error if we get one
   renderError()
   {
-    
+
     let strings = new LocalizedStrings({
       en:{
         strong: "An error has happened.",
@@ -247,14 +247,14 @@ export default class WriteReview extends React.Component {
         errortext : "Jotain meni pieleen arvostelua löhettäessä. Yritä myöhemmin uudelleen. Jos tämä virhe toistuu, ota yhteyttä ylläpitoon."
       }
     });
-    
+
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
     else{
       strings.setLanguage('fi');
     }
-    
+
     if(this.state.error != null)
     {
       return(
@@ -263,12 +263,12 @@ export default class WriteReview extends React.Component {
         </Alert>
       );
     }
-    
+
     return;
   }
- 
+
   render() {
-    
+
     /* Localization */
     let strings = new LocalizedStrings({
       en:{
@@ -280,7 +280,7 @@ export default class WriteReview extends React.Component {
         variety : "Variety",
         service : "Service and quality",
         pricing : "Pricing",
-        cancel : "Cancel",        
+        cancel : "Cancel",
         search: "Search...",
         submitTxt : "Lähetä",
         buttonTxt : "Review"
@@ -301,26 +301,26 @@ export default class WriteReview extends React.Component {
         buttonTxt : "Arvostele"
       }
     });
-    
+
     if(typeof this.props.language !== 'undefined'){
       strings.setLanguage(this.props.language);
     }
     else{
       strings.setLanguage('fi');
     }
-    
+
     return (
       <div>
-        <button className="filterBtn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
-        
+        <button className="review-restaurant-btn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
+
         <Modal isOpen={this.state.showForm} toggle={this.toggleForm} dialogClassName="reviewModal">
           <ModalHeader> {strings.modalTitle} </ModalHeader>
           <ModalBody>
               <form className="review">
-                
+
                 <input className='title' type="text" value={this.state.title} onChange={this.changeTitle} placeholder={strings.titlePlaceholder} /> <br/>
                 <textarea className='reviewTextArea' value={this.state.reviewText} onChange={this.changeReview}  placeholder={strings.textPlaceholder} />
-                    
+
                 {strings.diets}:
                 <Select
                   defaultValue={ this.state.defaultValues }
@@ -331,17 +331,17 @@ export default class WriteReview extends React.Component {
                   classNamePrefix="select"
                   onChange={this.changeFilter}
                 />
-                <br />      
-                  
-                {strings.reliability}: 
+                <br />
+
+                {strings.reliability}:
                 <ReactStars
                   value = {this.state.reliability}
                   count = {5}
                   size = {24}
                   onChange = {this.changeReliability}
                 />
-                <br />  
-                 
+                <br />
+
                 {strings.variety}:
                 <ReactStars
                   value = {this.state.choice}
@@ -350,7 +350,7 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeChoice}
                 />
                 <br />
-                  
+
                 {strings.service}:
                 <ReactStars
                   value = {this.state.quality}
@@ -359,8 +359,8 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeQuality}
                 />
                 <br />
-                 
-                {strings.pricing}: 
+
+                {strings.pricing}:
                 <ReactStars
                   value = {this.state.cost}
                   count = {3}
@@ -370,26 +370,26 @@ export default class WriteReview extends React.Component {
                   onChange = {this.changeCost}
                 />
                 <br />
-                
-              </form>      
+
+              </form>
           </ModalBody>
           { this.state.submitingReview ? (
-              
+
               <ModalFooter>
                 <ReactLoading type={'spokes'} color={'#2196F3'} className="loadingSpinner" height={'20%'} width={'20%'} />
               </ModalFooter>
-            ) : ( 
+            ) : (
               <ModalFooter>
-                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button> 
+                <Button color="primary" onClick={this.submitReview} > {strings.submitTxt} </Button>
                 <Button color="secondary" onClick={this.toggleForm} > {strings.cancel} </Button>
               </ModalFooter>
             )
-          
+
           }
-             
+
         </Modal>
       </div>
     );
   }
-    
+
 }

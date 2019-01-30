@@ -25,6 +25,9 @@ class Restaurant extends React.Component {
 			pictures : ["", "", ""],
 			priceLevel : 0,
 			userScore : 0,
+			rating_reliability: 0,
+			rating_service_and_quality:0,
+			rating_variety:0,
 			allergyTags : [],
 			openingHours : {mon: "",tue:"",wed:"",thu:"",fri:"", sat:"", sun: ""},
 			description : "",
@@ -40,7 +43,13 @@ class Restaurant extends React.Component {
 	}
 	/*loads data from database, sets new values to the state*/
 	componentDidMount() {
-		fetch(restaurantDataUrl + "?restaurantId=" + this.state.id)
+		var lang = "fi";
+		if(this.props.match.params.language != undefined)
+		{
+			lang = this.props.match.params.language;
+		}
+		console.log(lang);
+		fetch(restaurantDataUrl + "?restaurantId=" + this.state.id+"&language="+lang)
 		.then(res => res.json())
 		.then(
 			(result) => {
@@ -53,12 +62,43 @@ class Restaurant extends React.Component {
 				}
 
 				const restaurant = result.restaurant[0];
+				var desc = "-";
+				if(restaurant.description != null)
+				{
+					desc = restaurant.description;
+				}
+				var openExcept = "-";
+				if(restaurant.open_hours_exceptions != null)
+				{
+					openExcept = restaurant.open_hours_exceptions;
+				}
+				var addr = "-";
+				if(restaurant.street_address != null)
+				{
+					addr = restaurant.street_address;
+				}
+				var website = "-";
+				if(restaurant.website != null)
+				{
+					website = restaurant.website;
+				}
+				var email = "-";
+				if(restaurant.email != null)
+				{
+					email = restaurant.email;
+				}
 				this.setState({
 					//Note: not all info seen in the mockup exist currently in the database, may require changing what to show?
 					isLoaded: true,
 					name : restaurant.name,
 					userScore : restaurant.rating_overall,
 					allergyTags : restaurant.restaurant_diet_stats,
+					rating_reliability:restaurant.rating_reliability,
+					rating_service_and_quality:restaurant.rating_service_and_quality,
+					rating_variety:restaurant.rating_variety,
+					email:email,
+					website:website,
+					street_address:addr,
 					openingHours : {
 						mon: MapApi.handleOpeningHour(restaurant.opens_mon,restaurant.closes_mon),
 						tue: MapApi.handleOpeningHour(restaurant.opens_tue,restaurant.closes_tue),
@@ -67,8 +107,9 @@ class Restaurant extends React.Component {
 						fri: MapApi.handleOpeningHour(restaurant.opens_fri,restaurant.closes_fri),
 						sat: MapApi.handleOpeningHour(restaurant.opens_sat,restaurant.closes_sat),
 						sun: MapApi.handleOpeningHour(restaurant.opens_sun,restaurant.closes_sun),
+						exceptions:openExcept,
 					},
-					description : restaurant.email + ", " + restaurant.website + ", " + restaurant.street_address,
+					description : desc,
 					id : restaurant.restaurant_id
 				});
 			},
@@ -116,7 +157,14 @@ class Restaurant extends React.Component {
 			openingHours: ["Opening hours", "Mon: ","Tue: ","Wed: ","Thu: ","Fri: ","Sat: ", "Sun: "],
 			addReview: "Add a review",
 			description: "Description",
-			cancel: "Cancel"
+			cancel: "Cancel",
+			variety: "Food variety",
+			rating_service_and_quality: "Service and quality",
+			rating_reliability: "Diet reliability",
+			exceptions:"Exception in opening hours",
+			website:"Website",
+			address:"Street address",
+			email:"Email"
 		},
 		fi: {
 			preTitle: "Ravintolan arvostelut: ",
@@ -126,7 +174,14 @@ class Restaurant extends React.Component {
 			openingHours: ["Aukioloajat","Ma: ","Ti: ","Ke: ","To: ","Pe: ","La: ", "Su: "],
 			addReview: "Lisää arvostelu",
 			description: "Kuvaus",
-			cancel: "Peruuta"
+			cancel: "Peruuta",
+			variety: "Ruoan valinnanvara eri dieteillä",
+			rating_service_and_quality: "Palvelu ja laatu",
+			rating_reliability: "Luotettavuus eri ruokavalioilla",
+			exceptions:"Poikkeukset aukioloajoissa",
+			website:"Verkkosivu",
+			address:"Osoite",
+			email:"Sähköposti"
 		}
 		});
 		strings.setLanguage(this.props.match.params.language);
@@ -146,7 +201,7 @@ class Restaurant extends React.Component {
 			showThirdImage = false;
 		}
 		return (
-			<div class="mainContainer">
+			<div className="mainContainer">
 			<div id="restaurant" class="restaurant">
 				<h2 className="restaurant-title">{this.state.name}</h2>
 				<div id="restaurantPictures">
@@ -174,6 +229,12 @@ class Restaurant extends React.Component {
 						<div>{strings.openingHours[5]}{this.state.openingHours.fri}</div>
 						<div>{strings.openingHours[6]}{this.state.openingHours.sat}</div>
 						<div>{strings.openingHours[7]}{this.state.openingHours.sun}</div>
+						<div>{strings.exceptions}: {this.state.openingHours.exceptions}</div>
+					</div>
+					<div id="restaurantDetailsContainer" className="restaurant-image-container">
+						<div>{strings.website}: {this.state.website}</div>
+						<div>{strings.email}: {this.state.email}</div>
+						<div>{strings.address}: {this.state.street_address}</div>
 					</div>
 				</div>
 				<div className="restaurant-description-header">
@@ -188,22 +249,20 @@ class Restaurant extends React.Component {
 					<div className="inline-block-review" id="restaurantRating">
 						{strings.userRating}<ReactStars value={this.state.userScore} edit={false}/>
 					</div>
-					<div className="inline-block-review" id="allergyTags">
-						{strings.allergyTags}<br/>
-						{this.looper(this.state.allergyTags)}
+					<div className="inline-block-review" id="restaurantRating">
+						{strings.variety}<ReactStars value={this.state.rating_variety} edit={false}/>
+					</div>
+					<div className="inline-block-review" id="restaurantRating">
+						{strings.rating_service_and_quality}<ReactStars value={this.state.rating_service_and_quality} edit={false}/>
+					</div>
+					<div className="inline-block-review" id="restaurantRating">
+						{strings.rating_reliability}<ReactStars value={this.state.rating_reliability} edit={false}/>
 					</div>
 				</div>
 				<div id="review-restaurant-btn">
-					<div class="buttonContainer"><Button color="primary" value="Lisää arvostelu" onClick={this.toggleModal}>{strings.addReview}</Button></div>
-					<Modal isOpen={this.state.modalState} toggle={this.toggleModal} className="writeReview">
-					<ModalHeader></ModalHeader>
-					<ModalBody className="writeReview">
-					<WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
-					</ModalBody>
-					<ModalFooter>
-								<div class="buttonContainer"><Button color="primary" onClick={this.toggleModal}>{strings.cancel}</Button></div>
-					</ModalFooter>
-					</Modal>
+					<div className="buttonContainer">
+						<WriteReview restaurantId={this.state.id} language={this.props.match.params.language} />
+					</div>
 				</div>
 				<div id="preTitle">{strings.preTitle}</div>
 				<ReviewList idFromParent={this.state.id} language={this.props.match.params.language}/>
