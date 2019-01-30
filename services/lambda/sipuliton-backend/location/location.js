@@ -74,7 +74,7 @@ async function getToken() {
     return signedToken
 }
 
-async function getPsqlClient(token) {
+async function getPsqlClient() {
 
     var token = await getToken();
     //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
