@@ -110,7 +110,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietAllFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -125,7 +125,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietCreateAdminFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -140,7 +140,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietCreateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -155,7 +155,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietGroupsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -170,7 +170,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietPresetsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -185,7 +185,7 @@ Resources:
     Type: AWS::Serverless::Function
   DietUpdateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
@@ -230,7 +230,7 @@ Resources:
     Type: AWS::Serverless::Function
   LocationCitiesFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8c87d6ee39f0e99171089a8a30ea92dd
+      CodeUri: s3://sipuliton-lambdas/c754f0ec8e85408ecad3311c6711b67f
       Environment:
         Variables:
           PARAM1: VALUE
@@ -245,7 +245,7 @@ Resources:
     Type: AWS::Serverless::Function
   LocationCountriesFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8c87d6ee39f0e99171089a8a30ea92dd
+      CodeUri: s3://sipuliton-lambdas/c754f0ec8e85408ecad3311c6711b67f
       Environment:
         Variables:
           PARAM1: VALUE
@@ -485,7 +485,7 @@ Resources:
     Type: AWS::Serverless::Function
   VoteDietFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/1af74219204d04f36097ac16e63b7ddb
+      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
       Environment:
         Variables:
           PARAM1: VALUE
