@@ -62,20 +62,26 @@ class ModCog extends React.Component {
 
       //Auth.changePassword(user, this.state.typePass, this.state.retypePass)
       Auth.currentAuthenticatedUser()
-        .then(user => Auth.changePassword(user, this.state.curPass, this.state.retypePass))
-        .catch(err => {
-          this.setState({ message: err.code + ':' });
-          try {
-            if (err.code + '' === "LimitExceededException") { 
-              this.setState({ message: strings.limit })
-             }
-             else  {
-              this.setState({ message: strings.passwordError })
-             }
-          } catch (e) {
-            alert(e)
-          }
-        });
+        .then(user => 
+          Auth.changePassword(user, this.state.curPass, this.state.retypePass)
+          .then(res => {
+            const { language } = this.props.match.params;
+            this.props.history.push('/' + language + '/profile/');
+          })
+          .catch(err => {
+            this.setState({ message: err.code + ':' });
+            try {
+              if (err.code + '' === "LimitExceededException") { 
+                this.setState({ message: strings.limit })
+              }
+              else  {
+                this.setState({ message: strings.passwordError })
+              }
+            } catch (e) {
+              alert(e)
+            }
+          })
+        );
     }
   }
 

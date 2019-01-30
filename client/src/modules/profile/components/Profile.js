@@ -34,6 +34,7 @@ class Profile extends React.Component {
     this.handleEditClicked = this.handleEditClicked.bind(this);
     this.fetchProfile = this.fetchProfile.bind(this);
     this.renderLoading = this.renderLoading.bind(this);
+    this.handleChangePasswordClicked = this.handleChangePasswordClicked.bind(this);
   }
 
 
@@ -41,6 +42,11 @@ class Profile extends React.Component {
     const { language } = this.props.match.params;
     let id = this.state.id != null ? this.state.id : this.props.currentUserId;
     this.props.history.push('/' + language + '/edit-profile/' + id);
+  }
+
+  handleChangePasswordClicked() {
+    const { language } = this.props.match.params;
+    this.props.history.push('/' + language + '/modCog/');
   }
 
   async componentWillMount() {
@@ -120,7 +126,8 @@ class Profile extends React.Component {
         description:"Description",
         username:"Username",
         email:"Email",
-        city:"City"
+        city:"City",
+        changePassword: "Change password",
       },
       fi: {
         editProfile: "Muokkaa profiilia",
@@ -138,6 +145,7 @@ class Profile extends React.Component {
         username:"Käyttäjänimi",
         email:"Sähköposti",
         city:"Kaupunki",
+        changePassword: "Vaihda salasana",
       }
     });
     strings.setLanguage(this.props.match.params.language);
@@ -198,6 +206,12 @@ class Profile extends React.Component {
           isOwnProfile && 
           <button className="profile-edit-btn btn main-btn max-w-10" onClick={this.handleEditClicked}>
             {strings.edit}
+          </button> 
+        }
+        {
+          isOwnProfile &&
+          <button className="change-password-btn btn main-btn max-w-10" onClick={this.handleChangePasswordClicked}>
+            {strings.changePassword}
           </button>
         }
         
