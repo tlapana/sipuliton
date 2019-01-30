@@ -320,7 +320,7 @@ Resources:
     Type: AWS::Serverless::Function
   OwnReviewsDeleteFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/6234822dc2fd89ed382cce2bb7a3d891
+      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -335,7 +335,7 @@ Resources:
     Type: AWS::Serverless::Function
   OwnReviewsEditFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/6234822dc2fd89ed382cce2bb7a3d891
+      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -350,7 +350,7 @@ Resources:
     Type: AWS::Serverless::Function
   OwnReviewsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/6234822dc2fd89ed382cce2bb7a3d891
+      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
       Environment:
         Variables:
           PARAM1: VALUE
