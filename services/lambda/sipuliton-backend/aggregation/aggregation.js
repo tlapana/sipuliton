@@ -1,6 +1,16 @@
 
 let response;
+const pg = require('pg');
+const AWS = require('aws-sdk');
 
+// Database credentials
+const region = 'eu-central-1';
+const dbPort = 5432;
+const dbUsername = 'lambda_user'; 
+const dbName = 'sipuliton'; 
+const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
+
+/**
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
