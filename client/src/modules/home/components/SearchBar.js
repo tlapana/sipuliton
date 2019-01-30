@@ -36,8 +36,8 @@ class SearchBar extends React.Component {
     this.toggleSearchField = this.toggleSearchField.bind(this);
     this.searchUrl = this.searchUrl.bind(this);
     this.doSearch = this.doSearch.bind(this);
-    this.getDefaultValues = this.getDefaultValues.bind(this);
     this.getDiets = this.getDiets.bind(this);
+    this.getDefaultValues = this.getDefaultValues.bind(this);
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
 
@@ -58,7 +58,7 @@ class SearchBar extends React.Component {
       loadedDiets: false,
       popoverOpen: false,
       modalState: false,
-      filters : [],
+      selectedDiets : [],
       keywords : '',
       diets : [],
       defaultValues : [],
@@ -73,6 +73,7 @@ class SearchBar extends React.Component {
       searchFieldDisabled: false,
       userLocationAllowed: false,
       useUserLocation: false,
+      userDiets: [],
       radius: 10000,
       dietError: null,
     };
@@ -95,9 +96,10 @@ class SearchBar extends React.Component {
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
 
-    this.getDiets();
+    //Get the diets
     this.setState({
-      defaultValue : this.getDefaultValues()
+      diets: this.getDiets(),
+      userDiets : this.getDefaultValues()
     });
 
   }
@@ -129,7 +131,9 @@ class SearchBar extends React.Component {
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
-                + '&minPricing=' + this.state.pricing;
+                + '&minPricing=' + this.state.pricing
+                + '&diets=' + this.state.selectedDiets;
+    
 
     if(this.state.useUserLocation) {
       url = url + '&searchLongitude=' + this.state.longitude + '&searchLatitude=' + this.state.latitude;
@@ -137,7 +141,7 @@ class SearchBar extends React.Component {
     else{
       url = url + "&city=" + this.state.city;
     }
-                
+    
     return url;
   }
 
@@ -151,37 +155,27 @@ class SearchBar extends React.Component {
 
   }
 
-
-  //Get the default selections. Mainly checks if user is logged in if is, then get the data
-  getDefaultValues() {
-    const defaultValues = [];
-    this.setState({
-      loadedDefaults : true
-    });
-    return defaultValues;
-  }
-
   //This gets the options for the selection.
   getDiets() {
     //console.log("Fetching diets")
-    fetch("http://localhost:3000/diet/all")
+    fetch( Config.backendAPIPaths.BASE + "/diet/all")
       .then(res => res.json())
       .then(
         (result) => {  
           //Process results into ones that can be used by the select
           
-          var diet = []
+          var diets = []
           for(var i = 0; i < result.length; i++)
           {
-            diet.push({ value: result[i].global_diet_id, label: result[i].name});
+            diets.push({ value: result[i].global_diet_id, label: result[i].name});
           }
           //console.log("DEBUG: SearchBar.js getDiets()")
           //console.log(diet)
           
           this.setState({
             loadedDiets: true,
-            diets: diet
           });
+          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -195,6 +189,43 @@ class SearchBar extends React.Component {
           });
         }
       )
+  }
+  
+  //Get user default diets.
+  getDefaultValues()
+  {
+    //Console log for debugging
+    //console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging
+          //console.log("Sending results");
+          //console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+          
+          this.setState({
+            loadedDefaults : true,
+            selectedDiets : defValues
+          });
+          
+          
+          return defValues;
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        //console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
   }
 
   renderFilterButton() {
@@ -220,7 +251,7 @@ class SearchBar extends React.Component {
   //Used to acknowledge change and store new values
   handleFilterChange(selectedOptions) {
     this.setState({
-      filters : selectedOptions
+      selectedDiets : selectedOptions
     });
   }
 
