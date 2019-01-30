@@ -197,7 +197,7 @@ export default class WriteReview extends React.Component {
   submitReview  = event =>{
     
     event.preventDefault();
-    console.log("Submiting review");
+    //console.log("Submiting review");
     this.setState({
       submitingReview : true
     });
@@ -230,7 +230,7 @@ export default class WriteReview extends React.Component {
             submitingReview: false,
             reviewSubmitted: true,
           });
-          console.log("Success submitting review")
+          //console.log("Success submitting review")
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -241,7 +241,7 @@ export default class WriteReview extends React.Component {
             reviewSubmitted: false,
             error: error
           });
-          console.log("Error submitting review")
+          //console.log("Error submitting review")
           console.log(error);
         }
       )
