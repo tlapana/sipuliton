@@ -220,8 +220,8 @@ exports.lambdaHandler = async (event, context) => {
         FROM user_profile, review
         LEFT JOIN review_diet ON review.review_id = review_diet.review_id
         LEFT JOIN global_diet_name ON review_diet.global_diet_id = global_diet_name.global_diet_id AND language_id = $2
-        WHERE restaurant_id = $1 AND user_profile.user_id = review.userId
-        GROUP BY restaurant_id, user_profile.user_id, user_profile.display_name, posted, status, title, free_text, rating_overall,
+        WHERE restaurant_id = $1 AND user_profile.user_id = review.user_id
+        GROUP BY restaurant_id, user_profile.user_id, user_profile.display_nname, posted, status, title, free_text, rating_overall,
             rating_reliability, rating_variety, rating_service_and_quality,
             pricing, thumbs_up, thumbs_down
         ORDER BY posted DESC
