@@ -4,9 +4,11 @@
   "description": "GET endpoint for profile page",
   "main": "src/profile.js",
   "repository": "",
-  "author": "Sergei Häyrynen, Jani Jalkanen",
+  "author": "Sergei Häyrynen, Jani Jalkanen, Eelis Mikkola",
   "license": "",
   "dependencies": {
+    "node-fetch": "^2.3.0",
+    "node-jose": "^1.1.0",
     "pg": "^7.6.0"
   },
   "devDependencies": {}

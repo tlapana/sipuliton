@@ -114,6 +114,7 @@ function parseMapUrlParametersToFilters(searchString){
   var longitude = 24.940886;
   var latitude = 60.168182;
   var filters = {};
+  var useLocation = true;
   var variables = searchString.replace("?","");
   var varArray = variables.split("&");
   for(var i = 0; i<varArray.length; i++){
@@ -138,7 +139,15 @@ function parseMapUrlParametersToFilters(searchString){
       minPricing = parseInt(varValPair[1]);
     }
     if(varValPair[0] === "city"){
-      city = varValPair[1];
+      if(varValPair[1] !== undefined)
+      {
+        city = varValPair[1];
+        useLocation = false;
+      }
+      else
+      {
+        city = "";
+      }
     }
     if(varValPair[0] === "searchLongitude"){
       longitude = parseInt(varValPair[1]);
@@ -146,8 +155,15 @@ function parseMapUrlParametersToFilters(searchString){
     if(varValPair[0] === "searchLatitude"){
       latitude = parseInt(varValPair[1]);
     }
-    if(varValPair[0] === "searchDiets"){
-      diets = varValPair[1].split(',');
+    if(varValPair[0] === "diets"){
+      var dietList = varValPair[1].substring(1, varValPair[1].length - 1);
+      var temp_diets = dietList.split(',');
+      var diets = [];
+      for(var j = 0; j<temp_diets.length;++j)
+      {
+        var obj = {value:temp_diets[j],name:""}
+        diets.push(obj)
+      }
     }
   }
   filters = {
@@ -161,6 +177,7 @@ function parseMapUrlParametersToFilters(searchString){
     longitude:longitude,
     latitude:latitude,
     diets:diets,
+    useUserLocation:useLocation,
   }
   return filters;
 }

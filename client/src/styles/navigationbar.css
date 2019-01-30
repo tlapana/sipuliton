@@ -12,6 +12,7 @@
   box-shadow: 0px 0px 5px 1px #8b8b8b;
   padding-bottom: 6em;
   overflow-y: auto;
+  z-index: 200;
 }
 
 .side-menu.nav {

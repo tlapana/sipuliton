@@ -1,8 +1,5 @@
-import React from 'react';
-// "Public" API for login 
-import Review from './components/Review/';
+import Review from './components/Review/index';
+import myReviewEdit1 from './components/Review/myReviewsEdit';
 
 
-
-
-export default Review; 
+export { Review, myReviewEdit1, }; 

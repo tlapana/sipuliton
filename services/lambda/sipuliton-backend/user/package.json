@@ -4,9 +4,11 @@
   "description": "endpoints for user creation and deletion",
   "main": "src/profile.js",
   "repository": "",
-  "author": "Jani Jalkanen",
+  "author": "Jani Jalkanen, Eelis Mikkola",
   "license": "",
   "dependencies": {
+    "node-fetch": "^2.3.0",
+    "node-jose": "^1.1.0",
     "pg": "^7.6.0"
   },
   "devDependencies": {}
