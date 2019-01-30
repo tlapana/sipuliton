@@ -22,8 +22,7 @@
   cursor: pointer;
   -webkit-box-shadow: 1px 1px 2px 0px #c5c5c5;
   box-shadow: 1px 1px 2px 0px #c5c5c5;
-  transition: background-color .15s, opacity .15s;
-
+  transition: background-color .15s, opacity .15s, color .15s;
 }
 .app .main-btn:hover,
 .app .secondary-btn:hover,
@@ -53,6 +52,13 @@ form .main-btn {
   margin-bottom: 1em;
 }
 
+.main-btn.btn-margin,
+.secondary-btn.btn-margin,
+.tertiary-btn.btn-margin {
+  margin: .5em;
+}
+
+
 .max-w-40 {
   max-width: 40em;
   margin: auto;
@@ -75,6 +81,10 @@ form .main-btn {
 
 .w-100-percent {
   width: 100%;
+}
+
+.no-margin {
+  margin: 0;
 }
 
 
@@ -189,4 +199,12 @@ input.invalid:focus + .input-errormsg.visible {
 
 .select__menu .select__menu-list {
   padding: 0;
+}
+
+.basic-multi-select .select__menu {
+  z-index: 10;
+}
+
+.loadingSpinner {
+  margin: auto;
 }

@@ -2,6 +2,7 @@ import React, { } from 'react';
 
 import ReactStars from 'react-stars'
 import { Button, Container, Row, Col } from 'reactstrap';
+import config from '../../../config';
 
 export default  class myReviewEdit1 extends React.Component {
       constructor(props) {
@@ -37,7 +38,7 @@ export default  class myReviewEdit1 extends React.Component {
       var rating_service_and_quality=this.state.RatingServiceAndQuality;
       var rating_overall=this.state.rating_overall;
 
-      var url='http://127.0.0.1:3000/ownReviews/edit?status=0&text=' + text;
+      var url= config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
       url+="&review_id=" + this.state.review_id;
       url+="&title=" + title;
       url+="&rating_overall=" + rating_overall;

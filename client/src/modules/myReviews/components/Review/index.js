@@ -14,6 +14,7 @@ import '../../../../styles/ownreview.css';
 import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
+import config from '../../../../config';
 
 import LocalizedStrings from 'react-localization';
 /*class WaitReview extends React.Component {
@@ -48,7 +49,7 @@ class Review extends React.Component {
             window.location = "/fi/myReviewEdit"
       }
       deleterow(term) {
-            fetch('http://localhost:3000/ownReviews/delete?review_id=' + term)
+            fetch(config.backendAPIPaths.BASE + '/ownReviews/delete?review_id=' + term)
 
                   .then(ans => {
                         if (ans.ok) {
@@ -106,10 +107,10 @@ class Review extends React.Component {
             
       };
  
-      deleteItem() { fetch('http://127.0.0.1:3000/ownReviews/delete') }
+      deleteItem() { fetch(config.backendAPIPaths.BASE + '/ownReviews/delete') }
       init(statusvalue) {
             var t = this;
-            fetch('http://127.0.0.1:3000/ownReviews?status=' + statusvalue + '&limit=' + this.limit + '&offset=' + this.page * this.limit).then((response) => response.json())
+            fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue + '&limit=' + this.limit + '&offset=' + this.page * this.limit).then((response) => response.json())
                   .then((responseJson) => {
                  
                         var array1 = [];
@@ -151,7 +152,7 @@ class Review extends React.Component {
             var rating_overall = document.getElementById("overall").value;
 
             var rating_variety = document.getElementById("rating_variety").value;
-            var url = 'http://127.0.0.1:3000/ownReviews/edit?status=0&text=' + text;
+            var url = config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
             url += "&title=" + title;
             url += "&rating_overall=" + rating_overall;
             url += "&rating_variety=" + rating_variety;

@@ -8,7 +8,7 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
     Function:
-        Timeout: 3
+        Timeout: 8
 
 
 Resources:
@@ -91,6 +91,22 @@ Resources:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
                       Path: /user/create
+                      Method: get
+    
+    CognitoUserGetFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: user/
+          Handler: user.getUserByCognitoLambda
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                  PARAM1: VALUE
+          Events:
+              Landing:
+                  Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+                  Properties:
+                      Path: /user/getByCognito
                       Method: get
 
     UserDeleteFunction:
@@ -439,12 +455,157 @@ Resources:
               Variables:
                   PARAM1: VALUE
           Events:
-              Landing:
+            Landing:
                   Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
                   Properties:
                       Path: /dbUpdate
                       Method: get
-
+ 
+ 
+ 
+ 
+    CorsOptionsFunction:
+      Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      Properties:
+          CodeUri: corsOptions/
+          Handler: corsOptions.handler
+          Runtime: nodejs8.10
+          Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+              Variables:
+                PARAM1: VALUE
+          Events:
+              HelloWorld:
+                  Type: Api 
+                  Properties:
+                      Path: /hello
+                      Method: options
+              Landing:
+                  Type: Api
+                  Properties:
+                      Path: /landing
+                      Method: options
+              Profile:
+                  Type: Api 
+                  Properties:
+                      Path: /profile
+                      Method: options
+              ProfileEdit:
+                  Type: Api 
+                  Properties:
+                      Path: /profile/edit
+                      Method: options
+              UserCreate:
+                  Type: Api 
+                  Properties:
+                      Path: /user/create
+                      Method: options
+              UserGetByCognito:
+                  Type: Api 
+                  Properties:
+                      Path: /user/getByCognito
+                      Method: options
+              UserDelete:
+                  Type: Api 
+                  Properties:
+                      Path: /user/delete
+                      Method: options
+              OwnReviews:
+                  Type: Api 
+                  Properties:
+                      Path: /ownReviews
+                      Method: options
+              OwnReviewsEdit:
+                  Type: Api 
+                  Properties:
+                      Path: /ownReviews/edit
+                      Method: options
+              OwnReviewsDelete:
+                  Type: Api 
+                  Properties:
+                      Path: /ownReviews/delete
+                      Method: options
+              OwnDiets:
+                  Type: Api 
+                  Properties:
+                      Path: /ownDiets
+                      Method: options
+              OwnDietsEdit:
+                  Type: Api 
+                  Properties:
+                      Path: /ownDiets/edit
+                      Method: options
+              OwnDietsCreate:
+                  Type: Api 
+                  Properties:
+                      Path: /ownDiets/create
+                      Method: options
+              OwnDietsDelete:
+                  Type: Api 
+                  Properties:
+                      Path: /ownDiets/delete
+                      Method: options
+              LocationCities:
+                  Type: Api 
+                  Properties:
+                      Path: /location/cities
+                      Method: options
+              LocationCountries:
+                  Type: Api 
+                  Properties:
+                      Path: /location/countries
+                      Method: options
+              DietPresets:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/presets
+                      Method: options
+              DietAll:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/all
+                      Method: options
+              DietGroups:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/groups
+                      Method: options
+              DietCreateAdmin:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/createAdmin
+                      Method: options
+              DietCreate:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/create
+                      Method: options
+              DietUpdate:
+                  Type: Api 
+                  Properties:
+                      Path: /diet/update
+                      Method: options
+              Search:
+                  Type: Api 
+                  Properties:
+                      Path: /search
+                      Method: options
+              Restaurant:
+                  Type: Api 
+                  Properties:
+                      Path: /restaurant
+                      Method: options
+              Reviews:
+                  Type: Api 
+                  Properties:
+                      Path: /reviews
+                      Method: options
+              PostReview:
+                  Type: Api 
+                  Properties:
+                      Path: /postReview
+                      Method: options
+                      
+    
 
 Outputs:
 

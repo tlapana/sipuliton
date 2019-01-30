@@ -8,12 +8,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ReactStars from 'react-stars';
 import ReviewList from './Review_List.js';
 import WriteReviewComponents from '../../writereview';
-import Config from '../../../config.js';
+import config from '../../../config.js';
 /* Localization */
 import LocalizedStrings from 'react-localization';
 import WriteReview from '../../writereview/components/WriteReview.js';
 
-const restaurantDataUrl = "http://localhost:3000/restaurant";
+const restaurantDataUrl = config.backendAPIPaths.BASE + "/restaurant";
 
 class Restaurant extends React.Component {
 	constructor(props) {

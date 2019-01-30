@@ -2,16 +2,14 @@ import React from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 
 import home from '../../home';
-import login from '../../login';
+import { components as loginComponents } from '../../login';
 import register from '../../register';
 import forgotPassword from '../../forgotpassword';
 import profile from '../../profile';
-import Review  from '../../MyReview/components/MyReview';
 import about from '../../about';
-import map from '../../map'
-//import Review from '../../myReviews'
-import ModCog from '../../modCog'
-import myReviewEdit1 from '../../myReviews/components/Review/myReviewsEdit'
+import ModCog from '../../modCog';
+import map from '../../map';
+import { Review, myReviewEdit1, }  from '../../myReviews';
 import restaurant from '../../restaurant';
 import NotFound from './NotFound';
 
@@ -20,10 +18,10 @@ class RouteCollection extends React.Component {
 
   render() {
     const { Home } = home;
-    const { Login } = login;
+    const { Login } = loginComponents;
     const { Register } = register;
     const { ForgotPassword } = forgotPassword;
-    const { Profile } = profile;
+    const { EditProfile, ProfileContainer } = profile;
     const { Map } = map;
     const { Restaurant } = restaurant;
 
@@ -35,11 +33,13 @@ class RouteCollection extends React.Component {
         <Route path="/:language/login/" component={Login} />
         <Route path="/:language/register/" component={Register} />
         <Route path="/:language/forgot-password/" component={ForgotPassword} />
-        <Route path="/:language/profile/:id" component={Profile} />
+        <Route path="/:language/profile/:id/" component={ProfileContainer} />
+        <Route path="/:language/profile" component={ProfileContainer} />
+        <Route path="/:language/edit-profile/:id" component={EditProfile} />
         <Route path="/:language/map/:searchParameters" component={Map} />
         <Route path="/:language/map" component={Map} />
         <Route path="/:language/myReview" component={Review} />
-        <Route path="/:language/myReviewEdit" component={myReviewEdit1 } />
+        <Route path="/:language/myReviewEdit" component={myReviewEdit1} />
         <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route path="/:language/restaurant/:id" component={Restaurant} />
         <Route path="/:language/modCog" component={ModCog} />

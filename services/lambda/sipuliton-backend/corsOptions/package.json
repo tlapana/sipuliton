@@ -1,0 +1,11 @@
+{
+  "name": "corsOptions",
+  "version": "0.1.0",
+  "description": "endpoints for mocking options requests locally",
+  "main": "src/corsOptions.js",
+  "repository": "",
+  "author": "Eelis Mikkola",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {}
+}
