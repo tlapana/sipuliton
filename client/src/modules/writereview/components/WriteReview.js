@@ -11,6 +11,8 @@ import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
 
+import Config from '../../../config.js';
+
 
 /* Localization */
 import LocalizedStrings from 'react-localization';
@@ -23,6 +25,8 @@ export default class WriteReview extends React.Component {
 
     //Bind the functions
     this.setState = this.setState.bind(this);
+	this.getDiets = this.getDiets.bind(this);
+	this.getDefaultDiets = this.getDefaultDiets.bind(this);
     this.toggleForm = this.toggleForm.bind(this);
     this.changeTitle = this.changeTitle.bind(this);
     this.changeReview = this.changeReview.bind(this);
@@ -46,6 +50,7 @@ export default class WriteReview extends React.Component {
       title : '',
       reviewText : '',
       options : [],
+	  defaultDiets : [],
       selectedFilters : [],
       reliability : 0,
       choice : 0,
@@ -57,7 +62,10 @@ export default class WriteReview extends React.Component {
   //Actios to be caried upon mounting
   componentDidMount() {
     this._isMounted = true;
-    this.getOptions();
+    this.setState({
+		options: this.getDiets(),
+		defaultDiets: this.getDefaultDiets()
+	})
   }
 
   toggleForm() {
@@ -67,22 +75,77 @@ export default class WriteReview extends React.Component {
     });
   }
 
-  //Gets all the filtering options
-  getOptions() {
+  //This gets the options for the selection.
+  getDiets() {
+    //console.log("Fetching diets")
+    fetch( Config.backendAPIPaths.BASE + "/diet/all")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Process results into ones that can be used by the select
 
-    const options = [
-      { value: 'onions', label: 'Allergia/Sipuli' },
-      { value: 'tomato', label: 'Allergia/Tomaatti' },
-      { value: 'nuts', label: 'Allergia/Pähkinä' },
-      { value: 'lactose', label: 'Laktoositon ruokavalio' },
-      { value: 'coeliac ', label: 'Keliakia' }
-    ];
+          var diets = []
+          for(var i = 0; i < result.length; i++)
+          {
+            diets.push({ value: result[i].global_diet_id, label: result[i].name});
+          }
+          //console.log("DEBUG: SearchBar.js getDiets()")
+          //console.log(diet)
 
-    this.setState({
-      options : options,
-      loadingOptions : false
-    });
+          this.setState({
+            loadingOptions: false,
+          });
+          return diets;
+          //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          //console.log("Error fetching diets: " + error)
+          this.setState({
+            loadedDiets: true,
+            dietError : error,
+          });
+        }
+      )
+  }
 
+   //Get user default diets.
+  getDefaultDiets()
+  {
+    //Console log for debugging
+    //console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging
+          //console.log("Sending results");
+          //console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+
+          this.setState({
+            loadedDefaults : true,
+            selectedFilters : defValues
+          });
+
+
+          return defValues;
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        //console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
   }
 
   //Following four just change the values
@@ -142,42 +205,22 @@ export default class WriteReview extends React.Component {
     //Close form
     this.toggleForm();
 
-    //Generate JSON
-    var obj = {};
-
-    obj.id = this.state.id;
-    obj.title = this.state.title;
-    obj.reviewText = this.state.reviewText;
-    obj.reliability = this.state.reliability;
-    obj.variety = this.state.choice;
-    obj.quality = this.state.quality;
-    obj.pricing = this.state.cost;
-    obj.selectedFilters = this.state.selectedFilters;
-    obj.overall = (obj.reliability + obj.choice + obj.quality) / 3;
-
-    var jsonString = JSON.stringify(obj);
-
-
-    console.log("JSON Object");
-    console.log(obj);
-    console.log("As string");
-    console.log(jsonString);
+	//Calculate overall
+    var overall = (this.state.reliability + this.state.choice + this.state.quality) / 3;
 
     //Generating url
-    var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
-      + "&title=" + obj.title
-      + "&text=" + obj.reviewText
-      + "&rating_overall=" + obj.overall
-      + "&rating_variety=" + obj.choice
-      + "&rating_reliability=" + obj.reliability
-      + "&rating_service_and_quality=" + obj.quality
-      + "&pricing=" + obj.pricing
-      + "&diets=" + obj.selectedFilters;
+    var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + this.state.id
+      + "&title=" + this.state.title
+      + "&text=" + this.state.reviewText
+      + "&rating_overall=" + overall
+      + "&rating_variety=" + this.state.choice
+      + "&rating_reliability=" + this.state.reliability
+      + "&rating_service_and_quality=" + this.state.quality
+      + "&pricing=" + this.state.cost
+      + "&diets=" + this.state.selectedFilters.join();
 
-    //TODO: Diets
-
-    console.log("url:");
-    console.log(url);
+    //console.log("url:");
+    //console.log(url);
 
     fetch(url)
       .then(res => res.json())

@@ -36,8 +36,9 @@ class SearchBar extends React.Component {
     this.toggleSearchField = this.toggleSearchField.bind(this);
     this.searchUrl = this.searchUrl.bind(this);
     this.doSearch = this.doSearch.bind(this);
-    this.getDefaultValues = this.getDefaultValues.bind(this);
     this.getDiets = this.getDiets.bind(this);
+    this.getDefaultValues = this.getDefaultValues.bind(this);
+	
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
 
@@ -47,10 +48,13 @@ class SearchBar extends React.Component {
     this.changeService = this.changeService.bind(this);
     this.changePricing = this.changePricing.bind(this);
     this.distanceSelector = this.distanceSelector.bind(this);
-    this.onSliderChange = this.onSliderChange.bind(this);
+    this.onSliderChange = this.onSliderChange.bind(this);	
+	this.resetFilters = this.resetFilters.bind(this);
+	
     this.renderDistance = this.renderDistance.bind(this);
     this.renderDiets = this.renderDiets.bind(this);
 
+	//Starting state
     this.state = {
       error : null,
       isLoading: true,
@@ -58,7 +62,7 @@ class SearchBar extends React.Component {
       loadedDiets: false,
       popoverOpen: false,
       modalState: false,
-      filters : [],
+      selectedDiets : [],
       keywords : '',
       diets : [],
       defaultValues : [],
@@ -73,14 +77,13 @@ class SearchBar extends React.Component {
       searchFieldDisabled: false,
       userLocationAllowed: false,
       useUserLocation: false,
+      userDiets: [],
       radius: 10000,
       dietError: null,
     };
   }
 
   componentDidMount() {
-
-
     //Get user location
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -95,9 +98,10 @@ class SearchBar extends React.Component {
         { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
 
-    this.getDiets();
+    //Get the diets
     this.setState({
-      defaultValue : this.getDefaultValues()
+      diets: this.getDiets(),
+      userDiets : this.getDefaultValues()
     });
 
   }
@@ -129,7 +133,9 @@ class SearchBar extends React.Component {
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
-                + '&minPricing=' + this.state.pricing;
+                + '&minPricing=' + this.state.pricing
+                + '&diets=' + this.state.selectedDiets.join();
+    
 
     if(this.state.useUserLocation) {
       url = url + '&searchLongitude=' + this.state.longitude + '&searchLatitude=' + this.state.latitude;
@@ -137,7 +143,7 @@ class SearchBar extends React.Component {
     else{
       url = url + "&city=" + this.state.city;
     }
-                
+    
     return url;
   }
 
@@ -151,37 +157,27 @@ class SearchBar extends React.Component {
 
   }
 
-
-  //Get the default selections. Mainly checks if user is logged in if is, then get the data
-  getDefaultValues() {
-    const defaultValues = [];
-    this.setState({
-      loadedDefaults : true
-    });
-    return defaultValues;
-  }
-
   //This gets the options for the selection.
   getDiets() {
     //console.log("Fetching diets")
-    fetch("http://localhost:3000/diet/all")
+    fetch( Config.backendAPIPaths.BASE + "/diet/all")
       .then(res => res.json())
       .then(
         (result) => {  
           //Process results into ones that can be used by the select
           
-          var diet = []
+          var diets = []
           for(var i = 0; i < result.length; i++)
           {
-            diet.push({ value: result[i].global_diet_id, label: result[i].name});
+            diets.push({ value: result[i].global_diet_id, label: result[i].name});
           }
           //console.log("DEBUG: SearchBar.js getDiets()")
           //console.log(diet)
           
           this.setState({
             loadedDiets: true,
-            diets: diet
           });
+          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -196,7 +192,45 @@ class SearchBar extends React.Component {
         }
       )
   }
+  
+  //Get user default diets.
+  getDefaultValues()
+  {
+    //Console log for debugging
+    //console.log("Getting the default values for the diets: ");
+    var url = Config.backendAPIPaths.BASE+'/ownDiets';
+    fetch(url)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          //Console log for debugging
+          //console.log("Sending results");
+          //console.log(result);
+          var defValues = [];
+          //Send data via props
+          result.own_diets.forEach(function(element) {
+            defValues.push({value:element.global_diet_id, label:element.name});
+          });
+          
+          this.setState({
+            loadedDefaults : true,
+            selectedDiets : defValues
+          });
+          
+          
+          return defValues;
+      },
+      // Note: it's important to handle errors here
+      // instead of a catch() block so that we don't swallow
+      // exceptions from actual bugs in components.
+      (error) => {
+        //console.log("DEBUG: ComponentsDidMount error");
+        console.log(error);
+      }
+    ).then(() => this.setState({loading:false}));
+  }
 
+  //Renders filtering button
   renderFilterButton() {
     if( this.state.loadedDefaults && this.state.loadedDiets) {
       return (
@@ -220,7 +254,7 @@ class SearchBar extends React.Component {
   //Used to acknowledge change and store new values
   handleFilterChange(selectedOptions) {
     this.setState({
-      filters : selectedOptions
+      selectedDiets : selectedOptions
     });
   }
 
@@ -241,10 +275,24 @@ class SearchBar extends React.Component {
     this.setState({ pricing : newRating });
   }
   
+  //Handles changes done to the slider
   onSliderChange = (value) => {
     this.setState({
       radius : value,
     });
+  }
+  
+  //Resets the filters.
+  resetFilters()
+  {
+	this.setState({
+      minOverall : 0,
+      minReliability : 0,
+      minVariety : 0,
+      minService : 0,
+      pricing: 0,
+	  selectedDiets: this.state.userDiets
+	})
   }
 
   
@@ -367,6 +415,7 @@ class SearchBar extends React.Component {
         selectPlaceholder:"Select diets...",
         noOptionsMessage:"No diets",
         selectRadius: "Select search radius:",
+		resetFilters: "Reset filters"
       },
       fi: {
         search:"Hae kaupungista...",
@@ -384,6 +433,7 @@ class SearchBar extends React.Component {
         selectPlaceholder:"Valitse ruokavalioita...",
         noOptionsMessage:"Ei ruokavalioita",        
         selectRadius: "Valitse etsintä säde:",
+		resetFilters: "Tyhjennä hakuehdot"
       }
     });
     const language = this.props.language == null ? 'fi' : this.props.language;
@@ -471,6 +521,7 @@ class SearchBar extends React.Component {
               </ModalBody>
               
               <ModalFooter>
+				<button className="btn main-btn" onClick={this.resetFilters}> {strings.resetFilters} </button>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
               
