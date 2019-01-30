@@ -62,10 +62,9 @@ export default class WriteReview extends React.Component {
   //Actios to be caried upon mounting
   componentDidMount() {
     this._isMounted = true;    
-    this.setState({
-		options: this.getDiets(),
-		defaultDiets: this.getDefaultDiets()
-	})
+    
+	this.getDiets();
+	this.getDefaultDiets();
   }
   
   toggleForm() {
@@ -94,8 +93,8 @@ export default class WriteReview extends React.Component {
           
           this.setState({
             loadingOptions: false,
+			options: diets
           });
-          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -132,11 +131,9 @@ export default class WriteReview extends React.Component {
           
           this.setState({
             loadedDefaults : true,
-            selectedFilters : defValues
+            selectedFilters : defValues,
+			defaultDiets: defValues
           });
-          
-          
-          return defValues;
       },
       // Note: it's important to handle errors here
       // instead of a catch() block so that we don't swallow
