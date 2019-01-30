@@ -50,7 +50,7 @@ export default class WriteReview extends React.Component {
       title : '',
       reviewText : '',
       options : [],
-	  defaultDiets : []
+	  defaultDiets : [],
       selectedFilters : [],
       reliability : 0,
       choice : 0,
@@ -63,8 +63,8 @@ export default class WriteReview extends React.Component {
   componentDidMount() {
     this._isMounted = true;    
     this.setState({
-		options: getDiets()
-		defaultDiets: getDefaultDiets()
+		options: this.getDiets(),
+		defaultDiets: this.getDefaultDiets()
 	})
   }
   
@@ -209,13 +209,13 @@ export default class WriteReview extends React.Component {
     var overall = (this.state.reliability + this.state.choice + this.state.quality) / 3;    
 	
     //Generating url
-    var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + obj.id
+    var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + this.state.id
       + "&title=" + this.state.title
       + "&text=" + this.state.reviewText
       + "&rating_overall=" + overall
       + "&rating_variety=" + this.state.choice
       + "&rating_reliability=" + this.state.reliability
-      + "&rating_service_and_quality=" + obj.quality
+      + "&rating_service_and_quality=" + this.state.quality
       + "&pricing=" + this.state.cost
       + "&diets=" + this.state.selectedFilters.join();
     
