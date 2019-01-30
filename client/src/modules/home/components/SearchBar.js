@@ -163,8 +163,8 @@ class SearchBar extends React.Component {
 
   //This gets the options for the selection.
   getDiets() {
-    //console.log("Fetching diets")
-    fetch("http://localhost:3000/diet/all")
+    let url = Config.backendAPIPaths.BASE + '/diet/all';
+    fetch(url)
       .then(res => res.json())
       .then(
         (result) => {  

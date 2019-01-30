@@ -3,6 +3,7 @@ import { browserHistory, Router, Route } from 'react-router';
 import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
+import config from '../../../config';
 
 import { Button, Container, Row, Col } from 'reactstrap';
 
@@ -146,10 +147,10 @@ class Review extends React.Component {
       }
       left() { alert('vasen'); }
       rigth() { alert('rigth'); }
-      deleteItem() { fetch('http://localhost:3000/ownReviews/delete') }
+      deleteItem() { fetch(config.backendAPIPaths.BASE + '/ownReviews/delete') }
       init(statusvalue)  {
             var t = this;
-            fetch('http://localhost/ownReviews?status=' + statusvalue).then((response) => response.json())
+            fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
                              for(var item in responseJson.reviews)  {
@@ -179,7 +180,7 @@ class Review extends React.Component {
             var rating_overall = document.getElementById("overall").value;
 
             var rating_variety = document.getElementById("rating_variety").value;
-            var url = 'http://localhost:3000/ownReviews/edit?status=0&text=' + text;
+            var url = config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
             url += "&title=" + title;
             url += "&rating_overall=" + rating_overall;
             url += "&rating_variety=" + rating_variety;

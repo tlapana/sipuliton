@@ -1,5 +1,44 @@
 function isString(value) {
-  return (typeof value === 'string' || value instanceof String)
+  return (typeof value === 'string' || value instanceof String);
+}
+
+function isArray(value) {
+  return value.constructor === Array;
+}
+
+/* Combines the strings in stringArray to one string separated by separator */
+function combineStrings(stringArray, separator) {
+  if (stringArray === null || stringArray === undefined) {
+    return '';
+  }
+  if (!isArray(stringArray) || isString(stringArray)) {
+    return stringArray.toString();
+  }
+  if (stringArray.length === 0) {
+    return '';
+  }
+  if (stringArray.length === 1) {
+    return stringArray[0];
+  }
+
+  if (separator === null || separator === undefined) {
+    separator = '';
+  }
+
+  let res = stringArray[0];
+  for (let i = 1; i < stringArray.length; i++) {
+    let str = stringArray[i];
+    if (str !== null && str !== undefined && str != '') {
+      if (res === null || res === undefined || res === '') {
+        res = stringArray[i];
+      }
+      else {
+        res += separator + stringArray[i];
+      }
+    }
+  }
+
+  return res;
 }
 
 function checkIfTrue(boolean) {
@@ -20,7 +59,7 @@ function checkIfTrue(boolean) {
   return true;
 }
 
-function  checkIfValid(isValid, value) {
+function checkIfValid(isValid, value) {
   if (isValid != null) {
     if (typeof isValid === 'function') {
       if (isValid.length === 0 && !isValid()) {
@@ -43,6 +82,8 @@ function  checkIfValid(isValid, value) {
 
 module.exports = {
   isString,
+  isArray,
+  combineStrings,
   checkIfTrue,
-  checkIfValid
+  checkIfValid,
 };

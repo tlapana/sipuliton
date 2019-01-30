@@ -10,6 +10,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'react
 import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
+import config from '../../../config';
 
 
 /* Localization */
@@ -164,7 +165,7 @@ export default class WriteReview extends React.Component {
     console.log(jsonString);
     
     //Generating url
-    var url = "http://localhost:3000/postReview?restaurant_id=" + obj.id
+    var url = config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + obj.id
       + "&title=" + obj.title
       + "&text=" + obj.reviewText
       + "&rating_overall=" + obj.overall
