@@ -53,8 +53,8 @@
     margin: 1em 0em 0em 0em;
 }
 
-.profile-edit-btn{
-  margin: 0em 0em 5em 0em !important;
+.profile-edit-btn, .change-password-btn {
+  margin: 0em .5em 5em 0em !important;
   width: inherit !important;
   align-items:center !important;
 }
@@ -93,4 +93,8 @@
     border-color: white;
     border-style: none none solid none;
   }
+}
+
+.save-btn {
+  float: right;
 }

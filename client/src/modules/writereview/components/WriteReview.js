@@ -10,6 +10,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'react
 import Select from 'react-select';
 import ReactLoading from 'react-loading';
 import '../../../styles/writereview.css';
+import config from '../../../config';
 
 import Config from '../../../config.js';
 
@@ -239,7 +240,6 @@ export default class WriteReview extends React.Component {
 
     //console.log("url:");
     //console.log(url);
-
     fetch(url)
       .then(res => res.json())
       .then(

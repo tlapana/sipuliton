@@ -15,18 +15,22 @@ INSERT INTO city_name VALUES
     ('100000', '1', 'imaginary city');
 
 INSERT INTO user_login(user_id, cognito_sub, username, email) VALUES
-    ('0', 'test-user-1', 'Sipuliton mod', 'test@mail.com'),
+    ('0', 'c10cb9bc-7401-47fe-ac81-e13d394a0189', 'TestUser1', 'eelis.mikkola@student.tut.fi'),
     ('1', 'Test-user-2', 'Admin', 'admin@sipuliton.fi'),
     ('2', 'Test-user-3', 'Troller', 'sum1@here.com'),
     ('3', 'get from cognito', 'Restaurant owner', 'asd@asd.com'),
-    ('4', 'cog5', 'user', 'das@asd.com');
+    ('4', 'cog5', 'user', 'das@asd.com'),
+    ('5', 'test-user-1', 'Sipuliton mod', 'test@mail.com'),
+    ('6', '1cbd9888-a5b9-4334-85aa-a4a761f992be', 'TestUser4', 'eelis.mikkola@tuni.fi');
 
 INSERT INTO user_profile(user_id, role, display_name, image_url, language_id, birth_year, birth_month, gender, description, country_id, city_id, diet_id) VALUES
-    ('0', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
+    ('0', '3', 'TestUser1', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
     ('1', '0', 'Admin', NULL, '1', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
     ('2', '3', 'Basic user', NULL, '0', '2000', '8', 'M', NULL, '1000', '100000', '0'),
     ('3', '2', 'Restaurant owner', NULL, '0', NULL, NULL, 'F', 'A happy owner of restaurant', NULL, NULL, NULL),
-    ('4', '3', 'Basic user2', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+    ('4', '3', 'Basic user2', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+    ('5', '1', 'Sipuliton test', 'https://vignette.wikia.nocookie.net/blogclan-2/images/b/b9/Random-image-15.jpg/revision/latest?cb=20160706220047', '0', '2000', NULL, 'M', 'dunno what to write', NULL, NULL, '1'),
+    ('6', '3', 'TestUser4', NULL, '0', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 INSERT INTO user_stats(user_id, countries, cities, reviews, thumbs_up, thumbs_down, thumbs_up_given, thumbs_down_given, activity_level, last_active) VALUES
     ('0', '4', '12', '15', '32', '5', '8', '0', '8', '2018-06-12 19:10:25-07 '),
@@ -60,7 +64,7 @@ INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '3');
 
 INSERT INTO review(restaurant_id, user_id, posted, status, title, image_url, free_text, rating_overall, rating_reliability, rating_variety, rating_service_and_quality, pricing, thumbs_up, thumbs_down) VALUES
-    ('1', '0', '2018-09-22 6:30:25-07', '0', 'asd', NULL, NULL, '5', '5', '5', '5', '3', '0', '0'),
+    ('1', '0', '2018-09-22 6:30:25-07', '0', 'asd', NULL, '<script>alert(1);</script>', '5', '5', '5', '5', '3', '0', '0'),
     ('1', '0', '2018-11-1 10:23:54', '1', 'Hyvä ravintola', NULL, 'Vapaata arvostelutekstiä', '4', '4', '4', '4', '4', '100', '50'),
     ('1', '1', '2018-11-1 10:23:54', '1', 'Hyvä ravintola 2', NULL, 'Vapaata arvostelutekstiä', '1', '1', '1', '1', '1', '100', '500');
 

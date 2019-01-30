@@ -5,12 +5,11 @@ import {
   NavItem,
 } from 'reactstrap';
 import { Auth } from 'aws-amplify';
-import { Redirect } from "react-router-dom";
+import { Redirect, withRouter } from "react-router-dom";
 
-export default class MainMenuListItem extends React.Component{
+class MainMenuLogoutButton extends React.Component{
   constructor(props) {
     super(props);
-    this.state = { logoutSuccesfully: true };
     this.logout = this.logout.bind(this);
   }
 
@@ -18,7 +17,10 @@ export default class MainMenuListItem extends React.Component{
   /* This method implements user log out. */
   logout(){
     Auth.signOut()
-        .then(data => this.setState({logoutSuccesfully: true}))
+        .then(data => {
+          this.props.loggedOut();
+          this.props.history.push(this.props.redirectPath);
+        })
         .catch(err => console.log(err));
   }
 
@@ -31,8 +33,11 @@ export default class MainMenuListItem extends React.Component{
           <a className="nav-link" href="#" onClick={this.logout}>
             {this.props.logoutText}
           </a>
-        {this.state.logoutSuccesfully && <Redirect to={this.props.redirectPath} />}
         </NavItem>
     );
   }
 }
+
+
+const MainMenuLogoutButtonWithRouter = withRouter(MainMenuLogoutButton);
+export default MainMenuLogoutButtonWithRouter;
