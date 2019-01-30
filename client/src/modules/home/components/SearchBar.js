@@ -38,7 +38,7 @@ class SearchBar extends React.Component {
     this.doSearch = this.doSearch.bind(this);
     this.getDiets = this.getDiets.bind(this);
     this.getDefaultValues = this.getDefaultValues.bind(this);
-	
+
     this.handleKeywordChange = this.handleKeywordChange.bind(this);
     this.handleFilterChange = this.handleFilterChange.bind(this);
 
@@ -48,9 +48,9 @@ class SearchBar extends React.Component {
     this.changeService = this.changeService.bind(this);
     this.changePricing = this.changePricing.bind(this);
     this.distanceSelector = this.distanceSelector.bind(this);
-    this.onSliderChange = this.onSliderChange.bind(this);	
+    this.onSliderChange = this.onSliderChange.bind(this);
 	this.resetFilters = this.resetFilters.bind(this);
-	
+
     this.renderDistance = this.renderDistance.bind(this);
     this.renderDiets = this.renderDiets.bind(this);
 
@@ -99,10 +99,8 @@ class SearchBar extends React.Component {
     );
 
     //Get the diets
-    this.setState({
-      diets: this.getDiets(),
-      userDiets : this.getDefaultValues()
-    });
+    this.getDiets();
+    this.getDefaultValues();
 
   }
 
@@ -124,26 +122,47 @@ class SearchBar extends React.Component {
     //console.log("DEBUG: SearchBar.js ToggleSearchField()");
     //console.log(this.state.useUserLocation);
   }
-  
-  
+
+
   //Does the search by generating URL we pass to map
   searchUrl() {
+    var dietParam = "&diets=[]";
+    console.log(this.state.selectedDiets)
+    if(this.state.selectedDiets != undefined && this.state.selectedDiets.length>0)
+    {
+      var searchDiets = [];
+      for(var i = 0; i<this.state.selectedDiets.length; ++i)
+      {
+        searchDiets.push(this.state.selectedDiets[i].value);
+      }
+      var diet_ids = searchDiets;
+      var diet_array_string = "[";
+      for(var i = 0; i<diet_ids.length-1; ++i)
+      {
+        if(diet_ids[i] !== undefined)
+        {
+          diet_array_string = diet_array_string+diet_ids[i]+',';
+        }
+      }
+      diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
+      dietParam = '&diets='+diet_array_string;
+    }
     var url = '/'+this.props.language+'/map?'
                 + 'minOverallRating=' + this.state.minOverall
                 + '&minReliabilityRating=' + this.state.minReliability
                 + '&minVarietyRating=' + this.state.minService
                 + '&minServiceAndQualityRating=' + this.state.minVariety
                 + '&minPricing=' + this.state.pricing
-                + '&diets=' + this.state.selectedDiets.join();
-    
+                + dietParam;
+
 
     if(this.state.useUserLocation) {
       url = url + '&searchLongitude=' + this.state.longitude + '&searchLatitude=' + this.state.latitude;
     }
     else{
-      url = url + "&city=" + this.state.city;
+      url = url + "&city=" + this.state.keywords;
     }
-    
+
     return url;
   }
 
@@ -163,9 +182,9 @@ class SearchBar extends React.Component {
     fetch( Config.backendAPIPaths.BASE + "/diet/all")
       .then(res => res.json())
       .then(
-        (result) => {  
+        (result) => {
           //Process results into ones that can be used by the select
-          
+
           var diets = []
           for(var i = 0; i < result.length; i++)
           {
@@ -173,11 +192,11 @@ class SearchBar extends React.Component {
           }
           //console.log("DEBUG: SearchBar.js getDiets()")
           //console.log(diet)
-          
+
           this.setState({
             loadedDiets: true,
+			diets: diets
           });
-          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -192,7 +211,7 @@ class SearchBar extends React.Component {
         }
       )
   }
-  
+
   //Get user default diets.
   getDefaultValues()
   {
@@ -211,14 +230,12 @@ class SearchBar extends React.Component {
           result.own_diets.forEach(function(element) {
             defValues.push({value:element.global_diet_id, label:element.name});
           });
-          
+
           this.setState({
             loadedDefaults : true,
-            selectedDiets : defValues
+            selectedDiets : defValues,
+			userDiets : defValues
           });
-          
-          
-          return defValues;
       },
       // Note: it's important to handle errors here
       // instead of a catch() block so that we don't swallow
@@ -274,14 +291,14 @@ class SearchBar extends React.Component {
   changePricing(newRating, name) {
     this.setState({ pricing : newRating });
   }
-  
+
   //Handles changes done to the slider
   onSliderChange = (value) => {
     this.setState({
       radius : value,
     });
   }
-  
+
   //Resets the filters.
   resetFilters()
   {
@@ -295,22 +312,22 @@ class SearchBar extends React.Component {
 	})
   }
 
-  
+
   //Renders the distance slider if we use it
   distanceSelector()  {
     let strings = new LocalizedStrings({
       en:{
         selectRadius: "Select search radius:",
       },
-      fi: {      
+      fi: {
         selectRadius: "Valitse etsintä säde:",
       }
     });
-    
+
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
-    
-    if(this.state.useUserLocation) {      
+
+    if(this.state.useUserLocation) {
       return(
         <div>
           <div><Label>{strings.selectRadius}: {this.renderDistance()} </Label></div>
@@ -323,10 +340,10 @@ class SearchBar extends React.Component {
         </div>
       );
     }
-    
+
     return;
   }
-  
+
   //Prints distance
   renderDistance()
   {
@@ -334,10 +351,10 @@ class SearchBar extends React.Component {
     km = km.toFixed(2);
     return (km + "km");
   }
-  
+
   renderDiets()
   {
-    
+
     let strings = new LocalizedStrings({
       en:{
         loading: "Loading diets",
@@ -349,17 +366,17 @@ class SearchBar extends React.Component {
         loading: "Ladataan ruokavalioita",
         error : "Virhe tapahtui ruokavalioita hakiessa",
         selectPlaceholder:"Valitse ruokavalioita...",
-        noOptionsMessage:"Ei ruokavalioita",      
+        noOptionsMessage:"Ei ruokavalioita",
       }
     });
     const language = this.props.language == null ? 'fi' : this.props.language;
     strings.setLanguage(language);
-    
+
     //If diets have been loaded, present them
     if(this.state.loadedDiets)
-    {      
+    {
       if(this.state.dietError == null)
-      {    
+      {
         //console.log("DEBUG: SearchBar.js renderDiets()")
         //console.log(this.state.diets)
         return (
@@ -387,14 +404,14 @@ class SearchBar extends React.Component {
         );
       }
     }
-    
+
     //Else, present loading thingy
     return (
-      <div> 
+      <div>
         {strings.loading}
       </div>
     );
-    
+
   }
 
   render() {
@@ -431,7 +448,7 @@ class SearchBar extends React.Component {
         variety:"Ruokalajien laajuus",
         pricing:"Hintaluokka",
         selectPlaceholder:"Valitse ruokavalioita...",
-        noOptionsMessage:"Ei ruokavalioita",        
+        noOptionsMessage:"Ei ruokavalioita",
         selectRadius: "Valitse etsintä säde:",
 		resetFilters: "Tyhjennä hakuehdot"
       }
@@ -459,26 +476,26 @@ class SearchBar extends React.Component {
               </button>
               </InputGroupAddon>
             </InputGroup>
-            
+
             <input type="checkbox" name="useLocation"
               onChange={this.toggleSearchField}
               checked={this.state.useUserLocation}
-            /> 
+            />
             {strings.useMyLocation}
             {this.distanceSelector()}
             <br/>
-            
+
             <button className="filterBtn main-btn btn" id="filter_popover" onClick={this.toggleModal} type="button" >{strings.filter}</button>
-            
+
             <ThemedModalContainer isOpen={this.state.modalState} toggle={this.toggleModal} className="filterBox">
-            
+
               <ModalHeader>{strings.includeinsearch}</ModalHeader>
-              
+
               <ModalBody className="filterBox">
-              
-                {strings.diets}               
+
+                {strings.diets}
                 {this.renderDiets()}
-                 
+
                 <br />
                 {strings.overall}
                 <ReactStars
@@ -519,14 +536,14 @@ class SearchBar extends React.Component {
                 />
 
               </ModalBody>
-              
+
               <ModalFooter>
 				<button className="btn main-btn" onClick={this.resetFilters}> {strings.resetFilters} </button>
                 <button className="btn main-btn" onClick={this.toggleModal}> {strings.closeModal} </button>
               </ModalFooter>
-              
+
             </ThemedModalContainer>
-    
+
           </form>
         </div>
       );

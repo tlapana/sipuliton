@@ -62,10 +62,9 @@ export default class WriteReview extends React.Component {
   //Actios to be caried upon mounting
   componentDidMount() {
     this._isMounted = true;
-    this.setState({
-		options: this.getDiets(),
-		defaultDiets: this.getDefaultDiets()
-	})
+
+	this.getDiets();
+	this.getDefaultDiets();
   }
 
   toggleForm() {
@@ -94,8 +93,8 @@ export default class WriteReview extends React.Component {
 
           this.setState({
             loadingOptions: false,
+			options: diets
           });
-          return diets;
           //console.log("DEBUG: SearchBar getDiets(): Success fetching diets: " + this.state.diets)
         },
         // Note: it's important to handle errors here
@@ -132,11 +131,9 @@ export default class WriteReview extends React.Component {
 
           this.setState({
             loadedDefaults : true,
-            selectedFilters : defValues
+            selectedFilters : defValues,
+			defaultDiets: defValues
           });
-
-
-          return defValues;
       },
       // Note: it's important to handle errors here
       // instead of a catch() block so that we don't swallow
@@ -197,7 +194,7 @@ export default class WriteReview extends React.Component {
   submitReview  = event =>{
 
     event.preventDefault();
-    console.log("Submiting review");
+    //console.log("Submiting review");
     this.setState({
       submitingReview : true
     });
@@ -208,6 +205,27 @@ export default class WriteReview extends React.Component {
 	//Calculate overall
     var overall = (this.state.reliability + this.state.choice + this.state.quality) / 3;
 
+    var dietParam = "&globalDietId=[]";
+    if(this.state.selectedFilters != undefined && this.state.selectedFilters.length>0)
+    {
+      var searchDiets = [];
+      for(var i = 0; i<this.state.selectedFilters.length; ++i)
+      {
+        searchDiets.push(this.state.selectedFilters[i].value);
+      }
+      var diet_ids = searchDiets;
+      var diet_array_string = "[";
+      for(var i = 0; i<diet_ids.length-1; ++i)
+      {
+        if(diet_ids[i] !== undefined)
+        {
+          diet_array_string = diet_array_string+diet_ids[i]+',';
+        }
+      }
+      diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
+      dietParam = '&diets='+diet_array_string;
+    }
+
     //Generating url
     var url = Config.backendAPIPaths.BASE + "/postReview?restaurant_id=" + this.state.id
       + "&title=" + this.state.title
@@ -217,7 +235,7 @@ export default class WriteReview extends React.Component {
       + "&rating_reliability=" + this.state.reliability
       + "&rating_service_and_quality=" + this.state.quality
       + "&pricing=" + this.state.cost
-      + "&diets=" + this.state.selectedFilters.join();
+      + dietParam;
 
     //console.log("url:");
     //console.log(url);
@@ -230,7 +248,7 @@ export default class WriteReview extends React.Component {
             submitingReview: false,
             reviewSubmitted: true,
           });
-          console.log("Success submitting review")
+          //console.log("Success submitting review")
         },
         // Note: it's important to handle errors here
         // instead of a catch() block so that we don't swallow
@@ -241,7 +259,7 @@ export default class WriteReview extends React.Component {
             reviewSubmitted: false,
             error: error
           });
-          console.log("Error submitting review")
+          //console.log("Error submitting review")
           console.log(error);
         }
       )
@@ -354,7 +372,7 @@ export default class WriteReview extends React.Component {
 
     return (
       <div>
-        <button className="review-restaurant-btn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>  
+        <button className="review-restaurant-btn" onClick={this.toggleForm} type="button" >  {strings.buttonTxt} </button>
 
         <Modal isOpen={this.state.showForm} toggle={this.toggleForm} dialogClassName="reviewModal">
           <ModalHeader> {strings.modalTitle} </ModalHeader>

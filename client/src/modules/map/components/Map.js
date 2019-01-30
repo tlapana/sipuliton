@@ -39,6 +39,8 @@ class Map extends React.Component {
       latitude:60.168182,
       diets:[],
     }
+    //Geocoder initialization. This is needed for converting address to location.
+    Geocoder.init(Config.google.API_KEY);
 
     var showFilterBox = true;
     var loading = false;
@@ -55,7 +57,7 @@ class Map extends React.Component {
       loading = true;
       showCurrentLocationMarker = false;
     }
-
+    //console.log(filters);
     //Initialize new state vased on new filters.
     this.state = {
       filters:{
@@ -68,6 +70,7 @@ class Map extends React.Component {
         city:filters.city,
         diets:filters.diets,
       },
+      cityPassed:!filters.useUserLocation,
       showFilterBox: showFilterBox,
       center:[filters.latitude,filters.longitude],
       checkboxes:{
@@ -94,15 +97,15 @@ class Map extends React.Component {
       }
     };
 
-    //Geocoder initialization. This is needed for converting address to location.
-    Geocoder.init(Config.google.API_KEY);
+    //console.log(this.state);
 
     //Function bindings.
     this.GetRestaurantsMarkers = this.GetRestaurantsMarkers.bind(this);
 		this.FiltersChanged = this.FiltersChanged.bind(this);
     this.SelectedRestaurantChanged = this.SelectedRestaurantChanged.bind(this);
+    this.FetchRestaurants = this.FetchRestaurants.bind(this);
 
-    //Fetchh restaurant markers based on new filters if search parameters where inserted.
+    //Fetch restaurant markers based on new filters if search parameters where inserted.
     if(this.props.location.search !== undefined
       && this.props.location.search !== ""
       && this.props.location.search.includes("?")
@@ -200,6 +203,7 @@ class Map extends React.Component {
     //Printing for the debugging.
     //console.log("Getting: "+markColor)
     //console.log(this.state.searchLoc)
+
     var dietParam = "&globalDietId=[]";
     if(this.state.filters.diets != undefined && this.state.filters.diets.length>0)
     {
@@ -214,132 +218,184 @@ class Map extends React.Component {
       {
         if(diet_ids[i] !== undefined)
         {
-          diet_array_string = diet_array_string+diet_ids[i]+',';          
+          diet_array_string = diet_array_string+diet_ids[i]+',';
         }
       }
       diet_array_string = diet_array_string+diet_ids[diet_ids.length-1]+']';
       dietParam = '&globalDietId='+diet_array_string;
     }
-    console.log(dietParam);
+    //console.log(dietParam);
 
-    //Basic search portion for the green markers.
-    var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
-                + '&minOverallRating=' + this.state.filters.minOverall
-                + '&minReliabilityRating=' + this.state.filters.minReliability
-                + '&minVarietyRating=' + this.state.filters.minService
-                + '&minServiceAndQualityRating=' + this.state.filters.minVariety
-                + '&maxDistance=' + this.state.filters.radius
-                + '&currentLatitude=' + this.state.searchLoc[0]
-                + '&currentLongitude=' + this.state.searchLoc[1]
-                + dietParam;
-    console.log(url);
-    if(markColor === "grey"){
-      //Basic search portion for the grey markers. Here all ratings are set to 0 to find more restaurants.
-      url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
-                  + '&minOverallRating=0'
-                  + '&minReliabilityRating=0'
-                  + '&minVarietyRating=0'
-                  + '&minServiceAndQualityRating=0'
+    if(this.state.cityPassed)
+    {
+      // Change city name to location.
+      Geocoder.from(this.state.filters.city)
+      .then(json => {
+        //New location.
+        var location = json.results[0].geometry.location;
+        //Console print for debugging.
+        //console.log(location);
+        //Basic search portion for the green markers.
+        var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                    + '&minOverallRating=' + this.state.filters.minOverall
+                    + '&minReliabilityRating=' + this.state.filters.minReliability
+                    + '&minVarietyRating=' + this.state.filters.minService
+                    + '&minServiceAndQualityRating=' + this.state.filters.minVariety
+                    + '&maxDistance=' + this.state.filters.radius
+                    + '&currentLatitude=' + location.lat
+                    + '&currentLongitude=' + location.lng
+                    + dietParam;
+        //console.log(url);
+        if(markColor === "grey"){
+          //Basic search portion for the grey markers. Here all ratings are set to 0 to find more restaurants.
+          url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                      + '&minOverallRating=0'
+                      + '&minReliabilityRating=0'
+                      + '&minVarietyRating=0'
+                      + '&minServiceAndQualityRating=0'
+                      + '&maxDistance=' + this.state.filters.radius
+                      + '&currentLatitude=' + location.lat
+                      + '&currentLongitude=' + location.lng
+                      + dietParam;
+        }
+        //console.log(url);
+        this.setState({
+          center:[location.lat,location.lng],
+          searchLoc:[location.lat,location.lng],
+          cityPassed:false,
+        })
+        this.FetchRestaurants(url,markColor);
+      })
+      .catch(error => {
+        console.warn(error)
+      });
+    }
+    else{
+      //Basic search portion for the green markers.
+      var url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                  + '&minOverallRating=' + this.state.filters.minOverall
+                  + '&minReliabilityRating=' + this.state.filters.minReliability
+                  + '&minVarietyRating=' + this.state.filters.minService
+                  + '&minServiceAndQualityRating=' + this.state.filters.minVariety
                   + '&maxDistance=' + this.state.filters.radius
                   + '&currentLatitude=' + this.state.searchLoc[0]
                   + '&currentLongitude=' + this.state.searchLoc[1]
                   + dietParam;
+      //console.log(url);
+      if(markColor === "grey"){
+        //Basic search portion for the grey markers. Here all ratings are set to 0 to find more restaurants.
+        url = Config.backendAPIPaths.BASE+'/search?pageSize=10&pageNumber=0&orderBy=rating_overall'
+                    + '&minOverallRating=0'
+                    + '&minReliabilityRating=0'
+                    + '&minVarietyRating=0'
+                    + '&minServiceAndQualityRating=0'
+                    + '&maxDistance=' + this.state.filters.radius
+                    + '&currentLatitude=' + this.state.searchLoc[0]
+                    + '&currentLongitude=' + this.state.searchLoc[1]
+                    + dietParam;
+      }
+      this.FetchRestaurants(url,markColor);
     }
 
     //Set map to loading state.
     this.setState({loading:true})
 
-    //Fetch marker data.
-    fetch(url)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          //Printings for the debugging.
-          //console.log("Sending results");
-          //console.log(result);
-
-          //Parse fetched data using map global api.
-          var markers = MapApi.parseRestaurantsData(result.restaurants);
-          if(markColor === "grey"){
-            //Selects most suitable grey markers.
-            markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
-          }
-
-          if((markers.length === 0 || markers.length === undefined) &&
-            markColor === "grey" &&
-            this.state.restaurants.green.length === 0
-          )
-          {
-            //Here is not found any green and grey markers, so show no
-            //restaurants found notification.
-
-            this.setState({
-              loading:false,
-              errors:{
-                errorRestaurantsNotFound:true
-              }
-            })
-            return;
-          }
-
-          if(markColor === "grey"){
-            // Set new center point to the map api.
-            MapApi.setNewCenter(this.state.center);
-
-            // Sort markers by distance.
-            markers = markers.sort(MapApi.sortByDistanceToCenter());
-            this.setState(
-              {
-                loading:false,
-                restaurants:{
-                  grey:markers,
-                  green:this.state.restaurants.green,
-                  selected:[],
-                  selectedColour:"",
-                }
-              }
-            )
-          }
-          else{
-            // Set new center point to the map api.
-            MapApi.setNewCenter(this.state.center);
-            // Sort markers by distance.
-            markers = markers.sort(MapApi.sortByDistanceToCenter());
-            this.setState(
-              {
-                loading:false,
-                restaurants:{
-                  green:markers,
-                  grey:[],
-                  selected:[],
-                  selectedColour:"",
-                }
-              }
-            )
-          }
-        },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
-        (error) => {
-          console.log("DEBUG: ComponentsDidMount error");
-          console.log(error);
-          this.setState({loading:false,errors:{errorWhileSearching:true},});
-        }
-      )
-      .then(
-        () => {
-          //Check if the fetched markers were green.
-          if(markColor === "green"){
-            //Check if there was found under 10 restaurant
-            if(this.state.restaurants.green.length < 10){
-              //Fetch more restaurants as a grey restaurant.
-              this.GetRestaurantsMarkers("grey");
-            }
-          }
-        }
-      );
 	}
+
+  FetchRestaurants(url,markColor)
+  {
+
+        //Fetch marker data.
+        fetch(url)
+          .then(res => res.json())
+          .then(
+            (result) => {
+              //Printings for the debugging.
+              //console.log("Sending results");
+              //console.log(result);
+
+              //Parse fetched data using map global api.
+              var markers = MapApi.parseRestaurantsData(result.restaurants);
+              if(markColor === "grey"){
+                //Selects most suitable grey markers.
+                markers = MapApi.chooseGreyMarkers(this.state.restaurants.green,markers);
+              }
+
+              if((markers.length === 0 || markers.length === undefined) &&
+                markColor === "grey" &&
+                this.state.restaurants.green.length === 0
+              )
+              {
+                //Here is not found any green and grey markers, so show no
+                //restaurants found notification.
+
+                this.setState({
+                  loading:false,
+                  errors:{
+                    errorRestaurantsNotFound:true
+                  }
+                })
+                return;
+              }
+
+              if(markColor === "grey"){
+                // Set new center point to the map api.
+                MapApi.setNewCenter(this.state.center);
+
+                // Sort markers by distance.
+                markers = markers.sort(MapApi.sortByDistanceToCenter());
+                this.setState(
+                  {
+                    loading:false,
+                    restaurants:{
+                      grey:markers,
+                      green:this.state.restaurants.green,
+                      selected:[],
+                      selectedColour:"",
+                    }
+                  }
+                )
+              }
+              else{
+                // Set new center point to the map api.
+                MapApi.setNewCenter(this.state.center);
+                // Sort markers by distance.
+                markers = markers.sort(MapApi.sortByDistanceToCenter());
+                this.setState(
+                  {
+                    loading:false,
+                    restaurants:{
+                      green:markers,
+                      grey:[],
+                      selected:[],
+                      selectedColour:"",
+                    }
+                  }
+                )
+              }
+            },
+            // Note: it's important to handle errors here
+            // instead of a catch() block so that we don't swallow
+            // exceptions from actual bugs in components.
+            (error) => {
+              console.log("DEBUG: ComponentsDidMount error");
+              console.log(error);
+              this.setState({loading:false,errors:{errorWhileSearching:true},});
+            }
+          )
+          .then(
+            () => {
+              //Check if the fetched markers were green.
+              if(markColor === "green"){
+                //Check if there was found under 10 restaurant
+                if(this.state.restaurants.green.length < 10){
+                  //Fetch more restaurants as a grey restaurant.
+                  this.GetRestaurantsMarkers("grey");
+                }
+              }
+            }
+          );
+  }
 
   // Method handles filter changes. Takes as a parameter new filters.
 	FiltersChanged(
@@ -390,6 +446,7 @@ class Map extends React.Component {
           {
             showCurrentLocationMarker:false,
             searchLoc:[location.lat,location.lng],
+            center:[location.lat,location.lng],
             errors:{errorWhileGeocoding:false}
           },() => this.GetRestaurantsMarkers("green")
         );

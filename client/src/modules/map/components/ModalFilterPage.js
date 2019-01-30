@@ -329,7 +329,7 @@ class ModalFilterPage extends React.Component {
               }
             });
           })
-          console.log(defValues);
+          //console.log(defValues);
           this.setState({
             diets: defValues,
             defaultValues : defValues,
