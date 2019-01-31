@@ -13,6 +13,7 @@ import { Route, Redirect } from 'react-router'
 import ReactStars from 'react-stars';
 import Select from 'react-select';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { API } from "aws-amplify";
 
 import Slider from 'rc-slider';
 
@@ -217,9 +218,8 @@ class SearchBar extends React.Component {
   {
     //Console log for debugging
     //console.log("Getting the default values for the diets: ");
-    var url = Config.backendAPIPaths.BASE+'/ownDiets';
-    fetch(url)
-      .then(res => res.json())
+    let init = { queryStringParameters: {} };
+    API.get('api', '/ownDiets', init)
       .then(
         (result) => {
           //Console log for debugging

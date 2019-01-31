@@ -15,6 +15,7 @@ import SearchBar from '../../../../modules/home/components/SearchBar.js'
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
 import config from '../../../../config';
+import { API } from "aws-amplify";
 
 import LocalizedStrings from 'react-localization';
 /*class WaitReview extends React.Component {
@@ -49,10 +50,10 @@ class Review extends React.Component {
             window.location = "/fi/myReviewEdit"
       }
       deleterow(term) {
-            fetch(config.backendAPIPaths.BASE + '/ownReviews/delete?review_id=' + term)
-
+            let init = { queryStringParameters: { review_id: term } };
+            API.get('api', '/ownReviews/delete', init)
                   .then(ans => {
-                        if (ans.ok) {
+                        if (ans.ok || ans.statuscode == 200) {
                               alert('ok')
                               window.location.reload();
                         } else {
@@ -107,10 +108,22 @@ class Review extends React.Component {
             
       };
  
-      deleteItem() { fetch(config.backendAPIPaths.BASE + '/ownReviews/delete') }
+      deleteItem() { 
+            //let init = { queryStringParameters: {} };
+            //API.get('api', '/ownReviews/delete', init)
+            //fetch(config.backendAPIPaths.BASE + '/ownReviews/delete') 
+      }
       init(statusvalue) {
             var t = this;
-            fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue + '&limit=' + this.limit + '&offset=' + this.page * this.limit).then((response) => response.json())
+            let init = { 
+                  queryStringParameters: {
+                        status: statusvalue,
+                        limit: this.limit,
+                        offset: this.page * this.limit,
+                  } 
+            };
+            API.get('api', '/ownReviews', init)
+            //fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue + '&limit=' + this.limit + '&offset=' + this.page * this.limit).then((response) => response.json())
                   .then((responseJson) => {
                  
                         var array1 = [];
@@ -152,14 +165,16 @@ class Review extends React.Component {
             var rating_overall = document.getElementById("overall").value;
 
             var rating_variety = document.getElementById("rating_variety").value;
-            var url = config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
+            var url = '/ownReviews/edit?status=0&text=' + text;
             url += "&title=" + title;
             url += "&rating_overall=" + rating_overall;
             url += "&rating_variety=" + rating_variety;
             url += "&pricing=" + pricing;
             url += "&rating_service_and_quality=" + rating_service_and_quality;
 
-            fetch(url)
+            let init = { queryStringParameters: { } };
+            //fetch(url)
+            API.get('api', url, init)
                   .then(response => alert('jes'));
       }
 
