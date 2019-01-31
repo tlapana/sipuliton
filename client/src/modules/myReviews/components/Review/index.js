@@ -11,29 +11,16 @@ import { ClipLoader } from 'react-spinners';
 import Popup from "reactjs-popup";
 import { TiArrowDown } from "react-icons/ti";
 import '../../../../styles/ownreview.css';
-import SearchBar from '../../../../modules/home/components/SearchBar.js'
+ 
+
 import ReactPaginate from 'react-paginate';
 import Modal from 'react-responsive-modal';
 import config from '../../../../config';
 import { API } from "aws-amplify";
 
+
 import LocalizedStrings from 'react-localization';
-/*class WaitReview extends React.Component {
-      constructor(props) {
 
-            super(props);
-      }
-
-      async componentDidMount()   {
-     
-        }
-
-      render()  {
-            return ( <div>    <ReactLoading type={'spinningBubbles'} className="loadingSpinner" /> <p>Loading</p></div>);
-      }
-}
-
-*/
 
 
 class Review extends React.Component {
@@ -47,7 +34,7 @@ class Review extends React.Component {
 
       send() {
             localStorage.setItem('info', "" + JSON.stringify(this.state.data));
-            window.location = "/fi/myReviewEdit"
+            window.location = "/" +this.props.match.params.language+ "/myReviewEdit"
       }
       deleterow(term) {
             let init = { queryStringParameters: { review_id: term } };
@@ -80,16 +67,17 @@ class Review extends React.Component {
                   rating_variety: 0,
                   loading1:false,
                   rating_service_and_quality: 0,
-                  edit: false
+                  edit: false,
+                  la:this.props.match.params.language,
+
+
 
             }
 
-            
+  
        
 
       }
-
-    
 
       onOpenModal(item)  {
 
@@ -134,10 +122,9 @@ class Review extends React.Component {
                               //draw the array and formats time
                               let data_item =  responseJson.reviews[item]
                               var datetime1 = new Date(data_item.posted);
+                              array1.push(<div><Row  className='row1' key="1" > <Col xs="2">< button class="row1" onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <div class="starWidh" key="1" ><ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </div></Col>
+                           <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row> </div>);
 
-                              array1.push(<Row key="1"> <Col xs="2">< button onClick={  ()=>{this.onOpenModal(data_item )}  }>  <TiArrowDown /></button> </Col><Col xs="6" key="1"><em>{data_item .name}</em></Col><Col> <ReactStars edit={false} value={data_item .rating_overall} count={5} size={24} /> </Col></Row>);
-                              array1.push(<Row key="1"> <Col xs="2" key="1"></Col><Col xs="8" key="1"><em>{datetime1.getDate()}/{datetime1.getMonth() +1}/{datetime1.getFullYear()}  {datetime1.getHours()}:{datetime1.getMinutes()}</em> </Col></Row>);
-                              array1.push(<Row key="1"> <Col key="1"><hr /></Col></Row>);
                  
                         }
                         t.setState({ array: array1 });
@@ -196,7 +183,7 @@ class Review extends React.Component {
       };
 
 
-
+ 
     
 
       onCloseModal = () => {
@@ -204,6 +191,48 @@ class Review extends React.Component {
       };
 
        render() {
+         
+             
+            var lan=this.props.match.params.language
+            let strings = new LocalizedStrings({
+
+                  en: {
+                    title: "My reviews",
+                    status: "Status",
+                    name: "Name",
+                    reviewtitle: "Title",
+                    waiting: "Waiting",
+                    approved: "Approved",
+                    rejected: "Rejected",
+                    freetext: "Freetext",
+                    posted: "Posted",
+                    overall: "Overall Rating",
+                    pricing: "price",
+                    ratingServiveAndQuality: "Rating service and quality",
+                    ratingVariety:"Rating variety",
+
+
+                  },
+            
+                  fi: {
+                    title: "Omat arvostelut",
+                    status: "Tila",
+                    name: "Nimi",
+                    reviewtitle: "Otsikko",
+                    waiting: "Odottaa",
+                    approved: "Hyväksytty",
+                    freetext: "Vapaa teksti",
+                    posted: "Jätetty",
+                    overall: "Yleisarviointi",
+                    pricing: "Hinta",
+                    ratingServiveAndQuality: "Palvelu ja laatu",
+                    ratingVariety:"Arvostelujen vaihtelu",
+
+                  }
+            
+                });
+                strings.setLanguage(lan);
+
   
             const { open } = this.state;
             const ratingChanged = (newRating) => {
@@ -227,15 +256,16 @@ class Review extends React.Component {
          );
       
         if(this.state.loading1)
-            return (<div>
+            return (<div >
                    
-                  <h1   >MyReviews  </h1>
-     
-                  <Modal open={open} onClose={this.onCloseModal} center>
+                  <h5   >{strings.title}  </h5>
+         
+
+         <Modal open={open} onClose={this.onCloseModal} center>
                      
-                        <Row>
+                        <Row >  
                               <Col xs="4">
-                                    name
+                              {strings.name} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.name}
@@ -245,7 +275,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    title
+                              {strings.reviewtitle} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.title}
@@ -253,7 +283,7 @@ class Review extends React.Component {
                         </Row>
                         <Row>
                               <Col xs="4">
-                                    freetext
+                              {strings.freetext} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.freetext}
@@ -261,7 +291,7 @@ class Review extends React.Component {
                         </Row>
                         <Row>
                               <Col xs="4">
-                                    Posted
+                              {strings.posted} 
                                     </Col>
                               <Col xs="4">
                                     {this.state.posted}
@@ -270,7 +300,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Overall Rating
+                                    {strings.overall}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.overall} count={5} size={24} />
@@ -279,7 +309,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Pricing
+                              {strings.pricing}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.pricing} count={3} size={24} />
@@ -289,7 +319,8 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Rating service and quality
+                              {strings.ratingServiveAndQuality}
+                                    
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.RatingServiceAndQuality} count={5} size={24} />
@@ -298,7 +329,7 @@ class Review extends React.Component {
 
                         <Row>
                               <Col xs="4">
-                                    Rating variety
+                                    {strings.ratingVariety}
                                     </Col>
                               <Col xs="8">
                                     <ReactStars edit={false} value={this.state.rating_variety} count={5} size={24} />
@@ -310,12 +341,12 @@ class Review extends React.Component {
                         <Button onClick={() => { this.send() }} >Edit</Button><Button onClick={() => { this.deleterow(this.state.id) }}>Delete</Button>
 
                   </Modal>
+                  <div>
 
-
-                  <em id="test">Status</em><select id="status" onChange={() => { this.changedvalue() }}>
-                        <option value="0">Odottaa</option>
-                        <option value="1">Hyväksytty</option>
-                        <option value="2">Hylätty</option>
+                  <label>{strings.status}</label><select id="status" onChange={() => { this.changedvalue() }}>
+                        <option value="0">{strings.waiting}</option>
+                        <option value="1">{strings.approved}</option>
+                        <option value="2">{strings.rejected}</option>
                   </select>
                   <ReactPaginate id={"react-paginate"} initialPage={0} onPageChange={this.handlePageClick} previousLabel={'<<'} nextLabel={'>>'} breakLabel={'...'} breakClassName={'break-me'} pageCount={this.pageCount} marginPagesDisplayed={2} pageRangeDisplayed={5}
                         containerClassName={'pagination'}
@@ -323,9 +354,10 @@ class Review extends React.Component {
                         subContainerClassName={'pages pagination'}
 
                         activeClassName={'active'} />
-                  <div style={{ "width": "500px", "overflow": "scroll", "height": "300px" }}>
+                  <div >
          
                         {this.state.array}
+                  </div>
                   </div>
             </div>);
       

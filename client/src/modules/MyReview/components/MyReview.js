@@ -4,7 +4,6 @@ import { Link, withRouter } from "react-router-dom";
 import ReactStars from 'react-stars'
 import {  Redirect } from 'react-router-dom';
 import config from '../../../config';
-import { API } from "aws-amplify";
 
 import { Button, Container, Row, Col } from 'reactstrap';
 
@@ -148,16 +147,10 @@ class Review extends React.Component {
       }
       left() { alert('vasen'); }
       rigth() { alert('rigth'); }
-      deleteItem() { 
-            //let init = { queryStringParameters: {} };
-            //API.get('api', '/ownReviews/delete', init)
-            //fetch(config.backendAPIPaths.BASE + '/ownReviews/delete');
-      }
+      deleteItem() { fetch(config.backendAPIPaths.BASE + '/ownReviews/delete') }
       init(statusvalue)  {
             var t = this;
-            let init = { queryStringParameters: { status: statusvalue } };
-            //fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue).then((response) => response.json())
-            API.get('api', '/ownReviews', init)
+            fetch(config.backendAPIPaths.BASE + '/ownReviews?status=' + statusvalue).then((response) => response.json())
                   .then((responseJson) => {
                              var array1=[];
                              for(var item in responseJson.reviews)  {
@@ -187,18 +180,17 @@ class Review extends React.Component {
             var rating_overall = document.getElementById("overall").value;
 
             var rating_variety = document.getElementById("rating_variety").value;
-            let init = { 
-                  queryStringParameters: {
-                        status: 0,
-                        text: text,
-                        title: title,
-                        rating_overall: rating_overall,
-                        rating_variety: rating_variety,
-                        pricing: pricing,
-                        rating_service_and_quality: rating_service_and_quality,
-                  } 
-            };
-            API.get('api', '/ownReviews/edit', init)
+            var url = config.backendAPIPaths.BASE + '/ownReviews/edit?status=0&text=' + text;
+            url += "&title=" + title;
+            url += "&rating_overall=" + rating_overall;
+            url += "&rating_variety=" + rating_variety;
+            url += "&pricing=" + pricing;
+            url += "&rating_service_and_quality=" + rating_service_and_quality;
+
+
+
+
+            fetch(url)
                   .then(response => alert('jes'));
       }
 
