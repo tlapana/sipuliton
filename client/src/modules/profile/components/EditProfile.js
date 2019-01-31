@@ -7,7 +7,7 @@ import * as validationUtil from "../../../validationUtil";
 import LocalizedStrings from 'react-localization';
 import { API, Auth } from 'aws-amplify';
 import config from '../../../config';
-
+import Select from 'react-select';
 import '../../../styles/profile.css';
 
 
@@ -34,12 +34,15 @@ class EditProfile extends React.Component {
       emailValid: true,
       isLoading: false,
       isSaving: false,
+      options:[],
+      diets:[],
+      originalDefDiets:[],
     }
 
     this.fetchCountries = this.fetchCountries.bind(this);
     this.saveData = this.saveData.bind(this);
-    this.addAllerg = this.addAllerg.bind(this);
-    this.deleteAllerg = this.deleteAllerg.bind(this);
+    //this.addAllerg = this.addAllerg.bind(this);
+    //this.deleteAllerg = this.deleteAllerg.bind(this);
     this.fetchCities = this.fetchCities.bind(this);
     this.goBack = this.goBack.bind(this);
     this.fetchProfile = this.fetchProfile.bind(this);
@@ -51,6 +54,8 @@ class EditProfile extends React.Component {
     this.handleDescChange = this.handleDescChange.bind(this);
     this.handleAllergChange = this.handleAllergChange.bind(this);
     this.renderLoading = this.renderLoading.bind(this);
+    this.getOptions = this.getOptions.bind(this);
+    this.getDefaultValues = this.getDefaultValues.bind(this);
   }
 
   async fetchCountries() {
@@ -64,7 +69,7 @@ class EditProfile extends React.Component {
         this.setState({countriesLoading: false});
       });
   }
-
+/*
   addAllerg() {
     var data1 = {};
     data1.allerg = this.state.allerg;
@@ -96,6 +101,88 @@ class EditProfile extends React.Component {
       console.log(err);
     });
   }
+*/
+
+    //This gets the default options for the selection.
+    getOptions() {
+      //Console log for debugging.
+      //console.log("Getting the options: ");
+      var url = config.backendAPIPaths.BASE+'/diet/all';
+      fetch(url)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            //Console log for debugging.
+            //console.log("Sending results");
+            //console.log(result);
+            var options = [];
+            //Send data via props
+            result.forEach(function(element) {
+              options.push({value:element.global_diet_id, label:element.name});
+            });
+            this.setState({
+              options : options,
+            });
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          console.log("DEBUG: ComponentsDidMount error");
+          console.log(error);
+        }
+      );
+
+    }
+
+    //Get user default diets.
+    getDefaultValues()
+    {
+      //Console log for debugging
+      //console.log("Getting the default values for the diets: ");
+      let init = { queryStringParameters: {} };
+      API.get('api', '/ownDiets', init)
+        .then(
+          (result) => {
+            //Console log for debugging
+            //console.log("Sending results");
+            console.log(result);
+            var defValues = [];
+            //Send data via props
+            var dietOptions = this.state.options;
+            if(result.own_diets === null)
+            {
+              this.setState({
+                diets: [],
+                originalDefDiets: [],
+              });
+            }
+            else{
+              result.own_diets.forEach(function(userDiet) {
+                dietOptions.forEach(function(dietOption) {
+                  if(userDiet.global_diet_id === dietOption.value)
+                  {
+                    defValues.push(dietOption);
+                  }
+                });
+              })
+              //console.log(defValues);
+              this.setState({
+                diets: defValues,
+                originalDefDiets: result.own_diets,
+              });
+            }
+        },
+        // Note: it's important to handle errors here
+        // instead of a catch() block so that we don't swallow
+        // exceptions from actual bugs in components.
+        (error) => {
+          console.log("DEBUG: ComponentsDidMount error");
+          console.log(error);
+        }
+      );
+    }
+
 
   async fetchCities(country_id) {
     if (country_id == null) {
@@ -118,6 +205,8 @@ class EditProfile extends React.Component {
     this.fetchCountries();
     const country = this.state.current_country == null ? 0 : this.state.current_country;
     this.fetchCities(country);
+    this.getOptions();
+    this.getDefaultValues();
   }
 
   goBack() {
@@ -177,6 +266,35 @@ class EditProfile extends React.Component {
     }
     API.get('api', url, init)
       .then((response) => {
+        if(this.state.diets === [])
+        {
+          for(var k=0; k<this.state.originalDefDiets.length; ++k){
+            //console.log("Removing:"+this.state.originalDefDiets[k])
+            var url = '/ownDiets/delete'
+            url += '?diet_id=' + this.state.originalDefDiets[k].diet_id;
+            API.get('api', url, init)
+          }
+        }
+        else{
+          for(var i=0; i<this.state.diets.length; ++i){
+            if(this.state.originalDefDiets.filter(s => s.global_diet_id == this.state.diets[i].value).length === 0){
+              var url = '/ownDiets/create'
+              //console.log("Adding:"+this.state.diets[i].label)
+              url += '?global_diet_id=' + this.state.diets[i].value;
+              url += '&name=' + this.state.diets[i].label;
+              API.get('api', url, init)
+            }
+          }
+          for(var j=0; j<this.state.originalDefDiets.length; ++j){
+            if(this.state.diets.filter(s => s.value == this.state.originalDefDiets[j].global_diet_id).length === 0){
+              //console.log("Removing:"+this.state.originalDefDiets[j])
+              var url = '/ownDiets/delete'
+              url += '?diet_id=' + this.state.originalDefDiets[j].diet_id;
+              API.get('api', url, init)
+            }
+          }
+        }
+      }).then(s => {
         const { language } = this.props.match.params;
         this.props.history.push('/' + language + '/profile/' + this.state.id);
       })
@@ -184,6 +302,7 @@ class EditProfile extends React.Component {
         console.log(err);
         this.setState({isSaving: false});
       });
+
   }
 
   handleUsernameChange(e) {
@@ -219,10 +338,19 @@ class EditProfile extends React.Component {
     const desc = e.target.value;
     this.setState({desc: desc});
   }
-  
+
   handleAllergChange(e) {
     const allerg = e.target.value;
     this.setState({allerg: allerg});
+  }
+
+  //Handle diets changes.
+  onDietsChanged = (selectedOptions) => {
+    //Debug logging
+    //console.log(selectedOptions)
+    this.setState({
+      diets : selectedOptions,
+    });
   }
 
   renderLoading() {
@@ -247,7 +375,7 @@ class EditProfile extends React.Component {
 
   render() {
     const { VInput, } = commonComponents;
-    
+
     let strings = new LocalizedStrings({
       en:{
         editProfile: "Edit profile",
@@ -262,6 +390,8 @@ class EditProfile extends React.Component {
         addDiet: "Add diet",
         deleteDiet: "Delete diet",
         cancel: "Cancel",
+        selectPlaceholder:"Select diets...",
+        noOptionsMessage:"No diets available",
       },
       fi: {
         editProfile: "Muokkaa profiilia",
@@ -276,6 +406,8 @@ class EditProfile extends React.Component {
         addDiet: "Lisää ruokavalio",
         deleteDiet: "Poista ruokavalio",
         cancel: "Peruuta",
+        selectPlaceholder:"Valitse ruokavalioita...",
+        noOptionsMessage:"Ei ruokavalioita",
       }
     });
     strings.setLanguage(this.props.match.params.language);
@@ -303,17 +435,17 @@ class EditProfile extends React.Component {
           </FormGroup>
           <FormGroup>
             <Label>{strings.city}</Label>
-            <VInput 
-              type="select" 
-              className="custom-select" 
-              name="city" 
-              onChange={this.handleCityChange} 
+            <VInput
+              type="select"
+              className="custom-select"
+              name="city"
+              onChange={this.handleCityChange}
               disabled={this.state.citiesLoading || this.state.countriesLoading}
               value={current_city}
             >
               {
-                this.state.cities != null && 
-                this.state.cities.map((city => 
+                this.state.cities != null &&
+                this.state.cities.map((city =>
                   <option key={city.city_id} value={city.city_id}>{city.name}</option>
                 ))
               }
@@ -321,17 +453,17 @@ class EditProfile extends React.Component {
           </FormGroup>
           <FormGroup>
             <Label>{strings.country}</Label>
-            <VInput 
-              type="select" 
-              className="custom-select" 
-              name="country" 
+            <VInput
+              type="select"
+              className="custom-select"
+              name="country"
               onChange={this.handleCountryChange}
               disabled={this.state.citiesLoading || this.state.countriesLoading}
               value={current_country}
             >
             {
-              this.state.countries != null && 
-              this.state.countries.map((country => 
+              this.state.countries != null &&
+              this.state.countries.map((country =>
                 <option key={country.country_id} value={country.country_id}>{country.name}</option>
               ))
             }
@@ -341,28 +473,33 @@ class EditProfile extends React.Component {
             <Label>{strings.desc}</Label>
             <VInput type="text" id="desc" name="desc" value={this.state.desc} onChange={this.handleDescChange}/>
           </FormGroup>
-
-          <FormGroup>
-            <Label>{strings.diets}</Label>
-            <VInput type="text" id="allerg" name="allerg" />
-          </FormGroup>
-          
-          <Button className="btn secondary-btn btn-margin" onClick={this.addAllerg}>{strings.addDiet}</Button>
-          <Button className="btn secondary-btn btn-margin" onClick={this.deleteAllerg}>{strings.deleteDiet}</Button>
-          
+          <div className="diets-filters-box">
+            {strings.diets}
+            <Select
+              value={this.state.diets}
+              isMulti
+              name="filtersDrop"
+              options={ this.state.options }
+              className="basic-multi-select"
+              classNamePrefix="select"
+              onChange={this.onDietsChanged}
+              placeholder={strings.selectPlaceholder}
+              noOptionsMessage={() => {return strings.noOptionsMessage}}
+            />
+          </div>
           <div>
             <Button className="btn main-btn max-w-10" onClick={this.goBack}>{strings.cancel}</Button>
-            <VInput 
-              type="button" 
+            <VInput
+              type="button"
               className="main-btn big-btn btn-margin max-w-10"
               wrapperClassName="max-w-10 no-margin inline-block w-100-percent save-btn"
-              name="save" 
-              onClick={this.saveData} 
-              value={saveBtnStr} 
+              name="save"
+              onClick={this.saveData}
+              value={saveBtnStr}
               isValid={this.state.usernameValid && this.state.emailValid && !this.state.isSaving}
             />
           </div>
-          
+
         </Form>
       </div>
     );

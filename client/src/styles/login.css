@@ -3,6 +3,18 @@
   margin: 1em 0;
 }
 
+.social-login-btn{
+  height: 35px;
+  background-color: #72c567;
+  color: white;
+  margin: 0em 1em 0em 0em;
+}
+
+.social-login-logo{
+  height: 25px;
+  width: 25px;
+}
+
 .facebook-login-btn,
 .google-login-btn {
   padding-top: 1em;

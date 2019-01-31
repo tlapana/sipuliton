@@ -226,7 +226,7 @@ export default class WriteReview extends React.Component {
       dietParam = '&diets='+diet_array_string;
     }
 
-    let init = { 
+    let init = {
       queryStringParameters: {
         restaurant_id: this.state.id,
         title: this.state.title,
@@ -236,7 +236,6 @@ export default class WriteReview extends React.Component {
         rating_reliability: this.state.reliability,
         rating_service_and_quality: this.state.quality,
         pricing: this.state.cost,
-        globalDietId: [],
         diets: diet_array_string,
     }
   };

@@ -34,7 +34,7 @@ export default class SocialLogin extends React.Component {
     this.signInGoogle = this.signInGoogle.bind(this);
     this.signInFacebook = this.signInFacebook.bind(this);
   }
-  
+
   componentDidMount() {
     //First, check that FB script is avaible
     if (!window.FB) this.createScriptFB();
@@ -43,7 +43,7 @@ export default class SocialLogin extends React.Component {
     const ga = window.gapi && window.gapi.auth2 ? window.gapi.auth2.getAuthInstance() : null;
     if (!ga) this.createScriptGoogle();
   }
-  
+
   //Login with Google
   signInGoogle(response) {
     const ga = window.gapi.auth2.getAuthInstance();
@@ -56,7 +56,7 @@ export default class SocialLogin extends React.Component {
       }
     );
   }
-  
+
   //Getting credentuals with google user
   async getAWSCredentialsGoogle(googleUser) {
     const { id_token, expires_at } = googleUser.getAuthResponse();
@@ -65,7 +65,7 @@ export default class SocialLogin extends React.Component {
       email: profile.getEmail(),
       name: profile.getName()
     };
-     
+
     const credentials = await Auth.federatedSignIn(
       'google',
       { token: id_token, expires_at },
@@ -75,7 +75,7 @@ export default class SocialLogin extends React.Component {
        loggingSucceeded: true
     });
   }
-  
+
   //Login with Facebook
   signInFacebook(response) {
     console.log("DEBUG: Social_Login.js signInFacebook() entered")
@@ -97,9 +97,9 @@ export default class SocialLogin extends React.Component {
           }
         );
       }
-    });   
+    });
   }
-  
+
   //Getting credentuals with facebook user
   getAWSCredentialsFacebook(response) {
     const { accessToken, expiresIn } = response;
@@ -115,7 +115,7 @@ export default class SocialLogin extends React.Component {
       name: response.name,
       email: response.email
     };
-               
+
     Auth.federatedSignIn('facebook', { token: accessToken, expires_at }, user)
       .then(credentials => {
         console.log(credentials);
@@ -135,7 +135,7 @@ export default class SocialLogin extends React.Component {
     console.log("DEBUG: RESPONSE ON FAILURE")
     console.log(response);
   }
-  
+
   //For Facebook script
   createScriptFB() {
     // load the sdk
@@ -148,7 +148,7 @@ export default class SocialLogin extends React.Component {
     document.body.appendChild(script);
     console.log("DEBUG Social_Login.js createScriptFB out")
   }
-  
+
    initFB() {
     const fb = window.FB;
     console.log('DEBUG Social_Login.js initFB FB SDK inited');
@@ -165,7 +165,7 @@ export default class SocialLogin extends React.Component {
       version : 'v2.11'
     });
   }
-  
+
   //For Google script
   createScriptGoogle() {
     // load the Google SDK
@@ -177,8 +177,8 @@ export default class SocialLogin extends React.Component {
     document.body.appendChild(script);
     console.log("DEBUG Social_Login.js createScriptGoogle out")
   }
-  
-  
+
+
   //Google API initialization
   initGapi() {
     // init the Google SDK client
@@ -193,7 +193,7 @@ export default class SocialLogin extends React.Component {
     });
     console.log("DEBUG Social_Login.js initGapi out")
   }
-   
+
   render() {
     let strings = new LocalizedStrings({
       en:{
@@ -206,25 +206,25 @@ export default class SocialLogin extends React.Component {
       }
     });
     strings.setLanguage(this.props.language);
-    
-    
+
+
     if(this.state.loggingSucceeded)    {
       return <Redirect to={"/" + this.props.language + "/profile"} />
     }
     else {
-      
+
       return (
         <div>
-          <button onClick={this.signInGoogle}>{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
-            <img className="logo-icon" src={require("../../../resources/google_logo.svg")} />
+          <button className="social-login-btn" onClick={this.signInGoogle}>{/*<FontAwesomeIcon icon={["fab", "google"]}></FontAwesomeIcon>*/}
+            <img className="logo-icon social-login-logo" src={require("../../../resources/google_logo.svg")} />
             <span>{strings.googleLogin}</span>e
           </button>
-          <button onClick={this.signInFacebook}>
-            <FontAwesomeIcon className="logo-icon" icon={["fab", "facebook"]} />
+          <button className="social-login-btn" onClick={this.signInFacebook}>
+            <FontAwesomeIcon className="logo-icon social-login-logo" icon={["fab", "facebook"]} />
             {strings.fbLogin}
-          </button>  
+          </button>
         </div>
-        /* 
+        /*
         //These are the old buttons
         <div>
           <GoogleLogin

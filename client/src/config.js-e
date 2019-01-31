@@ -23,6 +23,6 @@ export default {
     EMAIL_MAX_LENGTH: 50,
   },
   backendAPIPaths: {
-    BASE: "https://d39jaaiol1.execute-api.eu-central-1.amazonaws.com/Prod/"
+    BASE: "https://ttv1izfbf7.execute-api.eu-central-1.amazonaws.com/Prod"
   }
 }

@@ -330,7 +330,7 @@ class SearchBar extends React.Component {
     if(this.state.useUserLocation) {
       return(
         <div>
-          <div><Label>{strings.selectRadius}: {this.renderDistance()} </Label></div>
+          <div><Label>{strings.selectRadius} {this.renderDistance()} </Label></div>
           <Slider
             min={100}
             max={20000}

@@ -38,6 +38,7 @@ class Map extends React.Component {
       longitude:24.940886,
       latitude:60.168182,
       diets:[],
+      useUserLocation:true,
     }
     //Geocoder initialization. This is needed for converting address to location.
     Geocoder.init(Config.google.API_KEY);
