@@ -309,21 +309,7 @@ async function getLanguage(client, language) {
 
 exports.lambdaHandler = async (event, context) => {
     try {
-        var pg = require("pg");
-       
-
-        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-        const client = new pg.Client(conn);
-        await client.connect((err) => {
-            console.log("Connecting")
-            if (err){
-                console.error("Failed to connect client")
-                console.error(err)
-                throw err
-            }
-        });
-
+        const client = await getPsqlClient()
         // Result of this query will later go to the returned json
         var pageSize = event.queryStringParameters.pageSize
         const restaurantId = event.queryStringParameters.restaurantId
