@@ -6,24 +6,8 @@ Description: 'sam-app
   '
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 10
 Outputs:
-  HelloWorldApi:
-    Description: API Gateway endpoint URL for Prod stage for Hello World function
-    Value:
-      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
-  HelloWorldFunction:
-    Description: Hello World Lambda Function ARN
-    Value:
-      Fn::GetAtt:
-      - HelloWorldFunction
-      - Arn
-  HelloWorldFunctionIamRole:
-    Description: Implicit IAM Role created for Hello World function
-    Value:
-      Fn::GetAtt:
-      - HelloWorldFunctionRole
-      - Arn
   LandingApi:
     Description: API Gateway endpoint URL for Prod stage for landing function
     Value:
@@ -33,12 +17,6 @@ Outputs:
     Value:
       Fn::GetAtt:
       - LandingFunction
-      - Arn
-  LandingFunctionIamRole:
-    Description: Implicit IAM Role created for Landing page function
-    Value:
-      Fn::GetAtt:
-      - LandingFunctionRole
       - Arn
   ProfileApi:
     Description: API Gateway endpoint URL for Prod stage for Profile page function
@@ -54,12 +32,6 @@ Outputs:
       Fn::GetAtt:
       - RestaurantFunction
       - Arn
-  RestaurantFunctionIamRole:
-    Description: Implicit IAM Role created for Restaurant page function
-    Value:
-      Fn::GetAtt:
-      - RestaurantFunctionRole
-      - Arn
   ReviewsApi:
     Description: API Gateway endpoint URL for Prod stage for reviews function
     Value:
@@ -69,12 +41,6 @@ Outputs:
     Value:
       Fn::GetAtt:
       - ReviewsFunction
-      - Arn
-  ReviewsFunctionIamRole:
-    Description: Implicit IAM Role created for Reviews page function
-    Value:
-      Fn::GetAtt:
-      - ReviewsFunctionRole
       - Arn
   SearchApi:
     Description: API Gateway endpoint URL for Prod stage for search functionality
@@ -86,16 +52,10 @@ Outputs:
       Fn::GetAtt:
       - SearchFunction
       - Arn
-  SearchFunctionIamRole:
-    Description: Implicit IAM Role created for Search function
-    Value:
-      Fn::GetAtt:
-      - SearchFunctionRole
-      - Arn
 Resources:
   AggregationFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/f92ee46b7a4dd148028162f23dc52259
+      CodeUri: s3://sipuliton-lambdas/5d4ebc35093c19a4b87ba9ef916ba1b7
       Environment:
         Variables:
           PARAM1: VALUE
@@ -106,11 +66,44 @@ Resources:
             Path: /dbUpdate
           Type: Api
       Handler: aggregation.aggregationLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  CognitoUserGetFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/9999060e6384ff96350e7ffadb69b3ed
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Landing:
+          Properties:
+            Method: get
+            Path: /user/getByCognito
+          Type: Api
+      Handler: user.getUserByCognitoLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
+      Runtime: nodejs8.10
+    Type: AWS::Serverless::Function
+  CorsOptionsFunction:
+    Properties:
+      CodeUri: s3://sipuliton-lambdas/c6bb31f4348385a32abbaedb2de2b339
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Cors:
+          Properties:
+            Method: options
+            Path: /{proxy+}
+          Type: Api
+      Handler: corsOptions.handler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietAllFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -121,11 +114,12 @@ Resources:
             Path: /diet/all
           Type: Api
       Handler: diet.getAllDietsLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietCreateAdminFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -136,11 +130,12 @@ Resources:
             Path: /diet/createAdmin
           Type: Api
       Handler: diet.createDietAdminLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietCreateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -151,11 +146,12 @@ Resources:
             Path: /diet/create
           Type: Api
       Handler: diet.createDietLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietGroupsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -166,11 +162,12 @@ Resources:
             Path: /diet/groups
           Type: Api
       Handler: diet.getFoodGroupsLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietPresetsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -181,11 +178,12 @@ Resources:
             Path: /diet/presets
           Type: Api
       Handler: diet.getPresetDietsLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   DietUpdateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -196,21 +194,7 @@ Resources:
             Path: /diet/update
           Type: Api
       Handler: diet.updateDietLambda
-      Runtime: nodejs8.10
-    Type: AWS::Serverless::Function
-  HelloWorldFunction:
-    Properties:
-      CodeUri: s3://sipuliton-lambdas/fb60ef7ca6a2d1a2bc3ee04025914aee
-      Environment:
-        Variables:
-          PARAM1: VALUE
-      Events:
-        HelloWorld:
-          Properties:
-            Method: get
-            Path: /hello
-          Type: Api
-      Handler: app.lambdaHandler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   LandingFunction:
@@ -226,11 +210,12 @@ Resources:
             Path: /landing
           Type: Api
       Handler: landing.lambdaHandler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   LocationCitiesFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/c754f0ec8e85408ecad3311c6711b67f
+      CodeUri: s3://sipuliton-lambdas/aaa25e3bb8921f30218ffd80767d4f9e
       Environment:
         Variables:
           PARAM1: VALUE
@@ -241,11 +226,12 @@ Resources:
             Path: /location/cities
           Type: Api
       Handler: location.getCitiesLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   LocationCountriesFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/c754f0ec8e85408ecad3311c6711b67f
+      CodeUri: s3://sipuliton-lambdas/aaa25e3bb8921f30218ffd80767d4f9e
       Environment:
         Variables:
           PARAM1: VALUE
@@ -256,11 +242,12 @@ Resources:
             Path: /location/countries
           Type: Api
       Handler: location.getCountriesLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnDietsCreateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8980b615f07d0c0e0f1a7a1d04eb085e
+      CodeUri: s3://sipuliton-lambdas/c85452d235e3c9dd3883ba3e60833ba3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -271,11 +258,12 @@ Resources:
             Path: /ownDiets/create
           Type: Api
       Handler: own_diet.createOwnDietLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnDietsDeleteFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8980b615f07d0c0e0f1a7a1d04eb085e
+      CodeUri: s3://sipuliton-lambdas/c85452d235e3c9dd3883ba3e60833ba3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -286,11 +274,12 @@ Resources:
             Path: /ownDiets/delete
           Type: Api
       Handler: own_diet.deleteDietLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnDietsEditFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8980b615f07d0c0e0f1a7a1d04eb085e
+      CodeUri: s3://sipuliton-lambdas/c85452d235e3c9dd3883ba3e60833ba3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -301,11 +290,12 @@ Resources:
             Path: /ownDiets/edit
           Type: Api
       Handler: own_diet.editOwnDietLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnDietsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/8980b615f07d0c0e0f1a7a1d04eb085e
+      CodeUri: s3://sipuliton-lambdas/c85452d235e3c9dd3883ba3e60833ba3
       Environment:
         Variables:
           PARAM1: VALUE
@@ -316,11 +306,12 @@ Resources:
             Path: /ownDiets
           Type: Api
       Handler: own_diet.getOwnDietsLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnReviewsDeleteFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
+      CodeUri: s3://sipuliton-lambdas/e8fcce8912b2528dcb2a91b2e60a557c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -331,11 +322,12 @@ Resources:
             Path: /ownReviews/delete
           Type: Api
       Handler: own_review.deleteReviewLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnReviewsEditFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
+      CodeUri: s3://sipuliton-lambdas/e8fcce8912b2528dcb2a91b2e60a557c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -346,11 +338,12 @@ Resources:
             Path: /ownReviews/edit
           Type: Api
       Handler: own_review.editReviewLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   OwnReviewsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/b3dc722eb257e47b3513b983814100e3
+      CodeUri: s3://sipuliton-lambdas/e8fcce8912b2528dcb2a91b2e60a557c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -361,11 +354,12 @@ Resources:
             Path: /ownReviews
           Type: Api
       Handler: own_review.getOwnReviewsLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   PostReviewFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/0d29ecb1c3979e60a5c5a379d4a24d28
+      CodeUri: s3://sipuliton-lambdas/d215021a74a84059713c954da0ab20ef
       Environment:
         Variables:
           PARAM1: VALUE
@@ -376,11 +370,12 @@ Resources:
             Path: /postReview
           Type: Api
       Handler: reviews.postReviewLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   ProfileEditFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/25f8852b94ee03cdfacbe6e40a577b15
+      CodeUri: s3://sipuliton-lambdas/fd13731c101b32995e32debfd1824652
       Environment:
         Variables:
           PARAM1: VALUE
@@ -391,11 +386,12 @@ Resources:
             Path: /profile/edit
           Type: Api
       Handler: profile.editProfileLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   ProfileFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/25f8852b94ee03cdfacbe6e40a577b15
+      CodeUri: s3://sipuliton-lambdas/fd13731c101b32995e32debfd1824652
       Environment:
         Variables:
           PARAM1: VALUE
@@ -406,11 +402,12 @@ Resources:
             Path: /profile
           Type: Api
       Handler: profile.profileLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   RestaurantFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/3b0ced7fc04fc5c70602adf92e0f1e13
+      CodeUri: s3://sipuliton-lambdas/3ff6d63c1bc48f1d672a12f2f93f7d54
       Environment:
         Variables:
           PARAM1: VALUE
@@ -421,11 +418,12 @@ Resources:
             Path: /restaurant
           Type: Api
       Handler: restaurant.lambdaHandler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   ReviewsFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/0d29ecb1c3979e60a5c5a379d4a24d28
+      CodeUri: s3://sipuliton-lambdas/d215021a74a84059713c954da0ab20ef
       Environment:
         Variables:
           PARAM1: VALUE
@@ -436,11 +434,12 @@ Resources:
             Path: /reviews
           Type: Api
       Handler: reviews.lambdaHandler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   SearchFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/55961362d09e4a6b90097790b96f857f
+      CodeUri: s3://sipuliton-lambdas/b577ea18e24424fde220152e6ee45f0b
       Environment:
         Variables:
           PARAM1: VALUE
@@ -451,11 +450,12 @@ Resources:
             Path: /search
           Type: Api
       Handler: search.lambdaHandler
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   UserCreateFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/ecc485a1f28d54a6d3b4f4ee22c9880a
+      CodeUri: s3://sipuliton-lambdas/9999060e6384ff96350e7ffadb69b3ed
       Environment:
         Variables:
           PARAM1: VALUE
@@ -466,11 +466,12 @@ Resources:
             Path: /user/create
           Type: Api
       Handler: user.createUserLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   UserDeleteFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/ecc485a1f28d54a6d3b4f4ee22c9880a
+      CodeUri: s3://sipuliton-lambdas/9999060e6384ff96350e7ffadb69b3ed
       Environment:
         Variables:
           PARAM1: VALUE
@@ -481,11 +482,12 @@ Resources:
             Path: /user/delete
           Type: Api
       Handler: user.deleteUserLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
   VoteDietFunction:
     Properties:
-      CodeUri: s3://sipuliton-lambdas/5ee582de1a213aa840f48f634031c628
+      CodeUri: s3://sipuliton-lambdas/28aaf163a1dc05db571f741135e9c11c
       Environment:
         Variables:
           PARAM1: VALUE
@@ -496,6 +498,7 @@ Resources:
             Path: /voteDiet
           Type: Api
       Handler: diet.voteDietLambda
+      Role: arn:aws:iam::080857800046:role/lambda-vpc-role
       Runtime: nodejs8.10
     Type: AWS::Serverless::Function
 Transform: AWS::Serverless-2016-10-31
