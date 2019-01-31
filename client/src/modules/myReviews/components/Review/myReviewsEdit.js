@@ -2,8 +2,10 @@ import React, { } from 'react';
 
 import ReactStars from 'react-stars'
 import { Button, Container, Row, Col } from 'reactstrap';
-import config from '../../../../config';
+import commonComponents from '../../../common';
 import { API } from "aws-amplify";
+
+import LocalizedStrings from 'react-localization';
 
 export default class myReviewEdit1 extends React.Component {
       constructor(props) {
