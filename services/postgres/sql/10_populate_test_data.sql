@@ -50,15 +50,33 @@ INSERT INTO diet_name(user_id, diet_id, global_diet_id, name) VALUES
     ('1', '0', '7', 'veg.'),
     ('1', '1', '2', 'no fish');
 
-INSERT INTO restaurant(restaurant_id, name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
-    ('1', 'Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
-    ('2', 'Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
-    ('3', 'Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
-    ('4', 'Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4');
+INSERT INTO restaurant(name, email, website, image_url, country_id, city_id, postal_code, street_address, latitude, longitude) VALUES
+    ('Testiravintola1', 'ravintola1@mail.com', 'www.sivusto.fi', NULL, '0', '0', '33200', 'Osoite1', '61.49911', '23.78712'),
+    ('Testiravintola2', 'ravintola2@mail.com', 'www.sivusto.fi', NULL, '1', '1', '33201', 'Osoite2', '61.499', '23.787'),
+    ('Testiravintola3', 'ravintola3@mail.com', NULL, NULL, '2', '2', '33202', 'Osoite3', '1', '3'),
+    ('Testiravintola4', NULL, NULL, NULL, '3', '3', '33203', 'Osoite4', '1', '4'),
+    ('JuvenesRavintolaNewton', 'newton@juvenes.fi', 'juvenes.fi', NULL, '71', '92', '33720', 'Korkeakoulunkatu6A', '61.448939', '23.858403'),
+    ('SodexoHertsi', 'neuvo@sodexo.fi', 'sodexo.fi', NULL, '71', '92', '33720', 'Korkeakoulunkatu4', '61.449918', '23.856676'),
+    ('FazerFood&Co.Reaktori', 'reaktori@fazerfoodco.fi', 'https://www.fazerfoodco.fi/', NULL, '71', '92', '33720', 'Korkeakoulunkatu7Kampusareenan2.kerros', '61.449703', '23.858225'),
+    ('RavintolaBorneo', NULL, 'ravintolaborneo.fi', NULL, '71', '92', '33110', 'Itsenäisyydenkatu15', '61.499126', '23.781632'),
+    ('BaiWeiRavintola', NULL, 'baiwei.fi', NULL, '71', '92', '33720', 'Pietilänkatu2', '61.450844', '23.852669'),
+    ('ZarilloHervantaDUO', NULL, 'zarillo.fi', NULL, '71', '92', '33720', 'Pietilänkatu2', '61.451262', '23.851923'),
+    ('Subway', NULL, 'subway.fi', NULL, '71', '92', '33720', 'Insinöörinkatu23', '61.450901', '23.850491'),
+    ('HerwoodGrilli', NULL, 'pizza-online.fi', NULL, '71', '92', '33720', 'Insinöörinkatu38', '61.450275', '23.849638'),
+    ('Pranzo', NULL, 'pranzo.fi', NULL, '71', '92', '33720', 'Insinöörinkatu38', '61.450081', '23.849216');
 
 INSERT INTO open_hours(restaurant_id, opens_mon, closes_mon, opens_tue, closes_tue, opens_wed, closes_wed, opens_thu, closes_thu, opens_fri, closes_fri, opens_sat, closes_sat, opens_sun, closes_sun) VALUES
     ('1', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', '12:00', '18:00'),
-    ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL);
+    ('2', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '18:00', '9:00', '22:00', '12:00', '16:00', NULL, NULL),
+    ('5', '10:30', '16:00', '10:30', '16:00', '10:30', '16:00', '10:30', '16:00', '10:30', '15:00', NULL, NULL, NULL, NULL),
+    ('6', '10:00', '15:00', '10:00', '15:00', '10:00', '15:00', '10:00', '15:00', '10:00', '15:00', NULL, NULL, NULL, NULL),
+    ('7', '8:00', '18:30', '8:00', '18:30', '8:00', '18:30', '8:00', '18:30', '8:00', '17:00', '10:00', '15:00', NULL, NULL),
+    ('8', '11:00', '21:00', '11:00', '21:00', '11:00', '21:00', '11:00', '21:00', '11:00', '21:00', '13:00', '21:00', NULL, NULL),
+    ('9', '10:30', '19:00', '10:30', '19:00', '10:30', '19:00', '10:30', '19:00', '10:30', '19:00', '11:30', '19:00', NULL, NULL),
+    ('10', '11:00', '21:00', '10:30', '21:00', '11:00', '21:00', '11:00', '21:00', '12:00', '21:00', '12:00', '20:00', NULL, NULL),
+    ('11', '9:00', '22:00', '9:00', '22:00', '9:00', '22:00', '9:00', '22:00', '9:00', '21:00', '12:00', '19:00', NULL, NULL),
+    ('12', '16:00', '24:00', '16:00', '24:00', '16:00', '24:00', '16:00', '24:00', '16:00', '01:00', '16:00', '01:00', '16:00', '24:00'),
+    ('13', '10:30', '22:00', '10:30', '22:00', '10:30', '22:00', '10:30', '22:00', '10:30', '22:00', '12:00', '22:00', NULL, NULL);
 
 INSERT INTO restaurant_owners(restaurant_id, owner_id) VALUES
     ('3', '4');
