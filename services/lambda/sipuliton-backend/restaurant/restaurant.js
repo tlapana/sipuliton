@@ -69,7 +69,7 @@ async function getLanguage(client, language) {
     return res.rows[0]['language_id'];
 }
 
-exports.lambdaHandler = async (event, context, cb) => {
+exports.lambdaHandler = (event, context, cb) => {
     try {
         var signer = new AWS.RDS.Signer();
         signer.getAuthToken({ // uses the IAM role access keys to create an authentication token
@@ -94,8 +94,8 @@ exports.lambdaHandler = async (event, context, cb) => {
                 
                 const restaurantId = event.queryStringParameters.restaurantId
                 var temp = event.queryStringParameters.language;
-                const languageId = temp === null ? await getLanguage(client, 'FI') :
-                    await getLanguage(client, temp.toUpperCase());
+                //const languageId = temp === null ? await getLanguage(client, 'FI') :
+                //    await getLanguage(client, temp.toUpperCase());
 
                 var collectRestaurantPage = `
                 SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
