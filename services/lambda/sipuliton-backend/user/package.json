@@ -9,7 +9,8 @@
   "dependencies": {
     "node-fetch": "^2.3.0",
     "node-jose": "^1.1.0",
-    "pg": "^7.6.0"
+    "pg": "^7.6.0",
+    "aws-sdk": "^2.392.0"
   },
   "devDependencies": {}
 }

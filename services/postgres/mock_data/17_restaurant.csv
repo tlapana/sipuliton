@@ -1,5 +1,10 @@
-restaurant_id,name,email,website,image_url,country_id,city_id,postal_code,street_address,latitude,longitude
-1,Testiravintola1,ravintola1@mail.com,www.sivusto.fi,,0,0,33200,Osoite1,61.49911,23.78712
-2,Testiravintola2,ravintola2@mail.com,www.sivusto.fi,,1,1,33201,Osoite2,61.499,23.787
-3,Testiravintola3,ravintola3@mail.com,,,2,2,33202,Osoite3,1,3
-4,Testiravintola4,,,,3,3,33203,Osoite4,1,4
+name,email,website,image_url,country_id,city_id,postal_code,street_address,latitude,longitude
+JuvenesRavintolaNewton,newton@juvenes.fi,juvenes.fi,,71,92,33720,Korkeakoulunkatu6A,61.448939,23.858403
+SodexoHertsi,neuvo@sodexo.fi,sodexo.fi,,71,92,33720,Korkeakoulunkatu4,61.449918,23.856676
+FazerFood&Co.Reaktori,reaktori@fazerfoodco.fi,https://www.fazerfoodco.fi/,,71,92,33720,Korkeakoulunkatu7Kampusareenan2.kerros,61.449703,23.858225
+RavintolaBorneo,,ravintolaborneo.fi,,71,92,33110,Itsenäisyydenkatu15,61.499126,23.781632
+BaiWeiRavintola,,baiwei.fi,,71,92,33720,Pietilänkatu2,61.450844,23.852669
+ZarilloHervantaDUO,,zarillo.fi,,71,92,33720,Pietilänkatu2,61.451262,23.851923
+Subway,,subway.fi,,71,92,33720,Insinöörinkatu23,61.450901,23.850491
+HerwoodGrilli,,pizza-online.fi,,71,92,33720,Insinöörinkatu38,61.450275,23.849638
+Pranzo,,pranzo.fi,,71,92,33720,Insinöörinkatu38,61.450081,23.849216

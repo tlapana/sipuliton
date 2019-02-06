@@ -1,6 +1,16 @@
 
 let response;
 
+const pg = require('pg');
+const AWS = require('aws-sdk');
+
+// Database credentials
+const region = 'eu-central-1';
+const dbPort = 5432;
+const dbUsername = 'lambda_user'; 
+const dbName = 'sipuliton'; 
+const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
+
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -35,6 +45,7 @@ let response;
  * @returns {Object} object.body - JSON Payload to be returned
  * 
  */
+
 async function getLanguage(client, language) {
     res = await client.query(
         `SELECT language_id
@@ -58,29 +69,36 @@ async function getLanguage(client, language) {
     return res.rows[0]['language_id'];
 }
 
-exports.lambdaHandler = async (event, context) => {
+exports.lambdaHandler = (event, context, cb) => {
     try {
-        var pg = require("pg");
+        var signer = new AWS.RDS.Signer();
+        signer.getAuthToken({ // uses the IAM role access keys to create an authentication token
+          region: region,
+          hostname: dbEndpoint,
+          port: dbPort,
+          username: dbUsername
+        }, function(err, token) {
+            if (err) {
+                console.log(`could not get auth token: ${err}`);
+                throw(err);
+            } else {
+                var client = new pg.Client({
+                    host: dbEndpoint,
+                    port: 5432,
+                    user: dbUsername,
+                    password: token,
+                    database: dbName,
+                    ssl: 'Amazon RDS'
+                  });
+                client.connect()
+                
+                const restaurantId = event.queryStringParameters.restaurantId
+                var temp = event.queryStringParameters.language;
+                //const languageId = temp === null ? await getLanguage(client, 'FI') :
+                //    await getLanguage(client, temp.toUpperCase());
 
-        //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-        var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-        const client = new pg.Client(conn);
-        await client.connect((err) => {
-            console.log("Connecting")
-            if (err){
-                console.error("Failed to connect client")
-                console.error(err)
-                throw err
-            }
-        });
-
-        const restaurantId = event.queryStringParameters.restaurantId
-        var temp = event.queryStringParameters.language;
-        const languageId = temp === null ? await getLanguage(client, 'FI') :
-            await getLanguage(client, temp.toUpperCase());
-
-        var collectRestaurantPage = `
-        SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
+                var collectRestaurantPage = `
+                SELECT restaurant.restaurant_id as restaurant_id, name, email, website, street_address, geo_location, 
                coalesce(rating_overall, 0) as rating_overall,
                coalesce(rating_reliability, 0) as rating_reliability,
                coalesce(rating_variety, 0) as rating_variety,
@@ -93,28 +111,38 @@ exports.lambdaHandler = async (event, context) => {
         LEFT JOIN restaurant_stats ON restaurant.restaurant_id=restaurant_stats.restaurant_id
         LEFT JOIN open_hours ON restaurant.restaurant_id=open_hours.restaurant_id
         LEFT JOIN open_hours_exceptions ON restaurant.restaurant_id=open_hours_exceptions.restaurant_id
-        LEFT JOIN restaurant_description ON restaurant.restaurant_id=restaurant_description.restaurant_id AND language_id = $2
+        LEFT JOIN restaurant_description ON restaurant.restaurant_id=restaurant_description.restaurant_id
         WHERE restaurant.restaurant_id = $1
         `;
-        
-        const resRestaurant = await client.query(collectRestaurantPage, [restaurantId, languageId]);
-        var jsonString = JSON.stringify(resRestaurant.rows);
-        var jsonObjRestaurant = JSON.parse(jsonString);
-        await client.end()
+                
+                
+                client.query(collectRestaurantPage, [restaurantId], function(err, resRestaurant, fields) {
+                    client.end()
+                    if (err) {
+                        console.log(`could not execute query: ${err}`);
+                        throw(err);
+                      } else {
+                        var jsonString = JSON.stringify(resRestaurant.rows);
+                        var jsonObjRestaurant = JSON.parse(jsonString);
+                        var bodyJSON = {
+                            'restaurant': jsonObjRestaurant
+                        }
+                    
+                    response = {
+                        'statusCode': 200,
+                        //TODO: Handle CORS in AWS api gateway settings prior to deployment
+                        'headers': {
+                            'Access-Control-Allow-Origin': '*'
+                        },
+                        'body': JSON.stringify(bodyJSON)
+                    };
+                    cb(undefined, response)
+                }
 
-        var bodyJSON = {
-            'restaurant': jsonObjRestaurant
+
+            });
         }
-
-        response = {
-            'statusCode': 200,
-            //TODO: Handle CORS in AWS api gateway settings prior to deployment
-            'headers': {
-                'Access-Control-Allow-Origin': '*'
-            },
-            'body': JSON.stringify(bodyJSON)
-        };
-
+        });
 
     } catch (err) {
         console.error(err);

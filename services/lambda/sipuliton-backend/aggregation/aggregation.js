@@ -1,6 +1,16 @@
 
 let response;
+const pg = require('pg');
+const AWS = require('aws-sdk');
 
+// Database credentials
+const region = 'eu-central-1';
+const dbPort = 5432;
+const dbUsername = 'lambda_user'; 
+const dbName = 'sipuliton'; 
+const dbEndpoint = 'sipulitondb.c15ehja7hync.eu-central-1.rds.amazonaws.com';
+
+/**
 /**
  *
  * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
@@ -38,11 +48,39 @@ let response;
 
 // shared functions
 
+async function getToken() {
+    var signedToken;
+    var signer = new AWS.RDS.Signer();
+    await signer.getAuthToken({ // uses the IAM role access keys to create an authentication token
+        region: region,
+        hostname: dbEndpoint,
+        port: dbPort,
+        username: dbUsername
+    }, function(err, token) {
+        if (err) {
+            console.log(`could not get auth token: ${err}`);
+            throw(err);
+        } else {
+            signedToken = token
+            return token
+        }
+    });
+    return signedToken
+}
+
 async function getPsqlClient() {
-    var pg = require("pg");
-    //TODO: Before deploying, change to a method for fetching Amazon RDS credentials
-    var conn = "postgres://sipuliton:sipuliton@sipuliton_postgres_1/sipuliton";
-    const client = new pg.Client(conn);
+
+    var token = await getToken();
+
+    var client = new pg.Client({
+        host: dbEndpoint,
+        port: 5432,
+        user: dbUsername,
+        password: token,
+        database: dbName,
+        ssl: 'Amazon RDS'
+      });
+
     await client.connect((err) => {
         if (err) {
             //TODO: Remove + err before deployment
